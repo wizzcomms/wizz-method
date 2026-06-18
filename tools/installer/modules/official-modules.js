@@ -225,6 +225,13 @@ class OfficialModules {
       }
     }
 
+    // Check bundled local modules (directly under src/modules/<code>), e.g. wizz.
+    // These ship inside this repo and are auto-discovered by list-options.js.
+    const bundledPath = getSourcePath('modules', moduleCode);
+    if (await fs.pathExists(path.join(bundledPath, 'module.yaml'))) {
+      return bundledPath;
+    }
+
     // Check external official modules (pass channelOptions so channel plan applies)
     const externalSource = await this.externalModuleManager.findExternalModuleSource(moduleCode, options);
     if (externalSource) {

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 // wizz-init — aplica a personalização Wizz num projeto que já tem o BMAD instalado.
 //
 // O que faz (idempotente, seguro de rodar de novo):
@@ -41,7 +40,7 @@ function upsertYamlKey(content, key, value) {
     }
   }
   // não existe: acrescenta no fim
-  if (lines.length && lines.at(-1).trim() !== '') lines.push('');
+  if (lines.length > 0 && lines.at(-1).trim() !== '') lines.push('');
   lines.push(`${key}: "${value}"`);
   return lines.join('\n');
 }
@@ -51,8 +50,7 @@ async function main() {
   const bmadDir = path.join(projectRoot, '_bmad');
 
   if (!(await exists(bmadDir))) {
-    console.error(`✗ Não achei _bmad/ em ${projectRoot}. Rode o instalador do BMAD primeiro.`);
-    process.exit(1);
+    throw new Error(`Não achei _bmad/ em ${projectRoot}. Rode o instalador do BMAD primeiro.`);
   }
 
   const done = [];
@@ -73,11 +71,11 @@ async function main() {
   const customDir = path.join(bmadDir, 'custom');
   await mkdir(customDir, { recursive: true });
   if (await exists(overridesDir)) {
-    const files = (await readdir(overridesDir)).filter((f) => f.endsWith('.toml'));
+    const entries = await readdir(overridesDir);
+    const files = entries.filter((f) => f.endsWith('.toml'));
     for (const f of files) {
-      const src = path.join(overridesDir, f);
-      const dest = path.join(customDir, f);
-      await writeFile(dest, await readFile(src, 'utf8'), 'utf8');
+      const content = await readFile(path.join(overridesDir, f), 'utf8');
+      await writeFile(path.join(customDir, f), content, 'utf8');
     }
     done.push(`${files.length} overrides Wizz copiados para _bmad/custom/`);
   }
@@ -87,7 +85,9 @@ async function main() {
   console.log('\n➡️ Próximo passo: invoque o wizz-maestro e mande seu pedido. Ele escolhe o agente certo.');
 }
 
-main().catch((err) => {
-  console.error('✗ wizz-init falhou:', err.message);
-  process.exit(1);
-});
+try {
+  await main();
+} catch (error) {
+  console.error('✗ wizz-init falhou:', error.message);
+  process.exitCode = 1;
+}
