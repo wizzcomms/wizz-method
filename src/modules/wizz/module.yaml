@@ -1,0 +1,110 @@
+code: wizz
+name: "Wizz Method"
+description: "Método de agência completo em PT-BR: dev, design, copy, SEO, growth e ads. Cada agente resume o que fez em linguagem fácil e já indica o próximo passo."
+default_selected: true # Selecionado por padrão em novas instalações
+
+# Variáveis vindas do Core Config (preenchidas pelo instalador):
+## user_name
+## project_name
+## communication_language   <- definir "Português (BR)" para todos os agentes falarem PT-BR
+## document_output_language
+## output_folder
+
+# --- Config específica do Wizz ---
+
+wizz_handoff_style:
+  prompt:
+    - "Como os agentes devem encerrar cada tarefa?"
+    - "Define o bloco final de resumo + próximo passo."
+  scope: user
+  default: "visual"
+  result: "{value}"
+  single-select:
+    - value: "visual"
+      label: "Visual — ✅ O que fiz / ➡️ Próximo passo / 🎯 Comando"
+    - value: "enxuto"
+      label: "Enxuto — texto curto, sem emoji"
+
+wizz_chaining:
+  prompt:
+    - "Como encadear os agentes?"
+    - "Confirmado: o maestro escolhe o 1º agente; você confirma os próximos."
+  scope: user
+  default: "confirmado"
+  result: "{value}"
+  single-select:
+    - value: "confirmado"
+      label: "Maestro escolhe + você confirma cada passo (recomendado)"
+    - value: "auto"
+      label: "Encadeamento automático (pipeline)"
+
+cerebro_integration:
+  prompt:
+    - "Integração com o cerebro (sua memória)?"
+  scope: user
+  default: "load-e-lembrete"
+  result: "{value}"
+  single-select:
+    - value: "load-e-lembrete"
+      label: "Auto-load leve no início + lembrete de salvar no fim (recomendado)"
+    - value: "auto"
+      label: "Totalmente automático (load + save)"
+    - value: "manual"
+      label: "Só quando eu pedir"
+
+# Diretórios criados na instalação
+directories:
+  - "{output_folder}/wizz"
+
+# Roster de agentes — só a essência. Skills externas (party-mode, help, maestro)
+# leem estes descritores para rotear, exibir e incorporar os agentes.
+# Persona e comportamento completos vivem no customize.toml de cada agente.
+agents:
+  - code: wizz-maestro
+    name: Maestro
+    title: Orquestrador
+    icon: "🧭"
+    team: wizz
+    description: "Lê seu pedido, descobre a área (dev, design, copy, SEO, growth, ads) e despacha o agente certo sozinho. Router dissolvido: roteia para os agentes wizz e para as skills globais. Fala simples e sempre diz o próximo passo."
+
+  - code: wizz-designer
+    name: Designer
+    title: Designer de Produto e UI
+    icon: "🎨"
+    team: wizz
+    description: "Cria interfaces, landing pages e motion de alto nível roteando para premium-landing-ui-researcher, ui-ux-pro-max e motion-3d-director. Mostra o visual antes do código e resume cada entrega em linguagem fácil."
+
+  - code: wizz-copy
+    name: Copy
+    title: Copywriter
+    icon: "✍️"
+    team: wizz
+    description: "Escreve copy de venda, e-mails e textos de página roteando para copywriting, email-sequence e humanizer. Humaniza o texto e entrega variações prontas."
+
+  - code: wizz-seo
+    name: SEO
+    title: Especialista de SEO
+    icon: "🔍"
+    team: wizz
+    description: "Audita e otimiza para busca tradicional e IA roteando para seo-audit, ai-seo, schema-markup e programmatic-seo. Aponta o que corrigir em ordem de impacto."
+
+  - code: wizz-growth
+    name: Growth
+    title: Growth e Conversão
+    icon: "📈"
+    team: wizz
+    description: "Pensa marketing, CRO, lançamento e preço roteando para marketing-ideas, page-cro, launch-strategy e pricing-strategy. Traz ideias acionáveis, não teoria."
+
+  - code: wizz-ads
+    name: Ads
+    title: Mídia Paga
+    icon: "📢"
+    team: wizz
+    description: "Gerencia anúncios pagos roteando para paid-ads, ad-creative e analytics-tracking (e o MCP meta-ads). Cria variações de criativo e acompanha métricas."
+
+  - code: wizz-memoria
+    name: Memória
+    title: Cérebro do Projeto
+    icon: "🧠"
+    team: wizz
+    description: "Guarda e recupera contexto via cerebro (/ver, /salvar, /decisao). Carrega o que já foi decidido e salva aprendizados ao fim da sessão."
