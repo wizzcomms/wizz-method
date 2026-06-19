@@ -17,7 +17,7 @@ Các lượt có người trong vòng lặp vừa cần thiết vừa tốn kém
 
 LLM hiện tại vẫn thất bại theo những cách dễ đoán: hiểu sai ý định, tự điền vào khoảng trống bằng những phán đoán tự tin, lệch sang công việc không liên quan, và tạo ra các bản review nhiễu. Đồng thời, việc cần con người nhảy vào liên tục làm giảm tốc độ phát triển. Sự chú ý của con người là nút thắt.
 
-`bmad-quick-dev` cân bằng lại đánh đổi đó. Nó tin mô hình có thể chạy tự chủ lâu hơn, nhưng chỉ sau khi quy trình đã tạo được một ranh giới đủ mạnh để làm điều đó an toàn.
+`wizz-quick-dev` cân bằng lại đánh đổi đó. Nó tin mô hình có thể chạy tự chủ lâu hơn, nhưng chỉ sau khi quy trình đã tạo được một ranh giới đủ mạnh để làm điều đó an toàn.
 
 ## Thiết kế cốt lõi
 

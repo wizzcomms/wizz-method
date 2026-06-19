@@ -8,27 +8,27 @@ sidebar:
 Every Wizz Method installation includes a set of core skills that can be used in conjunction with any anything you are doing — standalone tasks and workflows that work across all projects, all modules, and all phases. These are always available regardless of which optional modules you install.
 
 :::tip[Quick Path]
-Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No agent session required.
+Run any core tool by typing its skill name (e.g., `wizz-help`) in your IDE. No agent session required.
 :::
 
 ## Overview
 
 | Tool | Type | Purpose |
 | --- | --- | --- |
-| [`bmad-help`](#bmad-help) | Task | Get context-aware guidance on what to do next |
-| [`bmad-brainstorming`](#bmad-brainstorming) | Workflow | Facilitate interactive brainstorming sessions |
-| [`bmad-party-mode`](#bmad-party-mode) | Workflow | Orchestrate multi-agent group discussions |
-| [`bmad-spec`](#bmad-spec) | Workflow | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work |
-| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Task | Push LLM output through iterative refinement methods |
-| [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Task | Cynical review that finds what's missing and what's wrong |
-| [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Task | Exhaustive branching-path analysis for unhandled edge cases |
-| [`bmad-editorial-review-prose`](#bmad-editorial-review-prose) | Task | Clinical copy-editing for communication clarity |
-| [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Task | Structural editing — cuts, merges, and reorganization |
-| [`bmad-shard-doc`](#bmad-shard-doc) | Task | Split large markdown files into organized sections |
-| [`bmad-index-docs`](#bmad-index-docs) | Task | Generate or update an index of all docs in a folder |
-| [`bmad-customize`](#bmad-customize) | Task | Create and verify Wizz Method customization overrides |
+| [`wizz-help`](#wizz-help) | Task | Get context-aware guidance on what to do next |
+| [`wizz-brainstorming`](#wizz-brainstorming) | Workflow | Facilitate interactive brainstorming sessions |
+| [`wizz-party-mode`](#wizz-party-mode) | Workflow | Orchestrate multi-agent group discussions |
+| [`wizz-spec`](#wizz-spec) | Workflow | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work |
+| [`wizz-advanced-elicitation`](#wizz-advanced-elicitation) | Task | Push LLM output through iterative refinement methods |
+| [`wizz-review-adversarial-general`](#wizz-review-adversarial-general) | Task | Cynical review that finds what's missing and what's wrong |
+| [`wizz-review-edge-case-hunter`](#wizz-review-edge-case-hunter) | Task | Exhaustive branching-path analysis for unhandled edge cases |
+| [`wizz-editorial-review-prose`](#wizz-editorial-review-prose) | Task | Clinical copy-editing for communication clarity |
+| [`wizz-editorial-review-structure`](#wizz-editorial-review-structure) | Task | Structural editing — cuts, merges, and reorganization |
+| [`wizz-shard-doc`](#wizz-shard-doc) | Task | Split large markdown files into organized sections |
+| [`wizz-index-docs`](#wizz-index-docs) | Task | Generate or update an index of all docs in a folder |
+| [`wizz-customize`](#wizz-customize) | Task | Create and verify Wizz Method customization overrides |
 
-## bmad-help
+## wizz-help
 
 **Your intelligent guide to what comes next.** — Inspects your project state, detects what's been done, and recommends the next required or optional step.
 
@@ -46,11 +46,11 @@ Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No a
 3. Recommends next steps in priority order — required steps first, then optional
 4. Presents each recommendation with the skill command and a brief description
 
-**Input:** Optional query in natural language (e.g., `bmad-help I have a SaaS idea, where do I start?`)
+**Input:** Optional query in natural language (e.g., `wizz-help I have a SaaS idea, where do I start?`)
 
 **Output:** Prioritized list of recommended next steps with skill commands
 
-## bmad-brainstorming
+## wizz-brainstorming
 
 **Generate diverse ideas through interactive creative techniques.** — A facilitated brainstorming session that loads proven ideation methods from a technique library and guides you toward 100+ ideas before organizing.
 
@@ -76,7 +76,7 @@ Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No a
 The magic happens in ideas 50–100. The workflow encourages generating 100+ ideas before organization.
 :::
 
-## bmad-party-mode
+## wizz-party-mode
 
 **Orchestrate multi-agent group discussions.** — Loads all installed Wizz Method agents and facilitates a natural conversation where each agent contributes from their unique expertise and personality.
 
@@ -98,7 +98,7 @@ The magic happens in ideas 50–100. The workflow encourages generating 100+ ide
 
 **Output:** Real-time multi-agent conversation with maintained agent personalities
 
-## bmad-spec
+## wizz-spec
 
 **Distill any intent input into the canonical SPEC contract for downstream work.** Takes a brief, PRD, GDD, RFC, brain dump, transcript, UX folder, or mixed multi-source input and produces a `SPEC.md` carrying the five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files for load-bearing content that does not fit the kernel.
 
@@ -126,10 +126,10 @@ Spec Law enforces eight rules: capabilities carry both intent and success; inten
 **Output:** Spec folder containing `SPEC.md`, any companion files, and a `.decision-log.md`. Headless callers receive a JSON response with the result status and the list of files written or modified.
 
 :::note[Mutation contract]
-`bmad-spec` is the only writer of `SPEC.md` and of spec-authored companions. Other skills produce their own native artifacts and invoke `bmad-spec` headless when they need to express intent as the canonical contract or propose updates.
+`wizz-spec` is the only writer of `SPEC.md` and of spec-authored companions. Other skills produce their own native artifacts and invoke `wizz-spec` headless when they need to express intent as the canonical contract or propose updates.
 :::
 
-## bmad-advanced-elicitation
+## wizz-advanced-elicitation
 
 **Push LLM output through iterative refinement methods.** — Selects from a library of elicitation techniques to systematically improve content through multiple passes.
 
@@ -151,7 +151,7 @@ Spec Law enforces eight rules: capabilities carry both intent and success; inten
 
 **Output:** Enhanced version of the content with improvements applied
 
-## bmad-review-adversarial-general
+## wizz-review-adversarial-general
 
 **Cynical review that assumes problems exist and searches for them.** — Takes a skeptical, jaded reviewer perspective with zero patience for sloppy work. Looks for what's missing, not just what's wrong.
 
@@ -175,7 +175,7 @@ Spec Law enforces eight rules: capabilities carry both intent and success; inten
 
 **Output:** Markdown list of 10+ findings with descriptions
 
-## bmad-review-edge-case-hunter
+## wizz-review-edge-case-hunter
 
 **Walk every branching path and boundary condition, report only unhandled cases.** — Pure path-tracing methodology that mechanically derives edge classes. Orthogonal to adversarial review — method-driven, not attitude-driven.
 
@@ -200,10 +200,10 @@ Spec Law enforces eight rules: capabilities carry both intent and success; inten
 **Output:** JSON array of findings, each with `location`, `trigger_condition`, `guard_snippet`, and `potential_consequence`
 
 :::note[Complementary Reviews]
-Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` together for orthogonal coverage. The adversarial review catches quality and completeness issues; the edge case hunter catches unhandled paths.
+Run both `wizz-review-adversarial-general` and `wizz-review-edge-case-hunter` together for orthogonal coverage. The adversarial review catches quality and completeness issues; the edge case hunter catches unhandled paths.
 :::
 
-## bmad-editorial-review-prose
+## wizz-editorial-review-prose
 
 **Clinical copy-editing focused on communication clarity.** — Reviews text for issues that impede comprehension. Applies Microsoft Writing Style Guide baseline. Preserves author voice.
 
@@ -228,7 +228,7 @@ Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` to
 
 **Output:** Three-column markdown table: Original Text | Revised Text | Changes
 
-## bmad-editorial-review-structure
+## wizz-editorial-review-structure
 
 **Structural editing — proposes cuts, merges, moves, and condensing.** — Reviews document organization and proposes substantive changes to improve clarity and flow before copy editing.
 
@@ -255,7 +255,7 @@ Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` to
 
 **Output:** Document summary, prioritized recommendation list, and estimated reduction
 
-## bmad-shard-doc
+## wizz-shard-doc
 
 **Split large markdown files into organized section files.** — Uses level-2 headers as split points to create a folder of self-contained section files with an index.
 
@@ -276,7 +276,7 @@ Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` to
 
 **Output:** Folder with `index.md` and `01-{section}.md`, `02-{section}.md`, etc.
 
-## bmad-index-docs
+## wizz-index-docs
 
 **Generate or update an index of all documents in a folder.** — Scans a directory, reads each file to understand its purpose, and produces an organized `index.md` with links and descriptions.
 
@@ -297,7 +297,7 @@ Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` to
 
 **Output:** `index.md` with organized file listings, relative links, and brief descriptions
 
-## bmad-customize
+## wizz-customize
 
 **Create and verify customization overrides.** — Helps you change how an installed Wizz Method agent or workflow behaves without hand-authoring TOML.
 
@@ -311,11 +311,11 @@ Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` to
 
 1. Scans installed Wizz Method skills for customizable surfaces
 2. Selects the right scope for your requested change
-3. Writes override files under `_bmad/custom/`
+3. Writes override files under `_wizz/custom/`
 4. Verifies the merged configuration
 
 **Input:** Natural language description of the customization you want
 
-**Output:** TOML override files under `_bmad/custom/`
+**Output:** TOML override files under `_wizz/custom/`
 
 For a detailed guide on customizing the Wizz Method, see [How to Customize Wizz Method](../how-to/customize-bmad.md).

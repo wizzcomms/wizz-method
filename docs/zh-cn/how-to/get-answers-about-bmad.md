@@ -7,7 +7,7 @@ sidebar:
 
 ## 先从 BMad-Help 开始
 
-**获取 BMad 相关答案最快的方式是 `bmad-help` 技能。** 这个智能向导可以覆盖 80% 以上的常见问题，并且你在 IDE 里随时可用。
+**获取 BMad 相关答案最快的方式是 `wizz-help` 技能。** 这个智能向导可以覆盖 80% 以上的常见问题，并且你在 IDE 里随时可用。
 
 BMad-Help 不只是查表工具，它还能：
 - **检查你的项目状态**，判断哪些步骤已经完成
@@ -21,20 +21,20 @@ BMad-Help 不只是查表工具，它还能：
 在 AI 会话里直接输入：
 
 ```
-bmad-help
+wizz-help
 ```
 
 :::tip
-按平台不同，你也可以使用 `/bmad-help` 或 `$bmad-help`。但大多数情况下直接输入 `bmad-help` 就能工作。
+按平台不同，你也可以使用 `/wizz-help` 或 `$wizz-help`。但大多数情况下直接输入 `wizz-help` 就能工作。
 :::
 
 也可以结合自然语言问题一起调用：
 
 ```
-bmad-help 我有一个 SaaS 想法并且已经知道主要功能，我该从哪里开始？
-bmad-help 我在 UX 设计方面有哪些选项？
-bmad-help 我卡在 PRD 工作流了
-bmad-help 帮我看看目前完成了什么
+wizz-help 我有一个 SaaS 想法并且已经知道主要功能，我该从哪里开始？
+wizz-help 我在 UX 设计方面有哪些选项？
+wizz-help 我卡在 PRD 工作流了
+wizz-help 帮我看看目前完成了什么
 ```
 
 BMad-Help 通常会返回：
@@ -56,17 +56,17 @@ BMad-Help 通常会返回：
 
 | 来源 | 适合回答的问题 | 示例 |
 | --- | --- | --- |
-| **`_bmad` 文件夹** | 智能体、工作流、提示词如何工作 | “PM 智能体具体做什么？” |
+| **`_wizz` 文件夹** | 智能体、工作流、提示词如何工作 | “PM 智能体具体做什么？” |
 | **完整 GitHub 仓库** | 版本历史、安装器、整体架构 | “v6 主要改了什么？” |
 | **`llms-full.txt`** | 文档层面的快速全景理解 | “解释 BMad 的四个阶段” |
 
-安装 BMad 后会生成 `_bmad` 文件夹；如果你还没有安装，可先克隆仓库。
+安装 BMad 后会生成 `_wizz` 文件夹；如果你还没有安装，可先克隆仓库。
 
 ### 2. 让 AI 读取来源
 
 **如果你的 AI 可以直接读文件（如 Claude Code、Cursor）：**
 
-- **已安装 BMad：** 直接让它读取 `_bmad` 并提问
+- **已安装 BMad：** 直接让它读取 `_wizz` 并提问
 - **想看更深上下文：** 克隆[完整仓库](https://github.com/bmad-code-org/BMAD-METHOD)
 
 **如果你使用 ChatGPT 或 Claude.ai：**
@@ -83,7 +83,7 @@ https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt
 :::note[示例]
 **问：** “用 BMad 做一个需求到实现的最短路径是什么？”
 
-**答：** 使用 Quick Flow，运行 `bmad-quick-dev`。它会在一个工作流里完成意图澄清、计划、实现、审查与结果呈现，跳过完整规划阶段。
+**答：** 使用 Quick Flow，运行 `wizz-quick-dev`。它会在一个工作流里完成意图澄清、计划、实现、审查与结果呈现，跳过完整规划阶段。
 :::
 
 ## 你将获得什么

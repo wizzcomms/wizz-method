@@ -47,7 +47,7 @@ Nové v6 skills se instalují do:
 
 **Pokud máte plánovací dokumenty (Brief/PRD/UX/Architektura):**
 
-Přesuňte je do `_bmad-output/planning-artifacts/` s popisnými názvy:
+Přesuňte je do `_wizz-output/planning-artifacts/` s popisnými názvy:
 
 - Zahrňte `PRD` v názvu souboru pro PRD dokumenty
 - Zahrňte `brief`, `architecture` nebo `ux-design` odpovídajícím způsobem
@@ -60,8 +60,8 @@ Přesuňte je do `_bmad-output/planning-artifacts/` s popisnými názvy:
 Pokud máte vytvořené nebo implementované stories:
 
 1. Dokončete instalaci v6
-2. Umístěte `epics.md` nebo `epics/epic*.md` do `_bmad-output/planning-artifacts/`
-3. Spusťte workflow `bmad-sprint-planning` Scrum Mastera
+2. Umístěte `epics.md` nebo `epics/epic*.md` do `_wizz-output/planning-artifacts/`
+3. Spusťte workflow `wizz-sprint-planning` Scrum Mastera
 4. Řekněte SM, které epicy/stories jsou již dokončené
 
 ## Co získáte
@@ -70,14 +70,14 @@ Pokud máte vytvořené nebo implementované stories:
 
 ```text
 váš-projekt/
-├── _bmad/               # Jedna instalační složka
+├── _wizz/               # Jedna instalační složka
 │   ├── _config/         # Vaše přizpůsobení
 │   │   └── agents/      # Soubory přizpůsobení agentů
 │   ├── core/            # Univerzální základní framework
 │   ├── bmm/             # Modul BMad Method
 │   ├── bmb/             # BMad Builder
 │   └── cis/             # Creative Intelligence Suite
-└── _bmad-output/        # Výstupní složka (v4 to byla složka dokumentů)
+└── _wizz-output/        # Výstupní složka (v4 to byla složka dokumentů)
 ```
 
 ## Migrace modulů
@@ -94,7 +94,7 @@ váš-projekt/
 
 | Koncept         | v4                                   | v6                                     |
 | --------------- | ------------------------------------ | -------------------------------------- |
-| **Core**        | `_bmad-core` byl vlastně BMad Method | `_bmad/core/` je univerzální framework |
-| **Method**      | `_bmad-method`                       | `_bmad/bmm/`                           |
+| **Core**        | `_wizz-core` byl vlastně BMad Method | `_wizz/core/` je univerzální framework |
+| **Method**      | `_wizz-method`                       | `_wizz/bmm/`                           |
 | **Konfigurace** | Přímá editace souborů                | `config.yaml` pro každý modul          |
 | **Dokumenty**   | Vyžadované nastavení shardů          | Plně flexibilní, auto-skenování        |

@@ -14,15 +14,15 @@ sidebar:
 | Analyst (Mary) | `bmad-analyst` | `BP`、`MR`、`DR`、`TR`、`CB`、`WB`、`DP` | Brainstorm、Market Research、Domain Research、Technical Research、Create Brief、PRFAQ Challenge、Document Project |
 | Product Manager (John) | `bmad-pm` | `CP`、`VP`、`EP`、`CE`、`IR`、`CC` | Create/Validate/Edit PRD、Create Epics and Stories、Implementation Readiness、Correct Course |
 | Architect (Winston) | `bmad-architect` | `CA`、`IR` | Create Architecture、Implementation Readiness |
-| Developer (Amelia) | `bmad-agent-dev` | `DS`、`QD`、`QA`、`CR`、`SP`、`CS`、`ER` | Dev Story、Quick Dev、QA Test Generation、Code Review、Sprint Planning、Create Story、Epic Retrospective |
+| Developer (Amelia) | `wizz-agent-dev` | `DS`、`QD`、`QA`、`CR`、`SP`、`CS`、`ER` | Dev Story、Quick Dev、QA Test Generation、Code Review、Sprint Planning、Create Story、Epic Retrospective |
 | UX Designer (Sally) | `bmad-ux-designer` | `CU` | Create UX Design |
 | Technical Writer (Paige) | `bmad-tech-writer` | `DP`、`WD`、`US`、`MG`、`VD`、`EC` | Document Project、Write Document、Update Standards、Mermaid Generate、Validate Doc、Explain Concept |
 
 ## 使用说明
 
-- `Skill ID` 是直接调用该智能体的名称（例如 `bmad-agent-dev`）
+- `Skill ID` 是直接调用该智能体的名称（例如 `wizz-agent-dev`）
 - 触发器是进入智能体会话后可使用的菜单短码
-- QA 测试生成由 `bmad-qa-generate-e2e-tests` workflow skill 处理，通过 Developer 智能体调用；完整 TEA 能力位于独立模块
+- QA 测试生成由 `wizz-qa-generate-e2e-tests` workflow skill 处理，通过 Developer 智能体调用；完整 TEA 能力位于独立模块
 
 ## 触发器类型
 

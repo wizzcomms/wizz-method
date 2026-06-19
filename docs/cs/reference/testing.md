@@ -26,7 +26,7 @@ Většina projektů by měla začít s Quinnem. Pokud později budete potřebova
 
 Quinn je vestavěný QA agent v modulu BMM (Agile suite). Rychle generuje funkční testy pomocí existujícího testovacího frameworku vašeho projektu — bez konfigurace nebo další instalace.
 
-**Spouštěč:** `QA` nebo `bmad-qa-generate-e2e-tests`
+**Spouštěč:** `QA` nebo `wizz-qa-generate-e2e-tests`
 
 ### Co Quinn dělá
 
@@ -99,7 +99,7 @@ Quinn workflow Automate se objevuje ve Fázi 4 (Implementace) mapy workflow BMad
 
 1. Pro každou story v epicu: implementace s Dev (`DS`), pak validace pomocí Code Review (`CR`)
 2. Po dokončení epicu: generování testů s Quinnem (`QA`) nebo TEA workflow Automate
-3. Spuštění retrospektivy (`bmad-retrospective`) pro zachycení získaných zkušeností
+3. Spuštění retrospektivy (`wizz-retrospective`) pro zachycení získaných zkušeností
 
 Quinn pracuje přímo ze zdrojového kódu bez načítání plánovacích dokumentů (PRD, architektura). TEA workflow mohou integrovat s upstream plánovacími artefakty pro trasovatelnost.
 

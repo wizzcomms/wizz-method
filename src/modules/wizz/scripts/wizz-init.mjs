@@ -1,9 +1,9 @@
 // wizz-init — aplica a personalização Wizz num projeto que já tem o BMAD instalado.
 //
 // O que faz (idempotente, seguro de rodar de novo):
-//   1. Pergunta o idioma e o seta em _bmad/bmm/config.yaml (communication_language
+//   1. Pergunta o idioma e o seta em _wizz/bmm/config.yaml (communication_language
 //      e document_output_language).
-//   2. Copia os overrides Wizz (overrides/*.toml) para _bmad/custom/, dando aos
+//   2. Copia os overrides Wizz (overrides/*.toml) para _wizz/custom/, dando aos
 //      agentes BMAD o tom fácil + protocolo de encerramento.
 //
 // Uso:
@@ -116,10 +116,10 @@ function projectArg(argv) {
 
 async function main() {
   const projectRoot = path.resolve(projectArg(process.argv.slice(2)) || process.cwd());
-  const bmadDir = path.join(projectRoot, '_bmad');
+  const bmadDir = path.join(projectRoot, '_wizz');
 
   if (!(await exists(bmadDir))) {
-    throw new Error(`Não achei _bmad/ em ${projectRoot}. Rode o instalador do BMAD primeiro.`);
+    throw new Error(`Não achei _wizz/ em ${projectRoot}. Rode o instalador do BMAD primeiro.`);
   }
 
   const done = [];
@@ -132,12 +132,12 @@ async function main() {
     content = upsertYamlKey(content, 'communication_language', lang);
     content = upsertYamlKey(content, 'document_output_language', lang);
     await writeFile(bmmConfig, content, 'utf8');
-    done.push(`idioma → "${lang}" (${source}) em _bmad/bmm/config.yaml`);
+    done.push(`idioma → "${lang}" (${source}) em _wizz/bmm/config.yaml`);
   } else {
-    done.push('aviso: _bmad/bmm/config.yaml não encontrado — idioma não setado (instale o módulo bmm)');
+    done.push('aviso: _wizz/bmm/config.yaml não encontrado — idioma não setado (instale o módulo bmm)');
   }
 
-  // 2) Copia overrides Wizz para _bmad/custom/.
+  // 2) Copia overrides Wizz para _wizz/custom/.
   const customDir = path.join(bmadDir, 'custom');
   await mkdir(customDir, { recursive: true });
   if (await exists(overridesDir)) {
@@ -147,7 +147,7 @@ async function main() {
       const content = await readFile(path.join(overridesDir, f), 'utf8');
       await writeFile(path.join(customDir, f), content, 'utf8');
     }
-    done.push(`${files.length} overrides Wizz copiados para _bmad/custom/`);
+    done.push(`${files.length} overrides Wizz copiados para _wizz/custom/`);
   }
 
   console.log('✅ wizz-init concluído:');

@@ -9,16 +9,16 @@ Utilisez l’aide intégrée de BMad, la documentation source ou la communauté 
 
 ## 1. Demandez à BMad-Help
 
-Le moyen le plus rapide d’obtenir des réponses. Le skill `bmad-help` est disponible directement dans votre session IA et répond à plus de 80 % des questions — il inspecte votre projet, voit ce que vous avez accompli et vous dit quoi faire ensuite.
+Le moyen le plus rapide d’obtenir des réponses. Le skill `wizz-help` est disponible directement dans votre session IA et répond à plus de 80 % des questions — il inspecte votre projet, voit ce que vous avez accompli et vous dit quoi faire ensuite.
 
 ```
-bmad-help J'ai une idée de SaaS et je connais toutes les fonctionnalités. Par où commencer ?
-bmad-help Quelles sont mes options pour le design UX ?
-bmad-help Je suis bloqué sur le workflow PRD
+wizz-help J'ai une idée de SaaS et je connais toutes les fonctionnalités. Par où commencer ?
+wizz-help Quelles sont mes options pour le design UX ?
+wizz-help Je suis bloqué sur le workflow PRD
 ```
 
 :::tip
-Vous pouvez également utiliser `/bmad-help` ou `$bmad-help` selon votre plateforme, mais `bmad-help` tout seul devrait fonctionner partout.
+Vous pouvez également utiliser `/wizz-help` ou `$wizz-help` selon votre plateforme, mais `wizz-help` tout seul devrait fonctionner partout.
 :::
 
 ## 2. Approfondissez avec les sources
@@ -30,7 +30,7 @@ Clonez ou ouvrez le [dépôt BMAD-METHOD](https://github.com/bmad-code-org/BMAD-
 :::note[Exemple]
 **Q :** « Quel est le moyen le plus rapide de construire quelque chose avec BMad ? »
 
-**R :** Utilisez le flux rapide : Lancez `bmad-quick-dev` — il clarifie votre intention, planifie, implémente, révise et présente les résultats dans un seul workflow, en sautant les phases de planification complètes.
+**R :** Utilisez le flux rapide : Lancez `wizz-quick-dev` — il clarifie votre intention, planifie, implémente, révise et présente les résultats dans un seul workflow, en sautant les phases de planification complètes.
 :::
 
 **Conseils pour de meilleures réponses :**

@@ -3,10 +3,10 @@
 Resolve BMad's central config using four-layer TOML merge.
 
 Reads from four layers (highest priority last):
-  1. {project-root}/_bmad/config.toml              (installer-owned team)
-  2. {project-root}/_bmad/config.user.toml         (installer-owned user)
-  3. {project-root}/_bmad/custom/config.toml       (human-authored team, committed)
-  4. {project-root}/_bmad/custom/config.user.toml  (human-authored user, gitignored)
+  1. {project-root}/_wizz/config.toml              (installer-owned team)
+  2. {project-root}/_wizz/config.user.toml         (installer-owned user)
+  3. {project-root}/_wizz/custom/config.toml       (human-authored team, committed)
+  4. {project-root}/_wizz/custom/config.user.toml  (human-authored user, gitignored)
 
 Outputs merged JSON to stdout. Errors go to stderr.
 
@@ -140,7 +140,7 @@ def main():
     )
     parser.add_argument(
         "--project-root", "-p", required=True,
-        help="Absolute path to the project root (contains _bmad/)",
+        help="Absolute path to the project root (contains _wizz/)",
     )
     parser.add_argument(
         "--key", "-k", action="append", default=[],
@@ -149,7 +149,7 @@ def main():
     args = parser.parse_args()
 
     project_root = Path(args.project_root).resolve()
-    bmad_dir = project_root / "_bmad"
+    bmad_dir = project_root / "_wizz"
 
     base_team = load_toml(bmad_dir / "config.toml", required=True)
     base_user = load_toml(bmad_dir / "config.user.toml")

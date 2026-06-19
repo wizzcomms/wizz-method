@@ -47,7 +47,7 @@ Các skill v6 mới sẽ được cài tại:
 
 **Nếu bạn có tài liệu lập kế hoạch (Brief/PRD/UX/Architecture):**
 
-Di chuyển chúng vào `_bmad-output/planning-artifacts/` với tên mô tả rõ ràng:
+Di chuyển chúng vào `_wizz-output/planning-artifacts/` với tên mô tả rõ ràng:
 
 - Tên tệp PRD nên chứa `PRD`
 - Tên tệp tương ứng nên chứa `brief`, `architecture`, hoặc `ux-design`
@@ -60,8 +60,8 @@ Di chuyển chúng vào `_bmad-output/planning-artifacts/` với tên mô tả r
 Nếu bạn đã có các story được tạo hoặc đã triển khai:
 
 1. Hoàn thành cài đặt v6
-2. Đặt `epics.md` hoặc `epics/epic*.md` vào `_bmad-output/planning-artifacts/`
-3. Chạy workflow `bmad-sprint-planning` của Scrum Master
+2. Đặt `epics.md` hoặc `epics/epic*.md` vào `_wizz-output/planning-artifacts/`
+3. Chạy workflow `wizz-sprint-planning` của Scrum Master
 4. Nói rõ với SM những epic/story nào đã hoàn thành
 
 ## Bạn nhận được gì
@@ -70,14 +70,14 @@ Nếu bạn đã có các story được tạo hoặc đã triển khai:
 
 ```text
 du-an-cua-ban/
-├── _bmad/               # Thư mục cài đặt duy nhất
+├── _wizz/               # Thư mục cài đặt duy nhất
 │   ├── _config/         # Các tùy chỉnh của bạn
 │   │   └── agents/      # Tệp tùy chỉnh agent
 │   ├── core/            # Framework core dùng chung
 │   ├── bmm/             # Module BMad Method
 │   ├── bmb/             # BMad Builder
 │   └── cis/             # Creative Intelligence Suite
-└── _bmad-output/        # Thư mục output (là thư mục docs trong v4)
+└── _wizz-output/        # Thư mục output (là thư mục docs trong v4)
 ```
 
 ## Di chuyển module
@@ -94,7 +94,7 @@ du-an-cua-ban/
 
 | Khái niệm | v4 | v6 |
 | --- | --- | --- |
-| **Core** | `_bmad-core` thực chất là BMad Method | `_bmad/core/` là framework dùng chung |
-| **Method** | `_bmad-method` | `_bmad/bmm/` |
+| **Core** | `_wizz-core` thực chất là BMad Method | `_wizz/core/` là framework dùng chung |
+| **Method** | `_wizz-method` | `_wizz/bmm/` |
 | **Config** | Sửa trực tiếp các tệp | `config.yaml` theo từng module |
 | **Documents** | Cần thiết lập trước cho bản chia nhỏ hoặc nguyên khối | Linh hoạt hoàn toàn, tự động quét |

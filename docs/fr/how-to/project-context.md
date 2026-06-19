@@ -31,11 +31,11 @@ Utilisez le fichier `project-context.md` pour garantir que les agents IA respect
 
 ### Option A : Création manuelle
 
-Créez le fichier à l’emplacement `_bmad-output/project-context.md` :
+Créez le fichier à l’emplacement `_wizz-output/project-context.md` :
 
 ```bash
-mkdir -p _bmad-output
-touch _bmad-output/project-context.md
+mkdir -p _wizz-output
+touch _wizz-output/project-context.md
 ```
 
 Ajoutez votre pile technologique et vos règles d’implémentation :
@@ -77,7 +77,7 @@ sections_completed: ['technology_stack', 'critical_rules']
 Exécutez le workflow dans une nouvelle conversation :
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 Le workflow analyse votre document d’architecture et vos fichiers projet pour générer un fichier de contexte qui capture les décisions prises.
@@ -87,7 +87,7 @@ Le workflow analyse votre document d’architecture et vos fichiers projet pour 
 Pour les projets existants, exécutez :
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 Le workflow analyse votre base de code pour identifier les conventions, puis génère un fichier de contexte que vous pouvez réviser et affiner.

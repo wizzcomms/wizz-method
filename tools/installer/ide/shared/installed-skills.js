@@ -8,7 +8,7 @@ const csv = require('csv-parse/sync');
  * of whether they happen to start with "bmad-" (custom modules can ship skills
  * with any prefix, e.g. "fred-cool-skill").
  *
- * @param {string} bmadDir - Path to the _bmad install directory
+ * @param {string} bmadDir - Path to the _wizz install directory
  * @returns {Promise<Set<string>>} Set of canonicalIds, or empty set if manifest missing
  */
 async function getInstalledCanonicalIds(bmadDir) {

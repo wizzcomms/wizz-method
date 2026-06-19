@@ -1,3 +1,3 @@
 module,phase,name,code,sequence,workflow-file,command,required,agent,options,description,output-location,outputs
-core,anytime,Brainstorming,BSP,,_bmad/core/workflows/brainstorming/workflow.md,bmad-brainstorming,false,analyst,,"Generate ideas",{output_folder}/brainstorming.md,
-core,anytime,Party Mode,PM,,_bmad/core/workflows/bmad-party-mode/workflow.md,bmad-party-mode,false,facilitator,,"Multi-agent discussion",,
+core,anytime,Brainstorming,BSP,,_wizz/core/workflows/brainstorming/workflow.md,wizz-brainstorming,false,analyst,,"Generate ideas",{output_folder}/brainstorming.md,
+core,anytime,Party Mode,PM,,_wizz/core/workflows/wizz-party-mode/workflow.md,wizz-party-mode,false,facilitator,,"Multi-agent discussion",,

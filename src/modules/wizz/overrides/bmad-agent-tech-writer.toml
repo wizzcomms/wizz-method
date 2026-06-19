@@ -1,6 +1,6 @@
 # Override Wizz (escopo time) para o agente BMAD Paige (Technical Writer).
 # Mescla por cima da base: principles e activation_steps fazem APPEND.
-# Instalado em {project-root}/_bmad/custom/bmad-agent-tech-writer.toml
+# Instalado em {project-root}/_wizz/custom/wizz-agent-tech-writer.toml
 
 [agent]
 activation_steps_prepend = [

@@ -9,7 +9,7 @@ Party mode puts your AI agents in one room and lets them talk, to each other and
 
 ## What is Party Mode?
 
-Run `bmad-party-mode` and the Wizz Method agents you already have installed gather in one conversation: the PM, Architect, Dev, UX Designer, and whoever else your selected modules bring. That installed lineup is your default party, ready with no setup. They answer in character, agree, disagree, and build on each other. You steer the room. Ask a follow-up, push back, pull one voice forward, or change the subject. The conversation runs until you end it.
+Run `wizz-party-mode` and the Wizz Method agents you already have installed gather in one conversation: the PM, Architect, Dev, UX Designer, and whoever else your selected modules bring. That installed lineup is your default party, ready with no setup. They answer in character, agree, disagree, and build on each other. You steer the room. Ask a follow-up, push back, pull one voice forward, or change the subject. The conversation runs until you end it.
 
 It works because the personas hold different priorities. The Architect guards the design, the PM guards scope, the Dev guards what's actually buildable. Put them in the same room and the tradeoff surfaces now, in the conversation, instead of three weeks into the sprint.
 
@@ -38,13 +38,13 @@ Invoke the skill and say what you want; it works out whether you mean to run a p
 
 | Goal | Type this |
 | --- | --- |
-| Start a party in the default mode | `/bmad-party-mode` |
-| Start in a specific mode | `/bmad-party-mode --mode auto` (also `session`, `subagent`, `agent-team`) |
-| Open a saved party | `/bmad-party-mode --party code-review-crew` |
+| Start a party in the default mode | `/wizz-party-mode` |
+| Start in a specific mode | `/wizz-party-mode --mode auto` (also `session`, `subagent`, `agent-team`) |
+| Open a saved party | `/wizz-party-mode --party code-review-crew` |
 | Conjure a cast on the spot | "party mode with the bridge crew of the Enterprise" |
 | Create or add a party | "party mode, create a new party" |
 | Edit an existing party | "party mode, edit the writers' room" |
-| Customize the skill | `/bmad-customize bmad-party-mode` |
+| Customize the skill | `/wizz-customize wizz-party-mode` |
 
 ## How a party runs
 
@@ -67,9 +67,9 @@ Start a party with `--mode subagent` (or `auto`, `agent-team`, `session`) to ove
 
 ## Custom parties
 
-Out of the box, a party uses your installed Wizz Method agents. The larger use is building your own cast from any set of personas you can describe, then saving it to reuse. You author a party through the same skill. It detects whether you want to run one or build one, and writes the result to your overrides through [bmad-customize](../how-to/customize-bmad.md).
+Out of the box, a party uses your installed Wizz Method agents. The larger use is building your own cast from any set of personas you can describe, then saving it to reuse. You author a party through the same skill. It detects whether you want to run one or build one, and writes the result to your overrides through [wizz-customize](../how-to/customize-bmad.md).
 
-Party mode is customizable like every Wizz Method skill. Run `/bmad-customize bmad-party-mode` to set its defaults directly: pin any group you've built as the default party so it loads without a flag, choose which mode it starts in, and set any house rules the room should hold for the whole session.
+Party mode is customizable like every Wizz Method skill. Run `/wizz-customize wizz-party-mode` to set its defaults directly: pin any group you've built as the default party so it loads without a flag, choose which mode it starts in, and set any house rules the room should hold for the whole session.
 
 Two ideas do most of the work.
 

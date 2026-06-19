@@ -47,7 +47,7 @@ Les nouveaux skills v6 sont installés dans :
 
 **Si vous avez des documents de planification (Brief/PRD/UX/Architecture) :**
 
-Déplacez-les dans `_bmad-output/planning-artifacts/` avec des noms descriptifs :
+Déplacez-les dans `_wizz-output/planning-artifacts/` avec des noms descriptifs :
 
 - Incluez `PRD` dans le nom de fichier pour les documents PRD[^1]
 - Incluez `brief`, `architecture`, ou `ux-design` selon le cas
@@ -60,8 +60,8 @@ Déplacez-les dans `_bmad-output/planning-artifacts/` avec des noms descriptifs 
 Si vous avez des stories[^3] créées ou implémentées :
 
 1. Terminez l’installation v6
-2. Placez `epics.md` ou `epics/epic*.md`[^2] dans `_bmad-output/planning-artifacts/`
-3. Lancez le workflow Développeur `bmad-sprint-planning`[^4]
+2. Placez `epics.md` ou `epics/epic*.md`[^2] dans `_wizz-output/planning-artifacts/`
+3. Lancez le workflow Développeur `wizz-sprint-planning`[^4]
 4. Indiquez à l’agent quels epics/stories sont déjà terminés
 
 ## Résultat de la migration
@@ -70,14 +70,14 @@ Si vous avez des stories[^3] créées ou implémentées :
 
 ```text
 votre-projet/
-├── _bmad/               # Dossier d'installation unique
+├── _wizz/               # Dossier d'installation unique
 │   ├── _config/         # Vos personnalisations
 │   │   └── agents/      # Fichiers de personnalisation des agents
 │   ├── core/            # Framework core universel
 │   ├── bmm/             # Module BMad Method
 │   ├── bmb/             # BMad Builder
 │   └── cis/             # Creative Intelligence Suite
-└── _bmad-output/        # Dossier de sortie (remplace le dossier doc de la v4)
+└── _wizz-output/        # Dossier de sortie (remplace le dossier doc de la v4)
 ```
 
 ## Migration des modules
@@ -94,8 +94,8 @@ votre-projet/
 
 | Concept       | v4                                                      | v6                                       |
 |---------------|---------------------------------------------------------|------------------------------------------|
-| **Core**      | `_bmad-core` correspondait en réalité à la méthode BMad | `_bmad/core/` est le framework universel |
-| **Method**    | `_bmad-method`                                          | `_bmad/bmm/`                             |
+| **Core**      | `_wizz-core` correspondait en réalité à la méthode BMad | `_wizz/core/` est le framework universel |
+| **Method**    | `_wizz-method`                                          | `_wizz/bmm/`                             |
 | **Config**    | Fichiers modifiés directement                           | `config.yaml` par module                 |
 | **Documents** | Division en fragments obligatoire ou optionnelle        | Totalement flexible, analyse automatique |
 

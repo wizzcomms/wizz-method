@@ -9,7 +9,7 @@ Uvolněte svou kreativitu prostřednictvím řízeného průzkumu.
 
 ## Co je brainstorming?
 
-Spusťte `bmad-brainstorming` a máte kreativního facilitátora, který z vás táhne nápady — ne který je generuje za vás. AI působí jako kouč a průvodce, používá osvědčené techniky k vytvoření podmínek, ve kterých se projeví vaše nejlepší myšlení.
+Spusťte `wizz-brainstorming` a máte kreativního facilitátora, který z vás táhne nápady — ne který je generuje za vás. AI působí jako kouč a průvodce, používá osvědčené techniky k vytvoření podmínek, ve kterých se projeví vaše nejlepší myšlení.
 
 **Ideální pro:**
 

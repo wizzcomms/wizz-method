@@ -5,7 +5,7 @@ sidebar:
   order: 9
 ---
 
-Použijte nástroj `bmad-shard-doc`, pokud potřebujete rozdělit velké markdown soubory na menší, organizované soubory pro lepší správu kontextu.
+Použijte nástroj `wizz-shard-doc`, pokud potřebujete rozdělit velké markdown soubory na menší, organizované soubory pro lepší správu kontextu.
 
 :::caution[Zastaralé]
 Toto se již nedoporučuje a brzy s aktualizovanými workflow a většinou hlavních LLM a nástrojů podporujících subprocesy to bude zbytečné.
@@ -23,11 +23,11 @@ Dělení dokumentů rozděluje velké markdown soubory na menší, organizované
 
 ```text
 Před dělením:
-_bmad-output/planning-artifacts/
+_wizz-output/planning-artifacts/
 └── PRD.md (velký soubor o 50k tokenech)
 
 Po dělení:
-_bmad-output/planning-artifacts/
+_wizz-output/planning-artifacts/
 └── prd/
     ├── index.md                    # Obsah s popisy
     ├── overview.md                 # Sekce 1
@@ -41,7 +41,7 @@ _bmad-output/planning-artifacts/
 ### 1. Spusťte nástroj Shard-Doc
 
 ```bash
-/bmad-shard-doc
+/wizz-shard-doc
 ```
 
 ### 2. Následujte interaktivní proces

@@ -135,16 +135,16 @@ npx bmad-method install \
 Nguồn cục bộ được tham chiếu theo đường dẫn, không bị copy vào cache. Khi bạn sửa source của module rồi cài lại, trình cài đặt sẽ lấy đúng các thay đổi mới nhất.
 
 :::caution[Xóa nguồn sau khi cài]
-Nếu bạn xóa thư mục nguồn cục bộ sau khi cài, các file module đã được cài bên trong `_bmad/` vẫn được giữ nguyên. Tuy vậy, module đó sẽ bị bỏ qua trong các lần cập nhật cho tới khi đường dẫn nguồn được khôi phục.
+Nếu bạn xóa thư mục nguồn cục bộ sau khi cài, các file module đã được cài bên trong `_wizz/` vẫn được giữ nguyên. Tuy vậy, module đó sẽ bị bỏ qua trong các lần cập nhật cho tới khi đường dẫn nguồn được khôi phục.
 :::
 
 ## Bạn sẽ nhận được gì
 
-Sau khi cài, các module tùy chỉnh sẽ xuất hiện trong `_bmad/` cùng với module chính thức:
+Sau khi cài, các module tùy chỉnh sẽ xuất hiện trong `_wizz/` cùng với module chính thức:
 
 ```text
 your-project/
-├── _bmad/
+├── _wizz/
 │   ├── core/              # Module core tích hợp
 │   ├── bmm/               # Module chính thức, nếu bạn chọn
 │   ├── my-module/         # Module tùy chỉnh của bạn

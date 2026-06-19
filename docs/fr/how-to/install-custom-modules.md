@@ -135,16 +135,16 @@ npx bmad-method install \
 Les sources locales sont référencées par leur chemin, non copiées dans un cache. Lorsque vous mettez à jour la source de votre module et réinstallez, l’installateur récupère les dernières modifications.
 
 :::caution[Suppression de la source]
-Si vous supprimez le répertoire source local après l’installation, les fichiers du module installé dans `_bmad/` sont préservés. Le module sera ignoré lors des mises à jour tant que le chemin source n’est pas restauré.
+Si vous supprimez le répertoire source local après l’installation, les fichiers du module installé dans `_wizz/` sont préservés. Le module sera ignoré lors des mises à jour tant que le chemin source n’est pas restauré.
 :::
 
 ## Ce que vous obtenez
 
-Après l’installation, les modules personnalisés apparaissent dans `_bmad/` aux côtés des modules officiels :
+Après l’installation, les modules personnalisés apparaissent dans `_wizz/` aux côtés des modules officiels :
 
 ```
 your-project/
-├── _bmad/
+├── _wizz/
 │   ├── core/              # Module cœur intégré
 │   ├── bmm/               # Module officiel (si sélectionné)
 │   ├── my-module/         # Votre module personnalisé

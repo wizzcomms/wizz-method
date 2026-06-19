@@ -8,26 +8,26 @@ sidebar:
 Každá instalace BMad zahrnuje sadu základních skills, které lze použít v kombinaci s čímkoli — samostatné úkoly a workflow, které fungují napříč všemi projekty, všemi moduly a všemi fázemi. Ty jsou vždy dostupné bez ohledu na to, které volitelné moduly nainstalujete.
 
 :::tip[Rychlá cesta]
-Spusťte jakýkoli základní nástroj zadáním jeho názvu skillu (např. `bmad-help`) ve vašem IDE. Nevyžaduje relaci agenta.
+Spusťte jakýkoli základní nástroj zadáním jeho názvu skillu (např. `wizz-help`) ve vašem IDE. Nevyžaduje relaci agenta.
 :::
 
 ## Přehled
 
 | Nástroj | Typ | Účel |
 | --- | --- | --- |
-| [`bmad-help`](#bmad-help) | Task | Kontextové poradenství, co dělat dál |
-| [`bmad-brainstorming`](#bmad-brainstorming) | Workflow | Facilitace interaktivních brainstormingových sezení |
-| [`bmad-party-mode`](#bmad-party-mode) | Workflow | Orchestrace skupinových diskuzí více agentů |
-| [`bmad-spec`](#bmad-spec) | Workflow | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work (translation pending) |
-| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Task | Iterativní zdokonalování LLM výstupu |
-| [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Task | Cynická revize hledající chybějící a chybné |
-| [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Task | Vyčerpávající analýza větvících cest pro neošetřené hraniční případy |
-| [`bmad-editorial-review-prose`](#bmad-editorial-review-prose) | Task | Klinická jazyková korektura pro komunikační srozumitelnost |
-| [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Task | Strukturální editace — škrty, sloučení a reorganizace |
-| [`bmad-shard-doc`](#bmad-shard-doc) | Task | Rozdělení velkých markdown souborů do organizovaných sekcí |
-| [`bmad-index-docs`](#bmad-index-docs) | Task | Generování nebo aktualizace indexu dokumentů ve složce |
+| [`wizz-help`](#wizz-help) | Task | Kontextové poradenství, co dělat dál |
+| [`wizz-brainstorming`](#wizz-brainstorming) | Workflow | Facilitace interaktivních brainstormingových sezení |
+| [`wizz-party-mode`](#wizz-party-mode) | Workflow | Orchestrace skupinových diskuzí více agentů |
+| [`wizz-spec`](#wizz-spec) | Workflow | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work (translation pending) |
+| [`wizz-advanced-elicitation`](#wizz-advanced-elicitation) | Task | Iterativní zdokonalování LLM výstupu |
+| [`wizz-review-adversarial-general`](#wizz-review-adversarial-general) | Task | Cynická revize hledající chybějící a chybné |
+| [`wizz-review-edge-case-hunter`](#wizz-review-edge-case-hunter) | Task | Vyčerpávající analýza větvících cest pro neošetřené hraniční případy |
+| [`wizz-editorial-review-prose`](#wizz-editorial-review-prose) | Task | Klinická jazyková korektura pro komunikační srozumitelnost |
+| [`wizz-editorial-review-structure`](#wizz-editorial-review-structure) | Task | Strukturální editace — škrty, sloučení a reorganizace |
+| [`wizz-shard-doc`](#wizz-shard-doc) | Task | Rozdělení velkých markdown souborů do organizovaných sekcí |
+| [`wizz-index-docs`](#wizz-index-docs) | Task | Generování nebo aktualizace indexu dokumentů ve složce |
 
-## bmad-help
+## wizz-help
 
 **Váš inteligentní průvodce tím, co přijde dál.** — Zkoumá stav vašeho projektu, detekuje, co bylo uděláno, a doporučuje další povinný nebo volitelný krok.
 
@@ -45,11 +45,11 @@ Spusťte jakýkoli základní nástroj zadáním jeho názvu skillu (např. `bma
 3. Doporučuje další kroky v pořadí priority — nejprve povinné, pak volitelné
 4. Prezentuje každé doporučení s příkazem skillu a stručným popisem
 
-**Vstup:** Volitelný dotaz v přirozeném jazyce (např. `bmad-help I have a SaaS idea, where do I start?`)
+**Vstup:** Volitelný dotaz v přirozeném jazyce (např. `wizz-help I have a SaaS idea, where do I start?`)
 
 **Výstup:** Prioritizovaný seznam doporučených dalších kroků s příkazy skills
 
-## bmad-brainstorming
+## wizz-brainstorming
 
 **Generování různorodých nápadů prostřednictvím interaktivních kreativních technik.** — Facilitované brainstormingové sezení, které načítá osvědčené ideační metody z knihovny technik a vede vás k 100+ nápadům před organizací.
 
@@ -75,7 +75,7 @@ Spusťte jakýkoli základní nástroj zadáním jeho názvu skillu (např. `bma
 Kouzlo se děje v nápadech 50–100. Workflow povzbuzuje generování 100+ nápadů před organizací.
 :::
 
-## bmad-party-mode
+## wizz-party-mode
 
 **Orchestrace skupinových diskuzí více agentů.** — Načte všechny nainstalované BMad agenty a facilituje přirozenou konverzaci, kde každý agent přispívá svou unikátní odborností a osobností.
 
@@ -97,7 +97,7 @@ Kouzlo se děje v nápadech 50–100. Workflow povzbuzuje generování 100+ náp
 
 **Výstup:** Real-time multi-agentní konverzace s udržovanými osobnostmi agentů
 
-## bmad-advanced-elicitation
+## wizz-advanced-elicitation
 
 **Iterativní zdokonalování LLM výstupu metodami elicitace.** — Vybírá z knihovny elicitačních technik pro systematické zlepšování obsahu více průchody.
 
@@ -119,7 +119,7 @@ Kouzlo se děje v nápadech 50–100. Workflow povzbuzuje generování 100+ náp
 
 **Výstup:** Vylepšená verze obsahu s aplikovanými zlepšeními
 
-## bmad-review-adversarial-general
+## wizz-review-adversarial-general
 
 **Cynická revize, která předpokládá existenci problémů a hledá je.** — Zaujme perspektivu skeptického, otráveného recenzenta s nulovou tolerancí pro nedbalou práci. Hledá, co chybí, ne jen co je špatně.
 
@@ -143,7 +143,7 @@ Kouzlo se děje v nápadech 50–100. Workflow povzbuzuje generování 100+ náp
 
 **Výstup:** Markdown seznam 10+ nálezů s popisy
 
-## bmad-review-edge-case-hunter
+## wizz-review-edge-case-hunter
 
 **Procházení každé větvící cesty a hraničních podmínek, hlášení pouze neošetřených případů.** — Čistě metodologický přístup trasování cest, který mechanicky odvozuje třídy hraničních případů.
 
@@ -168,10 +168,10 @@ Kouzlo se děje v nápadech 50–100. Workflow povzbuzuje generování 100+ náp
 **Výstup:** JSON pole nálezů, každý s `location`, `trigger_condition`, `guard_snippet` a `potential_consequence`
 
 :::note[Komplementární revize]
-Spusťte obě `bmad-review-adversarial-general` a `bmad-review-edge-case-hunter` společně pro ortogonální pokrytí. Adversariální revize zachytí problémy kvality a úplnosti; hunter hraničních případů zachytí neošetřené cesty.
+Spusťte obě `wizz-review-adversarial-general` a `wizz-review-edge-case-hunter` společně pro ortogonální pokrytí. Adversariální revize zachytí problémy kvality a úplnosti; hunter hraničních případů zachytí neošetřené cesty.
 :::
 
-## bmad-editorial-review-prose
+## wizz-editorial-review-prose
 
 **Klinická jazyková korektura zaměřená na srozumitelnost komunikace.** — Reviduje text pro problémy bránící porozumění. Aplikuje baseline Microsoft Writing Style Guide. Zachovává autorský hlas.
 
@@ -196,7 +196,7 @@ Spusťte obě `bmad-review-adversarial-general` a `bmad-review-edge-case-hunter`
 
 **Výstup:** Třísloupcová markdown tabulka: Původní text | Revidovaný text | Změny
 
-## bmad-editorial-review-structure
+## wizz-editorial-review-structure
 
 **Strukturální editace — navrhuje škrty, sloučení, přesuny a zhuštění.** — Reviduje organizaci dokumentu a navrhuje substantivní změny pro zlepšení srozumitelnosti a toku před jazykovou korekcí.
 
@@ -223,7 +223,7 @@ Spusťte obě `bmad-review-adversarial-general` a `bmad-review-edge-case-hunter`
 
 **Výstup:** Shrnutí dokumentu, prioritizovaný seznam doporučení a odhadovaná redukce
 
-## bmad-shard-doc
+## wizz-shard-doc
 
 **Rozdělení velkých markdown souborů do organizovaných souborů sekcí.** — Používá nadpisy úrovně 2 jako body dělení k vytvoření složky samostatných souborů sekcí s indexem.
 
@@ -244,7 +244,7 @@ Spusťte obě `bmad-review-adversarial-general` a `bmad-review-edge-case-hunter`
 
 **Výstup:** Složka s `index.md` a `01-{sekce}.md`, `02-{sekce}.md` atd.
 
-## bmad-index-docs
+## wizz-index-docs
 
 **Generování nebo aktualizace indexu všech dokumentů ve složce.** — Skenuje adresář, čte každý soubor pro pochopení jeho účelu a produkuje organizovaný `index.md` s odkazy a popisy.
 

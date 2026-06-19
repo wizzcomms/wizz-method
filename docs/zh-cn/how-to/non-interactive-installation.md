@@ -36,7 +36,7 @@ sidebar:
 | `--user-name <name>` | 智能体使用的名称 | 系统用户名 |
 | `--communication-language <lang>` | 智能体通信语言 | 英语 |
 | `--document-output-language <lang>` | 文档输出语言 | 英语 |
-| `--output-folder <path>` | 输出文件夹路径 | _bmad-output |
+| `--output-folder <path>` | 输出文件夹路径 | _wizz-output |
 
 ### 其他选项
 
@@ -86,7 +86,7 @@ npx bmad-method install \
   --user-name "CI Bot" \
   --communication-language English \
   --document-output-language English \
-  --output-folder _bmad-output \
+  --output-folder _wizz-output \
   --yes
 ```
 
@@ -109,9 +109,9 @@ npx bmad-method install \
 
 ## 安装结果
 
-- 项目中完全配置的 `_bmad/` 目录
+- 项目中完全配置的 `_wizz/` 目录
 - 为所选模块和工具配置的智能体和工作流
-- 用于生成产物的 `_bmad-output/` 文件夹
+- 用于生成产物的 `_wizz-output/` 文件夹
 
 ## 参数校验与错误处理
 

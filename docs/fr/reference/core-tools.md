@@ -8,27 +8,27 @@ sidebar:
 Chaque installation BMad comprend un ensemble de compétences principales utilisables en complément de tout ce que vous faites — des tâches et des workflows autonomes qui fonctionnent dans tous les projets, tous les modules et toutes les phases. Elles restent toujours disponibles, quels que soient les modules optionnels que vous installez.
 
 :::tip[Raccourci Rapide]
-Exécutez n’importe quel outil principal en tapant son nom de compétence (par ex., `bmad-help`) dans votre IDE. Aucune session d’agent requise.
+Exécutez n’importe quel outil principal en tapant son nom de compétence (par ex., `wizz-help`) dans votre IDE. Aucune session d’agent requise.
 :::
 
 ## Vue d’ensemble
 
 | Outil                                                                 | Type     | Objectif                                                                      |
 |-----------------------------------------------------------------------|----------|-------------------------------------------------------------------------------|
-| [`bmad-help`](#bmad-help)                                             | Tâche    | Obtenir des conseils contextuels sur la prochaine étape                       |
-| [`bmad-brainstorming`](#bmad-brainstorming)                           | Workflow | Faciliter des sessions de brainstorming interactives                          |
-| [`bmad-party-mode`](#bmad-party-mode)                                 | Workflow | Orchestrer des discussions de groupe multi-agents                             |
-| [`bmad-spec`](#bmad-spec)                                             | Workflow | Distiller toute formulation d’intention en un noyau SPEC et fichiers associés |
-| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation)             | Tâche    | Soumettre la sortie LLM à des méthodes de raffinement itératives              |
-| [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Tâche    | Revue cynique qui traque ce qui manque et ce qui ne va pas                    |
-| [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter)       | Tâche    | Analyse exhaustive des chemins de branchement pour les cas limites non gérés  |
-| [`bmad-editorial-review-prose`](#bmad-editorial-review-prose)         | Tâche    | Correction éditoriale clinique pour la clarté de communication                |
-| [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Tâche    | Édition structurelle — coupes, fusions et réorganisation                      |
-| [`bmad-shard-doc`](#bmad-shard-doc)                                   | Tâche    | Diviser les fichiers markdown volumineux en sections organisées               |
-| [`bmad-index-docs`](#bmad-index-docs)                                 | Tâche    | Générer ou mettre à jour un index de tous les documents dans un dossier       |
-| [`bmad-customize`](#bmad-customize)                                   | Tâche    | Créer et vérifier des personnalisations BMad                                  |
+| [`wizz-help`](#wizz-help)                                             | Tâche    | Obtenir des conseils contextuels sur la prochaine étape                       |
+| [`wizz-brainstorming`](#wizz-brainstorming)                           | Workflow | Faciliter des sessions de brainstorming interactives                          |
+| [`wizz-party-mode`](#wizz-party-mode)                                 | Workflow | Orchestrer des discussions de groupe multi-agents                             |
+| [`wizz-spec`](#wizz-spec)                                             | Workflow | Distiller toute formulation d’intention en un noyau SPEC et fichiers associés |
+| [`wizz-advanced-elicitation`](#wizz-advanced-elicitation)             | Tâche    | Soumettre la sortie LLM à des méthodes de raffinement itératives              |
+| [`wizz-review-adversarial-general`](#wizz-review-adversarial-general) | Tâche    | Revue cynique qui traque ce qui manque et ce qui ne va pas                    |
+| [`wizz-review-edge-case-hunter`](#wizz-review-edge-case-hunter)       | Tâche    | Analyse exhaustive des chemins de branchement pour les cas limites non gérés  |
+| [`wizz-editorial-review-prose`](#wizz-editorial-review-prose)         | Tâche    | Correction éditoriale clinique pour la clarté de communication                |
+| [`wizz-editorial-review-structure`](#wizz-editorial-review-structure) | Tâche    | Édition structurelle — coupes, fusions et réorganisation                      |
+| [`wizz-shard-doc`](#wizz-shard-doc)                                   | Tâche    | Diviser les fichiers markdown volumineux en sections organisées               |
+| [`wizz-index-docs`](#wizz-index-docs)                                 | Tâche    | Générer ou mettre à jour un index de tous les documents dans un dossier       |
+| [`wizz-customize`](#wizz-customize)                                   | Tâche    | Créer et vérifier des personnalisations BMad                                  |
 
-## bmad-help
+## wizz-help
 
 **Votre guide intelligent pour la suite.** — Inspecte l’état de votre projet, détecte ce qui a été fait et recommande la prochaine étape requise ou facultative.
 
@@ -46,11 +46,11 @@ Exécutez n’importe quel outil principal en tapant son nom de compétence (par
 3. Recommande les prochaines étapes par ordre de priorité — étapes requises d’abord, puis facultatives
 4. Présente chaque recommandation avec la commande de compétence et une brève description
 
-**Entrée :** Requête optionnelle en langage naturel (par ex., `bmad-help J'ai une idée de SaaS, par où commencer ?`)
+**Entrée :** Requête optionnelle en langage naturel (par ex., `wizz-help J'ai une idée de SaaS, par où commencer ?`)
 
 **Sortie :** Liste priorisée des prochaines étapes recommandées avec les commandes de compétence
 
-## bmad-brainstorming
+## wizz-brainstorming
 
 **Génère des idées variées grâce à des techniques créatives interactives.** — Une session de brainstorming facilitée qui charge des méthodes d’idéation éprouvées à partir d’une bibliothèque de techniques et vous guide vers plus de 100 idées avant de les organiser.
 
@@ -76,7 +76,7 @@ Exécutez n’importe quel outil principal en tapant son nom de compétence (par
 La magie se produit dans les idées 50–100. Le workflow encourage la génération de plus de 100 idées avant organisation.
 :::
 
-## bmad-party-mode
+## wizz-party-mode
 
 **Orchestre des discussions de groupe multi-agents.** — Charge tous les agents BMad installés et facilite une conversation naturelle où chaque agent apporte son expertise et sa personnalité uniques.
 
@@ -98,7 +98,7 @@ La magie se produit dans les idées 50–100. Le workflow encourage la générat
 
 **Sortie :** Conversation multi-agents en temps réel conservant la personnalité de chaque agent
 
-## bmad-spec
+## wizz-spec
 
 **Distille toute formulation d’intention en un contrat SPEC canonique pour le travail en aval.** — Accepte un brief, un PRD, un GDD, un RFC, un brain dump, une transcription, un dossier UX ou une entrée multi-source mixte et produit un `SPEC.md` structuré autour d’un noyau de cinq champs (Pourquoi, Capacités, Contraintes, Non-objectifs, Signal de succès) ainsi que des fichiers compagnons pour le contenu essentiel qui ne trouve pas sa place dans le noyau.
 
@@ -126,11 +126,11 @@ La loi Spec impose huit règles : les capacités expriment à la fois l’inten
 **Sortie :** Dossier de spécification contenant `SPEC.md`, les éventuels fichiers compagnons, et un `.decision-log.md`. Les appelants en mode headless reçoivent une réponse JSON avec le statut du résultat et la liste des fichiers écrits ou modifiés.
 
 :::note[Contrat de mutation]
-`bmad-spec` est le seul outil autorisé à écrire `SPEC.md` et les fichiers compagnons de la spécification. Les autres compétences produisent leurs propres artefacts natifs et invoquent `bmad-spec` en mode headless lorsqu’elles ont besoin d’exprimer une intention sous forme de contrat canonique ou de proposer des mises à jour.
+`wizz-spec` est le seul outil autorisé à écrire `SPEC.md` et les fichiers compagnons de la spécification. Les autres compétences produisent leurs propres artefacts natifs et invoquent `wizz-spec` en mode headless lorsqu’elles ont besoin d’exprimer une intention sous forme de contrat canonique ou de proposer des mises à jour.
 :::
 
 
-## bmad-advanced-elicitation
+## wizz-advanced-elicitation
 
 **Soumet la sortie du LLM à des méthodes de raffinement itératives.** — Sélectionne à partir d’une bibliothèque de techniques d’élicitation pour améliorer systématiquement le contenu en plusieurs passages.
 
@@ -152,7 +152,7 @@ La loi Spec impose huit règles : les capacités expriment à la fois l’inten
 
 **Sortie :** Version améliorée du contenu avec les améliorations appliquées
 
-## bmad-review-adversarial-general
+## wizz-review-adversarial-general
 
 **Revue contradictoire qui part du principe que des problèmes existent et les traque.** — Adopte un regard de réviseur sceptique et blasé, sans aucune tolérance pour le travail bâclé. Cherche ce qui manque, pas seulement ce qui ne va pas.
 
@@ -176,7 +176,7 @@ La loi Spec impose huit règles : les capacités expriment à la fois l’inten
 
 **Sortie :** Liste markdown de plus de 10 constatations avec descriptions
 
-## bmad-review-edge-case-hunter
+## wizz-review-edge-case-hunter
 
 **Parcourt tous les chemins de branchement et les conditions limites, ne signale que les cas non gérés.** — Méthodologie pure de traçage de chemin[^1] qui dérive mécaniquement les classes de cas limites. Orthogonale à la revue contradictoire — centrée sur la méthode, pas sur l’attitude.
 
@@ -201,10 +201,10 @@ La loi Spec impose huit règles : les capacités expriment à la fois l’inten
 **Sortie :** Tableau JSON des résultats, chacun avec `location`, `trigger_condition`, `guard_snippet` et `potential_consequence`
 
 :::note[Revue Complémentaire]
-Exécutez à la fois `bmad-review-adversarial-general` et `bmad-review-edge-case-hunter` pour une couverture orthogonale. La revue contradictoire détecte les problèmes de qualité et de complétude ; le chasseur de cas limites détecte les chemins non gérés.
+Exécutez à la fois `wizz-review-adversarial-general` et `wizz-review-edge-case-hunter` pour une couverture orthogonale. La revue contradictoire détecte les problèmes de qualité et de complétude ; le chasseur de cas limites détecte les chemins non gérés.
 :::
 
-## bmad-editorial-review-prose
+## wizz-editorial-review-prose
 
 **Correction éditoriale clinique centrée sur la clarté de communication.** — Analyse le texte pour détecter les problèmes qui nuisent à la compréhension. Applique le Microsoft Writing Style Guide comme référence de base. Préserve la voix de l’auteur.
 
@@ -229,7 +229,7 @@ Exécutez à la fois `bmad-review-adversarial-general` et `bmad-review-edge-case
 
 **Sortie :** Tableau Markdown en trois colonnes : Texte original | Texte révisé | Modifications
 
-## bmad-editorial-review-structure
+## wizz-editorial-review-structure
 
 **Édition structurelle — propose des coupes, fusions, réorganisations et condensations.** — Révise l’organisation du document et propose des changements substantiels pour améliorer la clarté et le flux avant la correction éditoriale.
 
@@ -256,7 +256,7 @@ Exécutez à la fois `bmad-review-adversarial-general` et `bmad-review-edge-case
 
 **Sortie :** Résumé du document, liste de recommandations priorisées et réduction estimée
 
-## bmad-shard-doc
+## wizz-shard-doc
 
 **Fractionne les fichiers markdown volumineux en sections organisées.** — Utilise les en-têtes de niveau 2 comme points de découpe pour créer un dossier de fichiers de sections autonomes avec un index.
 
@@ -277,7 +277,7 @@ Exécutez à la fois `bmad-review-adversarial-general` et `bmad-review-edge-case
 
 **Sortie :** Dossier avec `index.md` et `01-{section}.md`, `02-{section}.md`, etc.
 
-## bmad-index-docs
+## wizz-index-docs
 
 **Génère ou met à jour un index de tous les documents dans un dossier.** — Analyse un répertoire, lit chaque fichier pour comprendre son objectif et produit un `index.md` organisé avec liens et descriptions.
 
@@ -298,7 +298,7 @@ Exécutez à la fois `bmad-review-adversarial-general` et `bmad-review-edge-case
 
 **Sortie :** `index.md` avec listes de fichiers organisées, liens relatifs et brèves descriptions
 
-## bmad-customize
+## wizz-customize
 
 **Créer et vérifier des personnalisations.** — Vous aide à modifier le comportement d’un agent ou d’un workflow BMad installé sans avoir à écrire de TOML manuellement.
 
@@ -312,12 +312,12 @@ Exécutez à la fois `bmad-review-adversarial-general` et `bmad-review-edge-case
 
 1. Analyse les skills BMad installés pour identifier les surfaces personnalisables
 2. Sélectionne le bon périmètre pour le changement demandé
-3. Écrit les fichiers de surcharge sous `_bmad/custom/`
+3. Écrit les fichiers de surcharge sous `_wizz/custom/`
 4. Vérifie la configuration fusionnée
 
 **Entrée :** Description en langage naturel de la personnalisation souhaitée
 
-**Sortie :** Fichiers de surcharge TOML sous `_bmad/custom/`
+**Sortie :** Fichiers de surcharge TOML sous `_wizz/custom/`
 
 Pour un guide détaillé sur la personnalisation de BMad, consultez [Comment personnaliser BMad](../how-to/customize-bmad.md).
 

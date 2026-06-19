@@ -64,8 +64,8 @@ Critical warnings only — data loss, security issues
 ```md
 | Skill        | Agent   | Purpose                              |
 | ------------ | ------- | ------------------------------------ |
-| `bmad-brainstorming` | Analyst | Brainstorm a new project             |
-| `bmad-create-prd`        | PM      | Create Product Requirements Document |
+| `wizz-brainstorming` | Analyst | Brainstorm a new project             |
+| `wizz-create-prd`        | PM      | Create Product Requirements Document |
 ```
 
 ## Folder Structure Blocks
@@ -75,8 +75,8 @@ Show in "What You've Accomplished" sections:
 ````md
 ```
 your-project/
-├── _bmad/                                   # Wizz Method configuration
-├── _bmad-output/
+├── _wizz/                                   # Wizz Method configuration
+├── _wizz-output/
 │   ├── planning-artifacts/
 │   │   └── PRD.md                           # Your requirements document
 │   ├── implementation-artifacts/
@@ -353,7 +353,7 @@ Only for Wizz Method and Enterprise tracks. Quick Flow skips to implementation.
 
 ### Can I change my plan later?
 
-Yes. The `bmad-correct-course` workflow handles scope changes mid-implementation.
+Yes. The `wizz-correct-course` workflow handles scope changes mid-implementation.
 
 **Have a question not answered here?** [Open an issue](...) or ask in [Discord](...).
 ```

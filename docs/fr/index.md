@@ -19,7 +19,7 @@ La façon la plus rapide de comprendre BMad est de l’essayer.
 - **[Carte des workflows](./reference/workflow-map.md)** — Vue d’ensemble visuelle des phases BMM, des workflows et de la gestion du contexte
 
 :::tip[Envie de passer à la pratique ?]
-Installez BMad et utilisez le skill[^3] `bmad-help` — il vous guidera pas à pas, en fonction de votre projet et des modules installés.
+Installez BMad et utilisez le skill[^3] `wizz-help` — il vous guidera pas à pas, en fonction de votre projet et des modules installés.
 :::
 
 ## Comment utiliser cette documentation

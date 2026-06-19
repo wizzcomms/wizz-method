@@ -5,13 +5,13 @@ sidebar:
   order: 8
 ---
 
-`bmad-checkpoint-preview` là một workflow review tương tác có người trong vòng lặp với hỗ trợ của LLM. Nó dẫn bạn đi qua một thay đổi mã nguồn, từ mục đích và bối cảnh đến các chi tiết quan trọng, để bạn có thể quyết định có nên phát hành, làm lại, hay đào sâu thêm.
+`wizz-checkpoint-preview` là một workflow review tương tác có người trong vòng lặp với hỗ trợ của LLM. Nó dẫn bạn đi qua một thay đổi mã nguồn, từ mục đích và bối cảnh đến các chi tiết quan trọng, để bạn có thể quyết định có nên phát hành, làm lại, hay đào sâu thêm.
 
 ![Sơ đồ workflow Checkpoint Preview](/diagrams/checkpoint-preview-diagram.png)
 
 ## Luồng điển hình
 
-Bạn chạy `bmad-quick-dev`. Nó làm rõ ý định của bạn, dựng spec, triển khai thay đổi, rồi khi xong sẽ nối thêm một review trail vào file spec và mở file đó trong editor. Bạn nhìn vào spec và thấy thay đổi này chạm tới 20 file, trải trên nhiều module.
+Bạn chạy `wizz-quick-dev`. Nó làm rõ ý định của bạn, dựng spec, triển khai thay đổi, rồi khi xong sẽ nối thêm một review trail vào file spec và mở file đó trong editor. Bạn nhìn vào spec và thấy thay đổi này chạm tới 20 file, trải trên nhiều module.
 
 Bạn có thể tự liếc diff. Nhưng khoảng 20 file là lúc cách đó bắt đầu kém hiệu quả: bạn mất mạch, bỏ sót liên hệ giữa hai thay đổi ở xa nhau, hoặc duyệt một thứ mà bạn chưa thực sự hiểu. Thay vì vậy, bạn nói "checkpoint" và LLM sẽ dẫn bạn đi qua thay đổi.
 
@@ -77,7 +77,7 @@ Nếu không có review trail do tác giả tạo, workflow sẽ tự sinh một
 
 ## Khi nào nên dùng
 
-Tình huống chính là bước bàn giao sau `bmad-quick-dev`: phần triển khai đã xong, file spec đang mở trong editor với review trail đã được nối thêm, và bạn cần quyết định có nên phát hành hay không. Lúc đó chỉ cần nói "checkpoint" là bắt đầu.
+Tình huống chính là bước bàn giao sau `wizz-quick-dev`: phần triển khai đã xong, file spec đang mở trong editor với review trail đã được nối thêm, và bạn cần quyết định có nên phát hành hay không. Lúc đó chỉ cần nói "checkpoint" là bắt đầu.
 
 Nó cũng hoạt động độc lập:
 

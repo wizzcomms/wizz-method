@@ -9,7 +9,7 @@ sidebar:
 
 ## Party Mode là gì?
 
-Chạy `bmad-party-mode` và bạn sẽ có cả đội AI trong cùng một phòng - PM, Architect, Dev, UX Designer, bất kỳ ai bạn cần. BMad Master điều phối, chọn các agent liên quan cho từng tin nhắn. Các agent trả lời đúng vai, đồng ý, phản biện, và bổ sung ý tưởng cho nhau.
+Chạy `wizz-party-mode` và bạn sẽ có cả đội AI trong cùng một phòng - PM, Architect, Dev, UX Designer, bất kỳ ai bạn cần. BMad Master điều phối, chọn các agent liên quan cho từng tin nhắn. Các agent trả lời đúng vai, đồng ý, phản biện, và bổ sung ý tưởng cho nhau.
 
 Cuộc trò chuyện tiếp tục lâu đến mức bạn muốn. Bạn có thể hỏi tiếp, phản biện câu trả lời, đổi hướng thảo luận - đó là một cuộc qua lại thật sự với các agent của bạn cho đến khi xong.
 

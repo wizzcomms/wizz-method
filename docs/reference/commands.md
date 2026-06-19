@@ -13,7 +13,7 @@ The Wizz Method offers two ways to start work, and they serve different purposes
 
 | Mechanism | How you invoke it | What happens |
 | --- | --- | --- |
-| **Skill** | Type the skill name (e.g. `bmad-help`) in your IDE | Directly loads an agent, runs a workflow, or executes a task |
+| **Skill** | Type the skill name (e.g. `wizz-help`) in your IDE | Directly loads an agent, runs a workflow, or executes a task |
 | **Agent menu trigger** | Load an agent first, then type a short code (e.g. `DS`) | The agent interprets the code and starts the matching workflow while staying in character |
 
 Agent menu triggers require an active agent session. Use skills when you know which workflow you want. Use triggers when you are already working with an agent and want to switch tasks without leaving the conversation.
@@ -50,22 +50,22 @@ Each skill is a directory containing a `SKILL.md` file. For example, a Claude Co
 
 ```text
 .claude/skills/
-├── bmad-help/
+├── wizz-help/
 │   └── SKILL.md
-├── bmad-prd/
+├── wizz-prd/
 │   └── SKILL.md
-├── bmad-agent-dev/
+├── wizz-agent-dev/
 │   └── SKILL.md
 └── ...
 ```
 
-The directory name determines the skill name in your IDE. For example, the directory `bmad-agent-dev/` registers the skill `bmad-agent-dev`.
+The directory name determines the skill name in your IDE. For example, the directory `wizz-agent-dev/` registers the skill `wizz-agent-dev`.
 
 ## How to Discover Your Skills
 
 Type the skill name in your IDE to invoke it. Some platforms require you to enable skills in settings before they appear.
 
-Run `bmad-help` for context-aware guidance on your next step.
+Run `wizz-help` for context-aware guidance on your next step.
 
 :::tip[Quick discovery]
 The generated skill directories in your project are the canonical list. Open them in your file explorer to see every skill with its description.
@@ -79,9 +79,9 @@ Agent skills load a specialized AI persona with a defined role, communication st
 
 | Example skill | Agent | Role |
 | --- | --- | --- |
-| `bmad-agent-dev` | Amelia (Developer) | Implements stories with strict adherence to specs |
-| `bmad-agent-pm` | John (Product Manager) | Creates and validates PRDs |
-| `bmad-agent-architect` | Winston (Architect) | Designs system architecture |
+| `wizz-agent-dev` | Amelia (Developer) | Implements stories with strict adherence to specs |
+| `wizz-agent-pm` | John (Product Manager) | Creates and validates PRDs |
+| `wizz-agent-architect` | Winston (Architect) | Designs system architecture |
 
 See [Agents](./agents.md) for the full list of default agents and their triggers.
 
@@ -91,15 +91,15 @@ Workflow skills run a structured, multi-step process without loading an agent pe
 
 | Example skill | Purpose |
 | --- | --- |
-| `bmad-product-brief` | Create or update a product brief — guided discovery when your concept is clear |
-| `bmad-prfaq` | [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) challenge to stress-test your product concept |
-| `bmad-prd` | Create, update, or validate a Product Requirements Document |
-| `bmad-ux` | Design user experience |
-| `bmad-create-architecture` | Design system architecture |
-| `bmad-create-epics-and-stories` | Create epics and stories |
-| `bmad-dev-story` | Implement a story |
-| `bmad-code-review` | Run a code review |
-| `bmad-quick-dev` | Unified quick flow — clarify intent, plan, implement, review, present |
+| `wizz-product-brief` | Create or update a product brief — guided discovery when your concept is clear |
+| `wizz-prfaq` | [Working Backwards PRFAQ](../explanation/analysis-phase.md#prfaq-working-backwards) challenge to stress-test your product concept |
+| `wizz-prd` | Create, update, or validate a Product Requirements Document |
+| `wizz-ux` | Design user experience |
+| `wizz-create-architecture` | Design system architecture |
+| `wizz-create-epics-and-stories` | Create epics and stories |
+| `wizz-dev-story` | Implement a story |
+| `wizz-code-review` | Run a code review |
+| `wizz-quick-dev` | Unified quick flow — clarify intent, plan, implement, review, present |
 
 See [Workflow Map](./workflow-map.md) for the complete workflow reference organized by phase.
 
@@ -109,13 +109,13 @@ Tasks and tools are standalone operations that do not require an agent or workfl
 
 **Wizz-Help: Your Intelligent Guide**
 
-`bmad-help` is your primary interface for discovering what to do next. It inspects your project, understands natural language queries, and recommends the next required or optional step based on your installed modules.
+`wizz-help` is your primary interface for discovering what to do next. It inspects your project, understands natural language queries, and recommends the next required or optional step based on your installed modules.
 
 :::note[Example]
 ```
-bmad-help
-bmad-help I have a SaaS idea and know all the features. Where do I start?
-bmad-help What are my options for UX design?
+wizz-help
+wizz-help I have a SaaS idea and know all the features. Where do I start?
+wizz-help What are my options for UX design?
 ```
 :::
 
@@ -125,7 +125,7 @@ The core module includes 12 built-in tools — specs, reviews, brainstorming, cu
 
 ## Naming Convention
 
-All skills use the `bmad-` prefix followed by a descriptive name (e.g., `bmad-agent-dev`, `bmad-prd`, `bmad-help`). See [Modules](./modules.md) for available modules.
+All skills use the `bmad-` prefix followed by a descriptive name (e.g., `wizz-agent-dev`, `wizz-prd`, `wizz-help`). See [Modules](./modules.md) for available modules.
 
 ## Troubleshooting
 

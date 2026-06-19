@@ -64,7 +64,7 @@ class InstallPaths {
     return path.join(this.configDir, 'files-manifest.csv');
   }
   helpCatalog() {
-    return path.join(this.configDir, 'bmad-help.csv');
+    return path.join(this.configDir, 'wizz-help.csv');
   }
   moduleDir(name) {
     return path.join(this.bmadDir, name);

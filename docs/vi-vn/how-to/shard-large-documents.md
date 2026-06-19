@@ -5,7 +5,7 @@ sidebar:
        order: 10
 ---
 
-Sử dụng công cụ `bmad-shard-doc` nếu bạn cần tách các tệp markdown lớn thành nhiều tệp nhỏ có tổ chức để quản lý context tốt hơn.
+Sử dụng công cụ `wizz-shard-doc` nếu bạn cần tách các tệp markdown lớn thành nhiều tệp nhỏ có tổ chức để quản lý context tốt hơn.
 
 :::caution[Đã ngừng khuyến nghị]
 Đây không còn là cách được khuyến nghị, và trong thời gian tới khi workflow được cập nhật và đa số LLM/công cụ lớn hỗ trợ subprocesses, việc này sẽ không còn cần thiết.
@@ -23,11 +23,11 @@ Chia nhỏ tài liệu là việc tách các tệp markdown lớn thành nhiều
 
 ```text
 Trước khi chia nhỏ:
-_bmad-output/planning-artifacts/
+_wizz-output/planning-artifacts/
 └── PRD.md (tệp lớn 50k token)
 
 Sau khi chia nhỏ:
-_bmad-output/planning-artifacts/
+_wizz-output/planning-artifacts/
 └── prd/
        ├── index.md                    # Mục lục kèm mô tả
        ├── overview.md                 # Phần 1
@@ -41,7 +41,7 @@ _bmad-output/planning-artifacts/
 ### 1. Chạy công cụ Shard-Doc
 
 ```bash
-/bmad-shard-doc
+/wizz-shard-doc
 ```
 
 ### 2. Làm theo quy trình tương tác

@@ -108,7 +108,7 @@ Décisions courantes qui préviennent les conflits :
 - Documenter les décisions qui traversent les frontières des epics
 - Se concentrer sur les zones sujettes aux conflits
 - Mettre à jour l’architecture au fur et à mesure des apprentissages
-- Utiliser `bmad-correct-course` pour les changements significatifs
+- Utiliser `wizz-correct-course` pour les changements significatifs
 :::
 
 ## Glossaire

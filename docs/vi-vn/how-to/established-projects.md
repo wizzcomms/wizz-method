@@ -20,8 +20,8 @@ Tài liệu này mô tả workflow cốt lõi để on-board vào các dự án 
 Nếu bạn đã hoàn thành toàn bộ epic và story trong PRD theo quy trình BMad, hãy dọn dẹp những tệp đó. Bạn có thể lưu trữ, xóa đi, hoặc dựa vào lịch sử phiên bản nếu cần. Không nên giữ các tệp này trong:
 
 - `docs/`
-- `_bmad-output/planning-artifacts/`
-- `_bmad-output/implementation-artifacts/`
+- `_wizz-output/planning-artifacts/`
+- `_wizz-output/implementation-artifacts/`
 
 ## Bước 2: Tạo Project Context
 
@@ -32,7 +32,7 @@ Hãy tạo `project-context.md` để ghi lại các pattern và quy ước tron
 Chạy workflow tạo project context:
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 Workflow này sẽ quét codebase để nhận diện:
@@ -42,7 +42,7 @@ Workflow này sẽ quét codebase để nhận diện:
 - Cách tiếp cận kiểm thử
 - Các pattern đặc thù framework
 
-Bạn có thể xem lại và chỉnh sửa tệp được tạo, hoặc tự tạo tệp tại `_bmad-output/project-context.md` nếu muốn.
+Bạn có thể xem lại và chỉnh sửa tệp được tạo, hoặc tự tạo tệp tại `_wizz-output/project-context.md` nếu muốn.
 
 [Tìm hiểu thêm về project context](../explanation/project-context.md)
 
@@ -55,22 +55,22 @@ Thư mục `docs/` của bạn nên chứa tài liệu ngắn gọn, có tổ ch
 - Kiến trúc
 - Bất kỳ thông tin dự án nào khác có liên quan
 
-Với các dự án phức tạp, hãy cân nhắc dùng workflow `bmad-document-project`. Nó có các biến thể lúc chạy có thể quét toàn bộ dự án và tài liệu hóa trạng thái thực tế hiện tại của hệ thống.
+Với các dự án phức tạp, hãy cân nhắc dùng workflow `wizz-document-project`. Nó có các biến thể lúc chạy có thể quét toàn bộ dự án và tài liệu hóa trạng thái thực tế hiện tại của hệ thống.
 
 ## Bước 4: Nhờ trợ giúp
 
 ### BMad-Help: Điểm bắt đầu của bạn
 
-**Hãy chạy `bmad-help` bất cứ lúc nào bạn không chắc cần làm gì tiếp theo.** Công cụ hướng dẫn thông minh này:
+**Hãy chạy `wizz-help` bất cứ lúc nào bạn không chắc cần làm gì tiếp theo.** Công cụ hướng dẫn thông minh này:
 
 - Kiểm tra dự án để xem những gì đã được hoàn thành
 - Đưa ra tùy chọn dựa trên các module bạn đã cài
 - Hiểu các câu hỏi bằng ngôn ngữ tự nhiên
 
 ```text
-bmad-help Tôi có một ứng dụng Rails đã tồn tại, tôi nên bắt đầu từ đâu?
-bmad-help Điểm khác nhau giữa quick-flow và full method là gì?
-bmad-help Cho tôi xem những workflow đang có
+wizz-help Tôi có một ứng dụng Rails đã tồn tại, tôi nên bắt đầu từ đâu?
+wizz-help Điểm khác nhau giữa quick-flow và full method là gì?
+wizz-help Cho tôi xem những workflow đang có
 ```
 
 BMad-Help cũng **tự động chạy ở cuối mỗi workflow**, đưa ra hướng dẫn rõ ràng về việc cần làm tiếp theo.
@@ -81,7 +81,7 @@ Bạn có hai lựa chọn chính, tùy thuộc vào phạm vi thay đổi:
 
 | Phạm vi | Cách tiếp cận được khuyến nghị |
 | --- | --- |
-| **Cập nhật hoặc bổ sung nhỏ** | Chạy `bmad-quick-dev` để làm rõ ý định, lập kế hoạch, triển khai và review trong một workflow duy nhất. Quy trình BMad Method đầy đủ có thể là quá mức cần thiết. |
+| **Cập nhật hoặc bổ sung nhỏ** | Chạy `wizz-quick-dev` để làm rõ ý định, lập kế hoạch, triển khai và review trong một workflow duy nhất. Quy trình BMad Method đầy đủ có thể là quá mức cần thiết. |
 | **Thay đổi hoặc bổ sung lớn** | Bắt đầu với BMad Method, áp dụng mức độ chặt chẽ phù hợp với nhu cầu của bạn. |
 
 ### Khi tạo PRD

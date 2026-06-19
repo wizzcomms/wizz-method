@@ -30,7 +30,7 @@ sidebar:
 安装完成后，每个已安装智能体都会在下面目录生成一个 `.customize.yaml`：
 
 ```text
-_bmad/_config/agents/
+_wizz/_config/agents/
 ├── core-bmad-master.customize.yaml
 ├── bmm-dev.customize.yaml
 ├── bmm-pm.customize.yaml

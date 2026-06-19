@@ -5,7 +5,7 @@ sidebar:
   order: 10
 ---
 
-Utilisez l’outil `bmad-shard-doc` si vous avez besoin de diviser des fichiers markdown volumineux en fichiers plus petits et organisés pour une meilleure gestion du contexte.
+Utilisez l’outil `wizz-shard-doc` si vous avez besoin de diviser des fichiers markdown volumineux en fichiers plus petits et organisés pour une meilleure gestion du contexte.
 
 :::caution[Déprécié]
 Ceci n’est plus recommandé, et bientôt avec les workflows mis à jour et la plupart des LLM et outils majeurs supportant les sous-processus, cela deviendra inutile.
@@ -23,11 +23,11 @@ La division de documents divise les fichiers markdown volumineux en fichiers plu
 
 ```text
 Avant Division :
-_bmad-output/planning-artifacts/
+_wizz-output/planning-artifacts/
 └── PRD.md (fichier volumineux de 50k tokens)
 
 Après Division :
-_bmad-output/planning-artifacts/
+_wizz-output/planning-artifacts/
 └── prd/
     ├── index.md                    # Table des matières avec descriptions
     ├── overview.md                 # Section 1
@@ -41,7 +41,7 @@ _bmad-output/planning-artifacts/
 ### 1. Exécuter l’Outil Shard-Doc
 
 ```bash
-/bmad-shard-doc
+/wizz-shard-doc
 ```
 
 ### 2. Suivre le Processus Interactif

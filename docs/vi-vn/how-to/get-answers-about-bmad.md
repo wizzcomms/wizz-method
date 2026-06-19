@@ -9,16 +9,16 @@ Hãy dùng trợ giúp tích hợp sẵn của BMad, tài liệu nguồn, hoặc
 
 ## 1. Hỏi BMad-Help
 
-Cách nhanh nhất để có câu trả lời. Skill `bmad-help` có sẵn ngay trong phiên AI của bạn và xử lý được hơn 80% câu hỏi. Nó sẽ kiểm tra dự án, nhìn xem bạn đã hoàn thành đến đâu và cho bạn biết nên làm gì tiếp theo.
+Cách nhanh nhất để có câu trả lời. Skill `wizz-help` có sẵn ngay trong phiên AI của bạn và xử lý được hơn 80% câu hỏi. Nó sẽ kiểm tra dự án, nhìn xem bạn đã hoàn thành đến đâu và cho bạn biết nên làm gì tiếp theo.
 
 ```text
-bmad-help Tôi có ý tưởng SaaS và đã biết tất cả tính năng. Tôi nên bắt đầu từ đâu?
-bmad-help Tôi có những lựa chọn nào cho thiết kế UX?
-bmad-help Tôi đang bị mắc ở workflow PRD
+wizz-help Tôi có ý tưởng SaaS và đã biết tất cả tính năng. Tôi nên bắt đầu từ đâu?
+wizz-help Tôi có những lựa chọn nào cho thiết kế UX?
+wizz-help Tôi đang bị mắc ở workflow PRD
 ```
 
 :::tip
-Bạn cũng có thể dùng `/bmad-help` hoặc `$bmad-help` tùy nền tảng, nhưng chỉ `bmad-help` là cách nên hoạt động mọi nơi.
+Bạn cũng có thể dùng `/wizz-help` hoặc `$wizz-help` tùy nền tảng, nhưng chỉ `wizz-help` là cách nên hoạt động mọi nơi.
 :::
 
 ## 2. Đi sâu hơn với mã nguồn
@@ -30,7 +30,7 @@ Hãy clone hoặc mở [repo BMAD-METHOD](https://github.com/bmad-code-org/BMAD-
 :::note[Ví dụ]
 **Q:** "Hãy chỉ tôi cách nhanh nhất để xây dựng một thứ gì đó bằng BMad"
 
-**A:** Dùng Quick Flow: Chạy `bmad-quick-dev` - nó sẽ làm rõ ý định, lập kế hoạch, triển khai, review và trình bày kết quả trong một workflow duy nhất, bỏ qua các giai đoạn lập kế hoạch đầy đủ.
+**A:** Dùng Quick Flow: Chạy `wizz-quick-dev` - nó sẽ làm rõ ý định, lập kế hoạch, triển khai, review và trình bày kết quả trong một workflow duy nhất, bỏ qua các giai đoạn lập kế hoạch đầy đủ.
 :::
 
 **Mẹo để có câu trả lời tốt hơn:**

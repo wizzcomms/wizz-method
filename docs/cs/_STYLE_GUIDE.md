@@ -64,8 +64,8 @@ Pouze kritická varování — ztráta dat, bezpečnostní problémy
 ```md
 | Skill                | Agent   | Účel                                 |
 | -------------------- | ------- | ------------------------------------ |
-| `bmad-brainstorming` | Analytik | Brainstorming nového projektu       |
-| `bmad-create-prd`    | PM      | Vytvoření dokumentu požadavků (PRD) |
+| `wizz-brainstorming` | Analytik | Brainstorming nového projektu       |
+| `wizz-create-prd`    | PM      | Vytvoření dokumentu požadavků (PRD) |
 ```
 
 ## Bloky struktury složek
@@ -75,8 +75,8 @@ Zobrazujte v sekcích „Co jste dosáhli“:
 ````md
 ```
 váš-projekt/
-├── _bmad/                                   # Konfigurace BMad
-├── _bmad-output/
+├── _wizz/                                   # Konfigurace BMad
+├── _wizz-output/
 │   ├── planning-artifacts/
 │   │   └── PRD.md                           # Váš dokument požadavků
 │   ├── implementation-artifacts/
@@ -353,7 +353,7 @@ Pouze pro BMad Method a Enterprise. Quick Flow přeskakuje rovnou k implementaci
 
 ### Mohu později změnit svůj plán?
 
-Ano. SM agent má workflow `bmad-correct-course` pro řešení změn rozsahu.
+Ano. SM agent má workflow `wizz-correct-course` pro řešení změn rozsahu.
 
 **Máte otázku, na kterou jste zde nenašli odpověď?** [Vytvořte issue](...) nebo se zeptejte na [Discordu](...).
 ```

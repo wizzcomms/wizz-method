@@ -1,5 +1,5 @@
 # Base do agente Wizz Maestro. Edite à vontade — este é o SEU método.
-# Overrides do usuário em _bmad/custom/wizz-maestro.toml e .user.toml ainda valem por cima.
+# Overrides do usuário em _wizz/custom/wizz-maestro.toml e .user.toml ainda valem por cima.
 
 [agent]
 name = "Maestro"
@@ -40,7 +40,7 @@ principles = [
 [[agent.menu]]
 code = "DEV"
 description = "Codar, bug, feature, testes, arquitetura, banco, segurança, PRD"
-prompt = "Roteie para o agente de desenvolvimento adequado e invoque-o via a ferramenta Skill: 'bmad-agent-dev' (codar/bug/feature/testes), 'bmad-agent-architect' (arquitetura/banco/segurança), 'bmad-agent-pm' (PRD/escopo), 'bmad-agent-analyst' (pesquisa/brief) ou 'bmad-agent-tech-writer' (documentação). Todos já vêm personalizados em PT-BR pelos overrides Wizz."
+prompt = "Roteie para o agente de desenvolvimento adequado e invoque-o via a ferramenta Skill: 'wizz-agent-dev' (codar/bug/feature/testes), 'wizz-agent-architect' (arquitetura/banco/segurança), 'wizz-agent-pm' (PRD/escopo), 'wizz-agent-analyst' (pesquisa/brief) ou 'wizz-agent-tech-writer' (documentação). Todos já vêm personalizados em PT-BR pelos overrides Wizz."
 
 [[agent.menu]]
 code = "QA"

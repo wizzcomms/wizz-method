@@ -62,7 +62,7 @@ Xem [Brainstorming](./brainstorming.md) để hiểu sâu hơn về cách một 
 Product Brief và PRFAQ đều tạo ra đầu vào cho PRD. Hãy chọn một trong hai tùy vào mức độ thách thức bạn muốn. Brief là discovery mang tính cộng tác. PRFAQ là một bài kiểm tra khắc nghiệt. Cả hai đều đưa bạn tới cùng một đích; PRFAQ chỉ kiểm tra xem concept của bạn có thật sự xứng đáng để đến đó hay không.
 
 :::tip[Chưa chắc nên bắt đầu ở đâu?]
-Hãy chạy `bmad-help` và mô tả tình huống của bạn. Nó sẽ gợi ý điểm bắt đầu phù hợp dựa trên những gì bạn đã làm và điều bạn đang muốn đạt được.
+Hãy chạy `wizz-help` và mô tả tình huống của bạn. Nó sẽ gợi ý điểm bắt đầu phù hợp dựa trên những gì bạn đã làm và điều bạn đang muốn đạt được.
 :::
 
 ## Sau giai đoạn phân tích thì chuyện gì xảy ra?

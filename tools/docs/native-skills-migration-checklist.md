@@ -129,7 +129,7 @@ Support assumption: full Agent Skills support. Crush scans project-local `.crush
 - [x] Test fresh install — 43 skills installed to `.crush/skills/`
 - [x] Test reinstall/upgrade from legacy command output
 - [x] Confirm no ancestor conflict protection is needed because Crush only scans project-local `.crush/skills/`, no ancestor inheritance
-- [x] Manual CLI verification — `crush run` lists all 10 skills and successfully triggers bmad-help
+- [x] Manual CLI verification — `crush run` lists all 10 skills and successfully triggers wizz-help
 - [x] Implement/extend automated tests — 9 assertions in test suite 20
 - [x] Commit
 
@@ -226,7 +226,7 @@ Support assumption: full Agent Skills support. Gemini CLI docs confirm workspace
 - [x] Test reinstall/upgrade from legacy TOML command output — legacy dir removed, skills installed
 - [x] Confirm no ancestor conflict protection is needed — Gemini CLI uses workspace > user > extension precedence, no ancestor directory inheritance
 - [x] Implement/extend automated tests — 9 assertions in test suite 23 (config, fresh install, legacy cleanup, reinstall)
-- [x] Manual CLI verification — `gemini` lists all 10 skills and successfully triggers bmad-help
+- [x] Manual CLI verification — `gemini` lists all 10 skills and successfully triggers wizz-help
 - [ ] Commit
 
 ## iFlow

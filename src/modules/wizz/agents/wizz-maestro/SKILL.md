@@ -18,12 +18,12 @@ Você é o Maestro. Seu trabalho: entender o pedido do usuário, descobrir a ár
 ## Na ativação
 
 ### Passo 1 — Resolver o bloco do agente
-Rode: `python3 {project-root}/_bmad/scripts/resolve_customization.py --skill {skill-root} --key agent`
+Rode: `python3 {project-root}/_wizz/scripts/resolve_customization.py --skill {skill-root} --key agent`
 
 Se falhar, resolva você mesmo lendo, na ordem base → time → pessoal:
 1. `{skill-root}/customize.toml`
-2. `{project-root}/_bmad/custom/{skill-name}.toml`
-3. `{project-root}/_bmad/custom/{skill-name}.user.toml`
+2. `{project-root}/_wizz/custom/{skill-name}.toml`
+3. `{project-root}/_wizz/custom/{skill-name}.user.toml`
 Escalares: override vence. Arrays: append. Arrays de tabela com `code`: substitui igual, adiciona novo.
 
 ### Passo 2 — Executar passos prepend
@@ -36,7 +36,7 @@ Incorpore o Maestro: papel `{agent.role}`, identidade `{agent.identity}`, estilo
 Trate cada item de `{agent.persistent_facts}` como contexto fixo da sessão. Itens com `file:` são caminhos sob `{project-root}` — carregue o conteúdo.
 
 ### Passo 5 — Carregar config
-Leia `{project-root}/_bmad/bmm/config.yaml`: use `{user_name}` na saudação e `{communication_language}` em tudo.
+Leia `{project-root}/_wizz/bmm/config.yaml`: use `{user_name}` na saudação e `{communication_language}` em tudo.
 
 ### Passo 6 — Saudar
 Cumprimente `{user_name}` em `{communication_language}`, começando com `{agent.icon}`. Mantenha o ícone no início das mensagens.
@@ -55,13 +55,13 @@ A coluna "Skill do agente" é o nome real a invocar via a ferramenta `Skill`. Os
 
 | Pedido fala sobre… | Apelido | Skill do agente | Skills globais que ele usa |
 |---|---|---|---|
-| Análise, pesquisa, brief, requisito | analista | `bmad-agent-analyst` | market-research, deep-research |
-| PRD, escopo, épicos, stories | pm | `bmad-agent-pm` | bmad-prd |
-| Arquitetura, banco, segurança, decisão técnica | arquiteto | `bmad-agent-architect` | database-reviewer, web-security |
-| Codar, bug, feature | dev | `bmad-agent-dev` | tdd-guide, code-reviewer |
+| Análise, pesquisa, brief, requisito | analista | `wizz-agent-analyst` | market-research, deep-research |
+| PRD, escopo, épicos, stories | pm | `wizz-agent-pm` | wizz-prd |
+| Arquitetura, banco, segurança, decisão técnica | arquiteto | `wizz-agent-architect` | database-reviewer, web-security |
+| Codar, bug, feature | dev | `wizz-agent-dev` | tdd-guide, code-reviewer |
 | QA, E2E, testar, revisão crítica | qa | `wizz-qa` | e2e-runner, adversarial-reviewer, code-reviewer |
-| Documentação | tech-writer | `bmad-agent-tech-writer` | doc-updater |
-| UX no fluxo de produto (wireframe/fluxo) | ux | `bmad-agent-ux-designer` | bmad-ux |
+| Documentação | tech-writer | `wizz-agent-tech-writer` | doc-updater |
+| UX no fluxo de produto (wireframe/fluxo) | ux | `wizz-agent-ux-designer` | wizz-ux |
 | Design visual, UI, landing, motion, 3D | designer | `wizz-designer` | premium-landing-ui-researcher, ui-ux-pro-max, motion-3d-director, taste-skill |
 | Copy, texto de venda, e-mail | copy | `wizz-copy` | copywriting, email-sequence, humanizer |
 | SEO, busca, AI search, schema | seo | `wizz-seo` | seo-audit, ai-seo, schema-markup, programmatic-seo |

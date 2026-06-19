@@ -13,7 +13,7 @@ BMad offre deux façons de démarrer un travail, chacune ayant un usage différe
 
 | Mécanisme                     | Comment l’invoquer                                            | Ce qui se passe                                                                                |
 |-------------------------------|---------------------------------------------------------------|------------------------------------------------------------------------------------------------|
-| **Skill**                     | Tapez le nom du skill (ex. `bmad-help`) dans votre IDE        | Charge directement un agent, exécute un workflow ou lance une tâche                            |
+| **Skill**                     | Tapez le nom du skill (ex. `wizz-help`) dans votre IDE        | Charge directement un agent, exécute un workflow ou lance une tâche                            |
 | **Déclencheur du menu agent** | Chargez d’abord un agent, puis tapez un code court (ex. `DS`) | L’agent interprète le code et démarre le workflow correspondant tout en préservant son persona |
 
 Les déclencheurs du menu agent nécessitent une session agent active. Utilisez les skills lorsque vous savez quel workflow vous voulez. Utilisez les déclencheurs lorsque vous travaillez déjà avec un agent et souhaitez changer de tâche sans quitter la conversation.
@@ -50,22 +50,22 @@ Chaque skill est un répertoire contenant un fichier `SKILL.md`. Par exemple, un
 
 ```text
 .claude/skills/
-├── bmad-help/
+├── wizz-help/
 │   └── SKILL.md
-├── bmad-prd/
+├── wizz-prd/
 │   └── SKILL.md
-├── bmad-agent-dev/
+├── wizz-agent-dev/
 │   └── SKILL.md
 └── ...
 ```
 
-Le nom du répertoire détermine le nom du skill dans votre IDE. Par exemple, le répertoire `bmad-agent-dev/` enregistre le skill `bmad-agent-dev`.
+Le nom du répertoire détermine le nom du skill dans votre IDE. Par exemple, le répertoire `wizz-agent-dev/` enregistre le skill `wizz-agent-dev`.
 
 ## Comment découvrir vos skills
 
 Tapez le nom du skill dans votre IDE pour l’invoquer. Certaines plateformes nécessitent d’activer les skills dans les paramètres avant qu’ils n’apparaissent.
 
-Exécutez `bmad-help` pour obtenir des conseils contextuels sur votre prochaine étape.
+Exécutez `wizz-help` pour obtenir des conseils contextuels sur votre prochaine étape.
 
 :::tip[Découverte rapide]
 Les répertoires de skills générés dans votre projet sont la liste de référence. Ouvrez-les dans votre explorateur de fichiers pour voir chaque skill avec sa description.
@@ -79,9 +79,9 @@ Les skills d’agent chargent un persona[^2] IA spécialisé avec un rôle défi
 
 | Exemple de skill       | Agent                  | Rôle                                                        |
 |------------------------|------------------------|-------------------------------------------------------------|
-| `bmad-agent-dev`       | Amelia (Développeur)   | Implémente les stories avec une adhérence stricte aux specs |
-| `bmad-agent-pm`        | John (Product Manager) | Crée, met à jour et valide les PRDs[^1]                     |
-| `bmad-agent-architect` | Winston (Architecte)   | Conçoit l’architecture système                              |
+| `wizz-agent-dev`       | Amelia (Développeur)   | Implémente les stories avec une adhérence stricte aux specs |
+| `wizz-agent-pm`        | John (Product Manager) | Crée, met à jour et valide les PRDs[^1]                     |
+| `wizz-agent-architect` | Winston (Architecte)   | Conçoit l’architecture système                              |
 
 Consultez [Agents](./agents.md) pour la liste complète des agents par défaut et leurs déclencheurs.
 
@@ -91,14 +91,14 @@ Les skills de workflow exécutent un processus structuré en plusieurs étapes s
 
 | Exemple de skill                | Objectif                                                                                                                     |
 |---------------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| `bmad-product-brief`            | Créer ou mettre à jour un product brief[^3] — découverte guidée lorsque votre concept est clair                              |
-| `bmad-prfaq`                    | Défi [PRFAQ Working Backwards](../explanation/analysis-phase.md#prfaq-working-backwards) pour éprouver votre concept produit |
-| `bmad-prd`                      | Créer, mettre à jour ou valider un PRD[^1]                                                                                   |
-| `bmad-create-architecture`      | Concevoir l’architecture système                                                                                             |
-| `bmad-create-epics-and-stories` | Créer des epics et des stories                                                                                               |
-| `bmad-dev-story`                | Implémenter une story                                                                                                        |
-| `bmad-code-review`              | Effectuer une revue de code                                                                                                  |
-| `bmad-quick-dev`                | Flux rapide unifié — clarifier l’intention, planifier, implémenter, réviser, présenter                                       |
+| `wizz-product-brief`            | Créer ou mettre à jour un product brief[^3] — découverte guidée lorsque votre concept est clair                              |
+| `wizz-prfaq`                    | Défi [PRFAQ Working Backwards](../explanation/analysis-phase.md#prfaq-working-backwards) pour éprouver votre concept produit |
+| `wizz-prd`                      | Créer, mettre à jour ou valider un PRD[^1]                                                                                   |
+| `wizz-create-architecture`      | Concevoir l’architecture système                                                                                             |
+| `wizz-create-epics-and-stories` | Créer des epics et des stories                                                                                               |
+| `wizz-dev-story`                | Implémenter une story                                                                                                        |
+| `wizz-code-review`              | Effectuer une revue de code                                                                                                  |
+| `wizz-quick-dev`                | Flux rapide unifié — clarifier l’intention, planifier, implémenter, réviser, présenter                                       |
 
 Consultez la [Carte des workflows](./workflow-map.md) pour la référence complète des workflows organisés par phase.
 
@@ -108,13 +108,13 @@ Les tâches et outils sont des opérations autonomes qui ne nécessitent pas de 
 
 **BMad-Help : Votre guide intelligent**
 
-`bmad-help` est votre interface principale pour découvrir quoi faire ensuite. Il inspecte votre projet, comprend les requêtes en langage naturel et recommande la prochaine étape requise ou optionnelle en fonction de vos modules installés.
+`wizz-help` est votre interface principale pour découvrir quoi faire ensuite. Il inspecte votre projet, comprend les requêtes en langage naturel et recommande la prochaine étape requise ou optionnelle en fonction de vos modules installés.
 
 :::note[Exemple]
 ```
-bmad-help
-bmad-help J'ai une idée de SaaS et je connais toutes les fonctionnalités. Par où commencer ?
-bmad-help Quelles sont mes options pour le design UX ?
+wizz-help
+wizz-help J'ai une idée de SaaS et je connais toutes les fonctionnalités. Par où commencer ?
+wizz-help Quelles sont mes options pour le design UX ?
 ```
 :::
 
@@ -124,7 +124,7 @@ Le module principal inclut 12 outils intégrés — specs, revues, brainstorming
 
 ## Convention de nommage
 
-Tous les skills utilisent le préfixe `bmad-` suivi d’un nom descriptif (ex. `bmad-agent-dev`, `bmad-prd`, `bmad-help`). Consultez [Modules](./modules.md) pour les modules disponibles.
+Tous les skills utilisent le préfixe `bmad-` suivi d’un nom descriptif (ex. `wizz-agent-dev`, `wizz-prd`, `wizz-help`). Consultez [Modules](./modules.md) pour les modules disponibles.
 
 ## Dépannage
 

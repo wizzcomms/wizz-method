@@ -21,7 +21,7 @@ Os papéis de dev/produto reusam os agentes BMAD (Mary, John, Winston, Amelia, S
 - **Encerramento** (`_shared/encerramento.md`): bloco ✅/➡️/🎯 ao terminar.
 - **Economia de token** (`_shared/token-economy.md`): graphify → cerebro → grep antes de ler arquivos; RTK reescreve shell.
 - **Cerebro** (`_shared/cerebro.md`): auto-load leve na ativação, lembrete de salvar no fim.
-- **Idioma**: escolhido no `wizz-init` (padrão Português (BR)), gravado em `_bmad/bmm/config.yaml`.
+- **Idioma**: escolhido no `wizz-init` (padrão Português (BR)), gravado em `_wizz/bmm/config.yaml`.
 - **Encadeamento**: modo confirmado. O maestro dispara o 1º agente; você confirma os próximos.
 
 ## Instalação
@@ -36,4 +36,4 @@ Os papéis de dev/produto reusam os agentes BMAD (Mary, John, Winston, Amelia, S
 
 ## Customização pessoal
 
-Os overrides em `overrides/*.toml` são escopo **time** e vão para `_bmad/custom/`. Para ajustes só seus, crie `_bmad/custom/<skill>.user.toml` — ele vence por cima.
+Os overrides em `overrides/*.toml` são escopo **time** e vão para `_wizz/custom/`. Para ajustes só seus, crie `_wizz/custom/<skill>.user.toml` — ele vence por cima.

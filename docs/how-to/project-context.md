@@ -32,11 +32,11 @@ Use the `project-context.md` file to ensure AI agents follow your project's tech
 
 ### Option A: Manual Creation
 
-Create the file at `_bmad-output/project-context.md`:
+Create the file at `_wizz-output/project-context.md`:
 
 ```bash
-mkdir -p _bmad-output
-touch _bmad-output/project-context.md
+mkdir -p _wizz-output
+touch _wizz-output/project-context.md
 ```
 
 Add your technology stack and implementation rules:
@@ -81,7 +81,7 @@ sections_completed: ['technology_stack', 'critical_rules']
 Run the workflow in a fresh chat:
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 The workflow scans your architecture document and project files to generate a context file capturing the decisions made.
@@ -91,7 +91,7 @@ The workflow scans your architecture document and project files to generate a co
 For existing projects, run:
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 The workflow analyzes your codebase to identify conventions, then generates a context file you can review and refine.

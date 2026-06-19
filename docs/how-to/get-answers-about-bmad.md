@@ -9,16 +9,16 @@ Use the Wizz Method's built-in help, source docs, or the community to get answer
 
 ## 1. Ask Wizz-Help
 
-The fastest way to get answers. The `bmad-help` skill is available directly in your AI session and handles over 80% of questions. It inspects your project, sees what you've completed, and tells you what to do next.
+The fastest way to get answers. The `wizz-help` skill is available directly in your AI session and handles over 80% of questions. It inspects your project, sees what you've completed, and tells you what to do next.
 
 ```
-bmad-help I have a SaaS idea and know all the features. Where do I start?
-bmad-help What are my options for UX design?
-bmad-help I'm stuck on the PRD workflow
+wizz-help I have a SaaS idea and know all the features. Where do I start?
+wizz-help What are my options for UX design?
+wizz-help I'm stuck on the PRD workflow
 ```
 
 :::tip
-You can also use `/bmad-help` or `$bmad-help` depending on your platform, but just `bmad-help` should work everywhere.
+You can also use `/wizz-help` or `$wizz-help` depending on your platform, but just `wizz-help` should work everywhere.
 :::
 
 ## 2. Go Deeper with Source
@@ -30,7 +30,7 @@ Clone or open the [wizz-method repo](https://github.com/wizzcomms/wizz-method) a
 :::note[Example]
 **Q:** "Tell me the fastest way to build something with the Wizz Method"
 
-**A:** Use Quick Flow: Run `bmad-quick-dev` — it clarifies your intent, plans, implements, reviews, and presents results in a single workflow, skipping the full planning phases.
+**A:** Use Quick Flow: Run `wizz-quick-dev` — it clarifies your intent, plans, implements, reviews, and presents results in a single workflow, skipping the full planning phases.
 :::
 
 **Tips for better answers:**

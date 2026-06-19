@@ -20,8 +20,8 @@ Tento návod pokrývá základní workflow pro zapojení se do existujících pr
 Pokud jste dokončili všechny PRD epicy a stories procesem BMad, vyčistěte tyto soubory. Archivujte je, smažte nebo se spoléhejte na historii verzí. Nenechávejte tyto soubory v:
 
 - `docs/`
-- `_bmad-output/planning-artifacts/`
-- `_bmad-output/implementation-artifacts/`
+- `_wizz-output/planning-artifacts/`
+- `_wizz-output/implementation-artifacts/`
 
 ## Krok 2: Vytvořte kontext projektu
 
@@ -32,7 +32,7 @@ Vygenerujte `project-context.md` pro zachycení vzorů a konvencí vaší existu
 Spusťte workflow pro generování kontextu projektu:
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 Toto skenuje vaši kódovou bázi a identifikuje:
@@ -42,7 +42,7 @@ Toto skenuje vaši kódovou bázi a identifikuje:
 - Přístupy k testování
 - Vzory specifické pro framework
 
-Vygenerovaný soubor můžete zkontrolovat a upravit, nebo ho vytvořit ručně na `_bmad-output/project-context.md`.
+Vygenerovaný soubor můžete zkontrolovat a upravit, nebo ho vytvořit ručně na `_wizz-output/project-context.md`.
 
 [Zjistit více o kontextu projektu](../explanation/project-context.md)
 
@@ -55,22 +55,22 @@ Vaše složka `docs/` by měla obsahovat stručnou, dobře organizovanou dokumen
 - Architektura
 - Jakékoli další relevantní informace o projektu
 
-Pro složité projekty zvažte použití workflow `bmad-document-project`. Nabízí varianty, které proskenují celý váš projekt a zdokumentují jeho aktuální stav.
+Pro složité projekty zvažte použití workflow `wizz-document-project`. Nabízí varianty, které proskenují celý váš projekt a zdokumentují jeho aktuální stav.
 
 ## Krok 3: Získejte pomoc
 
 ### BMad-Help: Váš výchozí bod
 
-**Spusťte `bmad-help` kdykoli si nejste jisti, co dělat dál.** Tento inteligentní průvodce:
+**Spusťte `wizz-help` kdykoli si nejste jisti, co dělat dál.** Tento inteligentní průvodce:
 
 - Prozkoumá váš projekt a zjistí, co už bylo uděláno
 - Ukáže možnosti na základě nainstalovaných modulů
 - Rozumí dotazům v přirozeném jazyce
 
 ```
-bmad-help I have an existing Rails app, where should I start?
-bmad-help What's the difference between quick-flow and full method?
-bmad-help Show me what workflows are available
+wizz-help I have an existing Rails app, where should I start?
+wizz-help What's the difference between quick-flow and full method?
+wizz-help Show me what workflows are available
 ```
 
 BMad-Help se také **automaticky spouští na konci každého workflow** a poskytuje jasné pokyny, co přesně dělat dál.
@@ -81,7 +81,7 @@ Máte dvě hlavní možnosti v závislosti na rozsahu změn:
 
 | Rozsah                         | Doporučený přístup                                                                                                            |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Malé aktualizace či doplnění** | Spusťte `bmad-quick-dev` pro vyjasnění záměru, plánování, implementaci a revizi v jednom workflow. Plná čtyřfázová metoda BMad je pravděpodobně přehnaná. |
+| **Malé aktualizace či doplnění** | Spusťte `wizz-quick-dev` pro vyjasnění záměru, plánování, implementaci a revizi v jednom workflow. Plná čtyřfázová metoda BMad je pravděpodobně přehnaná. |
 | **Velké změny či doplnění**    | Začněte s metodou BMad a aplikujte tolik nebo tak málo důkladnosti, kolik potřebujete.                                        |
 
 ### Během tvorby PRD

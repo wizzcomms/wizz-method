@@ -17,7 +17,7 @@ Human-in-the-loop turns are necessary and expensive.
 
 Current LLMs still fail in predictable ways: they misread intent, fill gaps with confident guesses, drift into unrelated work, and generate noisy review output. At the same time, constant human intervention limits development velocity. Human attention is the bottleneck.
 
-`bmad-quick-dev` rebalances that tradeoff. It trusts the model to run unsupervised for longer stretches, but only after the workflow has created a strong enough boundary to make that safe.
+`wizz-quick-dev` rebalances that tradeoff. It trusts the model to run unsupervised for longer stretches, but only after the workflow has created a strong enough boundary to make that safe.
 
 ## The Core Design
 

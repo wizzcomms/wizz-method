@@ -21,12 +21,12 @@ Le fichier `project-context.md` résout ce problème en documentant ce que les a
 Chaque workflow d’implémentation charge automatiquement `project-context.md` s’il existe. Le workflow architecte le charge également pour respecter vos préférences techniques lors de la conception de l’architecture.
 
 **Chargé par ces workflows :**
-- `bmad-create-architecture` — respecte les préférences techniques pendant la phase de solutioning
-- `bmad-create-story` — informe la création de stories avec les patterns du projet
-- `bmad-dev-story` — guide les décisions d’implémentation
-- `bmad-code-review` — valide par rapport aux standards du projet
-- `bmad-quick-dev` — applique les patterns lors de l’implémentation des spécifications techniques
-- `bmad-sprint-planning`, `bmad-retrospective`, `bmad-correct-course` — fournit le contexte global du projet
+- `wizz-create-architecture` — respecte les préférences techniques pendant la phase de solutioning
+- `wizz-create-story` — informe la création de stories avec les patterns du projet
+- `wizz-dev-story` — guide les décisions d’implémentation
+- `wizz-code-review` — valide par rapport aux standards du projet
+- `wizz-quick-dev` — applique les patterns lors de l’implémentation des spécifications techniques
+- `wizz-sprint-planning`, `wizz-retrospective`, `wizz-correct-course` — fournit le contexte global du projet
 
 ## Quand Le Créer
 
@@ -34,10 +34,10 @@ Le fichier `project-context.md` est utile à n’importe quel stade d’un proje
 
 | Scénario                                 | Quand Créer                                         | Objectif                                                                              |
 |------------------------------------------|-----------------------------------------------------|---------------------------------------------------------------------------------------|
-| **Nouveau projet, avant l’architecture** | Manuellement, avant `bmad-create-architecture`      | Documenter vos préférences techniques pour que l’architecte les respecte              |
-| **Nouveau projet, après l’architecture** | Via `bmad-generate-project-context` ou manuellement | Capturer les décisions d’architecture pour les agents d’implémentation                |
-| **Projet existant**                      | Via `bmad-generate-project-context`                 | Découvrir les patterns existants pour que les agents suivent les conventions établies |
-| **Projet Quick Dev**                     | Avant ou pendant `bmad-quick-dev`                   | Garantir que l’implémentation rapide respecte vos patterns                            |
+| **Nouveau projet, avant l’architecture** | Manuellement, avant `wizz-create-architecture`      | Documenter vos préférences techniques pour que l’architecte les respecte              |
+| **Nouveau projet, après l’architecture** | Via `wizz-generate-project-context` ou manuellement | Capturer les décisions d’architecture pour les agents d’implémentation                |
+| **Projet existant**                      | Via `wizz-generate-project-context`                 | Découvrir les patterns existants pour que les agents suivent les conventions établies |
+| **Projet Quick Dev**                     | Avant ou pendant `wizz-quick-dev`                   | Garantir que l’implémentation rapide respecte vos patterns                            |
 
 :::tip[Recommandé]
 Pour les nouveaux projets, créez-le manuellement avant l’architecture si vous avez de fortes préférences techniques. Sinon, générez-le après l’architecture pour capturer ces décisions.
@@ -96,32 +96,32 @@ Vous avez trois options :
 
 ### Création Manuelle
 
-Créez le fichier `_bmad-output/project-context.md` et ajoutez vos règles :
+Créez le fichier `_wizz-output/project-context.md` et ajoutez vos règles :
 
 ```bash
 # Depuis la racine du projet
-mkdir -p _bmad-output
-touch _bmad-output/project-context.md
+mkdir -p _wizz-output
+touch _wizz-output/project-context.md
 ```
 
 Éditez-le avec votre pile technologique et vos règles d’implémentation. Les workflows architecture et implémentation le trouveront et le chargeront automatiquement.
 
 ### Générer Après L’Architecture
 
-Exécutez le workflow `bmad-generate-project-context` après avoir terminé votre architecture :
+Exécutez le workflow `wizz-generate-project-context` après avoir terminé votre architecture :
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 Cela analyse votre document d’architecture et vos fichiers projet pour générer un fichier de contexte capturant les décisions prises.
 
 ### Générer Pour Les Projets Existants
 
-Pour les projets existants, exécutez `bmad-generate-project-context` pour découvrir les patterns existants :
+Pour les projets existants, exécutez `wizz-generate-project-context` pour découvrir les patterns existants :
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 Le workflow analyse votre codebase pour identifier les conventions, puis génère un fichier de contexte que vous pouvez examiner et affiner.
@@ -151,8 +151,8 @@ Le fichier `project-context.md` est un document vivant. Mettez-le à jour quand 
 - Les patterns évoluent pendant l’implémentation
 - Vous identifiez des lacunes dans le comportement des agents
 
-Vous pouvez l’éditer manuellement à tout moment, ou réexécuter `bmad-generate-project-context` pour le mettre à jour après des changements significatifs.
+Vous pouvez l’éditer manuellement à tout moment, ou réexécuter `wizz-generate-project-context` pour le mettre à jour après des changements significatifs.
 
 :::note[Emplacement du Fichier]
-L’emplacement par défaut est `_bmad-output/project-context.md`. Les workflows le recherchent là, et vérifient également `**/project-context.md` n’importe où dans votre projet.
+L’emplacement par défaut est `_wizz-output/project-context.md`. Les workflows le recherchent là, et vérifient également `**/project-context.md` n’importe où dans votre projet.
 :::

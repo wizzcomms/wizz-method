@@ -17,7 +17,7 @@ Les interactions humaines dans la boucle sont nécessaires et coûteuses.
 
 Les LLM actuels échouent encore de manière prévisible : ils interprètent mal l’intention, comblent les lacunes avec des suppositions assurées, dérivent vers du travail non lié, et génèrent des résultats à réviser bruyants. En même temps, l’intervention humaine constante limite la fluidité du développement. L’attention humaine est le goulot d’étranglement.
 
-`bmad-quick-dev` rééquilibre ce compromis. Il fait confiance au modèle pour s’exécuter sans surveillance sur de plus longues périodes, mais seulement après que le workflow ait créé une frontière suffisamment solide pour rendre cela sûr.
+`wizz-quick-dev` rééquilibre ce compromis. Il fait confiance au modèle pour s’exécuter sans surveillance sur de plus longues périodes, mais seulement après que le workflow ait créé une frontière suffisamment solide pour rendre cela sûr.
 
 ## La conception fondamentale
 

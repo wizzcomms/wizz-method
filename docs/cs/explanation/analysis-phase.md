@@ -62,7 +62,7 @@ Viz [Brainstorming](./brainstorming.md), kde se dozvíte, jak relace fungují.
 Product Brief i PRFAQ jsou vstupem pro PRD — vyberte si jeden z nich podle toho, jak moc chcete být nároční. Brief je společným objevováním. PRFAQ je hozená rukavice. Obojí vás dovede ke stejnému cíli; PRFAQ testuje, zda si váš koncept zaslouží se tam dostat.
 
 :::tip[Nejste si jisti?]
-Spusťte `bmad-help` a popište svou situaci. Doporučí vám správný výchozí bod na základě toho, co jste již udělali a čeho se snažíte dosáhnout.
+Spusťte `wizz-help` a popište svou situaci. Doporučí vám správný výchozí bod na základě toho, co jste již udělali a čeho se snažíte dosáhnout.
 :::
 
 ## Co se stane po analýze?

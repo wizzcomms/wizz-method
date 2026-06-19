@@ -34,11 +34,11 @@ sidebar:
 
 ### 选项 A：手动创建
 
-在 `_bmad-output/project-context.md` 创建文件：
+在 `_wizz-output/project-context.md` 创建文件：
 
 ```bash
-mkdir -p _bmad-output
-touch _bmad-output/project-context.md
+mkdir -p _wizz-output
+touch _wizz-output/project-context.md
 ```
 
 然后补充技术栈与实现规则：
@@ -80,7 +80,7 @@ sections_completed: ['technology_stack', 'critical_rules']
 在新的会话中运行：
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 该工作流会扫描架构文档和项目文件，生成能够反映已做决策的上下文文件。
@@ -90,7 +90,7 @@ bmad-generate-project-context
 对于既有项目，运行：
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 该工作流会分析代码库中的约定，然后生成可供你审阅和完善的上下文文件。

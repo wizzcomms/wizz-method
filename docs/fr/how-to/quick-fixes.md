@@ -38,7 +38,7 @@ quick-dev — corrige https://github.com/org/repo/issues/42
 ```
 
 ```text
-quick-dev — implémente _bmad-output/implementation-artifacts/my-intent.md
+quick-dev — implémente _wizz-output/implementation-artifacts/my-intent.md
 ```
 
 ```text
