@@ -64,8 +64,8 @@ Avertissements critiques uniquement — perte de données, problèmes de sécuri
 ```md
 | Skill                | Agent    | Objectif                              |
 |----------------------|----------|---------------------------------------|
-| `bmad-brainstorming` | Analyste | Brainstorming pour un nouveau projet  |
-| `bmad-prd`           | PM       | Créer un document d'exigences produit |
+| `wizz-brainstorming` | Analyste | Brainstorming pour un nouveau projet  |
+| `wizz-prd`           | PM       | Créer un document d'exigences produit |
 ```
 
 ## Blocs de structure de dossiers
@@ -75,8 +75,8 @@ Avertissements critiques uniquement — perte de données, problèmes de sécuri
 ````md
 ```
 votre-projet/
-├── _bmad/                                   # Configuration BMad
-├── _bmad-output/
+├── _wizz/                                   # Configuration BMad
+├── _wizz-output/
 │   ├── planning-artifacts/
 │   │   └── PRD.md                           # Votre document d’exigences
 │   ├── implementation-artifacts/
@@ -354,7 +354,7 @@ Uniquement pour les parcours méthode BMad et Enterprise. Quick Dev passe direct
 
 ### Puis-je modifier mon plan plus tard ?
 
-Oui. Utilisez `bmad-correct-course` pour gérer les changements de portée en cours d’implémentation.
+Oui. Utilisez `wizz-correct-course` pour gérer les changements de portée en cours d’implémentation.
 
 **Une question sans réponse ici ?** [Ouvrez une issue](...) ou posez votre question sur [Discord](...).
 ```

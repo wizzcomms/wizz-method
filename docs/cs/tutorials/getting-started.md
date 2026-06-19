@@ -22,7 +22,7 @@ Vytvářejte software rychleji pomocí pracovních postupů řízených AI se sp
 
 :::tip[Nejsnadnější cesta]
 **Instalace** → `npx bmad-method install`
-**Zeptejte se** → `bmad-help what should I do first?`
+**Zeptejte se** → `wizz-help what should I do first?`
 **Tvořte** → Nechte BMad-Help vás provést workflow po workflow
 :::
 
@@ -40,13 +40,13 @@ Vytvářejte software rychleji pomocí pracovních postupů řízených AI se sp
 Spusťte ho ve vašem AI IDE vyvoláním skillu:
 
 ```
-bmad-help
+wizz-help
 ```
 
 Nebo ho spojte s otázkou pro kontextové poradenství:
 
 ```
-bmad-help I have an idea for a SaaS product, I already know all the features I want. where do I get started?
+wizz-help I have an idea for a SaaS product, I already know all the features I want. where do I get started?
 ```
 
 BMad-Help odpoví s:
@@ -59,7 +59,7 @@ BMad-Help odpoví s:
 BMad-Help nejen odpovídá na otázky — **automaticky se spouští na konci každého workflow** a řekne vám přesně, co dělat dál. Žádné hádání, žádné prohledávání dokumentace — jen jasné pokyny k dalšímu povinnému workflow.
 
 :::tip[Začněte zde]
-Po instalaci BMad okamžitě vyvolejte skill `bmad-help`. Detekuje, jaké moduly máte nainstalované, a navede vás ke správnému výchozímu bodu pro váš projekt.
+Po instalaci BMad okamžitě vyvolejte skill `wizz-help`. Detekuje, jaké moduly máte nainstalované, a navede vás ke správnému výchozímu bodu pro váš projekt.
 :::
 
 ## Pochopení BMad
@@ -100,21 +100,21 @@ Pokud chcete nejnovější prereleaseový build místo výchozího release kaná
 Při výzvě k výběru modulů zvolte **BMad Method**.
 
 Instalátor vytvoří dvě složky:
-- `_bmad/` — agenti, workflow, úkoly a konfigurace
-- `_bmad-output/` — prozatím prázdná, ale zde se budou ukládat vaše artefakty
+- `_wizz/` — agenti, workflow, úkoly a konfigurace
+- `_wizz-output/` — prozatím prázdná, ale zde se budou ukládat vaše artefakty
 
 :::tip[Váš další krok]
 Otevřete vaše AI IDE ve složce projektu a spusťte:
 
 ```
-bmad-help
+wizz-help
 ```
 
 BMad-Help detekuje, co jste dokončili, a doporučí přesně, co dělat dál. Můžete mu také klást otázky jako „Jaké mám možnosti?“ nebo „Mám nápad na SaaS, kde začít?“
 :::
 
 :::note[Jak načítat agenty a spouštět workflow]
-Každý workflow má **skill**, který vyvoláte jménem ve vašem IDE (např. `bmad-create-prd`). Váš AI nástroj rozpozná název `bmad-*` a spustí ho — nemusíte načítat agenty zvlášť. Můžete také vyvolat agentní skill přímo pro obecnou konverzaci (např. `bmad-agent-pm` pro PM agenta).
+Každý workflow má **skill**, který vyvoláte jménem ve vašem IDE (např. `wizz-create-prd`). Váš AI nástroj rozpozná název `bmad-*` a spustí ho — nemusíte načítat agenty zvlášť. Můžete také vyvolat agentní skill přímo pro obecnou konverzaci (např. `wizz-agent-pm` pro PM agenta).
 :::
 
 :::caution[Nové chaty]
@@ -128,36 +128,36 @@ Projděte fázemi 1–3. **Pro každý workflow používejte nové chaty.**
 :::tip[Kontext projektu (volitelné)]
 Před začátkem zvažte vytvoření `project-context.md` pro dokumentaci vašich technických preferencí a pravidel implementace. Tím zajistíte, že všichni AI agenti budou dodržovat vaše konvence v průběhu celého projektu.
 
-Vytvořte ho ručně na `_bmad-output/project-context.md` nebo ho vygenerujte po architektuře pomocí `bmad-generate-project-context`. [Zjistit více](../explanation/project-context.md).
+Vytvořte ho ručně na `_wizz-output/project-context.md` nebo ho vygenerujte po architektuře pomocí `wizz-generate-project-context`. [Zjistit více](../explanation/project-context.md).
 :::
 
 ### Fáze 1: Analýza (volitelná)
 
 Všechny workflow v této fázi jsou volitelné:
-- **brainstorming** (`bmad-brainstorming`) — Řízená ideace
-- **průzkum** (`bmad-market-research` / `bmad-domain-research` / `bmad-technical-research`) — Tržní, doménový a technický průzkum
-- **product-brief** (`bmad-product-brief`) — Doporučený základní dokument, když je váš koncept jasný
-- **prfaq** (`bmad-prfaq`) — Working Backwards výzva pro zátěžový test a zformování vašeho produktového konceptu
+- **brainstorming** (`wizz-brainstorming`) — Řízená ideace
+- **průzkum** (`wizz-market-research` / `wizz-domain-research` / `wizz-technical-research`) — Tržní, doménový a technický průzkum
+- **product-brief** (`wizz-product-brief`) — Doporučený základní dokument, když je váš koncept jasný
+- **prfaq** (`wizz-prfaq`) — Working Backwards výzva pro zátěžový test a zformování vašeho produktového konceptu
 
 ### Fáze 2: Plánování (povinná)
 
 **Pro BMad Method a Enterprise cesty:**
-1. Vyvolejte **PM agenta** (`bmad-agent-pm`) v novém chatu
-2. Spusťte workflow `bmad-create-prd` (`bmad-create-prd`)
+1. Vyvolejte **PM agenta** (`wizz-agent-pm`) v novém chatu
+2. Spusťte workflow `wizz-create-prd` (`wizz-create-prd`)
 3. Výstup: `PRD.md`
 
 **Pro Quick Flow cestu:**
-- Spusťte `bmad-quick-dev` — zvládne plánování i implementaci v jednom workflow, přeskočte k implementaci
+- Spusťte `wizz-quick-dev` — zvládne plánování i implementaci v jednom workflow, přeskočte k implementaci
 
 :::note[UX Design (volitelné)]
-Pokud má váš projekt uživatelské rozhraní, vyvolejte **UX-Designer agenta** (`bmad-agent-ux-designer`) a spusťte UX design workflow (`bmad-ux`) po vytvoření PRD.
+Pokud má váš projekt uživatelské rozhraní, vyvolejte **UX-Designer agenta** (`wizz-agent-ux-designer`) a spusťte UX design workflow (`wizz-ux`) po vytvoření PRD.
 :::
 
 ### Fáze 3: Solutioning (BMad Method/Enterprise)
 
 **Vytvoření architektury**
-1. Vyvolejte **Architect agenta** (`bmad-agent-architect`) v novém chatu
-2. Spusťte `bmad-create-architecture` (`bmad-create-architecture`)
+1. Vyvolejte **Architect agenta** (`wizz-agent-architect`) v novém chatu
+2. Spusťte `wizz-create-architecture` (`wizz-create-architecture`)
 3. Výstup: Dokument architektury s technickými rozhodnutími
 
 **Vytvoření epiců a stories**
@@ -166,13 +166,13 @@ Pokud má váš projekt uživatelské rozhraní, vyvolejte **UX-Designer agenta*
 Epicy a stories se nyní vytvářejí *po* architektuře. Tím vznikají kvalitnější stories, protože architektonická rozhodnutí (databáze, API vzory, tech stack) přímo ovlivňují rozklad práce.
 :::
 
-1. Vyvolejte **PM agenta** (`bmad-agent-pm`) v novém chatu
-2. Spusťte `bmad-create-epics-and-stories` (`bmad-create-epics-and-stories`)
+1. Vyvolejte **PM agenta** (`wizz-agent-pm`) v novém chatu
+2. Spusťte `wizz-create-epics-and-stories` (`wizz-create-epics-and-stories`)
 3. Workflow využívá jak PRD, tak architekturu k vytvoření technicky informovaných stories
 
 **Kontrola připravenosti k implementaci** *(vysoce doporučeno)*
-1. Vyvolejte **Architect agenta** (`bmad-agent-architect`) v novém chatu
-2. Spusťte `bmad-check-implementation-readiness` (`bmad-check-implementation-readiness`)
+1. Vyvolejte **Architect agenta** (`wizz-agent-architect`) v novém chatu
+2. Spusťte `wizz-check-implementation-readiness` (`wizz-check-implementation-readiness`)
 3. Validuje soudržnost všech plánovacích dokumentů
 
 ## Krok 2: Sestavte svůj projekt
@@ -181,7 +181,7 @@ Jakmile je plánování dokončeno, přejděte k implementaci. **Každý workflo
 
 ### Inicializace plánování sprintu
 
-Vyvolejte **Developer agenta** (`bmad-agent-dev`) a spusťte `bmad-sprint-planning` (`bmad-sprint-planning`). Tím se vytvoří `sprint-status.yaml` pro sledování všech epiců a stories.
+Vyvolejte **Developer agenta** (`wizz-agent-dev`) a spusťte `wizz-sprint-planning` (`wizz-sprint-planning`). Tím se vytvoří `sprint-status.yaml` pro sledování všech epiců a stories.
 
 ### Cyklus vývoje
 
@@ -189,11 +189,11 @@ Pro každou story opakujte tento cyklus s novými chaty:
 
 | Krok | Agent | Workflow             | Příkaz                     | Účel                               |
 | ---- | ----- | -------------------- | -------------------------- | ---------------------------------- |
-| 1    | DEV   | `bmad-create-story`  | `bmad-create-story`        | Vytvoření story souboru z epicu    |
-| 2    | DEV   | `bmad-dev-story`     | `bmad-dev-story`           | Implementace story                 |
-| 3    | DEV   | `bmad-code-review`   | `bmad-code-review`         | Validace kvality *(doporučeno)*    |
+| 1    | DEV   | `wizz-create-story`  | `wizz-create-story`        | Vytvoření story souboru z epicu    |
+| 2    | DEV   | `wizz-dev-story`     | `wizz-dev-story`           | Implementace story                 |
+| 3    | DEV   | `wizz-code-review`   | `wizz-code-review`         | Validace kvality *(doporučeno)*    |
 
-Po dokončení všech stories v epicu vyvolejte **Developer agenta** (`bmad-agent-dev`) a spusťte `bmad-retrospective` (`bmad-retrospective`).
+Po dokončení všech stories v epicu vyvolejte **Developer agenta** (`wizz-agent-dev`) a spusťte `wizz-retrospective` (`wizz-retrospective`).
 
 ## Co jste dosáhli
 
@@ -208,8 +208,8 @@ Váš projekt nyní obsahuje:
 
 ```text
 váš-projekt/
-├── _bmad/                                   # Konfigurace BMad
-├── _bmad-output/
+├── _wizz/                                   # Konfigurace BMad
+├── _wizz-output/
 │   ├── planning-artifacts/
 │   │   ├── PRD.md                           # Váš dokument požadavků
 │   │   ├── architecture.md                  # Technická rozhodnutí
@@ -224,16 +224,16 @@ váš-projekt/
 
 | Workflow                              | Příkaz                                     | Agent     | Účel                                            |
 | ------------------------------------- | ------------------------------------------ | --------- | ----------------------------------------------- |
-| **`bmad-help`** ⭐                    | `bmad-help`                               | Jakýkoli  | **Váš inteligentní průvodce — ptejte se na cokoli!** |
-| `bmad-create-prd`                     | `bmad-create-prd`                         | PM        | Vytvoření dokumentu požadavků (PRD)             |
-| `bmad-create-architecture`            | `bmad-create-architecture`                | Architect | Vytvoření dokumentu architektury                |
-| `bmad-generate-project-context`       | `bmad-generate-project-context`           | Analyst   | Vytvoření souboru kontextu projektu             |
-| `bmad-create-epics-and-stories`       | `bmad-create-epics-and-stories`           | PM        | Rozklad PRD na epicy                            |
-| `bmad-check-implementation-readiness` | `bmad-check-implementation-readiness`     | Architect | Validace soudržnosti plánování                  |
-| `bmad-sprint-planning`                | `bmad-sprint-planning`                    | DEV       | Inicializace sledování sprintu                  |
-| `bmad-create-story`                   | `bmad-create-story`                       | DEV       | Vytvoření souboru story                         |
-| `bmad-dev-story`                      | `bmad-dev-story`                          | DEV       | Implementace story                              |
-| `bmad-code-review`                    | `bmad-code-review`                        | DEV       | Revize implementovaného kódu                    |
+| **`wizz-help`** ⭐                    | `wizz-help`                               | Jakýkoli  | **Váš inteligentní průvodce — ptejte se na cokoli!** |
+| `wizz-create-prd`                     | `wizz-create-prd`                         | PM        | Vytvoření dokumentu požadavků (PRD)             |
+| `wizz-create-architecture`            | `wizz-create-architecture`                | Architect | Vytvoření dokumentu architektury                |
+| `wizz-generate-project-context`       | `wizz-generate-project-context`           | Analyst   | Vytvoření souboru kontextu projektu             |
+| `wizz-create-epics-and-stories`       | `wizz-create-epics-and-stories`           | PM        | Rozklad PRD na epicy                            |
+| `wizz-check-implementation-readiness` | `wizz-check-implementation-readiness`     | Architect | Validace soudržnosti plánování                  |
+| `wizz-sprint-planning`                | `wizz-sprint-planning`                    | DEV       | Inicializace sledování sprintu                  |
+| `wizz-create-story`                   | `wizz-create-story`                       | DEV       | Vytvoření souboru story                         |
+| `wizz-dev-story`                      | `wizz-dev-story`                          | DEV       | Implementace story                              |
+| `wizz-code-review`                    | `wizz-code-review`                        | DEV       | Revize implementovaného kódu                    |
 
 ## Časté otázky
 
@@ -241,10 +241,10 @@ váš-projekt/
 Pouze pro BMad Method a Enterprise cesty. Quick Flow přeskakuje ze specifikace rovnou k implementaci.
 
 **Mohu později změnit svůj plán?**
-Ano. Workflow `bmad-correct-course` (`bmad-correct-course`) řeší změny rozsahu během implementace.
+Ano. Workflow `wizz-correct-course` (`wizz-correct-course`) řeší změny rozsahu během implementace.
 
 **Co když chci nejdřív brainstormovat?**
-Vyvolejte Analyst agenta (`bmad-agent-analyst`) a spusťte `bmad-brainstorming` (`bmad-brainstorming`) před zahájením PRD.
+Vyvolejte Analyst agenta (`wizz-agent-analyst`) a spusťte `wizz-brainstorming` (`wizz-brainstorming`) před zahájením PRD.
 
 **Musím dodržovat striktní pořadí?**
 Ne striktně. Jakmile se naučíte postup, můžete spouštět workflow přímo pomocí Rychlého přehledu výše.
@@ -252,7 +252,7 @@ Ne striktně. Jakmile se naučíte postup, můžete spouštět workflow přímo 
 ## Získání pomoci
 
 :::tip[První zastávka: BMad-Help]
-**Vyvolejte `bmad-help` kdykoli** — je to nejrychlejší způsob, jak se odpoutat. Zeptejte se na cokoli:
+**Vyvolejte `wizz-help` kdykoli** — je to nejrychlejší způsob, jak se odpoutat. Zeptejte se na cokoli:
 - „Co mám dělat po instalaci?“
 - „Zasekl jsem se na workflow X“
 - „Jaké mám možnosti pro Y?“
@@ -267,10 +267,10 @@ BMad-Help prozkoumá váš projekt, detekuje, co jste dokončili, a řekne vám 
 ## Klíčové poznatky
 
 :::tip[Zapamatujte si]
-- **Začněte s `bmad-help`** — Váš inteligentní průvodce, který zná váš projekt a možnosti
+- **Začněte s `wizz-help`** — Váš inteligentní průvodce, který zná váš projekt a možnosti
 - **Vždy používejte nové chaty** — Začněte nový chat pro každý workflow
-- **Cesta záleží** — Quick Flow používá `bmad-quick-dev`; Method/Enterprise vyžadují PRD a architekturu
+- **Cesta záleží** — Quick Flow používá `wizz-quick-dev`; Method/Enterprise vyžadují PRD a architekturu
 - **BMad-Help se spouští automaticky** — Každý workflow končí pokyny, co dělat dál
 :::
 
-Jste připraveni začít? Nainstalujte BMad, vyvolejte `bmad-help` a nechte svého inteligentního průvodce ukázat cestu.
+Jste připraveni začít? Nainstalujte BMad, vyvolejte `wizz-help` a nechte svého inteligentního průvodce ukázat cestu.

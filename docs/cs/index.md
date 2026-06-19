@@ -19,7 +19,7 @@ Nejrychlejší způsob, jak pochopit BMad, je vyzkoušet si ho.
 - **[Mapa pracovních postupů](./reference/workflow-map.md)** — Vizuální přehled fází BMM, pracovních postupů a správy kontextu
 
 :::tip[Chcete se rovnou ponořit?]
-Nainstalujte BMad a použijte skill `bmad-help` — provede vás vším na základě vašeho projektu a nainstalovaných modulů.
+Nainstalujte BMad a použijte skill `wizz-help` — provede vás vším na základě vašeho projektu a nainstalovaných modulů.
 :::
 
 ## Jak používat tuto dokumentaci

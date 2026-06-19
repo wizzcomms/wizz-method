@@ -9,7 +9,7 @@ Všichni vaši AI agenti v jedné konverzaci.
 
 ## Co je Party Mode?
 
-Spusťte `bmad-party-mode` a máte celý svůj AI tým v jedné místnosti — PM, Architect, Dev, UX Designer, kohokoli potřebujete. BMad Master orchestruje, vybírá relevantní agenty pro každou zprávu. Agenti odpovídají v charakteru, souhlasí, nesouhlasí a staví na nápadech ostatních.
+Spusťte `wizz-party-mode` a máte celý svůj AI tým v jedné místnosti — PM, Architect, Dev, UX Designer, kohokoli potřebujete. BMad Master orchestruje, vybírá relevantní agenty pro každou zprávu. Agenti odpovídají v charakteru, souhlasí, nesouhlasí a staví na nápadech ostatních.
 
 Konverzace pokračuje tak dlouho, jak chcete. Ptejte se na doplňující otázky, oponujte odpovědím, přesměrujte diskuzi — je to skutečná výměna s vašimi agenty, dokud neskončíte.
 

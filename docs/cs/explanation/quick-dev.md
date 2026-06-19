@@ -17,7 +17,7 @@ Human-in-the-loop kroky jsou nutné a nákladné.
 
 Současné LLM stále selhávají předvídatelnými způsoby: chybně čtou záměr, vyplňují mezery sebevědomými odhady, odchylují se k nesouvisející práci a generují šumový výstup revize. Současně neustálá lidská intervence limituje rychlost vývoje. Lidská pozornost je úzké hrdlo.
 
-`bmad-quick-dev` přenastavuje tento kompromis. Důvěřuje modelu, aby běžel bez dozoru delší úseky, ale pouze poté, co workflow vytvořil dostatečně silnou hranici, aby to bylo bezpečné.
+`wizz-quick-dev` přenastavuje tento kompromis. Důvěřuje modelu, aby běžel bez dozoru delší úseky, ale pouze poté, co workflow vytvořil dostatečně silnou hranici, aby to bylo bezpečné.
 
 ## Základní design
 

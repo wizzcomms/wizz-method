@@ -1,11 +1,11 @@
 ---
 title: "Forensic Investigation"
-description: How bmad-investigate treats every issue like a crime scene, grades evidence, and produces a structured case file engineers can act on
+description: How wizz-investigate treats every issue like a crime scene, grades evidence, and produces a structured case file engineers can act on
 sidebar:
   order: 10
 ---
 
-You hand `bmad-investigate` a crash log, a stack trace, or just a "this used to work, now it doesn't". The skill takes
+You hand `wizz-investigate` a crash log, a stack trace, or just a "this used to work, now it doesn't". The skill takes
 over the investigator's discipline for the duration of the run. It does not start fixing. It opens a case file.
 
 Every finding gets graded. Every hypothesis gets a status. Wrong turns are kept, not erased. The deliverable is a
@@ -101,7 +101,7 @@ in the same case file. There is no mode switch.
 
 ## Methodology Lives in the Skill
 
-The investigator's discipline is a property of the skill itself. Whoever invokes `bmad-investigate` takes on the
+The investigator's discipline is a property of the skill itself. Whoever invokes `wizz-investigate` takes on the
 methodology and communication style for the run: clinical precision, evidence-first language, no hedging, case-file
 framing. When the skill ends, the caller returns to its prior voice. No persona swap, just a tone shift from the skill's
 principles.
@@ -130,7 +130,7 @@ That's the bar.
 Most "AI debugging" today blends evidence, reasoning, and code changes into one stream of plausible-looking text. The
 signal is hard to find, the dead ends repeat, and the case file, if there is one, is a chat log nobody wants to read.
 
-`bmad-investigate` treats investigation as a discipline with its own deliverable. Evidence has a grade. Hypotheses have
+`wizz-investigate` treats investigation as a discipline with its own deliverable. Evidence has a grade. Hypotheses have
 a status. Wrong turns are documented, not erased. The case file outlives the session.
 
 When the next bug shows up that looks like one you've seen before, you have somewhere to start that isn't a blank

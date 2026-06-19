@@ -86,7 +86,7 @@ Ils sont liés au binaire de l’installateur que vous avez exécuté :
 
 ## Mettre à jour une installation existante
 
-Exécuter `npx bmad-method install` dans un répertoire contenant déjà `_bmad/` affiche un menu :
+Exécuter `npx bmad-method install` dans un répertoire contenant déjà `_wizz/` affiche un menu :
 
 | Choix              | Ce qu’il fait                                                                                                                                                                                                        |
 |--------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -183,7 +183,7 @@ npx bmad-method install --yes --action update \
 
 ### Substitutions de config de module
 
-`--set <module>.<clé>=<valeur>` vous permet de définir toute option de config de module de manière non interactive. Cette option est répétable et s’adapte à chaque module — présent et futur. L’option est appliquée comme un correctif post-installation : l’installateur exécute d’abord son flux normal, puis `--set` insère ou met à jour chaque valeur dans `_bmad/config.toml` (portée équipe) ou `_bmad/config.user.toml` (portée utilisateur), et dans `_bmad/<module>/config.yaml` pour que les valeurs déclarées soient conservées à la prochaine installation.
+`--set <module>.<clé>=<valeur>` vous permet de définir toute option de config de module de manière non interactive. Cette option est répétable et s’adapte à chaque module — présent et futur. L’option est appliquée comme un correctif post-installation : l’installateur exécute d’abord son flux normal, puis `--set` insère ou met à jour chaque valeur dans `_wizz/config.toml` (portée équipe) ou `_wizz/config.user.toml` (portée utilisateur), et dans `_wizz/<module>/config.yaml` pour que les valeurs déclarées soient conservées à la prochaine installation.
 
 **Exemple — installer bmm avec des connaissances projet et un niveau de compétence explicites :**
 
@@ -207,8 +207,8 @@ npx bmad-method install --list-options bmm
 
 - **Routage.** L’étape de correctif cherche `[modules.<module>] <clé>` (ou `[core] <clé>`) dans `config.user.toml` en premier ; si elle y est trouvée, elle met à jour ce fichier. Sinon elle écrit dans le `config.toml` de portée équipe. Ainsi, les clés de portée utilisateur (ex. `core.user_name`, `bmm.user_skill_level`) finissent dans `config.user.toml` et les clés de portée équipe dans `config.toml`, correspondant à la partition utilisée par l’installateur.
 - **Valeurs littérales.** La valeur est écrite exactement comme vous l’avez fournie — aucun rendu de template `result:`. Pour obtenir la valeur résolue (ex. `{project-root}/research`), passez-la explicitement : `--set bmm.project_knowledge='{project-root}/research'`.
-- **Persistance, clés déclarées.** Les valeurs pour les clés déclarées dans `module.yaml` sont conservées entre les installations car elles sont aussi écrites dans `_bmad/<module>/config.yaml`, que l’installateur lit comme valeur par défaut de l’invite lors de la prochaine exécution.
-- **Persistance, clés non déclarées.** Une valeur pour une clé que le schéma du module ne déclare pas est enregistrée dans `config.toml` pour l’installation courante mais ne sera pas réécrite à la prochaine installation (le partitionneur strict au schéma du manifeste ignore les clés inconnues). Repassez `--set` pour qu’elle soit persistante, ou éditez `_bmad/config.toml` directement.
+- **Persistance, clés déclarées.** Les valeurs pour les clés déclarées dans `module.yaml` sont conservées entre les installations car elles sont aussi écrites dans `_wizz/<module>/config.yaml`, que l’installateur lit comme valeur par défaut de l’invite lors de la prochaine exécution.
+- **Persistance, clés non déclarées.** Une valeur pour une clé que le schéma du module ne déclare pas est enregistrée dans `config.toml` pour l’installation courante mais ne sera pas réécrite à la prochaine installation (le partitionneur strict au schéma du manifeste ignore les clés inconnues). Repassez `--set` pour qu’elle soit persistante, ou éditez `_wizz/config.toml` directement.
 - **Pas de validation.** Les valeurs `single-select` ne sont pas vérifiées contre les choix autorisés, et les clés inconnues ne sont pas rejetées — la valeur fournie est écrite telle quelle.
 - **Modules non présents dans `--modules`.** Définir une valeur pour un module que vous n’avez pas inclus affiche un avertissement et la valeur est ignorée (aucun fichier n’est créé pour un module non installé).
 
@@ -226,7 +226,7 @@ Définissez `GITHUB_TOKEN=<personal access token>` dans l’environnement pour a
 
 ## Ce qui a été installé
 
-Après toute installation, `_bmad/_config/manifest.yaml` enregistre exactement ce qui est sur le disque :
+Après toute installation, `_wizz/_config/manifest.yaml` enregistre exactement ce qui est sur le disque :
 
 ```yaml
 modules:
@@ -259,7 +259,7 @@ Le tag que vous avez passé à `--pin` n’existe pas dans le dépôt du module.
 
 ### Une installation épinglée continue de se mettre à niveau
 
-Les installations épinglées ne se mettent pas à niveau. Quick-update applique les correctifs et les mises à niveau mineures uniquement sur le canal stable ; il ne touche pas `pinned` ou `next`. Si une installation épinglée a changé, ouvrez `_bmad/_config/manifest.yaml` — `channel: pinned` plus un `version` et `sha` fixes doivent rester stables d’une exécution à l’autre, sauf écrasement explicite via les options.
+Les installations épinglées ne se mettent pas à niveau. Quick-update applique les correctifs et les mises à niveau mineures uniquement sur le canal stable ; il ne touche pas `pinned` ou `next`. Si une installation épinglée a changé, ouvrez `_wizz/_config/manifest.yaml` — `channel: pinned` plus un `version` et `sha` fixes doivent rester stables d’une exécution à l’autre, sauf écrasement explicite via les options.
 
 ### `--pin bmm=X` n’a rien fait
 

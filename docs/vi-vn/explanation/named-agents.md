@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-Bạn nói: "Hey Mary, brainstorm với tôi nhé", và Mary được kích hoạt. Cô ấy chào bạn theo tên, bằng ngôn ngữ bạn đã cấu hình, với persona đặc trưng của riêng mình. Cô ấy nhắc rằng `bmad-help` luôn sẵn sàng. Rồi cô ấy bỏ qua menu và đi thẳng vào brainstorming vì ý định của bạn đã đủ rõ.
+Bạn nói: "Hey Mary, brainstorm với tôi nhé", và Mary được kích hoạt. Cô ấy chào bạn theo tên, bằng ngôn ngữ bạn đã cấu hình, với persona đặc trưng của riêng mình. Cô ấy nhắc rằng `wizz-help` luôn sẵn sàng. Rồi cô ấy bỏ qua menu và đi thẳng vào brainstorming vì ý định của bạn đã đủ rõ.
 
 Trang này giải thích điều gì thực sự đang diễn ra và vì sao BMad được thiết kế theo cách đó.
 
@@ -17,7 +17,7 @@ Mô hình agent của BMad đứng trên ba primitive kết hợp với nhau:
 |---|---|---|
 | **Skill** | Năng lực, tức một việc rời rạc mà assistant có thể làm như brainstorming, viết PRD hay triển khai story | `.claude/skills/{skill-name}/SKILL.md` hoặc vị trí tương đương theo IDE |
 | **Named agent** | Tính liên tục của persona, tức một danh tính dễ nhận ra bọc quanh một nhóm skill có cùng giọng điệu, nguyên tắc và dấu hiệu nhận biết | Các skill có thư mục bắt đầu bằng `bmad-agent-*` |
-| **Customization** | Khả năng biến nó thành của riêng bạn: override để đổi hành vi của agent, thêm tích hợp MCP, thay template, chồng convention của tổ chức | `_bmad/custom/{skill-name}.toml` cho team và `.user.toml` cho cá nhân |
+| **Customization** | Khả năng biến nó thành của riêng bạn: override để đổi hành vi của agent, thêm tích hợp MCP, thay template, chồng convention của tổ chức | `_wizz/custom/{skill-name}.toml` cho team và `.user.toml` cho cá nhân |
 
 Chỉ cần bỏ đi một chân là trải nghiệm sẽ sụp:
 
@@ -53,7 +53,7 @@ Khi bạn gọi một named agent, tám bước sau sẽ chạy theo thứ tự:
 7. **Chạy các bước hậu xử lý (append steps)**: mọi bước thiết lập sau lời chào mà team đã cấu hình
 8. **Dispatch hoặc hiện menu**: nếu tin nhắn mở đầu của bạn khớp một menu item thì agent đi thẳng vào đó, nếu không thì hiện menu và chờ input
 
-Bước 8 là nơi ý định gặp năng lực. Câu "Hey Mary, brainstorm với tôi nhé" bỏ qua phần render menu vì `bmad-brainstorming` là một mapping quá rõ với mục `BP` trong menu của Mary. Nếu bạn nói mơ hồ, cô ấy chỉ hỏi lại một lần, ngắn gọn, chứ không biến xác nhận thành nghi thức. Nếu chẳng có mục nào phù hợp, cô ấy tiếp tục cuộc hội thoại như bình thường.
+Bước 8 là nơi ý định gặp năng lực. Câu "Hey Mary, brainstorm với tôi nhé" bỏ qua phần render menu vì `wizz-brainstorming` là một mapping quá rõ với mục `BP` trong menu của Mary. Nếu bạn nói mơ hồ, cô ấy chỉ hỏi lại một lần, ngắn gọn, chứ không biến xác nhận thành nghi thức. Nếu chẳng có mục nào phù hợp, cô ấy tiếp tục cuộc hội thoại như bình thường.
 
 ## Vì sao không chỉ dùng menu
 
@@ -67,25 +67,25 @@ Menu vẫn còn đó như một phương án dự phòng, hiện ra khi bạn đ
 
 Prompt trống giả định rằng bạn biết "câu thần chú". "Giúp tôi brainstorm" có thể hiệu quả, nhưng "hãy ideate giúp tôi một ý tưởng SaaS" có thể cho kết quả khác, và đầu ra phụ thuộc khá nhiều vào cách bạn diễn đạt. Khi đó người dùng gần như phải kiêm luôn vai trò kỹ sư prompt (prompt engineer).
 
-Named agents thêm cấu trúc mà không đóng mất sự tự do. Persona giữ ổn định, năng lực thì dễ khám phá, và `bmad-help` luôn chỉ cách bạn một lệnh. Bạn không phải đoán agent làm được gì, nhưng cũng không cần học thuộc một cuốn manual để dùng nó.
+Named agents thêm cấu trúc mà không đóng mất sự tự do. Persona giữ ổn định, năng lực thì dễ khám phá, và `wizz-help` luôn chỉ cách bạn một lệnh. Bạn không phải đoán agent làm được gì, nhưng cũng không cần học thuộc một cuốn manual để dùng nó.
 
 ## Tùy chỉnh là công dân hạng nhất
 
 Chính mô hình customization làm cho cách tiếp cận này mở rộng được ra ngoài phạm vi của một lập trình viên đơn lẻ.
 
-Mỗi agent đi kèm một `customize.toml` với mặc định hợp lý. Team có thể commit override vào `_bmad/custom/bmad-agent-{role}.toml`. Mỗi cá nhân có thể chồng thêm sở thích riêng trong `.user.toml` bị gitignore. Resolver sẽ merge cả ba lớp tại thời điểm kích hoạt theo các quy tắc có tính dự đoán.
+Mỗi agent đi kèm một `customize.toml` với mặc định hợp lý. Team có thể commit override vào `_wizz/custom/bmad-agent-{role}.toml`. Mỗi cá nhân có thể chồng thêm sở thích riêng trong `.user.toml` bị gitignore. Resolver sẽ merge cả ba lớp tại thời điểm kích hoạt theo các quy tắc có tính dự đoán.
 
-Đa số người dùng không cần tự tay viết các file đó. Skill `bmad-customize` sẽ dẫn họ qua việc chọn đúng mục tiêu, quyết định override ở mức agent hay workflow, viết file và xác minh merge. Nhờ vậy bề mặt tùy chỉnh vẫn tiếp cận được với bất cứ ai hiểu ý định của mình, chứ không chỉ người rành TOML.
+Đa số người dùng không cần tự tay viết các file đó. Skill `wizz-customize` sẽ dẫn họ qua việc chọn đúng mục tiêu, quyết định override ở mức agent hay workflow, viết file và xác minh merge. Nhờ vậy bề mặt tùy chỉnh vẫn tiếp cận được với bất cứ ai hiểu ý định của mình, chứ không chỉ người rành TOML.
 
 Ví dụ cụ thể: một team commit một file yêu cầu Amelia luôn dùng Context7 MCP tool khi tra tài liệu thư viện, và fallback sang Linear nếu story không xuất hiện trong danh sách epic cục bộ. Từ đó mọi dev workflow mà Amelia dispatch như `dev-story`, `quick-dev`, `create-story`, `code-review` đều tự động thừa hưởng hành vi này mà không cần sửa source hay lặp lại cấu hình từng workflow.
 
-Ngoài ra còn có một bề mặt tùy chỉnh thứ hai cho các mối quan tâm *xuyên suốt*: `_bmad/config.toml`, `_bmad/config.user.toml`, `_bmad/custom/config.toml` và `_bmad/custom/config.user.toml`. Đây là nơi **agent roster** sống, tức các descriptor gọn nhẹ mà những skill như `bmad-party-mode`, `bmad-retrospective` và `bmad-advanced-elicitation` dùng để biết ai có mặt và phải nhập vai họ thế nào. Bạn có thể rebrand một agent cho cả tổ chức bằng team override, hoặc thêm những giọng hư cấu như Kirk, Spock hay một persona chuyên gia domain qua `.user.toml`, tất cả mà không cần đụng vào thư mục skill. File per-skill quyết định Mary *hành xử* như thế nào khi cô ấy kích hoạt; cấu hình trung tâm quyết định các skill khác *nhìn thấy* cô ấy ra sao khi quan sát toàn bộ đội hình.
+Ngoài ra còn có một bề mặt tùy chỉnh thứ hai cho các mối quan tâm *xuyên suốt*: `_wizz/config.toml`, `_wizz/config.user.toml`, `_wizz/custom/config.toml` và `_wizz/custom/config.user.toml`. Đây là nơi **agent roster** sống, tức các descriptor gọn nhẹ mà những skill như `wizz-party-mode`, `wizz-retrospective` và `wizz-advanced-elicitation` dùng để biết ai có mặt và phải nhập vai họ thế nào. Bạn có thể rebrand một agent cho cả tổ chức bằng team override, hoặc thêm những giọng hư cấu như Kirk, Spock hay một persona chuyên gia domain qua `.user.toml`, tất cả mà không cần đụng vào thư mục skill. File per-skill quyết định Mary *hành xử* như thế nào khi cô ấy kích hoạt; cấu hình trung tâm quyết định các skill khác *nhìn thấy* cô ấy ra sao khi quan sát toàn bộ đội hình.
 
 Để xem toàn bộ bề mặt tùy chỉnh và ví dụ thực tế:
 
 - [Cách tùy chỉnh BMad](../how-to/customize-bmad.md): tài liệu tham chiếu cho những gì có thể tùy chỉnh và merge diễn ra thế nào
 - [Cách mở rộng BMad cho tổ chức của bạn](../how-to/expand-bmad-for-your-org.md): năm recipe hoàn chỉnh trải từ quy tắc ở cấp agent, convention workflow, publish ra hệ thống ngoài, thay template đầu ra đến tùy chỉnh roster agent
-- Skill `bmad-customize`: trợ lý soạn cấu hình (authoring helper) có hướng dẫn để biến ý định thành một file override đúng chỗ và đã được kiểm chứng
+- Skill `wizz-customize`: trợ lý soạn cấu hình (authoring helper) có hướng dẫn để biến ý định thành một file override đúng chỗ và đã được kiểm chứng
 
 ## Ý tưởng lớn hơn phía sau
 

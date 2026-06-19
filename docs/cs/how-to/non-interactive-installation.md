@@ -36,7 +36,7 @@ Vyžaduje [Node.js](https://nodejs.org) v20.12+ a `npx` (součástí npm).
 | `--user-name <jméno>` | Jméno, které agenti použijí | Systémové uživatelské jméno |
 | `--communication-language <jazyk>` | Jazyk komunikace agentů | English |
 | `--document-output-language <jazyk>` | Jazyk výstupních dokumentů | English |
-| `--output-folder <cesta>` | Cesta k výstupní složce | _bmad-output |
+| `--output-folder <cesta>` | Cesta k výstupní složce | _wizz-output |
 
 ### Další možnosti
 
@@ -86,7 +86,7 @@ npx bmad-method install \
   --user-name "CI Bot" \
   --communication-language English \
   --document-output-language English \
-  --output-folder _bmad-output \
+  --output-folder _wizz-output \
   --yes
 ```
 
@@ -109,9 +109,9 @@ npx bmad-method install \
 
 ## Co získáte
 
-- Plně nakonfigurovaný adresář `_bmad/` ve vašem projektu
+- Plně nakonfigurovaný adresář `_wizz/` ve vašem projektu
 - Agenty a workflow nakonfigurované pro vybrané moduly a nástroje
-- Složku `_bmad-output/` pro generované artefakty
+- Složku `_wizz-output/` pro generované artefakty
 
 ## Validace a zpracování chyb
 

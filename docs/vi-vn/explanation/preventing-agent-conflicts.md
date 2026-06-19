@@ -108,5 +108,5 @@ Những quyết định phổ biến giúp tránh xung đột:
 - Tài liệu hóa những quyết định cắt ngang nhiều epic
 - Tập trung vào những khu vực dễ phát sinh xung đột
 - Cập nhật kiến trúc khi bạn học thêm
-- Dùng `bmad-correct-course` cho các thay đổi đáng kể
+- Dùng `wizz-correct-course` cho các thay đổi đáng kể
 :::

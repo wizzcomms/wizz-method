@@ -24,9 +24,9 @@ Most projects should start with the built-in QA workflow. If you later need test
 
 ## Built-in QA Workflow
 
-The built-in QA workflow (`bmad-qa-generate-e2e-tests`) is part of the BMM (Agile suite) module, available through the Developer agent. It generates working tests quickly using your project's existing test framework -- no configuration or additional installation required.
+The built-in QA workflow (`wizz-qa-generate-e2e-tests`) is part of the BMM (Agile suite) module, available through the Developer agent. It generates working tests quickly using your project's existing test framework -- no configuration or additional installation required.
 
-**Trigger:** `QA` (via the Developer agent) or `bmad-qa-generate-e2e-tests`
+**Trigger:** `QA` (via the Developer agent) or `wizz-qa-generate-e2e-tests`
 
 ### What It Does
 
@@ -99,7 +99,7 @@ The QA Automate workflow appears in Phase 4 (Implementation) of the Wizz Method 
 
 1. For each story in the epic: implement with Dev (`DS`), then validate with Code Review (`CR`)
 2. After the epic is complete: generate tests with `QA` (via the Developer agent) or TEA's Automate workflow
-3. Run retrospective (`bmad-retrospective`) to capture lessons learned
+3. Run retrospective (`wizz-retrospective`) to capture lessons learned
 
 The built-in QA workflow works directly from source code without loading planning documents (PRD, architecture). TEA workflows can integrate with upstream planning artifacts for traceability.
 

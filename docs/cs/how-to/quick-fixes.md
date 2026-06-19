@@ -38,7 +38,7 @@ run quick-dev — fix https://github.com/org/repo/issues/42
 ```
 
 ```text
-run quick-dev — implement the intent in _bmad-output/implementation-artifacts/my-intent.md
+run quick-dev — implement the intent in _wizz-output/implementation-artifacts/my-intent.md
 ```
 
 ```text

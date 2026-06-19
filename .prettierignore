@@ -5,8 +5,8 @@ test/fixtures/**
 CODE_OF_CONDUCT.md
 
 # BMAD runtime folders (user-specific, not in repo)
-_bmad/
-_bmad*/
+_wizz/
+_wizz*/
 
 # IDE integration folders (user-specific, not in repo)
 .junie/

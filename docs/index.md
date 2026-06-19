@@ -35,7 +35,7 @@ Os docs estão organizados em quatro seções, conforme o que você quer fazer:
 
 ## Expandir e personalizar
 
-Quer estender o Wizz Method com agentes, fluxos ou módulos próprios? A personalização da agência fica no módulo `wizz` (agentes, overrides em PT-BR e o `wizz-init`). Ajustes pessoais ficam em `_bmad/custom/`, que tem prioridade sobre os padrões do time.
+Quer estender o Wizz Method com agentes, fluxos ou módulos próprios? A personalização da agência fica no módulo `wizz` (agentes, overrides em PT-BR e o `wizz-init`). Ajustes pessoais ficam em `_wizz/custom/`, que tem prioridade sobre os padrões do time.
 
 ## O que você vai precisar
 

@@ -1820,7 +1820,7 @@ class OfficialModules {
 
   /**
    * Convert an existing stored value back into the prompt-facing value for templated fields.
-   * For example, "{test_artifacts}/{value}" + "_bmad-output/test-artifacts/test-design"
+   * For example, "{test_artifacts}/{value}" + "_wizz-output/test-artifacts/test-design"
    * becomes "test-design" so the template is not applied twice on modify.
    * @param {*} existingValue - Stored config value
    * @param {string} moduleName - Module name

@@ -33,7 +33,7 @@ class ManifestGenerator {
 
   /**
    * Generate all manifests for the installation
-   * @param {string} bmadDir - _bmad
+   * @param {string} bmadDir - _wizz
    * @param {Array} selectedModules - Selected modules for installation
    * @param {Array} installedFiles - All installed files (optional, for hash tracking)
    */
@@ -56,7 +56,7 @@ class ManifestGenerator {
     this.updatedModules = allModules; // Include ALL modules (including custom) for scanning
 
     this.bmadDir = bmadDir;
-    this.bmadFolderName = path.basename(bmadDir); // Get the actual folder name (e.g., '_bmad' or 'bmad')
+    this.bmadFolderName = path.basename(bmadDir); // Get the actual folder name (e.g., '_wizz' or 'bmad')
     this.allInstalledFiles = installedFiles;
 
     if (!Object.prototype.hasOwnProperty.call(options, 'ides')) {
@@ -419,10 +419,10 @@ class ManifestGenerator {
   }
 
   /**
-   * Write central _bmad/config.toml with [core], [modules.<code>], [agents.<code>] tables.
+   * Write central _wizz/config.toml with [core], [modules.<code>], [agents.<code>] tables.
    * Install-owned. Team-scope answers → config.toml; user-scope answers → config.user.toml.
    * Both files are regenerated on every install. User overrides live in
-   * _bmad/custom/config.toml and _bmad/custom/config.user.toml (never touched by installer).
+   * _wizz/custom/config.toml and _wizz/custom/config.user.toml (never touched by installer).
    * @returns {string[]} Paths to the written config files
    */
   async writeCentralConfig(bmadDir, moduleConfigs) {
@@ -467,7 +467,7 @@ class ManifestGenerator {
 
     // Core keys are always known (core module.yaml is built-in). These are
     // the only keys allowed in [core]; they must be stripped from every
-    // non-core module bucket because legacy _bmad/{mod}/config.yaml files
+    // non-core module bucket because legacy _wizz/{mod}/config.yaml files
     // spread core values into each module. Core belongs in [core] only —
     // workflows that need user_name/language/etc. read [core] directly.
     const coreKeys = new Set(Object.keys(scopeByModuleKey.core || {}));
@@ -502,8 +502,8 @@ class ManifestGenerator {
       '# To change an install answer durably, re-run the installer (your prior',
       '# answers are remembered as defaults). To pin a value regardless of',
       '# install answers, or to add custom agents / override descriptors, use:',
-      '#   _bmad/custom/config.toml       (team, committed)',
-      '#   _bmad/custom/config.user.toml  (personal, gitignored)',
+      '#   _wizz/custom/config.toml       (team, committed)',
+      '#   _wizz/custom/config.user.toml  (personal, gitignored)',
       '# Those files are never touched by the installer.',
       '# ─────────────────────────────────────────────────────────────────',
       '',
@@ -517,7 +517,7 @@ class ManifestGenerator {
       '# Direct edits to this file will be overwritten on the next install.',
       '# To change an answer durably, re-run the installer (your prior answers',
       '# are remembered as defaults). For pinned overrides or custom sections',
-      '# the installer does not know about, use _bmad/custom/config.user.toml',
+      '# the installer does not know about, use _wizz/custom/config.user.toml',
       '# — it is never touched by the installer.',
       '# ─────────────────────────────────────────────────────────────────',
       '',
@@ -620,7 +620,7 @@ class ManifestGenerator {
   }
 
   /**
-   * Create empty _bmad/custom/config.toml and _bmad/custom/config.user.toml stubs
+   * Create empty _wizz/custom/config.toml and _wizz/custom/config.user.toml stubs
    * on first install only. Installer never touches these files again after creation.
    */
   async ensureCustomConfigStubs(bmadDir) {
@@ -631,12 +631,12 @@ class ManifestGenerator {
       {
         file: path.join(customDir, 'config.toml'),
         header: [
-          '# Team / enterprise overrides for _bmad/config.toml.',
+          '# Team / enterprise overrides for _wizz/config.toml.',
           '# Committed to the repo — applies to every developer on the project.',
           '# Tables deep-merge over base config; keyed entries merge by key.',
           '# Example: override an agent descriptor, or add a new agent.',
           '#',
-          '# [agents.bmad-agent-pm]',
+          '# [agents.wizz-agent-pm]',
           '# description = "Prefers short, bulleted PRDs over narrative drafts."',
           '',
         ],
@@ -644,7 +644,7 @@ class ManifestGenerator {
       {
         file: path.join(customDir, 'config.user.toml'),
         header: [
-          '# Personal overrides for _bmad/config.toml.',
+          '# Personal overrides for _wizz/config.toml.',
           '# NOT committed (gitignored) — applies only to your local install.',
           '# Wins over both base config and team overrides.',
           '',

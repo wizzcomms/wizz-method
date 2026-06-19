@@ -28,7 +28,7 @@ file_paths_to_ignore:
   - "test/template-test-generator/**"
   - "tools/template-test-generator/test-scenarios/**"
   # --- Shared baseline: non-project dirs ---
-  - "_bmad*/**"
+  - "_wizz*/**"
   - "website/**"
   - "z*/**"
   - "sample-project/**"

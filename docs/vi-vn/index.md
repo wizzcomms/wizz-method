@@ -19,7 +19,7 @@ Cách nhanh nhất để hiểu BMad là dùng thử nó.
 - **[Sơ đồ Workflow](./reference/workflow-map.md)** — Tổng quan trực quan về các phase của BMM, workflow, và cách quản lý context
 
 :::tip[Muốn vào việc ngay?]
-Cài BMad và dùng skill `bmad-help` — nó sẽ hướng dẫn bạn mọi thứ dựa trên dự án và các module đã cài.
+Cài BMad và dùng skill `wizz-help` — nó sẽ hướng dẫn bạn mọi thứ dựa trên dự án và các module đã cài.
 :::
 
 ## Cách dùng bộ tài liệu này

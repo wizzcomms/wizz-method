@@ -1,6 +1,6 @@
 # Override Wizz (escopo time) para o agente BMAD Winston (System Architect).
 # Mescla por cima da base: principles e activation_steps fazem APPEND.
-# Instalado em {project-root}/_bmad/custom/bmad-agent-architect.toml
+# Instalado em {project-root}/_wizz/custom/wizz-agent-architect.toml
 
 [agent]
 activation_steps_prepend = [

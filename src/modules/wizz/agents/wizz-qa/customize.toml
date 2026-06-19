@@ -40,7 +40,7 @@ prompt = "Rode os testes do projeto (detecte o runner: npm test, pytest, etc.) e
 [[agent.menu]]
 code = "E2E"
 description = "Gerar e rodar testes E2E de fluxos críticos"
-prompt = "Invoque a skill GLOBAL 'e2e-runner' via a ferramenta Skill (ou 'bmad-qa-generate-e2e-tests') para gerar/rodar E2E dos fluxos críticos."
+prompt = "Invoque a skill GLOBAL 'e2e-runner' via a ferramenta Skill (ou 'wizz-qa-generate-e2e-tests') para gerar/rodar E2E dos fluxos críticos."
 
 [[agent.menu]]
 code = "ADV"

@@ -48,7 +48,7 @@ The new v6 skills are installed to:
 
 **If you have planning documents (Brief/PRD/UX/Architecture):**
 
-Move them to `_bmad-output/planning-artifacts/` with descriptive names:
+Move them to `_wizz-output/planning-artifacts/` with descriptive names:
 
 - Include `PRD` in filename for PRD documents
 - Include `brief`, `architecture`, or `ux-design` accordingly
@@ -61,8 +61,8 @@ Move them to `_bmad-output/planning-artifacts/` with descriptive names:
 If you have stories created or implemented:
 
 1. Complete the v6 installation
-2. Place `epics.md` or `epics/epic*.md` in `_bmad-output/planning-artifacts/`
-3. Run the Developer's `bmad-sprint-planning` workflow
+2. Place `epics.md` or `epics/epic*.md` in `_wizz-output/planning-artifacts/`
+3. Run the Developer's `wizz-sprint-planning` workflow
 4. Tell the agent which epics/stories are already complete
 
 ## What You Get
@@ -71,14 +71,14 @@ If you have stories created or implemented:
 
 ```text
 your-project/
-├── _bmad/               # Single installation folder
+├── _wizz/               # Single installation folder
 │   ├── _config/         # Your customizations
 │   │   └── agents/      # Agent customization files
 │   ├── core/            # Universal core framework
 │   ├── bmm/             # Wizz Method module
 │   ├── bmb/             # Wizz Builder
 │   └── cis/             # Creative Intelligence Suite
-└── _bmad-output/        # Output folder (was doc folder in v4)
+└── _wizz-output/        # Output folder (was doc folder in v4)
 ```
 
 ## Module Migration
@@ -95,7 +95,7 @@ your-project/
 
 | Concept       | v4                                    | v6                                   |
 | ------------- | ------------------------------------- | ------------------------------------ |
-| **Core**      | `_bmad-core` was actually Wizz Method | `_bmad/core/` is universal framework |
-| **Method**    | `_bmad-method`                        | `_bmad/bmm/`                         |
+| **Core**      | `_wizz-core` was actually Wizz Method | `_wizz/core/` is universal framework |
+| **Method**    | `_wizz-method`                        | `_wizz/bmm/`                         |
 | **Config**    | Modified files directly               | `config.yaml` per module             |
 | **Documents** | Sharded or unsharded required setup   | Fully flexible, auto-scanned         |

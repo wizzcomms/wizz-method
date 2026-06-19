@@ -3,8 +3,8 @@
 Resolve customization for a BMad skill using three-layer TOML merge.
 
 Reads customization from three layers (highest priority first):
-  1. {project-root}/_bmad/custom/{name}.user.toml  (personal, gitignored)
-  2. {project-root}/_bmad/custom/{name}.toml        (team/org, committed)
+  1. {project-root}/_wizz/custom/{name}.user.toml  (personal, gitignored)
+  2. {project-root}/_wizz/custom/{name}.toml        (team/org, committed)
   3. {skill-root}/customize.toml                    (skill defaults)
 
 Skill name is derived from the basename of the skill directory.
@@ -56,7 +56,7 @@ _KEYED_MERGE_FIELDS = ("code", "id")
 def find_project_root(start: Path):
     current = start.resolve()
     while True:
-        if (current / "_bmad").exists() or (current / ".git").exists():
+        if (current / "_wizz").exists() or (current / ".git").exists():
             return current
         parent = current.parent
         if parent == current:
@@ -209,13 +209,13 @@ def main():
     # Prefer the project that contains this skill. Only fall back to cwd if
     # the skill isn't inside a recognizable project tree (unusual but possible
     # for standalone skills invoked directly). Using cwd first is unsafe when
-    # an ancestor of cwd happens to have a stray _bmad/ from another project.
+    # an ancestor of cwd happens to have a stray _wizz/ from another project.
     project_root = find_project_root(skill_dir) or find_project_root(Path.cwd())
 
     team = {}
     user = {}
     if project_root:
-        custom_dir = project_root / "_bmad" / "custom"
+        custom_dir = project_root / "_wizz" / "custom"
         team = load_toml(custom_dir / f"{skill_name}.toml")
         user = load_toml(custom_dir / f"{skill_name}.user.toml")
 

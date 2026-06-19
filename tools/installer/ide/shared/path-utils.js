@@ -18,7 +18,7 @@
 const AGENT_SEGMENT = 'agents';
 
 // BMAD installation folder name - centralized constant for all installers
-const BMAD_FOLDER_NAME = '_bmad';
+const BMAD_FOLDER_NAME = '_wizz';
 
 /**
  * Convert hierarchical path to flat dash-separated name (NEW STANDARD)
@@ -58,7 +58,7 @@ function toDashName(module, type, name) {
  * Converts: 'core/agents/brainstorming.md' → 'bmad-agent-brainstorming.md' (core agents skip module name)
  *
  * @param {string} relativePath - Path like 'bmm/agents/pm.md'
- * @returns {string} Flat filename like 'bmad-agent-bmm-pm.md' or 'bmad-brainstorming.md'
+ * @returns {string} Flat filename like 'bmad-agent-bmm-pm.md' or 'wizz-brainstorming.md'
  */
 function toDashPath(relativePath) {
   if (!relativePath || typeof relativePath !== 'string') {
@@ -113,7 +113,7 @@ function isDashFormat(filename) {
  * Parses: 'bmad-agent-bmm-pm.md' → { prefix: 'bmad', module: 'bmm', type: 'agents', name: 'pm' }
  * Parses: 'bmad-bmm-correct-course.md' → { prefix: 'bmad', module: 'bmm', type: 'workflows', name: 'correct-course' }
  * Parses: 'bmad-agent-brainstorming.md' → { prefix: 'bmad', module: 'core', type: 'agents', name: 'brainstorming' } (core agents)
- * Parses: 'bmad-brainstorming.md' → { prefix: 'bmad', module: 'core', type: 'workflows', name: 'brainstorming' } (core workflows)
+ * Parses: 'wizz-brainstorming.md' → { prefix: 'bmad', module: 'core', type: 'workflows', name: 'brainstorming' } (core workflows)
  * Parses: 'bmad-agent-standalone-fred.md' → { prefix: 'bmad', module: 'standalone', type: 'agents', name: 'fred' }
  * Parses: 'bmad-standalone-foo.md' → { prefix: 'bmad', module: 'standalone', type: 'workflows', name: 'foo' }
  *
@@ -198,7 +198,7 @@ function parseDashName(filename) {
  * falling back to the path-derived name from toDashPath().
  *
  * @param {Object} artifact - Artifact object (must have relativePath; may have canonicalId)
- * @returns {string} Filename like 'bmad-create-prd.md' or 'bmad-agent-bmm-pm.md'
+ * @returns {string} Filename like 'wizz-create-prd.md' or 'bmad-agent-bmm-pm.md'
  */
 function resolveSkillName(artifact) {
   if (artifact.canonicalId) {

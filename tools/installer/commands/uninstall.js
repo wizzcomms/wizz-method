@@ -133,7 +133,7 @@ module.exports = {
         s.stop('User artifacts removed');
       }
 
-      // Phase 3: BMAD modules & data (last — other phases may need _bmad/)
+      // Phase 3: BMAD modules & data (last — other phases may need _wizz/)
       if (removeModules) {
         const s = await prompts.spinner();
         s.start(`Removing BMAD modules & data (${installer.bmadFolderName}/)...`);

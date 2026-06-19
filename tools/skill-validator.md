@@ -157,9 +157,9 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Applies to:** all files in the skill
 - **Rule:** A skill must never reference any file inside another skill's directory by file path. Skill directories are encapsulated — their internal files (steps, templates, checklists, data files, workflow.md) are private implementation details. The only valid way to reference another skill is via `skill:skill-name` syntax, which invokes the skill as a unit. Reaching into another skill to cherry-pick an internal file (e.g., a template, a step, or even its workflow.md) breaks encapsulation and creates fragile coupling that breaks when the target skill is moved or reorganized.
 - **Detection:** For each external file reference (frontmatter values, markdown links, inline paths), check whether the resolved path points into a directory that is or contains a skill (has a `SKILL.md`). Patterns to flag:
-  - `{project-root}/_bmad/.../other-skill/anything.md`
-  - `{project-root}/_bmad/.../other-skill/steps/...`
-  - `{project-root}/_bmad/.../other-skill/templates/...`
+  - `{project-root}/_wizz/.../other-skill/anything.md`
+  - `{project-root}/_wizz/.../other-skill/steps/...`
+  - `{project-root}/_wizz/.../other-skill/templates/...`
   - References to old pre-conversion locations that were skill directories (e.g., `core/workflows/skill-name/` when the skill has since moved to `core/skills/skill-name/`)
 - **Fix:**
   - If the intent is to invoke the other skill: replace with `skill:skill-name`.

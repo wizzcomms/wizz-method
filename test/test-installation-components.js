@@ -51,7 +51,7 @@ function assert(condition, testName, errorMessage = '') {
 
 async function createTestBmadFixture() {
   const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-'));
-  const fixtureDir = path.join(fixtureRoot, '_bmad');
+  const fixtureDir = path.join(fixtureRoot, '_wizz');
   await fs.ensureDir(fixtureDir);
 
   // Skill manifest CSV — the sole source of truth for IDE skill installation
@@ -60,7 +60,7 @@ async function createTestBmadFixture() {
     path.join(fixtureDir, '_config', 'skill-manifest.csv'),
     [
       'canonicalId,name,description,module,path',
-      '"bmad-master","bmad-master","Minimal test agent fixture","core","_bmad/core/bmad-master/SKILL.md"',
+      '"bmad-master","bmad-master","Minimal test agent fixture","core","_wizz/core/bmad-master/SKILL.md"',
       '',
     ].join('\n'),
   );
@@ -87,7 +87,7 @@ async function createTestBmadFixture() {
 
 async function createSkillCollisionFixture() {
   const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-skill-collision-'));
-  const fixtureDir = path.join(fixtureRoot, '_bmad');
+  const fixtureDir = path.join(fixtureRoot, '_wizz');
   const configDir = path.join(fixtureDir, '_config');
   await fs.ensureDir(configDir);
 
@@ -95,16 +95,16 @@ async function createSkillCollisionFixture() {
     path.join(configDir, 'skill-manifest.csv'),
     [
       'canonicalId,name,description,module,path',
-      '"bmad-help","bmad-help","Native help skill","core","_bmad/core/tasks/bmad-help/SKILL.md"',
+      '"wizz-help","wizz-help","Native help skill","core","_wizz/core/tasks/wizz-help/SKILL.md"',
       '',
     ].join('\n'),
   );
 
-  const skillDir = path.join(fixtureDir, 'core', 'tasks', 'bmad-help');
+  const skillDir = path.join(fixtureDir, 'core', 'tasks', 'wizz-help');
   await fs.ensureDir(skillDir);
   await fs.writeFile(
     path.join(skillDir, 'SKILL.md'),
-    ['---', 'name: bmad-help', 'description: Native help skill', '---', '', 'Use this skill directly.'].join('\n'),
+    ['---', 'name: wizz-help', 'description: Native help skill', '---', '', 'Use this skill directly.'].join('\n'),
   );
 
   const agentDir = path.join(fixtureDir, 'core', 'agents');
@@ -329,7 +329,7 @@ async function runTests() {
     const csvPath = path.join(installedBmadDir, '_config', 'skill-manifest.csv');
     const updatedCsv =
       'canonicalId,name,description,module,path\n' +
-      '"bmad-master","bmad-master","UPDATED description for the test agent","core","_bmad/core/bmad-master/SKILL.md"\n';
+      '"bmad-master","bmad-master","UPDATED description for the test agent","core","_wizz/core/bmad-master/SKILL.md"\n';
     await fs.writeFile(csvPath, updatedCsv);
     const result3 = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
       silent: true,
@@ -620,7 +620,7 @@ async function runTests() {
     //      persona — has customize.toml with [workflow]          → EXCLUDED
     //      (mirrors `bmad-agent-builder` in the real manifest)
     //   4. Workflow skill — no customize.toml at all             → EXCLUDED
-    //   5. `bmad-help` — meta-help skill with no customize.toml;
+    //   5. `wizz-help` — meta-help skill with no customize.toml;
     //      every persona agent's activation already advertises it,
     //      so it's correctly excluded from the picker as redundant    → EXCLUDED
     const fixtureCsvPath17 = path.join(installedBmadDir17, '_config', 'skill-manifest.csv');
@@ -628,11 +628,11 @@ async function runTests() {
       fixtureCsvPath17,
       [
         'canonicalId,name,description,module,path',
-        '"bmad-master","bmad-master","Workflow with no customize.toml — should NOT appear in Copilot agents picker","core","_bmad/core/bmad-master/SKILL.md"',
-        '"bmad-agent-fixture","bmad-agent-fixture","Persona agent — customize.toml has [agent], SHOULD appear","core","_bmad/core/bmad-agent-fixture/SKILL.md"',
-        '"bmad-tea","bmad-tea","Non-conventional id but [agent] in customize.toml — SHOULD appear","core","_bmad/core/bmad-tea/SKILL.md"',
-        '"bmad-agent-builder","bmad-agent-builder","Skill-builder workflow — id contains -agent- but customize.toml has [workflow] — should NOT appear","core","_bmad/core/bmad-agent-builder/SKILL.md"',
-        '"bmad-help","bmad-help","Meta-help skill — no customize.toml; SHOULD NOT appear in agents picker (toml-driven filter)","core","_bmad/core/bmad-help/SKILL.md"',
+        '"bmad-master","bmad-master","Workflow with no customize.toml — should NOT appear in Copilot agents picker","core","_wizz/core/bmad-master/SKILL.md"',
+        '"bmad-agent-fixture","bmad-agent-fixture","Persona agent — customize.toml has [agent], SHOULD appear","core","_wizz/core/bmad-agent-fixture/SKILL.md"',
+        '"bmad-tea","bmad-tea","Non-conventional id but [agent] in customize.toml — SHOULD appear","core","_wizz/core/bmad-tea/SKILL.md"',
+        '"bmad-agent-builder","bmad-agent-builder","Skill-builder workflow — id contains -agent- but customize.toml has [workflow] — should NOT appear","core","_wizz/core/bmad-agent-builder/SKILL.md"',
+        '"wizz-help","wizz-help","Meta-help skill — no customize.toml; SHOULD NOT appear in agents picker (toml-driven filter)","core","_wizz/core/wizz-help/SKILL.md"',
         '',
       ].join('\n'),
     );
@@ -642,7 +642,7 @@ async function runTests() {
     // SKILL.md files were already populated by createTestBmadFixture (they
     // share the bmad-master target_dir layout); only the customize.toml
     // and the new agent fixtures need to be created here.
-    for (const id of ['bmad-agent-fixture', 'bmad-tea', 'bmad-agent-builder', 'bmad-help']) {
+    for (const id of ['bmad-agent-fixture', 'bmad-tea', 'bmad-agent-builder', 'wizz-help']) {
       const dir17 = path.join(installedBmadDir17, 'core', id);
       await fs.ensureDir(dir17);
       await fs.writeFile(
@@ -650,7 +650,7 @@ async function runTests() {
         ['---', `name: ${id}`, `description: fixture for ${id}`, '---', '', `Body of ${id}.`].join('\n'),
       );
     }
-    // Note: bmad-help intentionally has NO customize.toml — it exercises
+    // Note: wizz-help intentionally has NO customize.toml — it exercises
     // the toml-driven filter's exclusion path (a skill with no
     // customize.toml is correctly kept out of the Copilot agents picker).
     // [agent] customize.toml for the two persona fixtures.
@@ -714,7 +714,7 @@ async function runTests() {
     const agentFileForTea17 = path.join(agentsDir17, 'bmad-tea.agent.md');
     const agentFileForWorkflow17 = path.join(agentsDir17, 'bmad-master.agent.md');
     const agentFileForMetaSkill17 = path.join(agentsDir17, 'bmad-agent-builder.agent.md');
-    const agentFileForBmadHelp17 = path.join(agentsDir17, 'bmad-help.agent.md');
+    const agentFileForBmadHelp17 = path.join(agentsDir17, 'wizz-help.agent.md');
 
     assert(
       await fs.pathExists(agentFileForPersona17),
@@ -724,7 +724,7 @@ async function runTests() {
     assert(!(await fs.pathExists(agentFileForWorkflow17)), 'Workflow skill (no customize.toml) is FILTERED OUT of .github/agents/');
     assert(
       !(await fs.pathExists(agentFileForBmadHelp17)),
-      'bmad-help is excluded from Copilot agents picker (no customize.toml; allowlist removed per maintainer feedback)',
+      'wizz-help is excluded from Copilot agents picker (no customize.toml; allowlist removed per maintainer feedback)',
     );
     assert(
       !(await fs.pathExists(agentFileForMetaSkill17)),
@@ -1233,7 +1233,7 @@ async function runTests() {
     const existingCsv27 = await fs.readFile(path.join(configDir27, 'skill-manifest.csv'), 'utf8');
     await fs.writeFile(
       path.join(configDir27, 'skill-manifest.csv'),
-      existingCsv27.trimEnd() + '\n"bmad-architect","bmad-architect","Architect","bmm","_bmad/bmm/agents/bmad-architect/SKILL.md"\n',
+      existingCsv27.trimEnd() + '\n"bmad-architect","bmad-architect","Architect","bmm","_wizz/bmm/agents/bmad-architect/SKILL.md"\n',
     );
 
     // Run Claude Code setup (which triggers cleanup then install)
@@ -1514,7 +1514,7 @@ async function runTests() {
     tempFixture30 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-test-30-'));
 
     const generator30 = new ManifestGenerator();
-    generator30.bmadFolderName = '_bmad';
+    generator30.bmadFolderName = '_wizz';
 
     // Case 1: Missing SKILL.md entirely
     const noSkillDir = path.join(tempFixture30, 'no-skill-md');
@@ -1597,7 +1597,7 @@ async function runTests() {
     assert(result.handlerResult.results.skillDirectories === 1, 'Result exposes unique skill directory count');
     assert(result.handlerResult.results.skills === 1, 'Result retains verbatim skill count');
     assert(
-      await fs.pathExists(path.join(collisionProjectDir, '.agent', 'skills', 'bmad-help', 'SKILL.md')),
+      await fs.pathExists(path.join(collisionProjectDir, '.agent', 'skills', 'wizz-help', 'SKILL.md')),
       'Skill directory is created from skill-manifest',
     );
   } catch (error) {
@@ -1745,12 +1745,12 @@ async function runTests() {
           project_name: 'demo-project',
           communication_language: 'Spanish',
           document_output_language: 'English',
-          output_folder: '_bmad-output',
+          output_folder: '_wizz-output',
         },
         bmm: {
           user_skill_level: 'expert',
-          planning_artifacts: '{project-root}/_bmad-output/planning-artifacts',
-          implementation_artifacts: '{project-root}/_bmad-output/implementation-artifacts',
+          planning_artifacts: '{project-root}/_wizz-output/planning-artifacts',
+          implementation_artifacts: '{project-root}/_wizz-output/implementation-artifacts',
           project_knowledge: '{project-root}/docs',
           // Spread-from-core pollution: legacy per-module config.yaml merges
           // core values into every module; writeCentralConfig must strip these
@@ -1761,7 +1761,7 @@ async function runTests() {
           project_name: 'stale-bmm-copy',
           communication_language: 'Spanish',
           document_output_language: 'English',
-          output_folder: '_bmad-output',
+          output_folder: '_wizz-output',
         },
         'external-mod': {
           // No src/modules/external-mod/module.yaml exists; installer treats
@@ -1783,8 +1783,8 @@ async function runTests() {
       await generator35.collectAgentsFromModuleYaml();
       assert(generator35.agents.length >= 6, 'collectAgentsFromModuleYaml discovers bmm agents from module.yaml (>= 6 agents)');
 
-      const maryEntry = generator35.agents.find((a) => a.code === 'bmad-agent-analyst');
-      assert(maryEntry !== undefined, 'collectAgentsFromModuleYaml includes bmad-agent-analyst');
+      const maryEntry = generator35.agents.find((a) => a.code === 'wizz-agent-analyst');
+      assert(maryEntry !== undefined, 'collectAgentsFromModuleYaml includes wizz-agent-analyst');
       assert(maryEntry && maryEntry.name === 'Mary', 'Agent entry carries name field');
       assert(maryEntry && maryEntry.title === 'Business Analyst', 'Agent entry carries title field');
       assert(maryEntry && maryEntry.icon === '📊', 'Agent entry carries icon field');
@@ -1805,7 +1805,7 @@ async function runTests() {
       // [core] — team-scoped keys land in config.toml
       assert(teamContent.includes('[core]'), 'config.toml has [core] section');
       assert(teamContent.includes('document_output_language = "English"'), 'Team-scope core key lands in config.toml');
-      assert(teamContent.includes('output_folder = "_bmad-output"'), 'Team-scope output_folder lands in config.toml');
+      assert(teamContent.includes('output_folder = "_wizz-output"'), 'Team-scope output_folder lands in config.toml');
       assert(teamContent.includes('project_name = "demo-project"'), 'project_name lands in [core] (core key as of #2279)');
       assert(!teamContent.includes('user_name'), 'user_name (scope: user) is absent from config.toml');
       assert(!teamContent.includes('communication_language'), 'communication_language (scope: user) is absent from config.toml');
@@ -1846,8 +1846,8 @@ async function runTests() {
       }
 
       // [agents.*] — agent roster from bmm module.yaml baked into config.toml (team-only)
-      assert(teamContent.includes('[agents.bmad-agent-analyst]'), 'config.toml has [agents.bmad-agent-analyst] table');
-      assert(teamContent.includes('[agents.bmad-agent-dev]'), 'config.toml has [agents.bmad-agent-dev] table');
+      assert(teamContent.includes('[agents.wizz-agent-analyst]'), 'config.toml has [agents.wizz-agent-analyst] table');
+      assert(teamContent.includes('[agents.wizz-agent-dev]'), 'config.toml has [agents.wizz-agent-dev] table');
       assert(teamContent.includes('module = "bmm"'), 'Agent entry serializes module field');
       assert(teamContent.includes('team = "software-development"'), 'Agent entry serializes team field');
       assert(teamContent.includes('name = "Mary"'), 'Agent entry serializes name');
@@ -1917,7 +1917,7 @@ async function runTests() {
       const priorToml = [
         '# prior',
         '',
-        '[agents.bmad-agent-analyst]',
+        '[agents.wizz-agent-analyst]',
         'module = "bmm"',
         'team = "bmm"',
         'name = "Stale Mary"',
@@ -1956,8 +1956,8 @@ async function runTests() {
       assert(teamContent.includes('module = "external-mod"'), 'Preserved block keeps its module field');
 
       // Freshly collected agents win over stale entries with the same code
-      const maryMatches = teamContent.match(/\[agents\.bmad-agent-analyst\]/g) || [];
-      assert(maryMatches.length === 1, 'bmad-agent-analyst emitted exactly once (fresh wins; stale not duplicated)');
+      const maryMatches = teamContent.match(/\[agents\.wizz-agent-analyst\]/g) || [];
+      assert(maryMatches.length === 1, 'wizz-agent-analyst emitted exactly once (fresh wins; stale not duplicated)');
       assert(!teamContent.includes('Stale Mary'), 'Stale name from prior config.toml is discarded when fresh module.yaml is read');
     } finally {
       await fs.remove(tempBmadDir37).catch(() => {});
@@ -2729,12 +2729,12 @@ async function runTests() {
     // from the manifest (the production layout). The cross-temp-dir fixture
     // above can't exercise this — same constraint Test Suite 40 documents.
     const projC = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-batch-c-'));
-    const bmadC = path.join(projC, '_bmad');
+    const bmadC = path.join(projC, '_wizz');
     await fs.ensureDir(path.join(bmadC, '_config'));
     await fs.writeFile(
       path.join(bmadC, '_config', 'skill-manifest.csv'),
       'canonicalId,name,description,module,path\n' +
-        '"bmad-master","bmad-master","Minimal test agent fixture","core","_bmad/core/bmad-master/SKILL.md"\n',
+        '"bmad-master","bmad-master","Minimal test agent fixture","core","_wizz/core/bmad-master/SKILL.md"\n',
     );
     const skillC = path.join(bmadC, 'core', 'bmad-master');
     await fs.ensureDir(skillC);
@@ -2782,13 +2782,13 @@ async function runTests() {
     // A custom module can ship a skill with any canonicalId (e.g. "fred-cool-skill").
     // detect() must recognize it as BMAD-owned via the manifest, not the bmad- prefix.
     const fixtureRoot41 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-custom-prefix-'));
-    const bmadDir41 = path.join(fixtureRoot41, '_bmad');
+    const bmadDir41 = path.join(fixtureRoot41, '_wizz');
     await fs.ensureDir(path.join(bmadDir41, '_config'));
     await fs.writeFile(
       path.join(bmadDir41, '_config', 'skill-manifest.csv'),
       [
         'canonicalId,name,description,module,path',
-        '"fred-cool-skill","fred-cool-skill","Custom module skill","fred","_bmad/fred/skills/fred-cool-skill/SKILL.md"',
+        '"fred-cool-skill","fred-cool-skill","Custom module skill","fred","_wizz/fred/skills/fred-cool-skill/SKILL.md"',
         '',
       ].join('\n'),
     );
@@ -2927,7 +2927,7 @@ async function runTests() {
     // core has user_name but not project_name. After hoist, project_name should
     // move to core, leaving bmm with only its own keys.
     const fixtureRoot43 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43-'));
-    const bmadDir43 = path.join(fixtureRoot43, '_bmad');
+    const bmadDir43 = path.join(fixtureRoot43, '_wizz');
     await fs.ensureDir(path.join(bmadDir43, '_config'));
     await fs.writeFile(path.join(bmadDir43, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
     await fs.ensureDir(path.join(bmadDir43, 'core'));
@@ -2961,7 +2961,7 @@ async function runTests() {
 
     // Precedence: if core already has the key, hoist must NOT overwrite it.
     const fixtureRoot43b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43b-'));
-    const bmadDir43b = path.join(fixtureRoot43b, '_bmad');
+    const bmadDir43b = path.join(fixtureRoot43b, '_wizz');
     await fs.ensureDir(path.join(bmadDir43b, '_config'));
     await fs.writeFile(path.join(bmadDir43b, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
     await fs.ensureDir(path.join(bmadDir43b, 'core'));
@@ -2983,7 +2983,7 @@ async function runTests() {
     // or the hoist pass — they should treat it as "no config for that module"
     // and continue. Regression for augment review on PR #2348.
     const fixtureRoot43c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43c-'));
-    const bmadDir43c = path.join(fixtureRoot43c, '_bmad');
+    const bmadDir43c = path.join(fixtureRoot43c, '_wizz');
     await fs.ensureDir(path.join(bmadDir43c, '_config'));
     await fs.writeFile(path.join(bmadDir43c, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
     await fs.ensureDir(path.join(bmadDir43c, 'core'));
@@ -3125,7 +3125,7 @@ async function runTests() {
     // ---- applySetOverrides happy path ------------------------------------
     {
       const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-'));
-      const bmadDir = path.join(tmp, '_bmad');
+      const bmadDir = path.join(tmp, '_wizz');
       await fs.ensureDir(bmadDir);
       // Seed a realistic post-install state: team config has bmm.project_knowledge,
       // user config has core.user_name. The applySetOverrides router should
@@ -3182,7 +3182,7 @@ async function runTests() {
     // ---- applySetOverrides creates config.user.toml if missing -----------
     {
       const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-nouser-'));
-      const bmadDir = path.join(tmp, '_bmad');
+      const bmadDir = path.join(tmp, '_wizz');
       await fs.ensureDir(bmadDir);
       await fs.writeFile(path.join(bmadDir, 'config.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
       await fs.ensureDir(path.join(bmadDir, 'core'));
@@ -3202,12 +3202,12 @@ async function runTests() {
     // ---- applySetOverrides skips modules without per-module config.yaml --
     {
       const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-skip-'));
-      const bmadDir = path.join(tmp, '_bmad');
+      const bmadDir = path.join(tmp, '_wizz');
       await fs.ensureDir(bmadDir);
       await fs.writeFile(path.join(bmadDir, 'config.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
       await fs.ensureDir(path.join(bmadDir, 'core'));
       await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'user_name: Brian\n', 'utf8');
-      // bmm is not installed (no `_bmad/bmm/config.yaml`). The override for
+      // bmm is not installed (no `_wizz/bmm/config.yaml`). The override for
       // bmm should be silently skipped, no `[modules.bmm]` section created.
       const applied = await applySetOverrides({ bmm: { foo: 'bar' }, core: { user_name: 'Updated' } }, bmadDir);
       const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
@@ -3220,7 +3220,7 @@ async function runTests() {
     // ---- applySetOverrides: empty/missing input is a no-op ---------------
     {
       const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-empty-'));
-      const bmadDir = path.join(tmp, '_bmad');
+      const bmadDir = path.join(tmp, '_wizz');
       await fs.ensureDir(bmadDir);
       const empty1 = await applySetOverrides({}, bmadDir);
       const empty2 = await applySetOverrides(null, bmadDir);
@@ -3281,7 +3281,7 @@ async function runTests() {
   let root45;
   try {
     root45 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-cleanup-test-'));
-    const bmadDir45 = path.join(root45, '_bmad');
+    const bmadDir45 = path.join(root45, '_wizz');
     await fs.ensureDir(path.join(bmadDir45, '_config'));
 
     // Two skills nested under the same grouping dir (1-analysis), plus a
@@ -3290,13 +3290,13 @@ async function runTests() {
       path.join(bmadDir45, '_config', 'skill-manifest.csv'),
       [
         'canonicalId,name,description,module,path',
-        '"bmad-agent-analyst","bmad-agent-analyst","fixture","bmm","_bmad/bmm/1-analysis/bmad-agent-analyst/SKILL.md"',
-        '"bmad-research","bmad-research","fixture","bmm","_bmad/bmm/1-analysis/research/bmad-research/SKILL.md"',
+        '"wizz-agent-analyst","wizz-agent-analyst","fixture","bmm","_wizz/bmm/1-analysis/wizz-agent-analyst/SKILL.md"',
+        '"bmad-research","bmad-research","fixture","bmm","_wizz/bmm/1-analysis/research/bmad-research/SKILL.md"',
         '',
       ].join('\n'),
     );
-    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'bmad-agent-analyst'));
-    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'bmad-agent-analyst', 'SKILL.md'), 'x');
+    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'wizz-agent-analyst'));
+    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'wizz-agent-analyst', 'SKILL.md'), 'x');
     await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research'));
     await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research', 'SKILL.md'), 'x');
     await fs.writeFile(path.join(bmadDir45, 'bmm', 'config.yaml'), 'module: bmm\n');

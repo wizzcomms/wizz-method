@@ -37,7 +37,7 @@ Yêu cầu [Node.js](https://nodejs.org) v20.12+ và `npx` (đi kèm với npm).
 | `--user-name <name>` | Tên để agent sử dụng | Tên người dùng hệ thống |
 | `--communication-language <lang>` | Ngôn ngữ giao tiếp của agent | Tiếng Anh |
 | `--document-output-language <lang>` | Ngôn ngữ đầu ra tài liệu | Tiếng Anh |
-| `--output-folder <path>` | Đường dẫn thư mục output (xem quy tắc resolve bên dưới) | `_bmad-output` |
+| `--output-folder <path>` | Đường dẫn thư mục output (xem quy tắc resolve bên dưới) | `_wizz-output` |
 
 #### Quy tắc resolve đường dẫn output folder
 
@@ -45,7 +45,7 @@ Giá trị truyền vào `--output-folder` (hoặc nhập ở chế độ tươn
 
 | Loại đầu vào | Ví dụ | Được resolve thành |
 |------|-------------|---------|
-| Đường dẫn tương đối (mặc định) | `_bmad-output` | `<project-root>/_bmad-output` |
+| Đường dẫn tương đối (mặc định) | `_wizz-output` | `<project-root>/_wizz-output` |
 | Đường dẫn tương đối có traversal | `../../shared-outputs` | Đường dẫn tuyệt đối đã được chuẩn hóa, ví dụ `/Users/me/shared-outputs` |
 | Đường dẫn tuyệt đối | `/Users/me/shared-outputs` | Giữ nguyên như đã nhập, **không** thêm project root vào trước |
 
@@ -100,7 +100,7 @@ npx bmad-method install \
   --user-name "CI Bot" \
   --communication-language English \
   --document-output-language English \
-  --output-folder _bmad-output \
+  --output-folder _wizz-output \
   --yes
 ```
 
@@ -150,9 +150,9 @@ Khi dùng `--custom-source` mà không kèm `--modules`, hệ thống chỉ cài
 
 ## Bạn nhận được gì
 
-- Thư mục `_bmad/` đã được cấu hình đầy đủ trong dự án của bạn
+- Thư mục `_wizz/` đã được cấu hình đầy đủ trong dự án của bạn
 - Agent và workflow đã được cấu hình theo module và công cụ bạn chọn
-- Thư mục `_bmad-output/` để lưu các artifact được tạo
+- Thư mục `_wizz-output/` để lưu các artifact được tạo
 
 ## Kiểm tra và xử lý lỗi
 

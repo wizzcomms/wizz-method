@@ -5,7 +5,7 @@
  * Catches broken file paths, missing referenced files, and absolute path leaks.
  *
  * What it checks:
- * - {project-root}/_bmad/ references in YAML and markdown resolve to real src/ files
+ * - {project-root}/_wizz/ references in YAML and markdown resolve to real src/ files
  * - Relative path references (./file.md, ../data/file.csv) point to existing files
  * - exec="..." and <invoke-task> targets exist
  * - Step metadata (thisStepFile, nextStepFile) references are valid
@@ -44,11 +44,11 @@ const SCAN_EXTENSIONS = new Set(['.yaml', '.yml', '.md', '.xml', '.csv']);
 // Skip directories
 const SKIP_DIRS = new Set(['node_modules', '.git']);
 
-// Pattern: {project-root}/_bmad/ references
-const PROJECT_ROOT_REF = /\{project-root\}\/_bmad\/([^\s'"<>})\]`]+)/g;
+// Pattern: {project-root}/_wizz/ references
+const PROJECT_ROOT_REF = /\{project-root\}\/_wizz\/([^\s'"<>})\]`]+)/g;
 
-// Pattern: {_bmad}/ shorthand references
-const BMAD_SHORTHAND_REF = /\{_bmad\}\/([^\s'"<>})\]`]+)/g;
+// Pattern: {_wizz}/ shorthand references
+const BMAD_SHORTHAND_REF = /\{_wizz\}\/([^\s'"<>})\]`]+)/g;
 
 // Pattern: exec="..." attributes
 const EXEC_ATTR = /exec="([^"]+)"/g;
@@ -147,17 +147,17 @@ function stripJsonExampleBlocks(content) {
 // --- Path Mapping ---
 
 function mapInstalledToSource(refPath) {
-  // Strip {project-root}/_bmad/ or {_bmad}/ prefix
-  let cleaned = refPath.replace(/^\{project-root\}\/_bmad\//, '').replace(/^\{_bmad\}\//, '');
+  // Strip {project-root}/_wizz/ or {_wizz}/ prefix
+  let cleaned = refPath.replace(/^\{project-root\}\/_wizz\//, '').replace(/^\{_wizz\}\//, '');
 
-  // Also handle bare _bmad/ prefix (seen in some invoke-task)
-  cleaned = cleaned.replace(/^_bmad\//, '');
+  // Also handle bare _wizz/ prefix (seen in some invoke-task)
+  cleaned = cleaned.replace(/^_wizz\//, '');
 
   // Skip install-only paths (generated at install time, not in source)
   if (isInstallOnly(cleaned)) return null;
 
   // Map installed module names to their source directory names
-  // _bmad/core/ → src/core-skills/, _bmad/bmm/ → src/bmm-skills/
+  // _wizz/core/ → src/core-skills/, _wizz/bmm/ → src/bmm-skills/
   if (cleaned.startsWith('core/')) {
     return path.join(SRC_DIR, 'core-skills', cleaned.slice('core/'.length));
   }
@@ -184,7 +184,7 @@ function isResolvable(refStr) {
 }
 
 function isInstallOnly(cleanedPath) {
-  // Skip paths that only exist in the installed _bmad/ structure, not in src/
+  // Skip paths that only exist in the installed _wizz/ structure, not in src/
   for (const prefix of INSTALL_ONLY_PATHS) {
     if (cleanedPath.startsWith(prefix)) return true;
   }
@@ -212,14 +212,14 @@ function extractYamlRefs(filePath, content) {
 
     const line = range ? offsetToLine(content, range[0]) : undefined;
 
-    // Check for {project-root}/_bmad/ refs
-    const prMatch = value.match(/\{project-root\}\/_bmad\/[^\s'"<>})\]`]+/);
+    // Check for {project-root}/_wizz/ refs
+    const prMatch = value.match(/\{project-root\}\/_wizz\/[^\s'"<>})\]`]+/);
     if (prMatch) {
       refs.push({ file: filePath, raw: prMatch[0], type: 'project-root', line, key: keyPath });
     }
 
-    // Check for {_bmad}/ refs
-    const bmMatch = value.match(/\{_bmad\}\/[^\s'"<>})\]`]+/);
+    // Check for {_wizz}/ refs
+    const bmMatch = value.match(/\{_wizz\}\/[^\s'"<>})\]`]+/);
     if (bmMatch) {
       refs.push({ file: filePath, raw: bmMatch[0], type: 'project-root', line, key: keyPath });
     }
@@ -275,10 +275,10 @@ function extractMarkdownRefs(filePath, content) {
     }
   }
 
-  // {project-root}/_bmad/ refs
+  // {project-root}/_wizz/ refs
   runPattern(PROJECT_ROOT_REF, 'project-root');
 
-  // {_bmad}/ shorthand
+  // {_wizz}/ shorthand
   runPattern(BMAD_SHORTHAND_REF, 'project-root');
 
   // exec="..." attributes
@@ -358,10 +358,10 @@ function resolveRef(ref) {
     if (execPath.includes('{project-root}')) {
       return mapInstalledToSource(execPath);
     }
-    if (execPath.includes('{_bmad}')) {
+    if (execPath.includes('{_wizz}')) {
       return mapInstalledToSource(execPath);
     }
-    if (execPath.startsWith('_bmad/')) {
+    if (execPath.startsWith('_wizz/')) {
       return mapInstalledToSource(execPath);
     }
     // Relative exec path
@@ -370,13 +370,13 @@ function resolveRef(ref) {
 
   if (ref.type === 'invoke-task') {
     // Extract file path from invoke-task content
-    const prMatch = ref.raw.match(/\{project-root\}\/_bmad\/([^\s'"<>})\]`]+)/);
+    const prMatch = ref.raw.match(/\{project-root\}\/_wizz\/([^\s'"<>})\]`]+)/);
     if (prMatch) return mapInstalledToSource(prMatch[0]);
 
-    const bmMatch = ref.raw.match(/\{_bmad\}\/([^\s'"<>})\]`]+)/);
+    const bmMatch = ref.raw.match(/\{_wizz\}\/([^\s'"<>})\]`]+)/);
     if (bmMatch) return mapInstalledToSource(bmMatch[0]);
 
-    const bareMatch = ref.raw.match(/_bmad\/([^\s'"<>})\]`]+)/);
+    const bareMatch = ref.raw.match(/_wizz\/([^\s'"<>})\]`]+)/);
     if (bareMatch) return mapInstalledToSource(bareMatch[0]);
 
     return null; // Can't resolve — skip

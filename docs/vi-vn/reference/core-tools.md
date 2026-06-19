@@ -8,26 +8,26 @@ sidebar:
 Mọi bản cài BMad đều bao gồm một tập skill cốt lõi có thể dùng cùng với bất cứ việc gì bạn đang làm, các tác vụ và quy trình độc lập hoạt động xuyên suốt mọi dự án, mọi module và mọi giai đoạn. Chúng luôn có sẵn bất kể bạn cài những module tùy chọn nào.
 
 :::tip[Lối đi nhanh]
-Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của nó, ví dụ `bmad-help`, trong IDE của bạn. Không cần mở phiên agent trước.
+Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của nó, ví dụ `wizz-help`, trong IDE của bạn. Không cần mở phiên agent trước.
 :::
 
 ## Tổng Quan
 
 | Công cụ | Loại | Mục đích |
 | --- | --- | --- |
-| [`bmad-help`](#bmad-help) | Tác vụ | Nhận hướng dẫn có ngữ cảnh về việc nên làm gì tiếp theo |
-| [`bmad-brainstorming`](#bmad-brainstorming) | Quy trình | Tổ chức các phiên brainstorming có tương tác |
-| [`bmad-party-mode`](#bmad-party-mode) | Quy trình | Điều phối thảo luận nhóm nhiều agent |
-| [`bmad-spec`](#bmad-spec) | Quy trình | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work (translation pending) |
-| [`bmad-advanced-elicitation`](#bmad-advanced-elicitation) | Tác vụ | Đẩy đầu ra của LLM qua các vòng tinh luyện lặp |
-| [`bmad-review-adversarial-general`](#bmad-review-adversarial-general) | Tác vụ | Rà soát hoài nghi để tìm chỗ thiếu và chỗ sai |
-| [`bmad-review-edge-case-hunter`](#bmad-review-edge-case-hunter) | Tác vụ | Phân tích toàn bộ nhánh rẽ để tìm trường hợp biên chưa được xử lý |
-| [`bmad-editorial-review-prose`](#bmad-editorial-review-prose) | Tác vụ | Biên tập câu chữ nhằm tăng độ rõ ràng khi giao tiếp |
-| [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Tác vụ | Biên tập cấu trúc — cắt, gộp và tổ chức lại |
-| [`bmad-shard-doc`](#bmad-shard-doc) | Tác vụ | Tách file markdown lớn thành các phần có tổ chức |
-| [`bmad-index-docs`](#bmad-index-docs) | Tác vụ | Tạo hoặc cập nhật mục lục cho toàn bộ tài liệu trong một thư mục |
+| [`wizz-help`](#wizz-help) | Tác vụ | Nhận hướng dẫn có ngữ cảnh về việc nên làm gì tiếp theo |
+| [`wizz-brainstorming`](#wizz-brainstorming) | Quy trình | Tổ chức các phiên brainstorming có tương tác |
+| [`wizz-party-mode`](#wizz-party-mode) | Quy trình | Điều phối thảo luận nhóm nhiều agent |
+| [`wizz-spec`](#wizz-spec) | Quy trình | Distill any intent input into a SPEC kernel and companions, the canonical contract for downstream work (translation pending) |
+| [`wizz-advanced-elicitation`](#wizz-advanced-elicitation) | Tác vụ | Đẩy đầu ra của LLM qua các vòng tinh luyện lặp |
+| [`wizz-review-adversarial-general`](#wizz-review-adversarial-general) | Tác vụ | Rà soát hoài nghi để tìm chỗ thiếu và chỗ sai |
+| [`wizz-review-edge-case-hunter`](#wizz-review-edge-case-hunter) | Tác vụ | Phân tích toàn bộ nhánh rẽ để tìm trường hợp biên chưa được xử lý |
+| [`wizz-editorial-review-prose`](#wizz-editorial-review-prose) | Tác vụ | Biên tập câu chữ nhằm tăng độ rõ ràng khi giao tiếp |
+| [`wizz-editorial-review-structure`](#wizz-editorial-review-structure) | Tác vụ | Biên tập cấu trúc — cắt, gộp và tổ chức lại |
+| [`wizz-shard-doc`](#wizz-shard-doc) | Tác vụ | Tách file markdown lớn thành các phần có tổ chức |
+| [`wizz-index-docs`](#wizz-index-docs) | Tác vụ | Tạo hoặc cập nhật mục lục cho toàn bộ tài liệu trong một thư mục |
 
-## bmad-help
+## wizz-help
 
 **Người dẫn đường thông minh cho bước tiếp theo của bạn.** Công cụ này kiểm tra trạng thái dự án, phát hiện những gì đã hoàn thành và đề xuất bước bắt buộc hoặc tùy chọn tiếp theo.
 
@@ -45,11 +45,11 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 3. Đề xuất bước tiếp theo theo thứ tự ưu tiên — bước bắt buộc trước, tùy chọn sau
 4. Trình bày từng đề xuất cùng lệnh skill và mô tả ngắn
 
-**Đầu vào:** Truy vấn ngôn ngữ tự nhiên tùy chọn, ví dụ `bmad-help I have a SaaS idea, where do I start?`
+**Đầu vào:** Truy vấn ngôn ngữ tự nhiên tùy chọn, ví dụ `wizz-help I have a SaaS idea, where do I start?`
 
 **Đầu ra:** Danh sách ưu tiên các bước tiếp theo được khuyến nghị kèm lệnh skill
 
-## bmad-brainstorming
+## wizz-brainstorming
 
 **Tạo ra nhiều ý tưởng đa dạng bằng các kỹ thuật sáng tạo có tương tác.** Đây là một phiên động não có điều phối, nạp các phương pháp phát ý tưởng đã được kiểm chứng từ thư viện kỹ thuật và dẫn bạn đến 100+ ý tưởng trước khi bắt đầu sắp xếp.
 
@@ -75,7 +75,7 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 Điểm bứt phá thường nằm ở vùng ý tưởng thứ 50-100. Workflow này khuyến khích bạn tạo 100+ ý tưởng trước khi sắp xếp.
 :::
 
-## bmad-party-mode
+## wizz-party-mode
 
 **Điều phối thảo luận nhóm nhiều agent.** Công cụ này nạp toàn bộ agent BMad đã cài và tạo một cuộc trao đổi tự nhiên, nơi mỗi agent đóng góp từ góc nhìn chuyên môn và cá tính riêng.
 
@@ -97,7 +97,7 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 
 **Đầu ra:** Cuộc hội thoại nhiều agent theo thời gian thực, vẫn giữ nguyên cá tính từng agent
 
-## bmad-advanced-elicitation
+## wizz-advanced-elicitation
 
 **Đẩy đầu ra của LLM qua các phương pháp tinh luyện lặp.** Công cụ này chọn từ thư viện kỹ thuật elicitation để cải thiện nội dung một cách có hệ thống qua nhiều lượt.
 
@@ -119,7 +119,7 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 
 **Đầu ra:** Phiên bản nội dung đã được nâng cấp
 
-## bmad-review-adversarial-general
+## wizz-review-adversarial-general
 
 **Kiểu review hoài nghi, mặc định cho rằng vấn đề luôn tồn tại và phải đi tìm chúng.** Công cụ này đứng ở góc nhìn của một reviewer khó tính, thiếu kiên nhẫn với sản phẩm cẩu thả. Nó tìm xem còn thiếu gì, không chỉ tìm cái gì sai.
 
@@ -143,7 +143,7 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 
 **Đầu ra:** Danh sách markdown gồm 10+ phát hiện kèm mô tả
 
-## bmad-review-edge-case-hunter
+## wizz-review-edge-case-hunter
 
 **Đi qua mọi nhánh rẽ và điều kiện biên, chỉ báo cáo những trường hợp chưa được xử lý.** Đây là phương pháp thuần túy dựa trên truy vết đường đi, suy ra các lớp edge case một cách cơ học. Nó trực giao với adversarial review — khác phương pháp, không khác thái độ.
 
@@ -168,10 +168,10 @@ Chạy bất kỳ công cụ cốt lõi nào bằng cách gõ tên skill của n
 **Đầu ra:** Mảng JSON các phát hiện, mỗi phát hiện có `location`, `trigger_condition`, `guard_snippet` và `potential_consequence`
 
 :::note[Các kiểu review bổ trợ nhau]
-Hãy chạy cả `bmad-review-adversarial-general` và `bmad-review-edge-case-hunter` để có độ bao phủ trực giao. Adversarial review bắt lỗi về chất lượng và độ đầy đủ; edge case hunter bắt các đường đi chưa được xử lý.
+Hãy chạy cả `wizz-review-adversarial-general` và `wizz-review-edge-case-hunter` để có độ bao phủ trực giao. Adversarial review bắt lỗi về chất lượng và độ đầy đủ; edge case hunter bắt các đường đi chưa được xử lý.
 :::
 
-## bmad-editorial-review-prose
+## wizz-editorial-review-prose
 
 **Biên tập câu chữ kiểu lâm sàng, tập trung vào độ rõ ràng khi truyền đạt.** Công cụ này review văn bản để tìm ra các vấn đề cản trở việc hiểu. Nó dùng Microsoft Writing Style Guide làm nền và vẫn giữ giọng văn của tác giả.
 
@@ -196,7 +196,7 @@ Hãy chạy cả `bmad-review-adversarial-general` và `bmad-review-edge-case-hu
 
 **Đầu ra:** Bảng markdown ba cột: Original Text | Revised Text | Changes
 
-## bmad-editorial-review-structure
+## wizz-editorial-review-structure
 
 **Biên tập cấu trúc — đề xuất cắt, gộp, di chuyển và cô đọng.** Công cụ này review cách tổ chức tài liệu và đề xuất thay đổi mang tính nội dung để tăng độ rõ ràng và luồng đọc trước khi chỉnh câu chữ.
 
@@ -223,7 +223,7 @@ Hãy chạy cả `bmad-review-adversarial-general` và `bmad-review-edge-case-hu
 
 **Đầu ra:** Tóm tắt tài liệu, danh sách khuyến nghị ưu tiên và ước tính mức giảm
 
-## bmad-shard-doc
+## wizz-shard-doc
 
 **Tách file markdown lớn thành các file phần có tổ chức.** Công cụ này dùng các header cấp 2 làm điểm cắt để tạo ra một thư mục gồm các file phần tự chứa cùng một file chỉ mục.
 
@@ -244,7 +244,7 @@ Hãy chạy cả `bmad-review-adversarial-general` và `bmad-review-edge-case-hu
 
 **Đầu ra:** Một thư mục gồm `index.md` và các file `01-{section}.md`, `02-{section}.md`, v.v.
 
-## bmad-index-docs
+## wizz-index-docs
 
 **Tạo hoặc cập nhật mục lục cho toàn bộ tài liệu trong một thư mục.** Công cụ này quét thư mục, đọc từng file để hiểu mục đích của nó, rồi tạo `index.md` có tổ chức với liên kết và mô tả.
 

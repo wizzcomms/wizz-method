@@ -15,7 +15,7 @@ Le système de personnalisation de BMad permet à une organisation d’adapter l
 :::
 
 :::tip[Appliquer ces recettes]
-Les **recettes par skill** ci-dessous (Recettes 1–4) peuvent être appliquées en exécutant le skill `bmad-customize` et en décrivant l’intention — il sélectionnera le bon point de personnalisation, générera le fichier d’override et vérifiera la fusion. La Recette 5 (overrides de la configuration centrale du registre des agents) n’est pas couverte par la v1 du skill et reste rédigée manuellement. Les recettes ici constituent la source de vérité sur *quoi* personnaliser ; `bmad-customize` gère le *comment* pour la surface agent/workflow.
+Les **recettes par skill** ci-dessous (Recettes 1–4) peuvent être appliquées en exécutant le skill `wizz-customize` et en décrivant l’intention — il sélectionnera le bon point de personnalisation, générera le fichier d’override et vérifiera la fusion. La Recette 5 (overrides de la configuration centrale du registre des agents) n’est pas couverte par la v1 du skill et reste rédigée manuellement. Les recettes ici constituent la source de vérité sur *quoi* personnaliser ; `wizz-customize` gère le *comment* pour la surface agent/workflow.
 :::
 
 ## Le modèle mental à trois couches
@@ -24,9 +24,9 @@ Avant de choisir une recette, comprenez où votre override se situe :
 
 | Couche                                       | Où vivent les overrides                                               | Périmètre                                                                                                                                       |
 |----------------------------------------------|-----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Agent** (ex. Amelia, Mary, John)           | Section `[agent]` de `_bmad/custom/bmad-agent-{role}.toml`            | Se propage avec le persona dans **chaque workflow que l’agent dispatche**                                                                       |
-| **Workflow** (ex. product-brief, create-prd) | Section `[workflow]` de `_bmad/custom/{workflow-name}.toml`           | S’applique uniquement à l’exécution de ce workflow                                                                                              |
-| **Configuration centrale**                   | `[agents.*]`, `[core]`, `[modules.*]` dans `_bmad/custom/config.toml` | Registre des agents (qui est disponible pour party-mode, retrospective, elicitation), paramètres d’installation figés pour toute l’organisation |
+| **Agent** (ex. Amelia, Mary, John)           | Section `[agent]` de `_wizz/custom/bmad-agent-{role}.toml`            | Se propage avec le persona dans **chaque workflow que l’agent dispatche**                                                                       |
+| **Workflow** (ex. product-brief, create-prd) | Section `[workflow]` de `_wizz/custom/{workflow-name}.toml`           | S’applique uniquement à l’exécution de ce workflow                                                                                              |
+| **Configuration centrale**                   | `[agents.*]`, `[core]`, `[modules.*]` dans `_wizz/custom/config.toml` | Registre des agents (qui est disponible pour party-mode, retrospective, elicitation), paramètres d’installation figés pour toute l’organisation |
 
 En règle générale : si la règle doit s’appliquer partout où un ingénieur travaille sur le développement, personnalisez l'**agent dev**. Si elle s’applique uniquement quand quelqu’un rédige un product brief, personnalisez le **workflow product-brief**. Si elle change *qui participe* (renommer un agent, ajouter une voix personnalisée, imposer un chemin d’artefact partagé), modifiez la **configuration centrale**.
 
@@ -37,7 +37,7 @@ En règle générale : si la règle doit s’appliquer partout où un ingénieu
 **Exemple : Amelia (agent dev) utilise toujours Context7 pour la documentation des bibliothèques, et se rabat sur Linear quand une story n’est pas trouvée dans la liste des epics.**
 
 ```toml
-# _bmad/custom/bmad-agent-dev.toml
+# _wizz/custom/wizz-agent-dev.toml
 
 [agent]
 
@@ -52,8 +52,8 @@ persistent_facts = [
 **Pourquoi ça marche :** Deux phrases suffisent à reconfigurer tous les workflows de dev de l’organisation, sans duplication par workflow ni modification du code source. Chaque nouvel ingénieur qui clone le dépôt hérite automatiquement des conventions.
 
 **Fichier d’équipe vs fichier personnel :**
-- `bmad-agent-dev.toml` : versionné dans git ; s’applique à toute l’équipe
-- `bmad-agent-dev.user.toml` : ignoré par git ; préférences personnelles ajoutées par-dessus
+- `wizz-agent-dev.toml` : versionné dans git ; s’applique à toute l’équipe
+- `wizz-agent-dev.user.toml` : ignoré par git ; préférences personnelles ajoutées par-dessus
 
 ## Recette 2 : Imposer les conventions de l’organisation dans un workflow spécifique
 
@@ -62,7 +62,7 @@ persistent_facts = [
 **Exemple : chaque product brief doit inclure des champs de conformité, et l’agent connaît les conventions de publication de l’organisation.**
 
 ```toml
-# _bmad/custom/bmad-product-brief.toml
+# _wizz/custom/wizz-product-brief.toml
 
 [workflow]
 
@@ -82,7 +82,7 @@ persistent_facts = [
 **Exemple : les briefs sont automatiquement publiés vers Confluence et proposent la création facultative d’un epic Jira.**
 
 ```toml
-# _bmad/custom/bmad-product-brief.toml
+# _wizz/custom/wizz-product-brief.toml
 
 [workflow]
 
@@ -126,7 +126,7 @@ et demander à l'utilisateur de publier manuellement.
 **Exemple : pointer le workflow product-brief vers un template appartenant à l’entreprise.**
 
 ```toml
-# _bmad/custom/bmad-product-brief.toml
+# _wizz/custom/wizz-product-brief.toml
 
 [workflow]
 brief_template = "{project-root}/docs/enterprise/brief-template.md"
@@ -135,22 +135,22 @@ brief_template = "{project-root}/docs/enterprise/brief-template.md"
 **Comment ça marche :** Le `customize.toml` du workflow est fourni avec `brief_template = "resources/brief-template.md"` (chemin relatif, résolu depuis la racine du skill). Votre override pointe vers un fichier sous `{project-root}`, donc l’agent lit votre template à l’étape 4 au lieu de celui livré par défaut.
 
 **Conseils pour la rédaction de templates :**
-- Gardez les templates dans `{project-root}/docs/` ou `{project-root}/_bmad/custom/templates/` pour qu’ils soient versionnés avec le fichier d’override
+- Gardez les templates dans `{project-root}/docs/` ou `{project-root}/_wizz/custom/templates/` pour qu’ils soient versionnés avec le fichier d’override
 - Utilisez les mêmes conventions structurelles que le template livré (titres de sections, frontmatter) ; l’agent s’adapte à ce qu’il trouve
 - Pour les dépôts multi-organisations, utilisez `.user.toml` pour permettre à chaque équipe de pointer vers ses propres templates sans toucher au fichier d’équipe versionné dans git
 
 ## Recette 5 : Personnaliser le registre des agents
 
-**Cas d’usage :** Changer *qui sera présent dans la pièce* pour les skills basés sur le registre comme `bmad-party-mode`, `bmad-retrospective` et `bmad-advanced-elicitation`, sans modifier le code source ni forker. Voici trois variantes courantes.
+**Cas d’usage :** Changer *qui sera présent dans la pièce* pour les skills basés sur le registre comme `wizz-party-mode`, `wizz-retrospective` et `wizz-advanced-elicitation`, sans modifier le code source ni forker. Voici trois variantes courantes.
 
 ### 5a. Renommer un agent BMad pour toute l’organisation
 
 Chaque agent réel possède un descripteur que l’installateur synthétise à partir de `module.yaml`. Surchargez-le pour changer la voix et le cadrage pour tous les consommateurs du registre :
 
 ```toml
-# _bmad/custom/config.toml (versionné dans git — s'applique à tous les développeurs)
+# _wizz/custom/config.toml (versionné dans git — s'applique à tous les développeurs)
 
-[agents.bmad-agent-analyst]
+[agents.wizz-agent-analyst]
 description = "Mary l'Analyste d'Affaires sensible à la réglementation — s'inspire de Porter et Minto, mais vit et respire les pistes d'audit FDA. Parle comme un expert en criminalistique présentant un dossier."
 ```
 
@@ -161,7 +161,7 @@ Party-mode génère Mary avec la nouvelle description. L’activation de l’ana
 Un descripteur complet suffit pour les fonctionnalités basées sur le registre, sans dossier de skill nécessaire. Utile pour varier les personnalités en mode party ou en session de brainstorming :
 
 ```toml
-# _bmad/custom/config.user.toml (personnel — ignoré par git)
+# _wizz/custom/config.user.toml (personnel — ignoré par git)
 
 [agents.spock]
 team = "startrek"
@@ -185,7 +185,7 @@ Demandez à party-mode d'« inviter l’équipage de l’Enterprise ». Il f
 L’installateur demande à chaque développeur des valeurs comme le chemin `planning_artifacts`. Quand l’organisation a besoin d’une réponse partagée, figez-la dans la configuration centrale — la réponse locale de chaque développeur est surchargée au moment de la résolution :
 
 ```toml
-# _bmad/custom/config.toml
+# _wizz/custom/config.toml
 
 [modules.bmm]
 planning_artifacts = "{project-root}/shared/planning"
@@ -195,7 +195,7 @@ implementation_artifacts = "{project-root}/shared/implementation"
 document_output_language = "English"
 ```
 
-Les paramètres personnels comme `user_name`, `communication_language` ou `user_skill_level` restent dans leur propre fichier `_bmad/config.user.toml` de chaque développeur. Le fichier d’équipe ne doit pas les modifier.
+Les paramètres personnels comme `user_name`, `communication_language` ou `user_skill_level` restent dans leur propre fichier `_wizz/config.user.toml` de chaque développeur. Le fichier d’équipe ne doit pas les modifier.
 
 **Pourquoi la configuration centrale vs le customize.toml par agent :** Les fichiers par agent façonnent la façon dont *un seul* agent se comporte quand il s’active. La configuration centrale façonne ce que les consommateurs du registre *voient* : quels agents existent, comment ils s’appellent, à quelle équipe ils appartiennent, et les paramètres d’installation partagés sur lesquels tout le dépôt s’accorde. Deux surfaces, des rôles différents.
 
@@ -216,7 +216,7 @@ Les personnalisations BMad se chargent quand un skill est activé. Beaucoup d’
 avant de s'appuyer sur les connaissances des données d'entraînement. -->
 ```
 
-Une phrase, chargée à chaque session. Elle s’associe à la personnalisation `bmad-agent-dev.toml` pour que la règle s’applique à la fois dans les workflows d’Amelia et lors des chats ad hoc avec l’assistant. Chaque couche possède son propre périmètre :
+Une phrase, chargée à chaque session. Elle s’associe à la personnalisation `wizz-agent-dev.toml` pour que la règle s’applique à la fois dans les workflows d’Amelia et lors des chats ad hoc avec l’assistant. Chaque couche possède son propre périmètre :
 
 | Couche                                             | Périmètre                                                | Utilisée pour                                                           |
 |----------------------------------------------------|----------------------------------------------------------|-------------------------------------------------------------------------|
@@ -229,14 +229,14 @@ Gardez le fichier IDE **concis**. Une douzaine de lignes bien choisies sont plus
 
 ## Recette 6 : Patterns d’intégration avancés
 
-Plusieurs workflows BMad exposent une surface de configuration plus riche au-delà des bases couvertes dans les Recettes 1–5. Ces patterns — sources de connaissance à la demande, publication automatique des livrables, standards de documentation à la finalisation et templates interchangeables — apparaissent dans plusieurs workflows. Consultez le `customize.toml` d’un workflow pour voir quels champs il expose ; les exemples ci-dessous utilisent `bmad-prd` car il les expose tous, mais les mêmes patterns s’appliquent partout où le champ apparaît.
+Plusieurs workflows BMad exposent une surface de configuration plus riche au-delà des bases couvertes dans les Recettes 1–5. Ces patterns — sources de connaissance à la demande, publication automatique des livrables, standards de documentation à la finalisation et templates interchangeables — apparaissent dans plusieurs workflows. Consultez le `customize.toml` d’un workflow pour voir quels champs il expose ; les exemples ci-dessous utilisent `wizz-prd` car il les expose tous, mais les mêmes patterns s’appliquent partout où le champ apparaît.
 
 ### Sources de connaissance à la demande (`external_sources`)
 
 Connectez le workflow à des bases de connaissances internes, des bases de données concurrentielles ou des référentiels de conformité. L’agent les consulte à la demande quand la conversation révèle un besoin correspondant — jamais par anticipation.
 
 ```toml
-# _bmad/custom/bmad-prd.toml  (même pattern pour tout workflow exposant external_sources)
+# _wizz/custom/wizz-prd.toml  (même pattern pour tout workflow exposant external_sources)
 
 [workflow]
 external_sources = [
@@ -252,7 +252,7 @@ Chaque entrée est une directive en langage naturel nommant l’outil MCP, la co
 Acheminez les artefacts terminés vers les systèmes de référence externes après la finalisation du workflow. Contrairement à `on_complete` (Recette 3), `external_handoffs` est un tableau d’ajout dédié — les entrées d’équipe s’accumulent et chaque handoff se déclenche indépendamment avec dégradation progressive si un outil est indisponible.
 
 ```toml
-# _bmad/custom/bmad-prd.toml  (même pattern pour tout workflow exposant external_handoffs)
+# _wizz/custom/wizz-prd.toml  (même pattern pour tout workflow exposant external_handoffs)
 
 [workflow]
 external_handoffs = [
@@ -268,7 +268,7 @@ Si un outil nommé est indisponible, le handoff est ignoré et signalé — les 
 Appliquez les standards rédactionnels de l’organisation aux documents à destination des utilisateurs à la finalisation, après que le contenu est complet mais avant que l’utilisateur ne voie le livrable. Chaque entrée est une directive `skill:`, `file:` ou en texte brut ; les passes s’exécutent comme des sous-agents parallèles.
 
 ```toml
-# _bmad/custom/bmad-prd.toml  (même pattern pour tout workflow exposant doc_standards)
+# _wizz/custom/wizz-prd.toml  (même pattern pour tout workflow exposant doc_standards)
 
 [workflow]
 doc_standards = [
@@ -285,7 +285,7 @@ doc_standards = [
 Les workflows qui produisent des documents structurés exposent généralement des chemins de templates et de checklists comme scalaires surchargeables. Pointez-les vers des fichiers appartenant à l’organisation sous `{project-root}` pour imposer une structure différente sans modifier le code source.
 
 ```toml
-# _bmad/custom/bmad-prd.toml
+# _wizz/custom/wizz-prd.toml
 
 [workflow]
 # Structure de PRD pour secteur réglementé
@@ -295,14 +295,14 @@ prd_template = "{project-root}/docs/enterprise/prd-template-hipaa.md"
 validation_checklist = "{project-root}/docs/enterprise/prd-checklist-regulated.md"
 ```
 
-L’agent s’adapte à la structure définie par le template. Gardez les templates sous `{project-root}/docs/` ou `{project-root}/_bmad/custom/templates/` pour qu’ils soient versionnés avec le fichier d’override. Pour les dépôts multi-organisations, utilisez `.user.toml` pour permettre aux équipes de pointer vers leurs propres templates sans toucher au fichier d’équipe versionné dans git.
+L’agent s’adapte à la structure définie par le template. Gardez les templates sous `{project-root}/docs/` ou `{project-root}/_wizz/custom/templates/` pour qu’ils soient versionnés avec le fichier d’override. Pour les dépôts multi-organisations, utilisez `.user.toml` pour permettre aux équipes de pointer vers leurs propres templates sans toucher au fichier d’équipe versionné dans git.
 
 ## Combiner les recettes
 
-Les six recettes se combinent librement. Un override entreprise réaliste pour `bmad-product-brief` pourrait définir `persistent_facts` (Recette 2), `on_complete` (Recette 3) et `brief_template` (Recette 4) dans un seul fichier. La règle au niveau agent (Recette 1) se trouve dans un fichier séparé sous le nom de l’agent, la configuration centrale (Recette 5) fige le registre partagé et les paramètres d’équipe, les patterns d’intégration avancés (Recette 6) configurent les sources externes et les handoffs, et toutes les couches s’appliquent en parallèle.
+Les six recettes se combinent librement. Un override entreprise réaliste pour `wizz-product-brief` pourrait définir `persistent_facts` (Recette 2), `on_complete` (Recette 3) et `brief_template` (Recette 4) dans un seul fichier. La règle au niveau agent (Recette 1) se trouve dans un fichier séparé sous le nom de l’agent, la configuration centrale (Recette 5) fige le registre partagé et les paramètres d’équipe, les patterns d’intégration avancés (Recette 6) configurent les sources externes et les handoffs, et toutes les couches s’appliquent en parallèle.
 
 ```toml
-# _bmad/custom/bmad-product-brief.toml (niveau workflow)
+# _wizz/custom/wizz-product-brief.toml (niveau workflow)
 
 [workflow]
 persistent_facts = ["..."]
@@ -311,7 +311,7 @@ on_complete = """ ... """
 ```
 
 ```toml
-# _bmad/custom/bmad-agent-analyst.toml (niveau agent — Mary dispatche product-brief)
+# _wizz/custom/wizz-agent-analyst.toml (niveau agent — Mary dispatche product-brief)
 
 [agent]
 persistent_facts = ["Toujours inclure une section 'Revue réglementaire' quand le domaine implique la santé, la finance ou les données d'enfants."]
@@ -321,7 +321,7 @@ Résultat : Mary charge la règle de revue réglementaire à l’activation de 
 
 ## Dépannage
 
-**L’override ne prend pas effet ?** Vérifiez que le fichier se trouve sous `_bmad/custom/` avec le nom exact du répertoire du skill (ex. `bmad-agent-dev.toml`, pas `bmad-dev.toml`). Voir [Comment personnaliser BMad](./customize-bmad.md#dépannage).
+**L’override ne prend pas effet ?** Vérifiez que le fichier se trouve sous `_wizz/custom/` avec le nom exact du répertoire du skill (ex. `wizz-agent-dev.toml`, pas `bmad-dev.toml`). Voir [Comment personnaliser BMad](./customize-bmad.md#dépannage).
 
 **Nom d’outil MCP inconnu ?** Utilisez le nom exact que le serveur MCP expose dans la session en cours. Demandez à Claude Code de lister les outils MCP disponibles en cas de doute. Les noms codés en dur dans `persistent_facts` ou `on_complete` ne fonctionneront pas si le serveur MCP n’est pas connecté.
 

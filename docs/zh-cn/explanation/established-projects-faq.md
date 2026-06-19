@@ -16,7 +16,7 @@ sidebar:
 
 ### 我必须先运行文档梳理工作流吗？
 
-不绝对必须，但通常强烈建议先运行 `bmad-document-project`，尤其当：
+不绝对必须，但通常强烈建议先运行 `wizz-document-project`，尤其当：
 - 项目文档缺失或明显过时
 - 新成员或智能体难以快速理解现有系统
 - 你希望后续 `workflow` 基于真实现状而不是猜测执行
@@ -29,7 +29,7 @@ sidebar:
 
 ### 既有项目可以直接用 Quick Flow 吗？
 
-可以。Quick Flow（例如 `bmad-quick-dev`）在既有项目里通常很高效，尤其适合：
+可以。Quick Flow（例如 `wizz-quick-dev`）在既有项目里通常很高效，尤其适合：
 - 小功能增量
 - 缺陷修复
 - 风险可控的局部改动
@@ -51,7 +51,7 @@ BMad Method 不会强制“立即现代化”，而是把决策权交给你。
 - 需要明确 `architecture` 决策，否则容易冲突
 - 涉及较大协作面、较高回归风险或复杂验收要求
 
-如果你不确定，先让 `bmad-help` 判断当前阶段更稳妥的 workflow。
+如果你不确定，先让 `wizz-help` 判断当前阶段更稳妥的 workflow。
 
 **还有问题？** 欢迎在 [GitHub Issues](https://github.com/bmad-code-org/BMAD-METHOD/issues) 或 [Discord](https://discord.gg/gk8jAdXWmj) 提问。
 

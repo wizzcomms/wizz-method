@@ -30,7 +30,7 @@ Vždy používejte soubory `.customize.yaml` popsané zde místo přímé editac
 Po instalaci najdete jeden soubor `.customize.yaml` na agenta v:
 
 ```text
-_bmad/_config/agents/
+_wizz/_config/agents/
 ├── core-bmad-master.customize.yaml
 ├── bmm-dev.customize.yaml
 ├── bmm-pm.customize.yaml

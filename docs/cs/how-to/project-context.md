@@ -31,11 +31,11 @@ Použijte soubor `project-context.md` k zajištění toho, aby AI agenti dodržo
 
 ### Možnost A: Ruční vytvoření
 
-Vytvořte soubor na `_bmad-output/project-context.md`:
+Vytvořte soubor na `_wizz-output/project-context.md`:
 
 ```bash
-mkdir -p _bmad-output
-touch _bmad-output/project-context.md
+mkdir -p _wizz-output
+touch _wizz-output/project-context.md
 ```
 
 Přidejte váš technologický stack a pravidla implementace:
@@ -77,7 +77,7 @@ sections_completed: ['technology_stack', 'critical_rules']
 Spusťte workflow v novém chatu:
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 Workflow skenuje váš dokument architektury a soubory projektu a generuje kontextový soubor zachycující učiněná rozhodnutí.
@@ -87,7 +87,7 @@ Workflow skenuje váš dokument architektury a soubory projektu a generuje konte
 Pro existující projekty spusťte:
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 Workflow analyzuje vaši kódovou bázi, identifikuje konvence a vygeneruje kontextový soubor, který můžete zkontrolovat a upřesnit.

@@ -81,15 +81,15 @@ npx github:bmad-code-org/BMAD-METHOD install
 
 ```text
 your-project/
-├── _bmad/
+├── _wizz/
 │   ├── bmm/            # 你选择的模块
 │   │   └── config.yaml # 模块设置（后续如需可修改）
 │   ├── core/           # 必需核心模块
 │   └── ...
-├── _bmad-output/       # 生成产物
+├── _wizz-output/       # 生成产物
 ├── .claude/            # Claude Code skills（如使用 Claude Code）
 │   └── skills/
-│       ├── bmad-help/
+│       ├── wizz-help/
 │       ├── bmad-persona/
 │       └── ...
 └── .cursor/            # Cursor skills（如使用 Cursor）
@@ -99,7 +99,7 @@ your-project/
 
 ## 验证安装
 
-运行 `bmad-help` 来验证一切正常并查看下一步操作。
+运行 `wizz-help` 来验证一切正常并查看下一步操作。
 
 **BMad-Help 是你的智能向导**，它会：
 - 确认你的安装正常工作
@@ -108,8 +108,8 @@ your-project/
 
 你也可以向它提问：
 ```
-bmad-help 我刚安装完成，应该先做什么？
-bmad-help 对于 SaaS 项目我有哪些选项？
+wizz-help 我刚安装完成，应该先做什么？
+wizz-help 对于 SaaS 项目我有哪些选项？
 ```
 
 ## 故障排除

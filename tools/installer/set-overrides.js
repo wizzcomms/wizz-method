@@ -1,6 +1,6 @@
 // `--set <module>.<key>=<value>` is a post-install patch. The installer runs
-// its normal flow and writes `_bmad/config.toml`, `_bmad/config.user.toml`,
-// and `_bmad/<module>/config.yaml`; afterwards `applySetOverrides` upserts
+// its normal flow and writes `_wizz/config.toml`, `_wizz/config.user.toml`,
+// and `_wizz/<module>/config.yaml`; afterwards `applySetOverrides` upserts
 // each override into those files.
 //
 // This is intentionally NOT integrated with the prompt/template/schema
@@ -11,7 +11,7 @@
 //   - Carry-forward across installs is best-effort: declared schema keys
 //     persist via the existingValue path on the next interactive run; values
 //     for keys outside any module's schema may need to be re-passed on each
-//     install (or edited directly in `_bmad/config.toml`).
+//     install (or edited directly in `_wizz/config.toml`).
 //   - No "key not in schema" validation: whatever you assert, we write.
 //
 // Names that, when used as object keys, can mutate `Object.prototype` and
@@ -220,9 +220,9 @@ async function tomlHasKey(filePath, section, key) {
  * installer. Called at the end of an install / quick-update.
  *
  * Routing per (module, key):
- *   1. If `_bmad/config.user.toml` already has `[section] key`, update there
+ *   1. If `_wizz/config.user.toml` already has `[section] key`, update there
  *      (user-scope key like `core.user_name`, `bmm.user_skill_level`).
- *   2. Otherwise update `_bmad/config.toml` (team scope, the default).
+ *   2. Otherwise update `_wizz/config.toml` (team scope, the default).
  *
  * The schema-correct user/team partition lives in `manifest-generator`. We
  * intentionally don't re-read module schemas here — the only goal is to
@@ -230,7 +230,7 @@ async function tomlHasKey(filePath, section, key) {
  * (not in either file yet), team scope is the safe default.
  *
  * @param {Object<string, Object<string, string>>} overrides
- * @param {string} bmadDir absolute path to `_bmad/`
+ * @param {string} bmadDir absolute path to `_wizz/`
  * @returns {Promise<Array<{module:string,key:string,scope:'team'|'user',file:string}>>}
  *          a list of applied entries (for caller logging)
  */
@@ -243,7 +243,7 @@ async function applySetOverrides(overrides, bmadDir) {
 
   for (const moduleCode of Object.keys(overrides)) {
     // Skip overrides for modules not actually installed. The installer writes
-    // `_bmad/<module>/config.yaml` for every installed module (including core),
+    // `_wizz/<module>/config.yaml` for every installed module (including core),
     // so its presence is a reliable "is this module here?" signal that works
     // for both fresh installs and quick-updates without coupling to caller-
     // supplied module lists.
@@ -269,7 +269,7 @@ async function applySetOverrides(overrides, bmadDir) {
       if (await fs.pathExists(targetPath)) {
         content = await fs.readFile(targetPath, 'utf8');
       } else {
-        content = '# Personal overrides for _bmad/config.toml.\n';
+        content = '# Personal overrides for _wizz/config.toml.\n';
       }
 
       const next = upsertTomlKey(content, section, key, valueToml);
@@ -282,7 +282,7 @@ async function applySetOverrides(overrides, bmadDir) {
       });
     }
 
-    // Also patch the per-module yaml (`_bmad/<module>/config.yaml`). The
+    // Also patch the per-module yaml (`_wizz/<module>/config.yaml`). The
     // installer reads this file as `_existingConfig` on subsequent runs and
     // surfaces declared values as prompt defaults — under `--yes` those
     // defaults are accepted, so patching here gives `--set` natural
@@ -298,7 +298,7 @@ async function applySetOverrides(overrides, bmadDir) {
         const parsed = yaml.parse(text);
         if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
           // Preserve the installer's banner header (everything up to the
-          // first non-comment line) so `_bmad/<module>/config.yaml` keeps
+          // first non-comment line) so `_wizz/<module>/config.yaml` keeps
           // its provenance comments after we round-trip it.
           const headerLines = [];
           for (const line of text.split('\n')) {

@@ -51,7 +51,7 @@ v6 新技能会安装到：
 
 **如果你有规划文档（Brief/PRD/UX/Architecture）：**
 
-把它们移动到 `_bmad-output/planning-artifacts/`，并使用可读的文件名：
+把它们移动到 `_wizz-output/planning-artifacts/`，并使用可读的文件名：
 
 - PRD 文档文件名包含 `PRD`
 - 其他文档按类型包含 `brief`、`architecture` 或 `ux-design`
@@ -64,8 +64,8 @@ v6 新技能会安装到：
 如果你已经创建或实现了部分用户故事（story）：
 
 1. 完成 v6 安装
-2. 将 `epics.md` 或 `epics/epic*.md` 放入 `_bmad-output/planning-artifacts/`
-3. 运行 Developer 的 `bmad-sprint-planning` 工作流
+2. 将 `epics.md` 或 `epics/epic*.md` 放入 `_wizz-output/planning-artifacts/`
+3. 运行 Developer 的 `wizz-sprint-planning` 工作流
 4. 告知智能体哪些史诗/故事已经完成
 
 ## 你将获得
@@ -74,14 +74,14 @@ v6 新技能会安装到：
 
 ```text
 your-project/
-├── _bmad/               # 单一安装目录
+├── _wizz/               # 单一安装目录
 │   ├── _config/         # 你的自定义配置
 │   │   └── agents/      # 智能体自定义文件
 │   ├── core/            # 通用核心框架
 │   ├── bmm/             # BMad Method 模块
 │   ├── bmb/             # BMad Builder
 │   └── cis/             # Creative Intelligence Suite
-└── _bmad-output/        # 输出目录（v4 时代常见为 doc 目录）
+└── _wizz-output/        # 输出目录（v4 时代常见为 doc 目录）
 ```
 
 ## 模块迁移
@@ -98,14 +98,14 @@ your-project/
 
 | 概念 | v4（旧） | v6（新） | 迁移提示 |
 | ------------ | --------------------------------------- | ------------------------------------ | ------------------------------------ |
-| **核心框架** | `_bmad-core` 实际上承载的是 BMad Method | `_bmad/core/` 变成通用框架层 | 迁移时不要再把 `_bmad/core/` 当成 Method 本体 |
-| **方法模块** | `_bmad-method` | `_bmad/bmm/` | 旧脚本、路径引用需同步更新到 `bmm` |
+| **核心框架** | `_wizz-core` 实际上承载的是 BMad Method | `_wizz/core/` 变成通用框架层 | 迁移时不要再把 `_wizz/core/` 当成 Method 本体 |
+| **方法模块** | `_wizz-method` | `_wizz/bmm/` | 旧脚本、路径引用需同步更新到 `bmm` |
 | **配置方式** | 直接改模块文件 | 每个模块通过 `config.yaml` 管理 | 优先改配置，不要直接改生成文件 |
 | **文档读取** | 需要手动区分分片/非分片 | 自动扫描完整文档与分片入口 | 只有在兼容性场景下才建议手动分片 |
 
 ## 后续建议
 
-- 升级完成后先运行 `bmad-help`，确认可用工作流与下一步建议
+- 升级完成后先运行 `wizz-help`，确认可用工作流与下一步建议
 - 如果是既有项目，补充或更新 `project-context.md`，减少后续实现偏差
 - 在继续开发前，先做一次关键链路验证（安装、命令触发、文档读取）
 - 继续阅读：[如何安装 BMad](./install-bmad.md)、[管理项目上下文](./project-context.md)

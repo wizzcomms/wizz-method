@@ -108,5 +108,5 @@ Běžná rozhodnutí, která zabraňují konfliktům:
 - Dokumentujte rozhodnutí, která přesahují hranice epiců
 - Zaměřte se na oblasti náchylné ke konfliktům
 - Aktualizujte architekturu, jak se učíte
-- Použijte `bmad-correct-course` pro významné změny
+- Použijte `wizz-correct-course` pro významné změny
 :::

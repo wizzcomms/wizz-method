@@ -62,7 +62,7 @@ Voir [Brainstorming](./brainstorming.md) pour un aperçu plus approfondi du fonc
 Le Product Brief et le PRFAQ produisent tous deux des entrées pour le PRD — choisissez-en un en fonction du niveau de défi que vous souhaitez. Le brief est une découverte collaborative. Le PRFAQ est un défi. Les deux vous mènent à la même destination ; le PRFAQ teste si votre concept mérite d’y arriver.
 
 :::tip[Pas sûr ?]
-Exécutez `bmad-help` et décrivez votre situation. Il vous recommandera le bon point de départ en fonction de ce que vous avez déjà accompli et de ce que vous essayez de réaliser.
+Exécutez `wizz-help` et décrivez votre situation. Il vous recommandera le bon point de départ en fonction de ce que vous avez déjà accompli et de ce que vous essayez de réaliser.
 :::
 
 ## Que se passe-t-il après l’analyse ?

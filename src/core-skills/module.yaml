@@ -29,5 +29,5 @@ document_output_language:
 
 output_folder:
   prompt: "Where should output files be saved?"
-  default: "_bmad-output"
+  default: "_wizz-output"
   result: "{project-root}/{value}"

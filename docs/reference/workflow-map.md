@@ -13,10 +13,10 @@ inform the next, so agents always know what to build and why.
 The rationale and concepts come from agile methodologies that have been used across the industry with great success as a
 mental framework.
 
-If at any time you are unsure what to do, the `bmad-help` skill will help you stay on track or know what to do next. You
-can always refer to this for reference also - but `bmad-help` is fully interactive and much quicker if you have already
+If at any time you are unsure what to do, the `wizz-help` skill will help you stay on track or know what to do next. You
+can always refer to this for reference also - but `wizz-help` is fully interactive and much quicker if you have already
 installed the Wizz Method. Additionally, if you are using different modules that have extended the Wizz Method or added
-other complementary non-extension modules - `bmad-help` evolves to know all that is available to give you the best
+other complementary non-extension modules - `wizz-help` evolves to know all that is available to give you the best
 in-the-moment advice.
 
 Final important note: Every workflow below can be run directly with your tool of choice via skill or by loading an agent
@@ -35,10 +35,10 @@ it**](../explanation/analysis-phase.md).
 
 | Workflow                                                                  | Purpose                                                                    | Produces                  |
 |---------------------------------------------------------------------------|----------------------------------------------------------------------------|---------------------------|
-| `bmad-brainstorming`                                                      | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
-| `bmad-domain-research`, `bmad-market-research`, `bmad-technical-research` | Validate market, technical, or domain assumptions                          | Research findings         |
-| `bmad-product-brief`                                                      | Capture strategic vision — best when your concept is clear                 | `product-brief.md`        |
-| `bmad-prfaq`                                                              | Working Backwards — stress-test and forge your product concept             | `prfaq-{project}.md`      |
+| `wizz-brainstorming`                                                      | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
+| `wizz-domain-research`, `wizz-market-research`, `wizz-technical-research` | Validate market, technical, or domain assumptions                          | Research findings         |
+| `wizz-product-brief`                                                      | Capture strategic vision — best when your concept is clear                 | `product-brief.md`        |
+| `wizz-prfaq`                                                              | Working Backwards — stress-test and forge your product concept             | `prfaq-{project}.md`      |
 
 ## Phase 2: Planning
 
@@ -46,19 +46,19 @@ Define what to build and for whom.
 
 | Workflow                | Purpose                                                                             | Produces                                          |
 |-------------------------|-------------------------------------------------------------------------------------|---------------------------------------------------|
-| `bmad-prd`              | Create, update, or validate a PRD — facilitated discovery, three intents in one skill | Create/Update: `prd.md`, `addendum.md`, `decision-log.md`; Validate: `validation-report.html` + `.md` |
-| `bmad-ux`               | Design user experience (when UX matters) — DESIGN.md (visual) + EXPERIENCE.md (behavioral) spine pair | `DESIGN.md`, `EXPERIENCE.md`, `.decision-log.md`  |
+| `wizz-prd`              | Create, update, or validate a PRD — facilitated discovery, three intents in one skill | Create/Update: `prd.md`, `addendum.md`, `decision-log.md`; Validate: `validation-report.html` + `.md` |
+| `wizz-ux`               | Design user experience (when UX matters) — DESIGN.md (visual) + EXPERIENCE.md (behavioral) spine pair | `DESIGN.md`, `EXPERIENCE.md`, `.decision-log.md`  |
 
 :::tip[Three intents in one skill]
-`bmad-prd` handles the full PRD lifecycle. State your intent when invoking or the skill will ask:
+`wizz-prd` handles the full PRD lifecycle. State your intent when invoking or the skill will ask:
 
 - **Create** — new PRD from scratch via coached discovery; produces `prd.md`, `addendum.md`, and `decision-log.md`
 - **Update** — reconcile an existing PRD with a change signal, surfacing conflicts before applying changes
 - **Validate** — critique a PRD against a configurable checklist and produce a structured HTML findings report
 :::
 
-:::tip[Upstream: `bmad-product-brief`]
-`bmad-product-brief` (Phase 1) produces a `product-brief.md` that `bmad-prd` can source-extract during Discovery, reducing re-explanation and keeping the two documents aligned. Neither skill requires the other — start with `bmad-prd` directly if you already know what you're building.
+:::tip[Upstream: `wizz-product-brief`]
+`wizz-product-brief` (Phase 1) produces a `product-brief.md` that `wizz-prd` can source-extract during Discovery, reducing re-explanation and keeping the two documents aligned. Neither skill requires the other — start with `wizz-prd` directly if you already know what you're building.
 :::
 
 ## Phase 3: Solutioning
@@ -67,9 +67,9 @@ Decide how to build it and break work into stories.
 
 | Workflow                              | Purpose                                    | Produces                    |
 |---------------------------------------|--------------------------------------------|-----------------------------|
-| `bmad-create-architecture`            | Make technical decisions explicit          | `architecture.md` with ADRs |
-| `bmad-create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
-| `bmad-check-implementation-readiness` | Gate check before implementation           | PASS/CONCERNS/FAIL decision |
+| `wizz-create-architecture`            | Make technical decisions explicit          | `architecture.md` with ADRs |
+| `wizz-create-epics-and-stories`       | Break requirements into implementable work | Epic files with stories     |
+| `wizz-check-implementation-readiness` | Gate check before implementation           | PASS/CONCERNS/FAIL decision |
 
 ## Phase 4: Implementation
 
@@ -77,14 +77,14 @@ Build it, one story at a time. Coming soon, full phase 4 automation!
 
 | Workflow               | Purpose                                                                       | Produces                                             |
 |------------------------|-------------------------------------------------------------------------------|------------------------------------------------------|
-| `bmad-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle)              | `sprint-status.yaml`                                 |
-| `bmad-create-story`    | Prepare next story for implementation                                         | `story-[slug].md`                                    |
-| `bmad-dev-story`       | Implement the story                                                           | Working code + tests                                 |
-| `bmad-code-review`     | Validate implementation quality                                               | Approved or changes requested                        |
-| `bmad-correct-course`  | Handle significant mid-sprint changes                                         | Updated plan or re-routing                           |
-| `bmad-sprint-status`   | Track sprint progress and story status                                        | Sprint status update                                 |
-| `bmad-retrospective`   | Review after epic completion                                                  | Lessons learned                                      |
-| `bmad-investigate`     | Forensic case investigation with evidence-graded findings, calibrated to the input | `{slug}-investigation.md` |
+| `wizz-sprint-planning` | Initialize tracking (once per project to sequence the dev cycle)              | `sprint-status.yaml`                                 |
+| `wizz-create-story`    | Prepare next story for implementation                                         | `story-[slug].md`                                    |
+| `wizz-dev-story`       | Implement the story                                                           | Working code + tests                                 |
+| `wizz-code-review`     | Validate implementation quality                                               | Approved or changes requested                        |
+| `wizz-correct-course`  | Handle significant mid-sprint changes                                         | Updated plan or re-routing                           |
+| `wizz-sprint-status`   | Track sprint progress and story status                                        | Sprint status update                                 |
+| `wizz-retrospective`   | Review after epic completion                                                  | Lessons learned                                      |
+| `wizz-investigate`     | Forensic case investigation with evidence-graded findings, calibrated to the input | `{slug}-investigation.md` |
 
 ## Quick Flow (Parallel Track)
 
@@ -92,7 +92,7 @@ Skip phases 1-3 for small, well-understood work.
 
 | Workflow         | Purpose                                                                   | Produces           |
 |------------------|---------------------------------------------------------------------------|--------------------|
-| `bmad-quick-dev` | Unified quick flow — clarify intent, plan, implement, review, and present | `spec-*.md` + code |
+| `wizz-quick-dev` | Unified quick flow — clarify intent, plan, implement, review, and present | `spec-*.md` + code |
 
 ## Context Management
 
@@ -111,7 +111,7 @@ important to keep aligned with current conventions.
 
 **How to create it:**
 
-- **Manually** — Create `_bmad-output/project-context.md` with your technology stack and implementation rules
-- **Generate it** — Run `bmad-generate-project-context` to auto-generate from your architecture or codebase
+- **Manually** — Create `_wizz-output/project-context.md` with your technology stack and implementation rules
+- **Generate it** — Run `wizz-generate-project-context` to auto-generate from your architecture or codebase
 
 [**Learn more about project-context.md**](../explanation/project-context.md)

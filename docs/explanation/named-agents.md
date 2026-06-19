@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-You say "Hey Mary, let's brainstorm," and Mary activates. She greets you by name, in the language you configured, with her distinctive persona. She reminds you that `bmad-help` is always available. Then she skips the menu entirely and drops straight into brainstorming — because your intent was clear.
+You say "Hey Mary, let's brainstorm," and Mary activates. She greets you by name, in the language you configured, with her distinctive persona. She reminds you that `wizz-help` is always available. Then she skips the menu entirely and drops straight into brainstorming — because your intent was clear.
 
 This page explains what's actually happening and why the Wizz Method is designed this way.
 
@@ -17,7 +17,7 @@ The Wizz Method's agent model rests on three primitives that compose:
 |---|---|---|
 | **Skill** | Capability — a discrete thing the assistant can do (brainstorm, draft a PRD, implement a story) | `.claude/skills/{skill-name}/SKILL.md` (or your IDE's equivalent) |
 | **Named agent** | Persona continuity — a recognizable identity that wraps a menu of related skills with consistent voice, principles, and visual cues | Skills whose directory starts with `bmad-agent-*` |
-| **Customization** | Makes it yours — overrides that reshape an agent's behavior, add MCP integrations, swap templates, layer in org conventions | `_bmad/custom/{skill-name}.toml` (committed team overrides) and `.user.toml` (personal, gitignored) |
+| **Customization** | Makes it yours — overrides that reshape an agent's behavior, add MCP integrations, swap templates, layer in org conventions | `_wizz/custom/{skill-name}.toml` (committed team overrides) and `.user.toml` (personal, gitignored) |
 
 Pull any leg away and the experience collapses:
 
@@ -53,7 +53,7 @@ When you invoke a named agent, eight steps run in order:
 7. **Execute append steps** — any post-greet setup the team configured
 8. **Dispatch or present the menu** — if your opening message maps to a menu item, go directly; otherwise render the menu and wait for input
 
-Step 8 is where intent meets capability. "Hey Mary, let's brainstorm" skips rendering because `bmad-brainstorming` is an obvious match for `BP` on Mary's menu. If you say something ambiguous, she asks once, briefly, not as a confirmation ritual. If nothing fits, she continues the conversation normally.
+Step 8 is where intent meets capability. "Hey Mary, let's brainstorm" skips rendering because `wizz-brainstorming` is an obvious match for `BP` on Mary's menu. If you say something ambiguous, she asks once, briefly, not as a confirmation ritual. If nothing fits, she continues the conversation normally.
 
 ## Why Not Just a Menu?
 
@@ -67,25 +67,25 @@ The menu is still there as a fallback — show it when you're exploring, skip it
 
 Blank prompts assume you know the magic words. "Help me brainstorm" might work, but "let's ideate on my SaaS idea" might not, and the results depend on how you phrased the ask. You become responsible for prompt engineering.
 
-Named agents add structure without closing off freedom. The persona stays consistent, the capabilities are discoverable, and `bmad-help` is always one command away. You don't have to guess what the agent can do, and you don't need a manual to use it either.
+Named agents add structure without closing off freedom. The persona stays consistent, the capabilities are discoverable, and `wizz-help` is always one command away. You don't have to guess what the agent can do, and you don't need a manual to use it either.
 
 ## Customization as a First-Class Citizen
 
 The customization model is what lets this scale beyond a single developer.
 
-Every agent ships a `customize.toml` with sensible defaults. Teams commit overrides to `_bmad/custom/bmad-agent-{role}.toml`. Individuals can layer personal preferences in `.user.toml` (gitignored). The resolver merges all three at activation time with predictable structural rules.
+Every agent ships a `customize.toml` with sensible defaults. Teams commit overrides to `_wizz/custom/bmad-agent-{role}.toml`. Individuals can layer personal preferences in `.user.toml` (gitignored). The resolver merges all three at activation time with predictable structural rules.
 
-Most users never hand-author these files. The `bmad-customize` skill walks through picking the target, choosing agent vs workflow scope, authoring the override, and verifying the merge — so the customization surface stays accessible to anyone who understands their intent, not just those fluent in TOML.
+Most users never hand-author these files. The `wizz-customize` skill walks through picking the target, choosing agent vs workflow scope, authoring the override, and verifying the merge — so the customization surface stays accessible to anyone who understands their intent, not just those fluent in TOML.
 
 Concrete example: a team commits a single file telling Amelia to always use the Context7 MCP tool for library docs and to fall back to Linear when a story isn't in the local epics list. Every dev workflow Amelia dispatches (dev-story, quick-dev, create-story, code-review) inherits that behavior, with no source edits or per-workflow duplication required.
 
-There's also a second customization surface for *cross-cutting* concerns: the central `_bmad/config.toml` and `_bmad/config.user.toml` (both installer-owned, rebuilt from each module's `module.yaml`) plus `_bmad/custom/config.toml` (team, committed) and `_bmad/custom/config.user.toml` (personal, gitignored) for overrides. This is where the **agent roster** lives — the lightweight descriptors that roster consumers like `bmad-party-mode`, `bmad-retrospective`, and `bmad-advanced-elicitation` read to know who's available and how to embody them. Rebrand an agent org-wide with a team override; add fictional voices (Kirk, Spock, a domain expert persona) as personal experiments via the `.user.toml` override — without touching any skill folder. The per-skill file shapes how Mary *behaves* when she activates; the central config shapes how other skills *see* her when they look at the field.
+There's also a second customization surface for *cross-cutting* concerns: the central `_wizz/config.toml` and `_wizz/config.user.toml` (both installer-owned, rebuilt from each module's `module.yaml`) plus `_wizz/custom/config.toml` (team, committed) and `_wizz/custom/config.user.toml` (personal, gitignored) for overrides. This is where the **agent roster** lives — the lightweight descriptors that roster consumers like `wizz-party-mode`, `wizz-retrospective`, and `wizz-advanced-elicitation` read to know who's available and how to embody them. Rebrand an agent org-wide with a team override; add fictional voices (Kirk, Spock, a domain expert persona) as personal experiments via the `.user.toml` override — without touching any skill folder. The per-skill file shapes how Mary *behaves* when she activates; the central config shapes how other skills *see* her when they look at the field.
 
 For the full customization surface and worked examples, see:
 
 - [How to Customize Wizz Method](../how-to/customize-bmad.md) — the reference for what's customizable and how merge works
 - [How to Expand Wizz Method for Your Organization](../how-to/expand-bmad-for-your-org.md) — five worked recipes spanning agent-wide rules, workflow conventions, external publishing, template swaps, and agent roster customization
-- `bmad-customize` skill — the guided authoring helper that turns intent into a correctly-placed, verified override file
+- `wizz-customize` skill — the guided authoring helper that turns intent into a correctly-placed, verified override file
 
 ## The Bigger Idea
 

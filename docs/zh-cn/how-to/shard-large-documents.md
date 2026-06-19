@@ -5,7 +5,7 @@ sidebar:
   order: 10
 ---
 
-当单个 Markdown 文档过大、影响模型读取时，可使用 `bmad-shard-doc` 工作流把文档拆成按章节组织的小文件，降低上下文压力。
+当单个 Markdown 文档过大、影响模型读取时，可使用 `wizz-shard-doc` 工作流把文档拆成按章节组织的小文件，降低上下文压力。
 
 :::caution[已弃用]
 这是兼容性方案，默认不推荐。随着工作流更新，以及主流模型/工具逐步支持子进程（subprocesses），很多场景将不再需要手动分片。
@@ -25,11 +25,11 @@ sidebar:
 
 ```text
 分片前：
-_bmad-output/planning-artifacts/
+_wizz-output/planning-artifacts/
 └── PRD.md（大型 50k token 文件）
 
 分片后：
-_bmad-output/planning-artifacts/
+_wizz-output/planning-artifacts/
 └── prd/
     ├── index.md                    # 带有描述的目录
     ├── overview.md                 # 第 1 节
@@ -40,10 +40,10 @@ _bmad-output/planning-artifacts/
 
 ## 步骤
 
-### 1. 运行 `bmad-shard-doc` 工作流
+### 1. 运行 `wizz-shard-doc` 工作流
 
 ```bash
-/bmad-shard-doc
+/wizz-shard-doc
 ```
 
 ### 2. 按交互流程完成分片

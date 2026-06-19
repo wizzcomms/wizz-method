@@ -1,11 +1,11 @@
 ---
 title: "Enquête de code"
-description: Comment bmad-investigate traite chaque problème comme une scène de crime, classe les preuves et produit un dossier structuré sur lequel les ingénieurs peuvent agir
+description: Comment wizz-investigate traite chaque problème comme une scène de crime, classe les preuves et produit un dossier structuré sur lequel les ingénieurs peuvent agir
 sidebar:
   order: 10
 ---
 
-Vous confiez à `bmad-investigate` un journal de plantage, une stack trace, ou simplement un « ça marchait avant, plus
+Vous confiez à `wizz-investigate` un journal de plantage, une stack trace, ou simplement un « ça marchait avant, plus
 maintenant ». Le skill prend le relais et applique la rigueur d’un enquêteur pendant toute son exécution. Il ne se lance pas dans
 la correction. Il ouvre un dossier d’enquête.
 
@@ -109,7 +109,7 @@ mode.
 
 ## La méthodologie réside dans le skill
 
-La discipline d’enquête est une propriété du skill lui-même. Quiconque invoque `bmad-investigate` adopte la méthodologie
+La discipline d’enquête est une propriété du skill lui-même. Quiconque invoque `wizz-investigate` adopte la méthodologie
 et le style de communication pendant l’exécution : précision clinique, langage centré sur la preuve, pas de prudence
 inutile, structuration en dossier d’enquête. Quand le skill se termine, l’appelant retrouve sa voix habituelle. Pas de
 changement de persona, juste un ajustement de ton dicté par les principes du skill.
@@ -140,7 +140,7 @@ La plupart des approches de « débogage par IA » actuelles mêlent preuves
 flux de texte plausible. Le signal est difficile à trouver, les impasses se répètent, et le dossier, s’il en existe un, est
 un historique de conversation que personne ne veut lire.
 
-`bmad-investigate` traite l’enquête comme une discipline avec son propre livrable. Chaque preuve est classée. Les
+`wizz-investigate` traite l’enquête comme une discipline avec son propre livrable. Chaque preuve est classée. Les
 hypothèses ont un statut. Les fausses pistes sont documentées, pas effacées. Le dossier survit à la session.
 
 Quand un bug similaire réapparaîtra, vous aurez un point de départ concret, pas un prompt vide.

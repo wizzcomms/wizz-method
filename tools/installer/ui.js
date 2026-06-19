@@ -854,7 +854,7 @@ class UI {
           project_name: path.basename(directory),
           communication_language: 'English',
           document_output_language: 'English',
-          output_folder: '_bmad-output',
+          output_folder: '_wizz-output',
         };
         await prompts.log.info('Using default configuration (--yes flag)');
       }

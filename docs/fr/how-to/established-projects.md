@@ -20,8 +20,8 @@ Ce guide couvre le flux de travail essentiel pour l’intégration à des projet
 Si vous avez terminé tous les epics et stories du PRD[^1] via le processus BMad, nettoyez ces fichiers. Archivez-les, supprimez-les, ou appuyez-vous sur l’historique des versions si nécessaire. Ne conservez pas ces fichiers dans :
 
 - `docs/`
-- `_bmad-output/planning-artifacts/`
-- `_bmad-output/implementation-artifacts/`
+- `_wizz-output/planning-artifacts/`
+- `_wizz-output/implementation-artifacts/`
 
 ## Étape 2 : Créer le contexte du projet
 
@@ -32,7 +32,7 @@ Générez `project-context.md` pour capturer les patterns et conventions de votr
 Exécutez le workflow de génération de contexte du projet :
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 Cela analyse votre base de code pour identifier :
@@ -42,7 +42,7 @@ Cela analyse votre base de code pour identifier :
 - Les approches de test
 - Les patterns spécifiques aux frameworks
 
-Vous pouvez examiner et affiner le fichier généré, ou le créer manuellement à `_bmad-output/project-context.md` si vous préférez.
+Vous pouvez examiner et affiner le fichier généré, ou le créer manuellement à `_wizz-output/project-context.md` si vous préférez.
 
 [En savoir plus sur le contexte du projet](../explanation/project-context.md)
 
@@ -55,22 +55,22 @@ Votre dossier `docs/` doit contenir une documentation succincte et bien organis�
 - L’architecture
 - Toute autre information pertinente sur le projet
 
-Pour les projets complexes, envisagez d’utiliser le workflow `bmad-document-project`. Il offre des variantes d’exécution qui analyseront l’ensemble de votre projet et documenteront son état actuel réel.
+Pour les projets complexes, envisagez d’utiliser le workflow `wizz-document-project`. Il offre des variantes d’exécution qui analyseront l’ensemble de votre projet et documenteront son état actuel réel.
 
 ## Étape 4 : Obtenir de l’aide
 
 ### BMad-Help : Votre point de départ
 
-**Exécutez `bmad-help` chaque fois que vous n’êtes pas sûr de la prochaine étape.** Ce guide intelligent :
+**Exécutez `wizz-help` chaque fois que vous n’êtes pas sûr de la prochaine étape.** Ce guide intelligent :
 
 - Inspecte votre projet pour voir ce qui a déjà été fait
 - Affiche les options basées sur vos modules installés
 - Comprend les requêtes en langage naturel
 
 ```
-bmad-help J'ai une app Rails existante, par où dois-je commencer ?
-bmad-help Quelle est la différence entre quick-dev et la méthode complète ?
-bmad-help Montre-moi quels workflows sont disponibles
+wizz-help J'ai une app Rails existante, par où dois-je commencer ?
+wizz-help Quelle est la différence entre quick-dev et la méthode complète ?
+wizz-help Montre-moi quels workflows sont disponibles
 ```
 
 BMad-Help s’exécute également **automatiquement à la fin de chaque workflow**, fournissant des conseils clairs sur exactement quoi faire ensuite.
@@ -81,7 +81,7 @@ Vous avez deux options principales selon l’ampleur des modifications :
 
 | Portée                              | Approche recommandée                                                                                                                                                                 |
 |-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Petites mises à jour ou ajouts**  | Exécutez `bmad-quick-dev` pour clarifier l’intention, planifier, implémenter et réviser dans un seul workflow. La méthode BMad complète en quatre phases est probablement excessive. |
+| **Petites mises à jour ou ajouts**  | Exécutez `wizz-quick-dev` pour clarifier l’intention, planifier, implémenter et réviser dans un seul workflow. La méthode BMad complète en quatre phases est probablement excessive. |
 | **Modifications ou ajouts majeurs** | Commencez avec la méthode BMad, en appliquant autant ou aussi peu de rigueur que nécessaire.                                                                                         |
 
 ### Pendant la création du PRD

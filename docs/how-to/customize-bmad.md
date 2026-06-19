@@ -7,8 +7,8 @@ sidebar:
 
 Tailor agent personas, inject domain context, add capabilities, and configure workflow behavior -- all without modifying installed files. Your customizations survive every update.
 
-:::tip[Don't want to hand-author TOML? Use `bmad-customize`]
-The `bmad-customize` skill is a guided authoring helper for the **per-skill agent/workflow override surface** described in this doc. It scans what's customizable in your installation, helps you choose the right surface (agent vs workflow) for your intent, writes the override file for you, and verifies the merge landed. Central-config overrides (`_bmad/custom/config.toml`) are out of scope for v1 — hand-author those per the Central Configuration section below. Run the skill whenever you want to make a per-skill change; this doc is the reference for *what* each surface exposes and how merging works.
+:::tip[Don't want to hand-author TOML? Use `wizz-customize`]
+The `wizz-customize` skill is a guided authoring helper for the **per-skill agent/workflow override surface** described in this doc. It scans what's customizable in your installation, helps you choose the right surface (agent vs workflow) for your intent, writes the override file for you, and verifies the merge landed. Central-config overrides (`_wizz/custom/config.toml`) are out of scope for v1 — hand-author those per the Central Configuration section below. Run the skill whenever you want to make a per-skill change; this doc is the reference for *what* each surface exposes and how merging works.
 :::
 
 ## When to Use This
@@ -33,12 +33,12 @@ Every customizable skill ships a `customize.toml` file with its defaults. This f
 ### Three-Layer Override Model
 
 ```text
-Priority 1 (wins): _bmad/custom/{skill-name}.user.toml  (personal, gitignored)
-Priority 2:        _bmad/custom/{skill-name}.toml        (team/org, committed)
+Priority 1 (wins): _wizz/custom/{skill-name}.user.toml  (personal, gitignored)
+Priority 2:        _wizz/custom/{skill-name}.toml        (team/org, committed)
 Priority 3 (last): skill's own customize.toml                    (defaults)
 ```
 
-The `_bmad/custom/` folder starts empty. Files only appear when someone actively customizes.
+The `_wizz/custom/` folder starts empty. Files only appear when someone actively customizes.
 
 ### Merge Rules (by shape, not by field name)
 
@@ -66,7 +66,7 @@ The resolver applies four structural rules. Field names are never special-cased 
 Look at the skill's `customize.toml` in its installed directory. For example, the PM agent:
 
 ```text
-.claude/skills/bmad-agent-pm/customize.toml
+.claude/skills/wizz-agent-pm/customize.toml
 ```
 
 (Path varies by IDE -- Cursor uses `.cursor/skills/`, Cline uses `.cline/skills/`, and so on.)
@@ -75,12 +75,12 @@ This file is the canonical schema. Every field you see is customizable (excludin
 
 ### 2. Create Your Override File
 
-Create the `_bmad/custom/` directory in your project root if it doesn't exist. Then create a file named after the skill:
+Create the `_wizz/custom/` directory in your project root if it doesn't exist. Then create a file named after the skill:
 
 ```text
-_bmad/custom/
-  bmad-agent-pm.toml        # team overrides (committed to git)
-  bmad-agent-pm.user.toml   # personal preferences (gitignored)
+_wizz/custom/
+  wizz-agent-pm.toml        # team overrides (committed to git)
+  wizz-agent-pm.user.toml   # personal preferences (gitignored)
 ```
 
 :::caution[Do NOT copy the whole `customize.toml`]
@@ -92,7 +92,7 @@ Copying the full `customize.toml` into an override is actively harmful: the next
 **Example — changing the icon and adding one principle**:
 
 ```toml
-# _bmad/custom/bmad-agent-pm.toml
+# _wizz/custom/wizz-agent-pm.toml
 # Just the fields I'm changing. Everything else inherits.
 
 [agent]
@@ -111,7 +111,7 @@ All examples below assume the Wizz Method's flat agent schema. Fields live direc
 **Scalars (icon, role, identity, communication_style).** Scalar overrides win. You only need to set the fields you're changing:
 
 ```toml
-# _bmad/custom/bmad-agent-pm.toml
+# _wizz/custom/wizz-agent-pm.toml
 
 [agent]
 icon = "🏥"
@@ -133,7 +133,7 @@ persistent_facts = [
   "All PRDs require legal sign-off before engineering kickoff.",
   "Target users are clinicians, not patients -- frame examples accordingly.",
   "file:{project-root}/docs/compliance/hipaa-overview.md",
-  "file:{project-root}/_bmad/custom/company-glossary.md",
+  "file:{project-root}/_wizz/custom/company-glossary.md",
 ]
 
 # Adds to the agent's value system
@@ -152,7 +152,7 @@ activation_steps_prepend = [
 # Runs AFTER greet, BEFORE the menu. Use for context-heavy setup that should
 # happen once the user has been acknowledged.
 activation_steps_append = [
-  "Read {project-root}/_bmad/custom/company-glossary.md if it exists.",
+  "Read {project-root}/_wizz/custom/company-glossary.md if it exists.",
 ]
 ```
 
@@ -174,7 +174,7 @@ skill = "custom-create-epics"
 code = "RC"
 description = "Run compliance pre-check"
 prompt = """
-Read {project-root}/_bmad/custom/compliance-checklist.md
+Read {project-root}/_wizz/custom/compliance-checklist.md
 and scan all documents in {planning_artifacts} against it.
 Report any gaps and cite the relevant regulatory section.
 """
@@ -182,16 +182,16 @@ Report any gaps and cite the relevant regulatory section.
 
 Each menu item has exactly one of `skill` (invokes a registered skill) or `prompt` (executes the text directly). Items not listed in your override keep their defaults.
 
-**Referencing files.** When a field's text needs to point at a file (in `persistent_facts`, `activation_steps_prepend`/`activation_steps_append`, or a menu item's `prompt`), use a full path rooted at `{project-root}`. Even if the file sits next to your override in `_bmad/custom/`, spell out the full path: `{project-root}/_bmad/custom/info.md`. The agent resolves `{project-root}` at runtime.
+**Referencing files.** When a field's text needs to point at a file (in `persistent_facts`, `activation_steps_prepend`/`activation_steps_append`, or a menu item's `prompt`), use a full path rooted at `{project-root}`. Even if the file sits next to your override in `_wizz/custom/`, spell out the full path: `{project-root}/_wizz/custom/info.md`. The agent resolves `{project-root}` at runtime.
 
 ### 4. Personal vs Team
 
-**Team file** (`bmad-agent-pm.toml`): Committed to git. Shared across the org. Use for compliance rules, company persona, custom capabilities.
+**Team file** (`wizz-agent-pm.toml`): Committed to git. Shared across the org. Use for compliance rules, company persona, custom capabilities.
 
-**Personal file** (`bmad-agent-pm.user.toml`): Gitignored automatically. Use for tone adjustments, personal workflow preferences, and private facts the agent should keep in mind.
+**Personal file** (`wizz-agent-pm.user.toml`): Gitignored automatically. Use for tone adjustments, personal workflow preferences, and private facts the agent should keep in mind.
 
 ```toml
-# _bmad/custom/bmad-agent-pm.user.toml
+# _wizz/custom/wizz-agent-pm.user.toml
 
 [agent]
 persistent_facts = [
@@ -204,41 +204,41 @@ persistent_facts = [
 On activation, the agent's SKILL.md runs a shared Python script that does the three-layer merge and returns the resolved block as JSON. The script uses the Python standard library's `tomllib` module (no external dependencies), so plain `python3` is enough:
 
 ```bash
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
+python3 {project-root}/_wizz/scripts/resolve_customization.py \
   --skill {skill-root} \
   --key agent
 ```
 
 **Requirements**: Python 3.11+ (earlier versions don't include `tomllib`). No `pip install`, no `uv`, no virtualenv. Check with `python3 --version`. Some platforms (macOS without Homebrew, Ubuntu 22.04) default `python3` to 3.10 or earlier, so you may need to install 3.11+ separately.
 
-`--skill` points at the skill's installed directory (where `customize.toml` lives). The skill name is derived from the directory's basename, and the script looks up `_bmad/custom/{skill-name}.toml` and `{skill-name}.user.toml` automatically.
+`--skill` points at the skill's installed directory (where `customize.toml` lives). The skill name is derived from the directory's basename, and the script looks up `_wizz/custom/{skill-name}.toml` and `{skill-name}.user.toml` automatically.
 
 Useful invocations:
 
 ```bash
 # Resolve the full agent block
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /abs/path/to/bmad-agent-pm \
+python3 {project-root}/_wizz/scripts/resolve_customization.py \
+  --skill /abs/path/to/wizz-agent-pm \
   --key agent
 
 # Resolve a single field
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /abs/path/to/bmad-agent-pm \
+python3 {project-root}/_wizz/scripts/resolve_customization.py \
+  --skill /abs/path/to/wizz-agent-pm \
   --key agent.icon
 
 # Full dump
-python3 {project-root}/_bmad/scripts/resolve_customization.py \
-  --skill /abs/path/to/bmad-agent-pm
+python3 {project-root}/_wizz/scripts/resolve_customization.py \
+  --skill /abs/path/to/wizz-agent-pm
 ```
 
 Output is always JSON. If the script is unavailable on a given platform, the SKILL.md tells the agent to read the three TOML files directly and apply the same merge rules.
 
 ## Workflow Customization
 
-Workflows (skills that drive multi-step processes like `bmad-product-brief`) share the same override mechanism as agents. Their customizable surface lives under `[workflow]` instead of `[agent]`:
+Workflows (skills that drive multi-step processes like `wizz-product-brief`) share the same override mechanism as agents. Their customizable surface lives under `[workflow]` instead of `[agent]`:
 
 ```toml
-# _bmad/custom/bmad-product-brief.toml
+# _wizz/custom/wizz-product-brief.toml
 
 [workflow]
 # Same prepend/append semantics as agents — runs before and after the workflow's
@@ -269,7 +269,7 @@ Customizable workflows run their activation in a fixed sequence so you know exac
 1. Resolve the `[workflow]` block (base → team → user merge)
 2. Execute `activation_steps_prepend` in order
 3. Load `persistent_facts` as foundational context for the run
-4. Load config (`_bmad/bmm/config.yaml`) and resolve standard variables (project name, languages, paths, date)
+4. Load config (`_wizz/bmm/config.yaml`) and resolve standard variables (project name, languages, paths, date)
 5. Greet the user
 6. Execute `activation_steps_append` in order
 
@@ -285,22 +285,22 @@ If you need a fine-grained knob that isn't exposed yet, either use `activation_s
 
 ## Central Configuration
 
-Per-skill `customize.toml` covers **deep behavior** (hooks, menus, persistent_facts, persona overrides for a single agent or workflow). A separate surface covers **cross-cutting state** — install answers and the agent roster that external skills like `bmad-party-mode`, `bmad-retrospective`, and `bmad-advanced-elicitation` consume. That surface lives in four TOML files at project root:
+Per-skill `customize.toml` covers **deep behavior** (hooks, menus, persistent_facts, persona overrides for a single agent or workflow). A separate surface covers **cross-cutting state** — install answers and the agent roster that external skills like `wizz-party-mode`, `wizz-retrospective`, and `wizz-advanced-elicitation` consume. That surface lives in four TOML files at project root:
 
 ```text
-_bmad/config.toml               (installer-owned)  team scope:   install answers + agent roster
-_bmad/config.user.toml          (installer-owned)  user scope:   user_name, language, skill level
-_bmad/custom/config.toml        (human-authored)   team overrides (committed to git)
-_bmad/custom/config.user.toml   (human-authored)   personal overrides (gitignored)
+_wizz/config.toml               (installer-owned)  team scope:   install answers + agent roster
+_wizz/config.user.toml          (installer-owned)  user scope:   user_name, language, skill level
+_wizz/custom/config.toml        (human-authored)   team overrides (committed to git)
+_wizz/custom/config.user.toml   (human-authored)   personal overrides (gitignored)
 ```
 
 ### Four-Layer Merge
 
 ```text
-Priority 1 (wins): _bmad/custom/config.user.toml
-Priority 2:        _bmad/custom/config.toml
-Priority 3:        _bmad/config.user.toml
-Priority 4 (base): _bmad/config.toml
+Priority 1 (wins): _wizz/custom/config.user.toml
+Priority 2:        _wizz/custom/config.toml
+Priority 3:        _wizz/config.user.toml
+Priority 4 (base): _wizz/config.toml
 ```
 
 Same structural rules as per-skill customize (scalars override, tables deep-merge, `code`/`id`-keyed arrays merge by key, other arrays append).
@@ -309,30 +309,30 @@ Same structural rules as per-skill customize (scalars override, tables deep-merg
 
 The installer partitions answers by the `scope:` declared on each prompt in `module.yaml`:
 
-- `[core]` and `[modules.<code>]` sections — install answers. Scope `team` lands in `_bmad/config.toml`; scope `user` lands in `_bmad/config.user.toml`.
+- `[core]` and `[modules.<code>]` sections — install answers. Scope `team` lands in `_wizz/config.toml`; scope `user` lands in `_wizz/config.user.toml`.
 - `[agents.<code>]` — agent essence (code, name, title, icon, description, team) distilled from each module's `module.yaml` `agents:` block. Always team-scoped.
 
 ### Editing Rules
 
-- `_bmad/config.toml` and `_bmad/config.user.toml` are **regenerated every install** from the answers collected during the installer flow. Treat them as read-only outputs — direct edits will be overwritten on the next install. To change an install answer durably, re-run the installer (it remembers your prior answers as defaults) or shadow the value in `_bmad/custom/config.toml`.
-- `_bmad/custom/config.toml` and `_bmad/custom/config.user.toml` are **never touched** by the installer. This is the correct surface for custom agents, agent descriptor overrides, team-enforced settings, and any value you want to pin regardless of install answers.
+- `_wizz/config.toml` and `_wizz/config.user.toml` are **regenerated every install** from the answers collected during the installer flow. Treat them as read-only outputs — direct edits will be overwritten on the next install. To change an install answer durably, re-run the installer (it remembers your prior answers as defaults) or shadow the value in `_wizz/custom/config.toml`.
+- `_wizz/custom/config.toml` and `_wizz/custom/config.user.toml` are **never touched** by the installer. This is the correct surface for custom agents, agent descriptor overrides, team-enforced settings, and any value you want to pin regardless of install answers.
 
 ### Example — Rebrand an Agent
 
 ```toml
-# _bmad/custom/config.toml (committed to git, applies to every developer)
+# _wizz/custom/config.toml (committed to git, applies to every developer)
 
-[agents.bmad-agent-pm]
+[agents.wizz-agent-pm]
 description = "Healthcare PM — regulatory-aware, stakeholder-driven, FDA-shaped questions first."
 icon = "🏥"
 ```
 
-The resolver merges over the installer-written `[agents.bmad-agent-pm]`. `bmad-party-mode` and any other roster consumer pick up the new description automatically.
+The resolver merges over the installer-written `[agents.wizz-agent-pm]`. `wizz-party-mode` and any other roster consumer pick up the new description automatically.
 
 ### Example — Add a Fictional Agent
 
 ```toml
-# _bmad/custom/config.user.toml (personal, gitignored)
+# _wizz/custom/config.user.toml (personal, gitignored)
 
 [agents.kirk]
 team = "startrek"
@@ -347,7 +347,7 @@ No skill folder required — the essence alone is enough for party-mode to spawn
 ### Example — Override Module Install Settings
 
 ```toml
-# _bmad/custom/config.toml
+# _wizz/custom/config.toml
 
 [modules.bmm]
 planning_artifacts = "/shared/org-planning-artifacts"
@@ -359,12 +359,12 @@ The override wins over whatever each developer answered during their local insta
 
 | Need | Use |
 |---|---|
-| Add MCP tool calls to every dev workflow | Per-skill: `_bmad/custom/bmad-agent-dev.toml` `persistent_facts` |
-| Add a menu item to an agent | Per-skill: `_bmad/custom/bmad-agent-{role}.toml` `[[agent.menu]]` |
-| Swap a workflow's output template | Per-skill: `_bmad/custom/{workflow}.toml` scalar override |
-| Rebrand an agent's public descriptor | **Central**: `_bmad/custom/config.toml` `[agents.<code>]` |
-| Add a custom or fictional agent to the roster | **Central**: `_bmad/custom/config.*.toml` new `[agents.<code>]` entry |
-| Pin team-enforced install settings | **Central**: `_bmad/custom/config.toml` `[modules.<code>]` or `[core]` |
+| Add MCP tool calls to every dev workflow | Per-skill: `_wizz/custom/wizz-agent-dev.toml` `persistent_facts` |
+| Add a menu item to an agent | Per-skill: `_wizz/custom/bmad-agent-{role}.toml` `[[agent.menu]]` |
+| Swap a workflow's output template | Per-skill: `_wizz/custom/{workflow}.toml` scalar override |
+| Rebrand an agent's public descriptor | **Central**: `_wizz/custom/config.toml` `[agents.<code>]` |
+| Add a custom or fictional agent to the roster | **Central**: `_wizz/custom/config.*.toml` new `[agents.<code>]` entry |
+| Pin team-enforced install settings | **Central**: `_wizz/custom/config.toml` `[modules.<code>]` or `[core]` |
 
 Use both surfaces in the same project as needed.
 
@@ -376,7 +376,7 @@ For enterprise-oriented recipes (shaping an agent across every workflow it dispa
 
 **Customization not appearing?**
 
-- Verify your file is in `_bmad/custom/` with the correct skill name
+- Verify your file is in `_wizz/custom/` with the correct skill name
 - Check TOML syntax: strings must be quoted, table headers use `[section]`, array-of-tables use `[[section]]`, and any scalar or array keys for a table must appear *before* any of that table's `[[subtables]]` in the file
 - For agents, customization lives under `[agent]` -- fields written below that header belong to `agent` until another table header begins
 - Remember `agent.name` and `agent.title` are read-only; overrides there have no effect
@@ -387,9 +387,9 @@ For enterprise-oriented recipes (shaping an agent across every workflow it dispa
 
 **Need to see what's customizable?**
 
-- Run the `bmad-customize` skill — it enumerates every customizable skill installed in your project, shows which ones already have overrides, and walks you through adding or updating one
+- Run the `wizz-customize` skill — it enumerates every customizable skill installed in your project, shows which ones already have overrides, and walks you through adding or updating one
 - Or read the skill's `customize.toml` directly — every field there is customizable (except `name` and `title`)
 
 **Need to reset?**
 
-- Delete your override file from `_bmad/custom/` -- the skill falls back to its built-in defaults
+- Delete your override file from `_wizz/custom/` -- the skill falls back to its built-in defaults

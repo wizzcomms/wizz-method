@@ -31,11 +31,11 @@ Sử dụng tệp `project-context.md` để đảm bảo các agent AI tuân th
 
 ### Lựa chọn A: Tạo thủ công
 
-Tạo tệp tại `_bmad-output/project-context.md`:
+Tạo tệp tại `_wizz-output/project-context.md`:
 
 ```bash
-mkdir -p _bmad-output
-touch _bmad-output/project-context.md
+mkdir -p _wizz-output
+touch _wizz-output/project-context.md
 ```
 
 Thêm stack công nghệ và các quy tắc triển khai của bạn:
@@ -77,7 +77,7 @@ sections_completed: ['technology_stack', 'critical_rules']
 Chạy workflow trong một phiên chat mới:
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 Workflow sẽ quét tài liệu kiến trúc và tệp dự án để tạo tệp context ghi lại các quyết định đã được đưa ra.
@@ -87,7 +87,7 @@ Workflow sẽ quét tài liệu kiến trúc và tệp dự án để tạo tệ
 Với các dự án hiện có, chạy:
 
 ```bash
-bmad-generate-project-context
+wizz-generate-project-context
 ```
 
 Workflow sẽ phân tích codebase để nhận diện quy ước, sau đó tạo tệp context để bạn xem lại và chỉnh sửa.
