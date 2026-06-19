@@ -1,23 +1,78 @@
 // wizz-init — aplica a personalização Wizz num projeto que já tem o BMAD instalado.
 //
 // O que faz (idempotente, seguro de rodar de novo):
-//   1. Seta o idioma para PT-BR em _bmad/bmm/config.yaml (communication_language
+//   1. Pergunta o idioma e o seta em _bmad/bmm/config.yaml (communication_language
 //      e document_output_language).
 //   2. Copia os overrides Wizz (overrides/*.toml) para _bmad/custom/, dando aos
-//      agentes BMAD o tom PT-BR fácil + protocolo de encerramento.
+//      agentes BMAD o tom fácil + protocolo de encerramento.
 //
 // Uso:
-//   node src/modules/wizz/scripts/wizz-init.mjs [caminho-do-projeto]
-// Sem argumento, usa o diretório atual.
+//   node src/modules/wizz/scripts/wizz-init.mjs [caminho-do-projeto] [--lang "<idioma>"]
+// Sem argumento de caminho, usa o diretório atual.
+// O idioma pode ser passado de forma não-interativa por flag (--lang "English")
+// ou pela variável de ambiente WIZZ_LANG. Sem isso, num terminal interativo o
+// script pergunta; em CI (sem TTY) usa o padrão "Português (BR)".
 
 import { readFile, writeFile, readdir, mkdir, access } from 'node:fs/promises';
 import { constants } from 'node:fs';
+import { createInterface } from 'node:readline';
+import { stdin, stdout } from 'node:process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const LANG = 'Português (BR)';
+const DEFAULT_LANG = 'Português (BR)';
+const LANG_OPTIONS = ['Português (BR)', 'English', 'Español', 'Français', 'Deutsch', 'Italiano'];
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const overridesDir = path.resolve(__dirname, '..', 'overrides');
+
+// Lê o idioma pedido por flag (--lang "x" / --lang=x) ou por env WIZZ_LANG.
+function langFromArgs(argv) {
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === '--lang' || a === '--language') return (argv[i + 1] || '').trim() || null;
+    const m = a.match(/^--lang(?:uage)?=(.+)$/);
+    if (m) return m[1].trim();
+  }
+  if (process.env.WIZZ_LANG && process.env.WIZZ_LANG.trim()) return process.env.WIZZ_LANG.trim();
+  return null;
+}
+
+// Pergunta promisificada sobre o readline estável (node:readline).
+function ask(rl, q) {
+  return new Promise((resolve) => rl.question(q, resolve));
+}
+
+// Decide o idioma: flag/env > prompt interativo > padrão PT-BR (não-interativo).
+async function pickLanguage(argv) {
+  const fromArgs = langFromArgs(argv);
+  if (fromArgs) return { lang: fromArgs, source: 'flag/env' };
+
+  if (!stdin.isTTY) return { lang: DEFAULT_LANG, source: 'padrão (sem TTY)' };
+
+  const rl = createInterface({ input: stdin, output: stdout });
+  try {
+    console.log('Em qual idioma os agentes devem se comunicar?');
+    for (const [i, opt] of LANG_OPTIONS.entries()) console.log(`  ${i + 1}) ${opt}`);
+    console.log(`  ${LANG_OPTIONS.length + 1}) Outro (digitar)`);
+    const raw = await ask(rl, `Escolha [1-${LANG_OPTIONS.length + 1}] (Enter = 1): `);
+    const answer = raw.trim();
+
+    if (answer === '') return { lang: LANG_OPTIONS[0], source: 'escolha' };
+    const n = Number(answer);
+    if (Number.isInteger(n) && n >= 1 && n <= LANG_OPTIONS.length) {
+      return { lang: LANG_OPTIONS[n - 1], source: 'escolha' };
+    }
+    if (n === LANG_OPTIONS.length + 1) {
+      const customRaw = await ask(rl, 'Digite o idioma (ex.: "Português (PT)"): ');
+      const custom = customRaw.trim();
+      return { lang: custom || DEFAULT_LANG, source: custom ? 'escolha' : 'padrão' };
+    }
+    // resposta não numérica: trata como idioma livre digitado direto
+    return { lang: answer, source: 'escolha' };
+  } finally {
+    rl.close();
+  }
+}
 
 async function exists(p) {
   try {
@@ -45,8 +100,22 @@ function upsertYamlKey(content, key, value) {
   return lines.join('\n');
 }
 
+// Primeiro argumento posicional (ignora flags --x e o valor de --lang/--language).
+function projectArg(argv) {
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === '--lang' || a === '--language') {
+      i++; // pula o valor da flag
+      continue;
+    }
+    if (a.startsWith('--')) continue;
+    return a;
+  }
+  return null;
+}
+
 async function main() {
-  const projectRoot = path.resolve(process.argv[2] || process.cwd());
+  const projectRoot = path.resolve(projectArg(process.argv.slice(2)) || process.cwd());
   const bmadDir = path.join(projectRoot, '_bmad');
 
   if (!(await exists(bmadDir))) {
@@ -55,14 +124,15 @@ async function main() {
 
   const done = [];
 
-  // 1) Idioma PT-BR no config do bmm.
+  // 1) Idioma escolhido no config do bmm.
+  const { lang, source } = await pickLanguage(process.argv.slice(2));
   const bmmConfig = path.join(bmadDir, 'bmm', 'config.yaml');
   if (await exists(bmmConfig)) {
     let content = await readFile(bmmConfig, 'utf8');
-    content = upsertYamlKey(content, 'communication_language', LANG);
-    content = upsertYamlKey(content, 'document_output_language', LANG);
+    content = upsertYamlKey(content, 'communication_language', lang);
+    content = upsertYamlKey(content, 'document_output_language', lang);
     await writeFile(bmmConfig, content, 'utf8');
-    done.push(`idioma → "${LANG}" em _bmad/bmm/config.yaml`);
+    done.push(`idioma → "${lang}" (${source}) em _bmad/bmm/config.yaml`);
   } else {
     done.push('aviso: _bmad/bmm/config.yaml não encontrado — idioma não setado (instale o módulo bmm)');
   }

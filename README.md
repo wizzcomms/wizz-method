@@ -45,11 +45,13 @@ Siga os prompts do instalador, depois abra seu IDE de IA (Claude Code, Cursor, e
 npx wizz-method install --directory /caminho/do/projeto --modules bmm --tools claude-code --yes
 ```
 
-Em seguida, rode a personalização Wizz (idioma PT-BR + overrides dos agentes BMAD). O comando é idempotente: pode rodar quantas vezes quiser.
+Em seguida, rode a personalização Wizz (escolha do idioma + overrides dos agentes BMAD). O comando é idempotente: pode rodar quantas vezes quiser.
 
 ```bash
 node <caminho-do-wizz-method>/src/modules/wizz/scripts/wizz-init.mjs .
 ```
+
+Ele pergunta o idioma de comunicação dos agentes. Para CI ou modo não-interativo, passe `--lang "English"` (ou a variável `WIZZ_LANG`); sem TTY o padrão é "Português (BR)".
 
 Por fim, invoque o `wizz-maestro` e mande seu pedido.
 

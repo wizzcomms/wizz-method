@@ -21,17 +21,17 @@ Os papéis de dev/produto reusam os agentes BMAD (Mary, John, Winston, Amelia, S
 - **Encerramento** (`_shared/encerramento.md`): bloco ✅/➡️/🎯 ao terminar.
 - **Economia de token** (`_shared/token-economy.md`): graphify → cerebro → grep antes de ler arquivos; RTK reescreve shell.
 - **Cerebro** (`_shared/cerebro.md`): auto-load leve na ativação, lembrete de salvar no fim.
-- **Idioma**: PT-BR via `_bmad/bmm/config.yaml`.
-- **Encadeamento**: modo confirmado — o maestro dispara o 1º agente; você confirma os próximos.
+- **Idioma**: escolhido no `wizz-init` (padrão Português (BR)), gravado em `_bmad/bmm/config.yaml`.
+- **Encadeamento**: modo confirmado. O maestro dispara o 1º agente; você confirma os próximos.
 
 ## Instalação
 
 1. Instale o BMAD no projeto (o módulo `wizz` aparece como bundled em `src/modules/wizz`).
-2. Rode a personalização Wizz (idioma PT-BR + overrides dos agentes BMAD):
+2. Rode a personalização Wizz (escolha do idioma + overrides dos agentes BMAD):
    ```bash
    node <caminho-do-wizz-method>/src/modules/wizz/scripts/wizz-init.mjs .
    ```
-   Idempotente: pode rodar quantas vezes quiser.
+   Ele pergunta o idioma. Para CI, use `--lang "English"` ou `WIZZ_LANG`. Idempotente: pode rodar quantas vezes quiser.
 3. Invoque o `wizz-maestro` e mande seu pedido.
 
 ## Customização pessoal
