@@ -40,7 +40,8 @@ const positionalArgs = args.filter((a) => !a.startsWith('--'));
 
 // --- Constants ---
 
-const NAME_REGEX = /^bmad-[a-z0-9]+(-[a-z0-9]+)*$/;
+// Aceita o namespace do motor BMAD (bmad-) e o namespace próprio da Wizz (wizz-).
+const NAME_REGEX = /^(bmad|wizz)-[a-z0-9]+(-[a-z0-9]+)*$/;
 const STEP_FILENAME_REGEX = /^step-\d{2}[a-z]?-[a-z0-9-]+\.md$/;
 const TIME_ESTIMATE_PATTERNS = [/takes?\s+\d+\s*min/i, /~\s*\d+\s*min/i, /estimated\s+time/i, /\bETA\b/];
 

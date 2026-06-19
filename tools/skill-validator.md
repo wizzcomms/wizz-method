@@ -68,9 +68,9 @@ If no findings are generated (from either pass), the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** `SKILL.md`
-- **Rule:** The `name` value must start with `bmad-`, use only lowercase letters, numbers, and single hyphens between segments.
-- **Detection:** Regex test: `^bmad-[a-z0-9]+(-[a-z0-9]+)*$`.
-- **Fix:** Rename to comply with the format (e.g., `bmad-my-skill`).
+- **Rule:** The `name` value must start with `bmad-` (motor) or `wizz-` (camada Wizz), use only lowercase letters, numbers, and single hyphens between segments.
+- **Detection:** Regex test: `^(bmad|wizz)-[a-z0-9]+(-[a-z0-9]+)*$`.
+- **Fix:** Rename to comply with the format (e.g., `wizz-my-skill` ou `bmad-my-skill`).
 
 ### SKILL-05 — `name` Must Match Directory Name
 
