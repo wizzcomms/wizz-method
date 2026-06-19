@@ -5,13 +5,13 @@ sidebar:
   order: 3
 ---
 
-Use the BMad installer to add modules from the community registry, third-party Git repositories, or local file paths.
+Use the Wizz Method installer to add modules from the community registry, third-party Git repositories, or local file paths.
 
 ## When to Use This
 
-- Installing a community-contributed module from the BMad registry
+- Installing a community-contributed module from the Wizz Method registry
 - Installing a module from a third-party Git repository (GitHub, GitLab, Bitbucket, self-hosted)
-- Testing a module you are developing locally with BMad Builder
+- Testing a module you are developing locally with Wizz Builder
 - Installing modules from a private or self-hosted Git server
 
 :::note[Prerequisites]
@@ -20,7 +20,7 @@ Requires [Node.js](https://nodejs.org) v20.12+ and `npx` (included with npm). Cu
 
 ## Community Modules
 
-Community modules are curated in the [BMad plugins marketplace](https://github.com/bmad-code-org/bmad-plugins-marketplace). They are organized by category and are pinned to an approved commit for safety.
+Community modules are curated in the [Wizz Method plugins marketplace](https://github.com/wizzcomms/wizz-method). They are organized by category and are pinned to an approved commit for safety.
 
 ### 1. Run the Installer
 
@@ -122,7 +122,7 @@ The `.claude-plugin/marketplace.json` path is a standard convention adopted acro
 
 ## Local Development Workflow
 
-If you are building a module with [BMad Builder](https://github.com/bmad-code-org/bmad-builder), you can install it directly from your working directory:
+If you are building a module with [Wizz Builder](https://github.com/wizzcomms/wizz-method), you can install it directly from your working directory:
 
 ```bash
 npx bmad-method install \
@@ -167,14 +167,14 @@ Custom modules participate in the normal update flow:
 
 ## Creating Your Own Modules
 
-Use [BMad Builder](https://github.com/bmad-code-org/bmad-builder) to create modules that others can install:
+Use [Wizz Builder](https://github.com/wizzcomms/wizz-method) to create modules that others can install:
 
 1. Run `bmad-module-builder` to scaffold your module structure
 2. Add skills, agents, and workflows with the various bmad builder tools
 3. Publish to a Git repository or share the folder collection
 4. Others install with `--custom-source <your-repo-url>`
 
-For modules to support discovery mode, include a `.claude-plugin/marketplace.json` in your repository root (this is a cross-tool convention, not Claude-specific). See the [BMad Builder documentation](https://github.com/bmad-code-org/bmad-builder) for the marketplace.json format.
+For modules to support discovery mode, include a `.claude-plugin/marketplace.json` in your repository root (this is a cross-tool convention, not Claude-specific). See the [Wizz Builder documentation](https://github.com/wizzcomms/wizz-method) for the marketplace.json format.
 
 :::tip[Testing Locally First]
 During development, install your module with a local path to iterate quickly before publishing to a Git repository.

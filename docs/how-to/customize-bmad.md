@@ -1,5 +1,5 @@
 ---
-title: 'How to Customize BMad'
+title: 'How to Customize Wizz Method'
 description: Customize agents and workflows while preserving update compatibility
 sidebar:
   order: 8
@@ -21,7 +21,7 @@ The `bmad-customize` skill is a guided authoring helper for the **per-skill agen
 
 :::note[Prerequisites]
 
-- BMad installed in your project (see [How to Install BMad](./install-bmad.md))
+- Wizz Method installed in your project (see [How to Install Wizz Method](./install-bmad.md))
 - Python 3.11+ on your PATH (for the resolver script -- uses stdlib `tomllib`, no `pip install`, no `uv`, no virtualenv)
 - A text editor for TOML files
 :::
@@ -53,7 +53,7 @@ The resolver applies four structural rules. Field names are never special-cased 
 
 **No removal mechanism.** Overrides cannot delete base items. If you need to suppress a default menu item, override it by `code` with a no-op description or prompt. If you need to restructure an array more deeply, fork the skill.
 
-**The `code` / `id` convention.** BMad uses `code` (short identifier like `"BP"` or `"R1"`) and `id` (longer stable identifier) as merge keys on arrays of tables. If you author a custom array-of-tables that should be replaceable-by-key rather than append-only, pick **one** convention (either `code` on every item, or `id` on every item) and stick with it across the whole array. Mixing `code` on some items and `id` on others falls back to append — the resolver won't guess which key to merge on.
+**The `code` / `id` convention.** The Wizz Method uses `code` (short identifier like `"BP"` or `"R1"`) and `id` (longer stable identifier) as merge keys on arrays of tables. If you author a custom array-of-tables that should be replaceable-by-key rather than append-only, pick **one** convention (either `code` on every item, or `id` on every item) and stick with it across the whole array. Mixing `code` on some items and `id` on others falls back to append — the resolver won't guess which key to merge on.
 
 ### Some agent fields are read-only
 
@@ -106,7 +106,7 @@ This appends the new principle to the defaults (leaving the shipped principles i
 
 ### 3. Customize What You Need
 
-All examples below assume BMad's flat agent schema. Fields live directly under `[agent]` — no nested `metadata` or `persona` sub-tables.
+All examples below assume the Wizz Method's flat agent schema. Fields live directly under `[agent]` — no nested `metadata` or `persona` sub-tables.
 
 **Scalars (icon, role, identity, communication_style).** Scalar overrides win. You only need to set the fields you're changing:
 
@@ -158,7 +158,7 @@ activation_steps_append = [
 
 **The two hooks do different jobs.** Prepend runs before greeting so the agent can load context it needs to personalize the greeting itself. Append runs after greeting so the user isn't staring at a blank terminal while heavy scans complete.
 
-**Menu customization (merge by `code`).** The menu is an array of tables. Each item has a `code` field (BMad convention), so the resolver merges by code: matching codes replace in place, new codes append.
+**Menu customization (merge by `code`).** The menu is an array of tables. Each item has a `code` field (Wizz Method convention), so the resolver merges by code: matching codes replace in place, new codes append.
 
 TOML array-of-tables syntax uses `[[agent.menu]]` for each item:
 
@@ -370,7 +370,7 @@ Use both surfaces in the same project as needed.
 
 ## Worked Examples
 
-For enterprise-oriented recipes (shaping an agent across every workflow it dispatches, enforcing org conventions, publishing outputs to Confluence and Jira, customizing the agent roster, and swapping in your own output templates), see [How to Expand BMad for Your Organization](./expand-bmad-for-your-org.md).
+For enterprise-oriented recipes (shaping an agent across every workflow it dispatches, enforcing org conventions, publishing outputs to Confluence and Jira, customizing the agent roster, and swapping in your own output templates), see [How to Expand the Wizz Method for Your Organization](./expand-bmad-for-your-org.md).
 
 ## Troubleshooting
 

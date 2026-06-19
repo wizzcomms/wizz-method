@@ -9,7 +9,7 @@ Party mode puts your AI agents in one room and lets them talk, to each other and
 
 ## What is Party Mode?
 
-Run `bmad-party-mode` and the BMad agents you already have installed gather in one conversation: the PM, Architect, Dev, UX Designer, and whoever else your selected modules bring. That installed lineup is your default party, ready with no setup. They answer in character, agree, disagree, and build on each other. You steer the room. Ask a follow-up, push back, pull one voice forward, or change the subject. The conversation runs until you end it.
+Run `bmad-party-mode` and the Wizz Method agents you already have installed gather in one conversation: the PM, Architect, Dev, UX Designer, and whoever else your selected modules bring. That installed lineup is your default party, ready with no setup. They answer in character, agree, disagree, and build on each other. You steer the room. Ask a follow-up, push back, pull one voice forward, or change the subject. The conversation runs until you end it.
 
 It works because the personas hold different priorities. The Architect guards the design, the PM guards scope, the Dev guards what's actually buildable. Put them in the same room and the tradeoff surfaces now, in the conversation, instead of three weeks into the sprint.
 
@@ -67,9 +67,9 @@ Start a party with `--mode subagent` (or `auto`, `agent-team`, `session`) to ove
 
 ## Custom parties
 
-Out of the box, a party uses your installed BMad agents. The larger use is building your own cast from any set of personas you can describe, then saving it to reuse. You author a party through the same skill. It detects whether you want to run one or build one, and writes the result to your overrides through [bmad-customize](../how-to/customize-bmad.md).
+Out of the box, a party uses your installed Wizz Method agents. The larger use is building your own cast from any set of personas you can describe, then saving it to reuse. You author a party through the same skill. It detects whether you want to run one or build one, and writes the result to your overrides through [bmad-customize](../how-to/customize-bmad.md).
 
-Party mode is customizable like every BMad skill. Run `/bmad-customize bmad-party-mode` to set its defaults directly: pin any group you've built as the default party so it loads without a flag, choose which mode it starts in, and set any house rules the room should hold for the whole session.
+Party mode is customizable like every Wizz Method skill. Run `/bmad-customize bmad-party-mode` to set its defaults directly: pin any group you've built as the default party so it loads without a flag, choose which mode it starts in, and set any house rules the room should hold for the whole session.
 
 Two ideas do most of the work.
 
@@ -104,7 +104,7 @@ These are starting points. Any set of voices you can describe becomes a party: w
 
 ## The Code Review Crew
 
-Your default party is the agents your installed modules provide. The Code Review Crew is a custom party BMad ships alongside that default — a working template to study before you build your own, not a replacement for it. It's a review panel: five lenses that attack a change from different angles and argue about what actually matters, instead of rubber-stamping it.
+Your default party is the agents your installed modules provide. The Code Review Crew is a custom party the Wizz Method ships alongside that default — a working template to study before you build your own, not a replacement for it. It's a review panel: five lenses that attack a change from different angles and argue about what actually matters, instead of rubber-stamping it.
 
 | Member | Lens |
 | --- | --- |

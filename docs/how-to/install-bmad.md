@@ -1,15 +1,15 @@
 ---
-title: 'How to Install BMad'
-description: Install, update, and pin BMad for local development, teams, and CI
+title: 'How to Install Wizz Method'
+description: Install, update, and pin the Wizz Method for local development, teams, and CI
 sidebar:
   order: 1
 ---
 
-Use `npx bmad-method install` to set up BMad in your project. One command handles first installs, upgrades, channel switching, and scripted CI runs. This page covers all of it.
+Use `npx bmad-method install` to set up the Wizz Method in your project. One command handles first installs, upgrades, channel switching, and scripted CI runs. This page covers all of it.
 
 ## When to Use This
 
-- Starting a new project with BMad
+- Starting a new project with the Wizz Method
 - Adding or removing modules on an existing install
 - Switching a module to main-HEAD or pinning to a specific release
 - Scripting installs for CI pipelines, Dockerfiles, or enterprise rollouts

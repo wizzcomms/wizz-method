@@ -1,14 +1,14 @@
 ---
 title: 'Getting Started'
-description: Install BMad and build your first project
+description: Install Wizz Method and build your first project
 ---
 
 Build software faster using AI-powered workflows with specialized agents that guide you through planning, architecture, and implementation.
 
 ## What You'll Learn
 
-- Install and initialize BMad Method for a new project
-- Use **BMad-Help** — your intelligent guide that knows what to do next
+- Install and initialize the Wizz Method for a new project
+- Use **Wizz-Help** — your intelligent guide that knows what to do next
 - Choose the right planning track for your project size
 - Progress through phases from requirements to working code
 - Use agents and workflows effectively
@@ -24,19 +24,19 @@ Build software faster using AI-powered workflows with specialized agents that gu
 :::tip[The Easiest Path]
 **Install** → `npx bmad-method install`
 **Ask** → `bmad-help what should I do first?`
-**Build** → Let BMad-Help guide you workflow by workflow
+**Build** → Let Wizz-Help guide you workflow by workflow
 :::
 
-## Meet BMad-Help: Your Intelligent Guide
+## Meet Wizz-Help: Your Intelligent Guide
 
-**BMad-Help is the fastest way to get started with BMad.** You don't need to memorize workflows or phases — just ask, and BMad-Help will:
+**Wizz-Help is the fastest way to get started with the Wizz Method.** You don't need to memorize workflows or phases. Just ask, and Wizz-Help will:
 
 - **Inspect your project** to see what's already been done
 - **Show your options** based on which modules you have installed
 - **Recommend what's next** — including the first required task
 - **Answer questions** like "I have a SaaS idea, where do I start?"
 
-### How to Use BMad-Help
+### How to Use Wizz-Help
 
 Run it in your AI IDE by invoking the skill:
 
@@ -50,7 +50,7 @@ Or combine it with a question for context-aware guidance:
 bmad-help I have an idea for a SaaS product, I already know all the features I want. where do I get started?
 ```
 
-BMad-Help will respond with:
+Wizz-Help will respond with:
 
 - What's recommended for your situation
 - What the first required task is
@@ -58,31 +58,31 @@ BMad-Help will respond with:
 
 ### It Powers Workflows Too
 
-BMad-Help doesn't just answer questions — **it automatically runs at the end of every workflow** to tell you exactly what to do next. No guessing, no searching docs — just clear guidance on the next required workflow.
+Wizz-Help doesn't just answer questions. **It automatically runs at the end of every workflow** to tell you exactly what to do next. No guessing, no searching docs. Just clear guidance on the next required workflow.
 
 :::tip[Start Here]
-After installing BMad, invoke the `bmad-help` skill immediately. It will detect what modules you have installed and guide you to the right starting point for your project.
+After installing the Wizz Method, invoke the `bmad-help` skill immediately. It will detect what modules you have installed and guide you to the right starting point for your project.
 :::
 
-## Understanding BMad
+## Understanding the Wizz Method
 
-BMad helps you build software through guided workflows with specialized AI agents. The process follows four phases:
+The Wizz Method helps you build software through guided workflows with specialized AI agents. The process follows four phases:
 
 | Phase | Name           | What Happens                                                 |
 | ----- | -------------- | ------------------------------------------------------------ |
 | 1     | Analysis       | Brainstorming, research, product brief or PRFAQ _(optional)_ |
 | 2     | Planning       | Create requirements (PRD or spec)                            |
-| 3     | Solutioning    | Design architecture _(BMad Method/Enterprise only)_          |
+| 3     | Solutioning    | Design architecture _(Wizz Method/Enterprise only)_          |
 | 4     | Implementation | Build epic by epic, story by story                           |
 
 **[Open the Workflow Map](../reference/workflow-map.md)** to explore phases, workflows, and context management.
 
-Based on your project's complexity, BMad offers three planning tracks:
+Based on your project's complexity, the Wizz Method offers three planning tracks:
 
 | Track           | Best For                                               | Documents Created                      |
 | --------------- | ------------------------------------------------------ | -------------------------------------- |
 | **Quick Flow**  | Bug fixes, simple features, clear scope (1-15 stories) | Tech-spec only                         |
-| **BMad Method** | Products, platforms, complex features (10-50+ stories) | PRD + Architecture + UX                |
+| **Wizz Method** | Products, platforms, complex features (10-50+ stories) | PRD + Architecture + UX                |
 | **Enterprise**  | Compliance, multi-tenant systems (30+ stories)         | PRD + Architecture + Security + DevOps |
 
 :::note
@@ -99,7 +99,7 @@ npx bmad-method install
 
 If you want the newest prerelease build instead of the default release channel, use `npx bmad-method@next install`.
 
-When prompted to select modules, choose **BMad Method**.
+When prompted to select modules, choose **Wizz Method**.
 
 The installer creates two folders:
 
@@ -113,7 +113,7 @@ Open your AI IDE in the project folder and run:
 bmad-help
 ```
 
-BMad-Help will detect what you've completed and recommend exactly what to do next. You can also ask it questions like "What are my options?" or "I have a SaaS idea, where should I start?"
+Wizz-Help will detect what you've completed and recommend exactly what to do next. You can also ask it questions like "What are my options?" or "I have a SaaS idea, where should I start?"
 :::
 
 :::note[How to Load Agents and Run Workflows]
@@ -145,7 +145,7 @@ All workflows in this phase are optional. [**Not sure which to use?**](../explan
 
 ### Phase 2: Planning (Required)
 
-**For BMad Method and Enterprise tracks:**
+**For Wizz Method and Enterprise tracks:**
 
 1. Run `bmad-prd` in a new chat — state your intent (Create / Update / Validate) or let the skill ask
 2. Output: `prd.md`, `addendum.md`, `decision-log.md`
@@ -165,7 +165,7 @@ All workflows in this phase are optional. [**Not sure which to use?**](../explan
 If your project has a user interface, invoke the **UX-Designer agent** (`bmad-agent-ux-designer`) and run the UX design workflow (`bmad-ux`) after creating your PRD.
 :::
 
-### Phase 3: Solutioning (BMad Method/Enterprise)
+### Phase 3: Solutioning (Wizz Method/Enterprise)
 
 **Create Architecture**
 
@@ -211,9 +211,9 @@ After completing all stories in an epic, invoke the **Developer agent** (`bmad-a
 
 ## What You've Accomplished
 
-You've learned the foundation of building with BMad:
+You've learned the foundation of building with the Wizz Method:
 
-- Installed BMad and configured it for your IDE
+- Installed the Wizz Method and configured it for your IDE
 - Initialized a project with your chosen planning track
 - Created planning documents (PRD, Architecture, Epics & Stories)
 - Understood the build cycle for implementation
@@ -222,7 +222,7 @@ Your project now has:
 
 ```text
 your-project/
-├── _bmad/                                   # BMad configuration
+├── _bmad/                                   # Wizz Method configuration
 ├── _bmad-output/
 │   ├── planning-artifacts/
 │   │   ├── PRD.md                           # Your requirements document
@@ -252,7 +252,7 @@ your-project/
 ## Common Questions
 
 **Do I always need architecture?**
-Only for BMad Method and Enterprise tracks. Quick Flow skips from spec to implementation.
+Only for Wizz Method and Enterprise tracks. Quick Flow skips from spec to implementation.
 
 **Can I change my plan later?**
 Yes. The `bmad-correct-course` workflow handles scope changes mid-implementation.
@@ -265,7 +265,7 @@ Not strictly. Once you learn the flow, you can run workflows directly using the 
 
 ## Getting Help
 
-:::tip[First Stop: BMad-Help]
+:::tip[First Stop: Wizz-Help]
 **Invoke `bmad-help` anytime** — it's the fastest way to get unstuck. Ask it anything:
 
 - "What should I do after installing?"
@@ -273,7 +273,7 @@ Not strictly. Once you learn the flow, you can run workflows directly using the 
 - "What are my options for Y?"
 - "Show me what's been done so far"
 
-BMad-Help inspects your project, detects what you've completed, and tells you exactly what to do next.
+Wizz-Help inspects your project, detects what you've completed, and tells you exactly what to do next.
 :::
 
 - **During workflows** — Agents guide you with questions and explanations
@@ -286,7 +286,7 @@ BMad-Help inspects your project, detects what you've completed, and tells you ex
 - **Start with `bmad-help`** — Your intelligent guide that knows your project and options
 - **Always use fresh chats** — Start a new chat for each workflow
 - **Track matters** — Quick Flow uses `bmad-quick-dev`; Method/Enterprise need PRD and architecture
-- **BMad-Help runs automatically** — Every workflow ends with guidance on what's next
+- **Wizz-Help runs automatically** — Every workflow ends with guidance on what's next
   :::
 
-Ready to start? Install BMad, invoke `bmad-help`, and let your intelligent guide lead the way.
+Ready to start? Install the Wizz Method, invoke `bmad-help`, and let your intelligent guide lead the way.

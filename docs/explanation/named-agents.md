@@ -1,17 +1,17 @@
 ---
 title: "Named Agents"
-description: Why BMad agents have names, personas, and customization surfaces — and what that unlocks compared to menu-driven or prompt-driven alternatives
+description: Why Wizz Method agents have names, personas, and customization surfaces, and what that unlocks compared to menu-driven or prompt-driven alternatives
 sidebar:
   order: 1
 ---
 
 You say "Hey Mary, let's brainstorm," and Mary activates. She greets you by name, in the language you configured, with her distinctive persona. She reminds you that `bmad-help` is always available. Then she skips the menu entirely and drops straight into brainstorming — because your intent was clear.
 
-This page explains what's actually happening and why BMad is designed this way.
+This page explains what's actually happening and why the Wizz Method is designed this way.
 
 ## The Three-Legged Stool
 
-BMad's agent model rests on three primitives that compose:
+The Wizz Method's agent model rests on three primitives that compose:
 
 | Primitive | What it provides | Where it lives |
 |---|---|---|
@@ -27,7 +27,7 @@ Pull any leg away and the experience collapses:
 
 ## What Named Agents Buy You
 
-BMad ships six named agents, each anchored to a phase of the BMad Method:
+The Wizz Method ships six named agents, each anchored to a phase of the Wizz Method:
 
 | Agent | Phase | Module |
 |---|---|---|
@@ -83,8 +83,8 @@ There's also a second customization surface for *cross-cutting* concerns: the ce
 
 For the full customization surface and worked examples, see:
 
-- [How to Customize BMad](../how-to/customize-bmad.md) — the reference for what's customizable and how merge works
-- [How to Expand BMad for Your Organization](../how-to/expand-bmad-for-your-org.md) — five worked recipes spanning agent-wide rules, workflow conventions, external publishing, template swaps, and agent roster customization
+- [How to Customize Wizz Method](../how-to/customize-bmad.md) — the reference for what's customizable and how merge works
+- [How to Expand Wizz Method for Your Organization](../how-to/expand-bmad-for-your-org.md) — five worked recipes spanning agent-wide rules, workflow conventions, external publishing, template swaps, and agent roster customization
 - `bmad-customize` skill — the guided authoring helper that turns intent into a correctly-placed, verified override file
 
 ## The Bigger Idea

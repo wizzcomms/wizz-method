@@ -5,15 +5,15 @@ sidebar:
   order: 5
 ---
 
-BMad extends through official modules that you select during installation. These add-on modules provide specialized agents, workflows, and tasks for specific domains beyond the built-in core and BMM (Agile suite).
+The Wizz Method extends through official modules that you select during installation. These add-on modules provide specialized agents, workflows, and tasks for specific domains beyond the built-in core and BMM (Agile suite).
 
 :::tip[Installing Modules]
 Run `npx bmad-method install` and select the modules you want. The installer handles downloading, configuration, and IDE integration automatically.
 :::
 
-## BMad Builder
+## Wizz Builder
 
-Create custom agents, workflows, and domain-specific modules with guided assistance. BMad Builder is the meta-module for extending the framework itself.
+Create custom agents, workflows, and domain-specific modules with guided assistance. Wizz Builder is the meta-module for extending the framework itself.
 
 - **Code:** `bmb`
 - **npm:** [`bmad-builder`](https://www.npmjs.com/package/bmad-builder)
@@ -73,4 +73,4 @@ Enterprise-grade test strategy, automation guidance, and release gate decisions 
 
 ## Community Modules
 
-Community modules and a module marketplace are coming. Check the [BMad GitHub organization](https://github.com/bmad-code-org) for updates.
+Community modules and a module marketplace are coming. Check the [Wizz Method GitHub](https://github.com/wizzcomms/wizz-method) for updates.

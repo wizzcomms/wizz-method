@@ -25,7 +25,7 @@ Current LLMs still fail in predictable ways: they misread intent, fill gaps with
 
 The workflow starts by having the human and the model compress the request into one coherent goal. The input can begin as a rough expression of intent, but before the workflow runs autonomously it has to become small enough, clear enough, and contradiction-free enough to execute.
 
-Intent can come in many forms: a couple of phrases, a bug tracker link, output from plan mode, text copied from a chat session, or even a story number from BMAD's own `epics.md`. In that last case, the workflow will not understand BMAD story-tracking semantics, but it can still take the story itself and run with it.
+Intent can come in many forms: a couple of phrases, a bug tracker link, output from plan mode, text copied from a chat session, or even a story number from Wizz Method's own `epics.md`. In that last case, the workflow will not understand Wizz Method story-tracking semantics, but it can still take the story itself and run with it.
 
 This workflow does not eliminate human control. It relocates it to a small number of high-value moments:
 

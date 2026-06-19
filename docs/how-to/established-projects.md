@@ -1,24 +1,24 @@
 ---
 title: 'Established Projects'
-description: How to use BMad Method on existing codebases
+description: How to use Wizz Method on existing codebases
 sidebar:
   order: 7
 ---
 
-Use BMad Method effectively when working on existing projects and legacy codebases.
+Use the Wizz Method effectively when working on existing projects and legacy codebases.
 
-This guide covers the essential workflow for onboarding to existing projects with BMad Method.
+This guide covers the essential workflow for onboarding to existing projects with the Wizz Method.
 
 :::note[Prerequisites]
 
-- BMad Method installed (`npx bmad-method install`)
+- Wizz Method installed (`npx bmad-method install`)
 - An existing codebase you want to work on
 - Access to an AI-powered IDE (Claude Code or Cursor)
   :::
 
 ## Step 1: Clean Up Completed Planning Artifacts
 
-If you have completed all PRD epics and stories through the BMad process, clean up those files. Archive them, delete them, or rely on version history if needed. Do not keep these files in:
+If you have completed all PRD epics and stories through the Wizz Method process, clean up those files. Archive them, delete them, or rely on version history if needed. Do not keep these files in:
 
 - `docs/`
 - `_bmad-output/planning-artifacts/`
@@ -61,7 +61,7 @@ For complex projects, consider using the `bmad-document-project` workflow. It of
 
 ## Step 3: Get Help
 
-### BMad-Help: Your Starting Point
+### Wizz-Help: Your Starting Point
 
 **Run `bmad-help` anytime you're unsure what to do next.** This intelligent guide:
 
@@ -75,7 +75,7 @@ bmad-help What's the difference between quick-flow and full method?
 bmad-help Show me what workflows are available
 ```
 
-BMad-Help also **automatically runs at the end of every workflow**, providing clear guidance on exactly what to do next.
+Wizz-Help also **automatically runs at the end of every workflow**, providing clear guidance on exactly what to do next.
 
 ### Choosing Your Approach
 
@@ -83,8 +83,8 @@ You have two primary options depending on the scope of changes:
 
 | Scope                          | Recommended Approach                                                                                                                          |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Small updates or additions** | Run `bmad-quick-dev` to clarify intent, plan, implement, and review in a single workflow. The full four-phase BMad Method is likely overkill. |
-| **Major changes or additions** | Start with the BMad Method, applying as much or as little rigor as needed.                                                                    |
+| **Small updates or additions** | Run `bmad-quick-dev` to clarify intent, plan, implement, and review in a single workflow. The full four-phase Wizz Method is likely overkill. |
+| **Major changes or additions** | Start with the Wizz Method, applying as much or as little rigor as needed.                                                                    |
 
 ### During PRD Creation
 

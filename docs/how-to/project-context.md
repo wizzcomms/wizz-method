@@ -9,7 +9,7 @@ Use the `project-context.md` file to ensure AI agents follow your project's tech
 
 :::note[Prerequisites]
 
-- BMad Method installed
+- Wizz Method installed
 - Understanding of your project's technology stack and conventions
   :::
 
@@ -123,7 +123,7 @@ A `project-context.md` file that:
 - **Focus on the unobvious** — Document patterns agents might miss (e.g., "Use JSDoc on every public class"), not universal practices like "use meaningful variable names."
 - **Keep it lean** — This file is loaded by every implementation workflow. Long files waste context. Exclude content that only applies to narrow scope or specific stories.
 - **Update as needed** — Edit manually when patterns change, or re-generate after significant architecture changes.
-- Works for Quick Flow and full BMad Method projects alike.
+- Works for Quick Flow and full Wizz Method projects alike.
   :::
 
 ## Next Steps

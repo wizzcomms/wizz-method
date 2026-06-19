@@ -1,6 +1,6 @@
 ---
 title: 'Use Web Bundles'
-description: Install a BMad web bundle as a Google Gemini Gem or ChatGPT Custom GPT
+description: Install a Wizz Method web bundle as a Google Gemini Gem or ChatGPT Custom GPT
 ---
 
 Web bundles install from **[bmadcode.com/web-bundles](https://bmadcode.com/web-bundles/)**.
@@ -28,7 +28,7 @@ Each bundle's `INSTRUCTIONS.md` (inside the ZIP) includes a **Persona Swap Examp
 
 ## What you get
 
-- A reusable Gem or Custom GPT scoped to one BMad planning capability.
+- A reusable Gem or Custom GPT scoped to one Wizz Method planning capability.
 - Polished artifacts (briefs, PRDs, research reports, UX specs) ready to drop into your IDE for implementation.
 - Planning conversation runs on your existing web LLM subscription instead of metered IDE tokens.
 
@@ -38,4 +38,4 @@ Web LLMs occasionally drop persona partway through long sessions. If the model s
 
 ## Building your own
 
-To turn an existing BMad skill into a web bundle, use the `bmad-os-skill-to-bundle` utility skill from [bmad-utility-skills](https://github.com/bmad-code-org/bmad-utility-skills). It produces the bundle files with persona inheritance from the owning agent and a swap-example contrast voice. Submit your bundle to the shelf by opening a PR on [BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) that adds the bundle directory and an entry in `web-bundles/bundles.json`.
+To turn an existing Wizz Method skill into a web bundle, use the `bmad-os-skill-to-bundle` utility skill. It produces the bundle files with persona inheritance from the owning agent and a swap-example contrast voice. Submit your bundle to the shelf by opening a PR on [wizz-method](https://github.com/wizzcomms/wizz-method) that adds the bundle directory and an entry in `web-bundles/bundles.json`.

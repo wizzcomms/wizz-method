@@ -1,22 +1,22 @@
 ---
 title: 'How to Upgrade to v6'
-description: Migrate from BMad v4 to v6
+description: Migrate from Wizz Method v4 to v6
 sidebar:
   order: 4
 ---
 
-Use the BMad installer to upgrade from v4 to v6, which includes automatic detection of legacy installations and migration assistance.
+Use the Wizz Method installer to upgrade from v4 to v6, which includes automatic detection of legacy installations and migration assistance.
 
 ## When to Use This
 
-- You have BMad v4 installed (`.bmad-method` folder)
+- You have Wizz Method v4 installed (`.bmad-method` folder)
 - You want to migrate to the new v6 architecture
 - You have existing planning artifacts to preserve
 
 :::note[Prerequisites]
 
 - Node.js 20.12+
-- Existing BMad v4 installation
+- Existing Wizz Method v4 installation
   :::
 
 ## Steps
@@ -75,8 +75,8 @@ your-project/
 │   ├── _config/         # Your customizations
 │   │   └── agents/      # Agent customization files
 │   ├── core/            # Universal core framework
-│   ├── bmm/             # BMad Method module
-│   ├── bmb/             # BMad Builder
+│   ├── bmm/             # Wizz Method module
+│   ├── bmb/             # Wizz Builder
 │   └── cis/             # Creative Intelligence Suite
 └── _bmad-output/        # Output folder (was doc folder in v4)
 ```
@@ -95,7 +95,7 @@ your-project/
 
 | Concept       | v4                                    | v6                                   |
 | ------------- | ------------------------------------- | ------------------------------------ |
-| **Core**      | `_bmad-core` was actually BMad Method | `_bmad/core/` is universal framework |
+| **Core**      | `_bmad-core` was actually Wizz Method | `_bmad/core/` is universal framework |
 | **Method**    | `_bmad-method`                        | `_bmad/bmm/`                         |
 | **Config**    | Modified files directly               | `config.yaml` per module             |
 | **Documents** | Sharded or unsharded required setup   | Fully flexible, auto-scanned         |

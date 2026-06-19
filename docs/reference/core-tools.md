@@ -1,11 +1,11 @@
 ---
 title: Core Tools
-description: Reference for all built-in tasks and workflows available in every BMad installation without additional modules.
+description: Reference for all built-in tasks and workflows available in every Wizz Method installation without additional modules.
 sidebar:
   order: 3
 ---
 
-Every BMad installation includes a set of core skills that can be used in conjunction with any anything you are doing — standalone tasks and workflows that work across all projects, all modules, and all phases. These are always available regardless of which optional modules you install.
+Every Wizz Method installation includes a set of core skills that can be used in conjunction with any anything you are doing — standalone tasks and workflows that work across all projects, all modules, and all phases. These are always available regardless of which optional modules you install.
 
 :::tip[Quick Path]
 Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No agent session required.
@@ -26,7 +26,7 @@ Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No a
 | [`bmad-editorial-review-structure`](#bmad-editorial-review-structure) | Task | Structural editing — cuts, merges, and reorganization |
 | [`bmad-shard-doc`](#bmad-shard-doc) | Task | Split large markdown files into organized sections |
 | [`bmad-index-docs`](#bmad-index-docs) | Task | Generate or update an index of all docs in a folder |
-| [`bmad-customize`](#bmad-customize) | Task | Create and verify BMad customization overrides |
+| [`bmad-customize`](#bmad-customize) | Task | Create and verify Wizz Method customization overrides |
 
 ## bmad-help
 
@@ -35,7 +35,7 @@ Run any core tool by typing its skill name (e.g., `bmad-help`) in your IDE. No a
 **Use it when:**
 
 - You finished a workflow and want to know what's next
-- You're new to BMad and need orientation
+- You're new to the Wizz Method and need orientation
 - You're stuck and want context-aware advice
 - You installed new modules and want to see what's available
 
@@ -78,7 +78,7 @@ The magic happens in ideas 50–100. The workflow encourages generating 100+ ide
 
 ## bmad-party-mode
 
-**Orchestrate multi-agent group discussions.** — Loads all installed BMad agents and facilitates a natural conversation where each agent contributes from their unique expertise and personality.
+**Orchestrate multi-agent group discussions.** — Loads all installed Wizz Method agents and facilitates a natural conversation where each agent contributes from their unique expertise and personality.
 
 **Use it when:**
 
@@ -299,7 +299,7 @@ Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` to
 
 ## bmad-customize
 
-**Create and verify customization overrides.** — Helps you change how an installed BMad agent or workflow behaves without hand-authoring TOML.
+**Create and verify customization overrides.** — Helps you change how an installed Wizz Method agent or workflow behaves without hand-authoring TOML.
 
 **Use it when:**
 
@@ -309,7 +309,7 @@ Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` to
 
 **How it works:**
 
-1. Scans installed BMad skills for customizable surfaces
+1. Scans installed Wizz Method skills for customizable surfaces
 2. Selects the right scope for your requested change
 3. Writes override files under `_bmad/custom/`
 4. Verifies the merged configuration
@@ -318,4 +318,4 @@ Run both `bmad-review-adversarial-general` and `bmad-review-edge-case-hunter` to
 
 **Output:** TOML override files under `_bmad/custom/`
 
-For a detailed guide on customizing BMad, see [How to Customize BMad](../how-to/customize-bmad.md).
+For a detailed guide on customizing the Wizz Method, see [How to Customize Wizz Method](../how-to/customize-bmad.md).

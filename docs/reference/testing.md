@@ -5,7 +5,7 @@ sidebar:
   order: 6
 ---
 
-BMad provides two testing paths: a built-in QA workflow for fast test generation and an installable Test Architect module for enterprise-grade test strategy.
+The Wizz Method provides two testing paths: a built-in QA workflow for fast test generation and an installable Test Architect module for enterprise-grade test strategy.
 
 ## Which Should You Use?
 
@@ -95,7 +95,7 @@ TEA also supports P0-P3 risk-based prioritization and optional integrations with
 
 ## How Testing Fits into Workflows
 
-The QA Automate workflow appears in Phase 4 (Implementation) of the BMad Method workflow map. It is designed to run **after a full epic is complete** — once all stories in an epic have been implemented and code-reviewed. A typical sequence:
+The QA Automate workflow appears in Phase 4 (Implementation) of the Wizz Method workflow map. It is designed to run **after a full epic is complete** — once all stories in an epic have been implemented and code-reviewed. A typical sequence:
 
 1. For each story in the epic: implement with Dev (`DS`), then validate with Code Review (`CR`)
 2. After the epic is complete: generate tests with `QA` (via the Developer agent) or TEA's Automate workflow

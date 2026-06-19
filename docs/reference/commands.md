@@ -1,15 +1,15 @@
 ---
 title: Skills
-description: Reference for BMad skills — what they are, how they work, and where to find them.
+description: Reference for Wizz Method skills — what they are, how they work, and where to find them.
 sidebar:
   order: 4
 ---
 
-Skills are pre-built prompts that load agents, run workflows, or execute tasks inside your IDE. The BMad installer generates them from your installed modules at install time. If you later add, remove, or change modules, re-run the installer to keep skills in sync (see [Troubleshooting](#troubleshooting)).
+Skills are pre-built prompts that load agents, run workflows, or execute tasks inside your IDE. The Wizz Method installer generates them from your installed modules at install time. If you later add, remove, or change modules, re-run the installer to keep skills in sync (see [Troubleshooting](#troubleshooting)).
 
 ## Skills vs. Agent Menu Triggers
 
-BMad offers two ways to start work, and they serve different purposes.
+The Wizz Method offers two ways to start work, and they serve different purposes.
 
 | Mechanism | How you invoke it | What happens |
 | --- | --- | --- |
@@ -107,7 +107,7 @@ See [Workflow Map](./workflow-map.md) for the complete workflow reference organi
 
 Tasks and tools are standalone operations that do not require an agent or workflow context.
 
-**BMad-Help: Your Intelligent Guide**
+**Wizz-Help: Your Intelligent Guide**
 
 `bmad-help` is your primary interface for discovering what to do next. It inspects your project, understands natural language queries, and recommends the next required or optional step based on your installed modules.
 

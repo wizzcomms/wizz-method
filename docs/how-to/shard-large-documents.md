@@ -62,7 +62,7 @@ Agent: Sharding PRD.md...
 
 ## How Workflow Discovery Works
 
-BMad workflows use a **dual discovery system**:
+Wizz Method workflows use a **dual discovery system**:
 
 1. **Try whole document first** - Look for `document-name.md`
 2. **Check for sharded version** - Look for `document-name/index.md`

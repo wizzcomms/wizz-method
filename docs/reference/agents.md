@@ -7,7 +7,7 @@ sidebar:
 
 ## Default Agents
 
-This page lists the default BMM (Agile suite) agents that install with BMad Method, along with their skill IDs, menu triggers, and primary workflows. Each agent is invoked as a skill.
+This page lists the default BMM (Agile suite) agents that install with the Wizz Method, along with their skill IDs, menu triggers, and primary workflows. Each agent is invoked as a skill.
 
 ## Notes
 

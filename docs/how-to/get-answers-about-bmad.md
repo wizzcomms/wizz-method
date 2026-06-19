@@ -1,15 +1,15 @@
 ---
-title: 'How to Get Answers About BMad'
-description: Use an LLM to quickly answer your own BMad questions
+title: 'How to Get Answers About the Wizz Method'
+description: Use an LLM to quickly answer your own Wizz Method questions
 sidebar:
   order: 5
 ---
 
-Use BMad's built-in help, source docs, or the community to get answers — from quickest to most thorough.
+Use the Wizz Method's built-in help, source docs, or the community to get answers, from quickest to most thorough.
 
-## 1. Ask BMad-Help
+## 1. Ask Wizz-Help
 
-The fastest way to get answers. The `bmad-help` skill is available directly in your AI session and handles over 80% of questions — it inspects your project, sees what you've completed, and tells you what to do next.
+The fastest way to get answers. The `bmad-help` skill is available directly in your AI session and handles over 80% of questions. It inspects your project, sees what you've completed, and tells you what to do next.
 
 ```
 bmad-help I have a SaaS idea and know all the features. Where do I start?
@@ -23,12 +23,12 @@ You can also use `/bmad-help` or `$bmad-help` depending on your platform, but ju
 
 ## 2. Go Deeper with Source
 
-BMad-Help draws on your installed configuration. For questions about BMad's internals, history, or architecture — or if you're researching BMad before installing — point your AI at the source directly.
+Wizz-Help draws on your installed configuration. For questions about the Wizz Method's internals, history, or architecture, or if you're researching the Wizz Method before installing, point your AI at the source directly.
 
-Clone or open the [BMAD-METHOD repo](https://github.com/bmad-code-org/BMAD-METHOD) and ask your AI about it. Any agent-capable tool (Claude Code, Cursor, Windsurf, etc.) can read the source and answer questions directly.
+Clone or open the [wizz-method repo](https://github.com/wizzcomms/wizz-method) and ask your AI about it. Any agent-capable tool (Claude Code, Cursor, Windsurf, etc.) can read the source and answer questions directly.
 
 :::note[Example]
-**Q:** "Tell me the fastest way to build something with BMad"
+**Q:** "Tell me the fastest way to build something with the Wizz Method"
 
 **A:** Use Quick Flow: Run `bmad-quick-dev` — it clarifies your intent, plans, implements, reviews, and presents results in a single workflow, skipping the full planning phases.
 :::
@@ -40,11 +40,11 @@ Clone or open the [BMAD-METHOD repo](https://github.com/bmad-code-org/BMAD-METHO
 
 ### Not using an agent? Use the docs site
 
-If your AI can't read local files (ChatGPT, Claude.ai, etc.), fetch [llms-full.txt](https://bmad-code-org.github.io/BMAD-METHOD/llms-full.txt) into your session — it's a single-file snapshot of the BMad documentation.
+If your AI can't read local files (ChatGPT, Claude.ai, etc.), fetch the llms-full.txt from the wizz-method repo into your session. It's a single-file snapshot of the Wizz Method documentation.
 
 ## 3. Ask Someone
 
-If neither BMad-Help nor the source answered your question, you now have a much better question to ask.
+If neither Wizz-Help nor the source answered your question, you now have a much better question to ask.
 
 | Channel                 | Use For                    |
 | ----------------------- | -------------------------- |
@@ -53,7 +53,7 @@ If neither BMad-Help nor the source answered your question, you now have a much 
 
 **Discord:** [discord.gg/gk8jAdXWmj](https://discord.gg/gk8jAdXWmj)
 
-**GitHub Issues:** [github.com/bmad-code-org/BMAD-METHOD/issues](https://github.com/bmad-code-org/BMAD-METHOD/issues)
+**GitHub Issues:** [github.com/wizzcomms/wizz-method/issues](https://github.com/wizzcomms/wizz-method/issues)
 _You!_
 _Stuck_
 _in the queue—_

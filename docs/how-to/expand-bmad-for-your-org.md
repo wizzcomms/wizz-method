@@ -1,16 +1,16 @@
 ---
-title: 'How to Expand BMad for Your Organization'
-description: Six customization patterns that reshape BMad without forking — agent-wide rules, workflow conventions, external publishing, template swaps, agent roster changes, and advanced integration patterns
+title: 'How to Expand the Wizz Method for Your Organization'
+description: Six customization patterns that reshape the Wizz Method without forking, covering agent-wide rules, workflow conventions, external publishing, template swaps, agent roster changes, and advanced integration patterns
 sidebar:
   order: 11
 ---
 
-BMad's customization surface lets an organization reshape behavior without editing installed files or forking skills. This guide walks through six recipes that cover most enterprise needs.
+The Wizz Method's customization surface lets an organization reshape behavior without editing installed files or forking skills. This guide walks through six recipes that cover most enterprise needs.
 
 :::note[Prerequisites]
 
-- BMad installed in your project (see [How to Install BMad](./install-bmad.md))
-- Familiarity with the customization model (see [How to Customize BMad](./customize-bmad.md))
+- Wizz Method installed in your project (see [How to Install Wizz Method](./install-bmad.md))
+- Familiarity with the customization model (see [How to Customize Wizz Method](./customize-bmad.md))
 - Python 3.11+ on PATH (for the resolver — stdlib only, no `pip install`)
 :::
 
@@ -143,7 +143,7 @@ brief_template = "{project-root}/docs/enterprise/brief-template.md"
 
 **Use case:** Change *who's in the room* for roster-driven skills like `bmad-party-mode`, `bmad-retrospective`, and `bmad-advanced-elicitation`, without editing any source or forking. Three common variants follow.
 
-### 5a. Rebrand a BMad Agent Org-Wide
+### 5a. Rebrand a Wizz Method Agent Org-Wide
 
 Every real agent has a descriptor the installer synthesizes from `module.yaml`. Override it to shift voice and framing across every roster consumer:
 
@@ -178,7 +178,7 @@ icon = "⚕️"
 description = "Country doctor's warmth, short fuse. 'Dammit Jim, I'm a doctor not a ___.' Ethics-driven counterweight to Spock."
 ```
 
-Ask party-mode to "invite the Enterprise crew." It filters by `team = "startrek"` and spawns Spock and McCoy with those descriptors. Real BMad agents (Mary, Amelia) can sit at the same table if you ask them to.
+Ask party-mode to "invite the Enterprise crew." It filters by `team = "startrek"` and spawns Spock and McCoy with those descriptors. Real Wizz Method agents (Mary, Amelia) can sit at the same table if you ask them to.
 
 ### 5c. Pin Team Install Settings
 
@@ -201,7 +201,7 @@ Personal settings like `user_name`, `communication_language`, or `user_skill_lev
 
 ## Reinforce Global Rules in Your IDE's Session File
 
-BMad customizations load when a skill is activated. Many IDE tools also load a global instruction file at the **start of every session**, before any skill runs (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, `.github/copilot-instructions.md`, etc). For rules that should hold even outside BMad skills, restate the critical ones there too.
+Wizz Method customizations load when a skill is activated. Many IDE tools also load a global instruction file at the **start of every session**, before any skill runs (`CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, `.github/copilot-instructions.md`, etc). For rules that should hold even outside Wizz Method skills, restate the critical ones there too.
 
 **When to double up:**
 - A rule is important enough that a plain chat conversation (no skill active) should still follow it
@@ -220,16 +220,16 @@ One sentence, loaded every session. It pairs with the `bmad-agent-dev.toml` cust
 
 | Layer | Scope | Use for |
 |---|---|---|
-| IDE session file (`CLAUDE.md` / `AGENTS.md`) | Every session, before any skill activates | Short, universal rules that should survive outside BMad |
-| BMad agent customization | Every workflow the agent dispatches | Agent-persona-specific behavior |
-| BMad workflow customization | One workflow run | Workflow-specific output shape, publishing hooks, templates |
-| BMad central config | Agent roster + shared install settings | Who's in the room and what shared paths the team uses |
+| IDE session file (`CLAUDE.md` / `AGENTS.md`) | Every session, before any skill activates | Short, universal rules that should survive outside the Wizz Method |
+| Wizz agent customization | Every workflow the agent dispatches | Agent-persona-specific behavior |
+| Wizz workflow customization | One workflow run | Workflow-specific output shape, publishing hooks, templates |
+| Wizz central config | Agent roster + shared install settings | Who's in the room and what shared paths the team uses |
 
 Keep the IDE file **succinct**. A dozen well-chosen lines are more effective than a sprawling list. Models read it every turn, and noise crowds out signal.
 
 ## Recipe 6: Advanced Integration Patterns
 
-Several BMad workflows expose a richer configuration surface beyond the basics covered in Recipes 1–5. These patterns — on-demand knowledge sources, automatic output publishing, finalize-time doc standards, and swappable templates — appear across multiple workflows. Check a workflow's `customize.toml` to see which fields it exposes; the examples below use `bmad-prd` because it exposes all of them, but the same patterns apply wherever the field appears.
+Several Wizz Method workflows expose a richer configuration surface beyond the basics covered in Recipes 1–5. These patterns — on-demand knowledge sources, automatic output publishing, finalize-time doc standards, and swappable templates — appear across multiple workflows. Check a workflow's `customize.toml` to see which fields it exposes; the examples below use `bmad-prd` because it exposes all of them, but the same patterns apply wherever the field appears.
 
 ### On-demand knowledge sources (`external_sources`)
 
@@ -317,11 +317,11 @@ on_complete = """ ... """
 persistent_facts = ["Always include a 'Regulatory Review' section when the domain involves healthcare, finance, or children's data."]
 ```
 
-Result: Mary loads the regulatory-review rule at persona activation. When the user picks the product-brief menu item, the workflow loads its own conventions on top, writes to the enterprise template, and publishes to Confluence on completion. Every layer contributes, and none of them required editing BMad source.
+Result: Mary loads the regulatory-review rule at persona activation. When the user picks the product-brief menu item, the workflow loads its own conventions on top, writes to the enterprise template, and publishes to Confluence on completion. Every layer contributes, and none of them required editing Wizz Method source.
 
 ## Troubleshooting
 
-**Override not taking effect?** Check that the file is under `_bmad/custom/` with the exact skill directory name (e.g. `bmad-agent-dev.toml`, not `bmad-dev.toml`). See [How to Customize BMad](./customize-bmad.md#troubleshooting).
+**Override not taking effect?** Check that the file is under `_bmad/custom/` with the exact skill directory name (e.g. `bmad-agent-dev.toml`, not `bmad-dev.toml`). See [How to Customize Wizz Method](./customize-bmad.md#troubleshooting).
 
 **MCP tool name unknown?** Use the exact name the MCP server exposes in the current session. Ask Claude Code to list available MCP tools if unsure. Hardcoded names in `persistent_facts` or `on_complete` won't work if the MCP server isn't connected.
 
