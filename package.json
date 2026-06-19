@@ -11,15 +11,15 @@
     "methodology",
     "agents",
     "wizz",
-    "agencywizz"
+    "wizzcomms"
   ],
   "homepage": "https://method.wizzcomms.com",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/agencywizz/wizz-method.git"
+    "url": "git+https://github.com/wizzcomms/wizz-method.git"
   },
   "license": "MIT",
-  "author": "Wizz! comms. (agencywizz)",
+  "author": "Wizz! comms. (wizzcomms)",
   "main": "tools/installer/bmad-cli.js",
   "bin": {
     "wizz": "tools/installer/bmad-cli.js",

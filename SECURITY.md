@@ -21,7 +21,7 @@ We take security vulnerabilities seriously. If you discover a security issue, pl
 
 Instead, please report them via one of these methods:
 
-1. **GitHub Security Advisories** (Preferred): Use [GitHub's private vulnerability reporting](https://github.com/agencywizz/wizz-method/security/advisories/new) to submit a confidential report.
+1. **GitHub Security Advisories** (Preferred): Use [GitHub's private vulnerability reporting](https://github.com/wizzcomms/wizz-method/security/advisories/new) to submit a confidential report.
 
 2. **Email**: escreva para <support@wizzcomms.com>.
 

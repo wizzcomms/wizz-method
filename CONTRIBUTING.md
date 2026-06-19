@@ -2,11 +2,11 @@
 
 Obrigado por considerar contribuir. Acreditamos em **amplificação humana, não substituição**: trazer o melhor pensamento de humanos e de IA por meio de colaboração guiada.
 
-📨 **Contato**: abra uma [issue no GitHub](https://github.com/agencywizz/wizz-method/issues) ou escreva para <support@wizzcomms.com>.
+📨 **Contato**: abra uma [issue no GitHub](https://github.com/wizzcomms/wizz-method/issues) ou escreva para <support@wizzcomms.com>.
 
 ---
 
-> **Antes de escrever código: fale com a gente** por [issue no GitHub](https://github.com/agencywizz/wizz-method/issues).
+> **Antes de escrever código: fale com a gente** por [issue no GitHub](https://github.com/wizzcomms/wizz-method/issues).
 >
 > Se a mudança adiciona features, reestrutura código ou toca mais que alguns arquivos, **confirme antes que ela faz sentido**. Um PR grande do nada tem alta chance de ser fechado, independente do esforço investido. Uma conversa de cinco minutos pode poupar horas.
 
@@ -37,11 +37,11 @@ BMad strengthens human-AI collaboration through specialized agents and guided wo
 
 1. **Search existing issues** — Use the GitHub issue search to check if your bug or feature has already been reported
 2. **Search closed issues** — Your issue may have been fixed or addressed previously
-3. **Check discussions** — Some conversations happen in [GitHub Discussions](https://github.com/agencywizz/wizz-method/discussions)
+3. **Check discussions** — Some conversations happen in [GitHub Discussions](https://github.com/wizzcomms/wizz-method/discussions)
 
 ### Bug Reports
 
-After searching, if the bug is unreported, use the [bug report template](https://github.com/agencywizz/wizz-method/issues/new?template=bug_report.md) and include:
+After searching, if the bug is unreported, use the [bug report template](https://github.com/wizzcomms/wizz-method/issues/new?template=bug_report.md) and include:
 
 - Clear description of the problem
 - Steps to reproduce
@@ -51,7 +51,7 @@ After searching, if the bug is unreported, use the [bug report template](https:/
 
 ### Feature Requests
 
-After searching, use the [feature request template](https://github.com/agencywizz/wizz-method/issues/new?template=feature_request.md) and explain:
+After searching, use the [feature request template](https://github.com/wizzcomms/wizz-method/issues/new?template=feature_request.md) and explain:
 
 - What the feature is
 - Why it would benefit the BMad community
@@ -167,9 +167,9 @@ Keep messages under 72 characters. Each commit = one logical change.
 
 ## Need Help?
 
-- 📨 **Contato**: [issue no GitHub](https://github.com/agencywizz/wizz-method/issues) ou <support@wizzcomms.com>
-- 🐛 **Bugs**: Use the [bug report template](https://github.com/agencywizz/wizz-method/issues/new?template=bug_report.md)
-- 💡 **Features**: Use the [feature request template](https://github.com/agencywizz/wizz-method/issues/new?template=feature_request.md)
+- 📨 **Contato**: [issue no GitHub](https://github.com/wizzcomms/wizz-method/issues) ou <support@wizzcomms.com>
+- 🐛 **Bugs**: Use the [bug report template](https://github.com/wizzcomms/wizz-method/issues/new?template=bug_report.md)
+- 💡 **Features**: Use the [feature request template](https://github.com/wizzcomms/wizz-method/issues/new?template=feature_request.md)
 
 ---
 

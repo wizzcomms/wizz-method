@@ -53,7 +53,7 @@ export default defineConfig({
       favicon: '/wizz-icon-orange.svg',
 
       // Social links
-      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/agencywizz/wizz-method' }],
+      social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/wizzcomms/wizz-method' }],
 
       // Show last updated timestamps
       lastUpdated: true,

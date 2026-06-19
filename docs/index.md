@@ -51,7 +51,7 @@ Convém ter familiaridade com conceitos básicos de desenvolvimento (controle de
 
 Tire dúvidas, mostre o que está construindo ou contribua:
 
-- **[GitHub](https://github.com/agencywizz/wizz-method)**: código-fonte, issues e contribuições.
+- **[GitHub](https://github.com/wizzcomms/wizz-method)**: código-fonte, issues e contribuições.
 - **[Wizz! comms.](https://wizzcomms.com)**: a agência por trás do método.
 
 ## Próximo passo

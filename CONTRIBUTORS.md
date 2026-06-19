@@ -6,7 +6,7 @@ O Wizz Method é mantido pela Wizz! comms. e construído sobre o motor do BMad M
 
 - **Git history** — Every contribution is preserved in the project's commit history
 - **Contributors badge** — See the dynamic contributors list on our [README](README.md)
-- **GitHub contributors graph** — Visual representation at <https://github.com/agencywizz/wizz-method/graphs/contributors>
+- **GitHub contributors graph** — Visual representation at <https://github.com/wizzcomms/wizz-method/graphs/contributors>
 
 ## Becoming a Contributor
 
