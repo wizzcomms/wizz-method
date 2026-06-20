@@ -3576,6 +3576,28 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 48: empty-string default counts as a real default (#express-slug)
+  // An explicit `default: ""` (e.g. active_feature) means "defaults to blank",
+  // NOT "required, must prompt". Only undefined/null mean "no default".
+  // Regression: Express Setup was interrupting to ask the BMM feature slug.
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 48: empty-string default is a valid default${colors.reset}`);
+  try {
+    assert(OfficialModules.isMissingDefault() === true, 'undefined default is treated as missing');
+    assert(OfficialModules.isMissingDefault(null) === true, 'null default is treated as missing');
+    assert(OfficialModules.isMissingDefault('') === false, 'empty-string default is NOT missing (defaults to blank)');
+    assert(OfficialModules.isMissingDefault('admin-panel') === false, 'non-empty string default is not missing');
+    assert(OfficialModules.isMissingDefault(0) === false, 'zero default is not missing');
+    assert(OfficialModules.isMissingDefault(false) === false, 'false default is not missing');
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 48 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

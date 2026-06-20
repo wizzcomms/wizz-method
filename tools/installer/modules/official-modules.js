@@ -7,6 +7,18 @@ const { CLIUtils } = require('../cli-utils');
 const { ExternalModuleManager } = require('./external-manager');
 
 class OfficialModules {
+  /**
+   * A config field is "missing a default" only when it has no default value at
+   * all (undefined/null). An explicit empty string (`default: ""`) is a real
+   * default meaning "defaults to blank" — it must NOT force a required prompt.
+   * Centralized so the express/customize/skip-prompts paths stay consistent.
+   * @param {*} defaultValue - The field's `default` value from module.yaml.
+   * @returns {boolean} True when the field has no usable default.
+   */
+  static isMissingDefault(defaultValue) {
+    return defaultValue === undefined || defaultValue === null;
+  }
+
   constructor(options = {}) {
     this.externalModuleManager = new ExternalModuleManager();
     // Config collection state (merged from ConfigCollector)
@@ -1003,7 +1015,7 @@ class OfficialModules {
 
         const hasFieldsWithoutDefaults = questionKeys.some((key) => {
           const item = moduleConfig[key];
-          return item.default === undefined || item.default === null || item.default === '';
+          return OfficialModules.isMissingDefault(item.default);
         });
 
         results.push({
@@ -1526,7 +1538,7 @@ class OfficialModules {
         await prompts.log.info(`Using default configuration for ${moduleDisplayName}`);
         // Use defaults for all questions
         for (const question of questions) {
-          const hasDefault = question.default !== undefined && question.default !== null && question.default !== '';
+          const hasDefault = !OfficialModules.isMissingDefault(question.default);
           if (hasDefault && typeof question.default !== 'function') {
             allAnswers[question.name] = question.default;
           }
@@ -1554,7 +1566,7 @@ class OfficialModules {
 
         if (useDefaults && moduleName !== 'core') {
           // Accept defaults - only ask questions that have NO default value
-          const questionsWithoutDefaults = questions.filter((q) => q.default === undefined || q.default === null || q.default === '');
+          const questionsWithoutDefaults = questions.filter((q) => OfficialModules.isMissingDefault(q.default));
 
           if (questionsWithoutDefaults.length > 0) {
             await prompts.log.message(`  Asking required questions for ${moduleName.toUpperCase()}...`);
@@ -1563,7 +1575,7 @@ class OfficialModules {
           }
 
           // For questions with defaults that weren't asked, we need to process them with their default values
-          const questionsWithDefaults = questions.filter((q) => q.default !== undefined && q.default !== null && q.default !== '');
+          const questionsWithDefaults = questions.filter((q) => !OfficialModules.isMissingDefault(q.default));
           for (const question of questionsWithDefaults) {
             // Skip function defaults - these are dynamic and will be evaluated later
             if (typeof question.default === 'function') {
