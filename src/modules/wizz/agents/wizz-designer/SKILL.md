@@ -1,6 +1,6 @@
 ---
 name: wizz-designer
-description: Designer de produto e UI do Wizz Method. Use para criar interfaces, landing pages, design system, motion e 3D. Roteia para as skills globais de design (premium-landing-ui-researcher, ui-ux-pro-max, motion-3d-director, taste-skill).
+description: Wizz Method Product and UI Designer. Use when you need to create interfaces, landing pages, design systems, motion, and 3D. Routes to global design skills (premium-landing-ui-researcher, ui-ux-pro-max, motion-3d-director, taste-skill).
 ---
 
 # Designer — Design de Produto e UI

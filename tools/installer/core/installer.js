@@ -8,7 +8,7 @@ const { Config } = require('./config');
 const { getProjectRoot, getSourcePath } = require('../project-root');
 const { ManifestGenerator } = require('./manifest-generator');
 const prompts = require('../prompts');
-const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
+const { WIZZ_FOLDER_NAME } = require('../ide/shared/path-utils');
 const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
 const { resolveModuleVersion } = require('../modules/version-resolver');
@@ -24,7 +24,7 @@ class Installer {
     this.ideManager = new IdeManager();
     this.fileOps = new FileOps();
     this.installedFiles = new Set(); // Track all installed files
-    this.bmadFolderName = BMAD_FOLDER_NAME;
+    this.wizzFolderName = WIZZ_FOLDER_NAME;
   }
 
   /**
@@ -41,7 +41,7 @@ class Installer {
       const config = Config.build(originalConfig);
       const paths = await InstallPaths.create(config);
       const officialModules = await OfficialModules.build(config, paths);
-      const existingInstall = await ExistingInstall.detect(paths.bmadDir);
+      const existingInstall = await ExistingInstall.detect(paths.wizzDir);
 
       try {
         await warnPreNativeSkillsLegacy({
@@ -50,7 +50,7 @@ class Installer {
         });
       } catch (error) {
         // Legacy-dir scan is informational; never let it abort install.
-        await prompts.log.warn(`Warning: Could not check for legacy BMAD entries: ${error.message}`);
+        await prompts.log.warn(`Warning: Could not check for legacy WIZZ entries: ${error.message}`);
       }
 
       if (existingInstall.installed) {
@@ -64,7 +64,7 @@ class Installer {
       // Capture pre-install module versions for from→to display
       const preInstallVersions = new Map();
       if (existingInstall.installed) {
-        const existingModules = await this.manifest.getAllModuleVersions(paths.bmadDir);
+        const existingModules = await this.manifest.getAllModuleVersions(paths.wizzDir);
         for (const mod of existingModules) {
           if (mod.name && mod.version) {
             preInstallVersions.set(mod.name, mod.version);
@@ -78,7 +78,7 @@ class Installer {
 
       // Capture previously installed skill rows before they get overwritten
       const preservedModules = originalConfig._preserveModules || [];
-      const previousSkillManifestRows = await this._readSkillManifestRows(paths.bmadDir);
+      const previousSkillManifestRows = await this._readSkillManifestRows(paths.wizzDir);
       const previousSkillIds = this._getPreviousSkillIdsForCleanup(previousSkillManifestRows, preservedModules);
 
       const allModules = config.modules || [];
@@ -98,13 +98,13 @@ class Installer {
 
       // Skills are now in IDE directories — remove redundant copies from _wizz/.
       // Also cleans up skill dirs left by older installer versions.
-      await this._cleanupSkillDirs(paths.bmadDir);
+      await this._cleanupSkillDirs(paths.wizzDir);
 
       const restoreResult = await this._restoreUserFiles(paths, updateState);
 
       // Render consolidated summary
       await this.renderInstallSummary(results, {
-        bmadDir: paths.bmadDir,
+        wizzDir: paths.wizzDir,
         modules: config.modules,
         ides: config.ides,
         customFiles: restoreResult.customFiles.length > 0 ? restoreResult.customFiles : undefined,
@@ -114,7 +114,7 @@ class Installer {
 
       return {
         success: true,
-        path: paths.bmadDir,
+        path: paths.wizzDir,
         modules: config.modules,
         ides: config.ides,
         projectDir: paths.projectRoot,
@@ -256,7 +256,7 @@ class Installer {
     installTasks.push({
       title: 'Creating module directories',
       task: async (message) => {
-        const verboseMode = process.env.BMAD_VERBOSE_INSTALL === 'true' || config.verbose;
+        const verboseMode = process.env.WIZZ_VERBOSE_INSTALL === 'true' || config.verbose;
         const moduleLogger = {
           log: async (msg) => (verboseMode ? await prompts.log.message(msg) : undefined),
           error: async (msg) => await prompts.log.error(msg),
@@ -266,7 +266,7 @@ class Installer {
         if (config.modules && config.modules.length > 0) {
           for (const moduleName of config.modules) {
             message(`Setting up ${moduleName}...`);
-            const result = await officialModules.createModuleDirectories(moduleName, paths.bmadDir, {
+            const result = await officialModules.createModuleDirectories(moduleName, paths.wizzDir, {
               installedIDEs: config.ides || [],
               moduleConfig: moduleConfigs[moduleName] || {},
               existingModuleConfig: officialModules.existingConfig?.[moduleName] || {},
@@ -290,7 +290,7 @@ class Installer {
     const configTask = {
       title: 'Generating configurations',
       task: async (message) => {
-        await this.generateModuleConfigs(paths.bmadDir, moduleConfigs);
+        await this.generateModuleConfigs(paths.wizzDir, moduleConfigs);
         addResult('Configurations', 'ok', 'generated');
 
         this.installedFiles.add(paths.manifestFile());
@@ -314,14 +314,14 @@ class Installer {
           modulesForCsvPreserve = preservedModules.length > 0 ? [...allModules, ...preservedModules] : allModules;
         }
 
-        await this._trackPreservedModuleFiles(paths.bmadDir, preservedModules);
+        await this._trackPreservedModuleFiles(paths.wizzDir, preservedModules);
 
-        await manifestGen.generateManifests(paths.bmadDir, allModulesForManifest, [...this.installedFiles], {
+        await manifestGen.generateManifests(paths.wizzDir, allModulesForManifest, [...this.installedFiles], {
           ides: config.ides || [],
           preservedModules: modulesForCsvPreserve,
           moduleConfigs,
         });
-        await this._appendPreservedSkillManifestRows(paths.bmadDir, previousSkillManifestRows, preservedModules);
+        await this._appendPreservedSkillManifestRows(paths.wizzDir, previousSkillManifestRows, preservedModules);
 
         // Apply post-install --set TOML patches. Runs after writeCentralConfig
         // (inside generateManifests above) so the patch operates on the
@@ -329,7 +329,7 @@ class Installer {
         // See `tools/installer/set-overrides.js` for routing rules.
         if (config.setOverrides && Object.keys(config.setOverrides).length > 0) {
           const { applySetOverrides } = require('../set-overrides');
-          const applied = await applySetOverrides(config.setOverrides, paths.bmadDir);
+          const applied = await applySetOverrides(config.setOverrides, paths.wizzDir);
           if (applied.length > 0) {
             const summary = applied.map((a) => `${a.module}.${a.key} → ${a.file}`).join(', ');
             await prompts.log.info(`Applied --set overrides: ${summary}`);
@@ -337,7 +337,7 @@ class Installer {
         }
 
         message('Generating help catalog...');
-        await this.mergeModuleHelpCatalogs(paths.bmadDir, manifestGen.agents);
+        await this.mergeModuleHelpCatalogs(paths.wizzDir, manifestGen.agents);
         addResult('Help catalog', 'ok');
 
         return 'Configurations generated';
@@ -380,7 +380,7 @@ class Installer {
       return;
     }
 
-    const setupResults = await this.ideManager.setupBatch(validIdes, paths.projectRoot, paths.bmadDir, {
+    const setupResults = await this.ideManager.setupBatch(validIdes, paths.projectRoot, paths.wizzDir, {
       selectedModules: allModules || [],
       verbose: config.verbose,
       previousSkillIds,
@@ -401,41 +401,41 @@ class Installer {
    * Skills are self-contained in IDE directories, so _wizz/ only needs
    * module-level files (config.yaml, _config/, etc.).
    * Also cleans up skill dirs left by older installer versions.
-   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} wizzDir - WIZZ installation directory
    */
-  async _cleanupSkillDirs(bmadDir) {
+  async _cleanupSkillDirs(wizzDir) {
     const csv = require('csv-parse/sync');
-    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    const csvPath = path.join(wizzDir, '_config', 'skill-manifest.csv');
     if (!(await fs.pathExists(csvPath))) return;
 
     const csvContent = await fs.readFile(csvPath, 'utf8');
     const records = csv.parse(csvContent, { columns: true, skip_empty_lines: true });
-    const bmadFolderName = path.basename(bmadDir);
-    const bmadPrefix = bmadFolderName + '/';
+    const wizzFolderName = path.basename(wizzDir);
+    const wizzPrefix = wizzFolderName + '/';
 
     for (const record of records) {
       if (!record.path) continue;
-      const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
-      const sourceDir = path.dirname(path.join(bmadDir, relativePath));
+      const relativePath = record.path.startsWith(wizzPrefix) ? record.path.slice(wizzPrefix.length) : record.path;
+      const sourceDir = path.dirname(path.join(wizzDir, relativePath));
       if (await fs.pathExists(sourceDir)) {
         await fs.remove(sourceDir);
-        await this._removeEmptyParents(path.dirname(sourceDir), bmadDir);
+        await this._removeEmptyParents(path.dirname(sourceDir), wizzDir);
       }
     }
   }
 
   /**
    * Remove now-empty parent directories left behind after skill dir cleanup.
-   * Walks up from dir, stopping at (and never removing) bmadDir. Best-effort:
+   * Walks up from dir, stopping at (and never removing) wizzDir. Best-effort:
    * a directory that vanishes or fills in mid-walk just ends the walk.
    * @param {string} dir - Directory to start walking up from
-   * @param {string} bmadDir - BMAD installation directory (boundary)
+   * @param {string} wizzDir - WIZZ installation directory (boundary)
    */
-  async _removeEmptyParents(dir, bmadDir) {
+  async _removeEmptyParents(dir, wizzDir) {
     let current = dir;
     while (true) {
       // Path-boundary check (not a string prefix, so siblings like _wizz2 don't match).
-      const rel = path.relative(bmadDir, current);
+      const rel = path.relative(wizzDir, current);
       if (rel === '' || rel.startsWith('..') || path.isAbsolute(rel)) break;
       try {
         const entries = await fs.readdir(current);
@@ -448,8 +448,8 @@ class Installer {
     }
   }
 
-  async _readSkillManifestRows(bmadDir) {
-    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+  async _readSkillManifestRows(wizzDir) {
+    const csvPath = path.join(wizzDir, '_config', 'skill-manifest.csv');
     if (!(await fs.pathExists(csvPath))) return [];
 
     try {
@@ -473,17 +473,17 @@ class Installer {
     return ids;
   }
 
-  async _appendPreservedSkillManifestRows(bmadDir, previousRows, preservedModules = []) {
+  async _appendPreservedSkillManifestRows(wizzDir, previousRows, preservedModules = []) {
     if (!previousRows || previousRows.length === 0 || preservedModules.length === 0) return;
 
     const preservedModuleSet = new Set(preservedModules);
     const rowsToPreserve = previousRows.filter((row) => row.canonicalId && row.module && preservedModuleSet.has(row.module));
     if (rowsToPreserve.length === 0) return;
 
-    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    const csvPath = path.join(wizzDir, '_config', 'skill-manifest.csv');
     if (!(await fs.pathExists(csvPath))) return;
 
-    const currentRows = await this._readSkillManifestRows(bmadDir);
+    const currentRows = await this._readSkillManifestRows(wizzDir);
     const activeIds = new Set(currentRows.map((row) => row.canonicalId).filter(Boolean));
     const appendedRows = [];
 
@@ -529,7 +529,7 @@ class Installer {
             message(`Restoring ${updateState.customFiles.length} custom files...`);
 
             for (const originalPath of updateState.customFiles) {
-              const relativePath = path.relative(paths.bmadDir, originalPath);
+              const relativePath = path.relative(paths.wizzDir, originalPath);
               const backupPath = path.join(updateState.tempBackupDir, relativePath);
 
               if (await fs.pathExists(backupPath)) {
@@ -552,7 +552,7 @@ class Installer {
               message(`Restoring ${restoredModifiedFiles.length} modified files as .bak...`);
 
               for (const modifiedFile of restoredModifiedFiles) {
-                const relativePath = path.relative(paths.bmadDir, modifiedFile.path);
+                const relativePath = path.relative(paths.wizzDir, modifiedFile.path);
                 const tempBackupPath = path.join(updateState.tempModifiedBackupDir, relativePath);
                 const bakPath = modifiedFile.path + '.bak';
 
@@ -584,8 +584,8 @@ class Installer {
    */
   async _prepareUpdateState(paths, config, existingInstall, officialModules) {
     // Detect custom and modified files BEFORE updating (compare current files vs files-manifest.csv)
-    const existingFilesManifest = await this.readFilesManifest(paths.bmadDir);
-    const { customFiles, modifiedFiles } = await this.detectCustomFiles(paths.bmadDir, existingFilesManifest);
+    const existingFilesManifest = await this.readFilesManifest(paths.wizzDir);
+    const { customFiles, modifiedFiles } = await this.detectCustomFiles(paths.wizzDir, existingFilesManifest);
 
     // Preserve existing core configuration during updates
     // (no-op for quick-update which already has core config from collectModuleConfigQuick)
@@ -630,7 +630,7 @@ class Installer {
       await fs.ensureDir(tempBackupDir);
 
       for (const customFile of customFiles) {
-        const relativePath = path.relative(paths.bmadDir, customFile);
+        const relativePath = path.relative(paths.wizzDir, customFile);
         const backupPath = path.join(tempBackupDir, relativePath);
         await fs.ensureDir(path.dirname(backupPath));
         await fs.copy(customFile, backupPath);
@@ -642,7 +642,7 @@ class Installer {
       await fs.ensureDir(tempModifiedBackupDir);
 
       for (const modifiedFile of modifiedFiles) {
-        const relativePath = path.relative(paths.bmadDir, modifiedFile.path);
+        const relativePath = path.relative(paths.wizzDir, modifiedFile.path);
         const tempBackupPath = path.join(tempModifiedBackupDir, relativePath);
         await fs.ensureDir(path.dirname(tempBackupPath));
         await fs.copy(modifiedFile.path, tempBackupPath, { overwrite: true });
@@ -696,9 +696,9 @@ class Installer {
     }
   }
 
-  async _trackPreservedModuleFiles(bmadDir, preservedModules = []) {
+  async _trackPreservedModuleFiles(wizzDir, preservedModules = []) {
     for (const moduleName of preservedModules) {
-      const modulePath = path.join(bmadDir, moduleName);
+      const modulePath = path.join(wizzDir, moduleName);
       if (await fs.pathExists(modulePath)) {
         await this._trackFilesRecursive(modulePath);
       }
@@ -727,7 +727,7 @@ class Installer {
       const moduleConfig = officialModules.moduleConfigs[moduleName] || {};
       const installResult = await officialModules.install(
         moduleName,
-        paths.bmadDir,
+        paths.wizzDir,
         (filePath) => {
           this.installedFiles.add(filePath);
         },
@@ -769,11 +769,11 @@ class Installer {
 
   /**
    * Read files-manifest.csv
-   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} wizzDir - WIZZ installation directory
    * @returns {Array} Array of file entries from files-manifest.csv
    */
-  async readFilesManifest(bmadDir) {
-    const filesManifestPath = path.join(bmadDir, '_config', 'files-manifest.csv');
+  async readFilesManifest(wizzDir) {
+    const filesManifestPath = path.join(wizzDir, '_config', 'files-manifest.csv');
     if (!(await fs.pathExists(filesManifestPath))) {
       return [];
     }
@@ -825,11 +825,11 @@ class Installer {
 
   /**
    * Detect custom and modified files
-   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} wizzDir - WIZZ installation directory
    * @param {Array} existingFilesManifest - Previous files from files-manifest.csv
    * @returns {Object} Object with customFiles and modifiedFiles arrays
    */
-  async detectCustomFiles(bmadDir, existingFilesManifest) {
+  async detectCustomFiles(wizzDir, existingFilesManifest) {
     const customFiles = [];
     const modifiedFiles = [];
 
@@ -837,7 +837,7 @@ class Installer {
     // per-user runtime data generated by agents with sidecars. These files
     // aren't installer-managed and must never be reported as "custom" or
     // "modified" — they're user state, not user overrides.
-    const bmadMemoryPaths = ['_memory', 'memory'];
+    const wizzMemoryPaths = ['_memory', 'memory'];
 
     // Check if the manifest has hashes - if not, we can't detect modifications
     let manifestHasHashes = false;
@@ -849,7 +849,7 @@ class Installer {
     const installedFilesMap = new Map();
     for (const fileEntry of existingFilesManifest) {
       if (fileEntry.path) {
-        const absolutePath = path.join(bmadDir, fileEntry.path);
+        const absolutePath = path.join(wizzDir, fileEntry.path);
         installedFilesMap.set(path.normalize(absolutePath), {
           hash: fileEntry.hash,
           relativePath: fileEntry.path,
@@ -857,7 +857,7 @@ class Installer {
       }
     }
 
-    // Recursively scan bmadDir for all files
+    // Recursively scan wizzDir for all files
     const scanDirectory = async (dir) => {
       try {
         const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -875,7 +875,7 @@ class Installer {
             const fileInfo = installedFilesMap.get(normalizedPath);
 
             // Skip certain system files that are auto-generated
-            const relativePath = path.relative(bmadDir, fullPath);
+            const relativePath = path.relative(wizzDir, fullPath);
             const fileName = path.basename(fullPath);
 
             // Skip _config directory EXCEPT for modified agent customizations
@@ -883,7 +883,7 @@ class Installer {
               // Special handling for .customize.yaml files - only preserve if modified
               if (relativePath.includes('/agents/') && fileName.endsWith('.customize.yaml')) {
                 // Check if the customization file has been modified from manifest
-                const manifestPath = path.join(bmadDir, '_config', 'manifest.yaml');
+                const manifestPath = path.join(wizzDir, '_config', 'manifest.yaml');
                 if (await fs.pathExists(manifestPath)) {
                   const crypto = require('node:crypto');
                   const currentContent = await fs.readFile(fullPath, 'utf8');
@@ -903,7 +903,7 @@ class Installer {
               continue;
             }
 
-            if (bmadMemoryPaths.some((mp) => relativePath === mp || relativePath.startsWith(mp + '/'))) {
+            if (wizzMemoryPaths.some((mp) => relativePath === mp || relativePath.startsWith(mp + '/'))) {
               continue;
             }
 
@@ -937,29 +937,29 @@ class Installer {
       }
     };
 
-    await scanDirectory(bmadDir);
+    await scanDirectory(wizzDir);
     return { customFiles, modifiedFiles };
   }
 
   /**
    * Generate clean config.yaml files for each installed module
-   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} wizzDir - WIZZ installation directory
    * @param {Object} moduleConfigs - Collected configuration values
    */
-  async generateModuleConfigs(bmadDir, moduleConfigs) {
+  async generateModuleConfigs(wizzDir, moduleConfigs) {
     const yaml = require('yaml');
 
     // Extract core config values to share with other modules
     const coreConfig = moduleConfigs.core || {};
 
     // Get all installed module directories
-    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+    const entries = await fs.readdir(wizzDir, { withFileTypes: true });
     const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
     const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
     // Generate config.yaml for each installed module
     for (const moduleName of installedModules) {
-      const modulePath = path.join(bmadDir, moduleName);
+      const modulePath = path.join(wizzDir, moduleName);
 
       // Get module-specific config or use empty object if none
       const config = moduleConfigs[moduleName] || {};
@@ -1040,17 +1040,17 @@ class Installer {
    * Merge all module-help.csv files into a single wizz-help.csv.
    * Scans all installed modules for module-help.csv and merges them.
    * Output preserves the source schema verbatim — see schema below.
-   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} wizzDir - WIZZ installation directory
    * @param {Array<Object>} _agentEntries - Unused; retained for call-site compatibility
    */
-  async mergeModuleHelpCatalogs(bmadDir, _agentEntries = []) {
+  async mergeModuleHelpCatalogs(wizzDir, _agentEntries = []) {
     const allRows = [];
     const headerRow = MODULE_HELP_CSV_HEADER;
     const COLUMN_COUNT = 13;
     const PHASE_INDEX = 7;
 
     // Get all installed module directories
-    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+    const entries = await fs.readdir(wizzDir, { withFileTypes: true });
     const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
     const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
 
@@ -1065,7 +1065,7 @@ class Installer {
 
     // Map installed module paths
     for (const moduleName of installedModules) {
-      const modulePath = path.join(bmadDir, moduleName);
+      const modulePath = path.join(wizzDir, moduleName);
       modulePaths.set(moduleName, modulePath);
     }
 
@@ -1111,7 +1111,7 @@ class Installer {
             allRows.push(padded.map((c) => this.escapeCSVField(c)).join(','));
           }
 
-          if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
+          if (process.env.WIZZ_VERBOSE_INSTALL === 'true') {
             await prompts.log.message(`  Merged module-help from: ${moduleName}`);
           }
         } catch (error) {
@@ -1136,7 +1136,7 @@ class Installer {
     const sortedRows = decorated.map((d) => d.row);
 
     // Write merged catalog
-    const outputDir = path.join(bmadDir, '_config');
+    const outputDir = path.join(wizzDir, '_config');
     await fs.ensureDir(outputDir);
     const outputPath = path.join(outputDir, 'wizz-help.csv');
 
@@ -1146,7 +1146,7 @@ class Installer {
     // Track the installed file
     this.installedFiles.add(outputPath);
 
-    if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
+    if (process.env.WIZZ_VERBOSE_INSTALL === 'true') {
       await prompts.log.message(`  Generated wizz-help.csv: ${sortedRows.length} workflows`);
     }
   }
@@ -1154,7 +1154,7 @@ class Installer {
   /**
    * Render a consolidated install summary using prompts.note()
    * @param {Array} results - Array of {step, status: 'ok'|'error'|'warn', detail}
-   * @param {Object} context - {bmadDir, modules, ides, customFiles, modifiedFiles}
+   * @param {Object} context - {wizzDir, modules, ides, customFiles, modifiedFiles}
    */
   async renderInstallSummary(results, context = {}) {
     const color = await prompts.getColor();
@@ -1216,8 +1216,8 @@ class Installer {
 
     // Context and warnings
     lines.push('');
-    if (context.bmadDir) {
-      lines.push(`  Installed to: ${context.bmadDir}`);
+    if (context.wizzDir) {
+      lines.push(`  Installed to: ${context.wizzDir}`);
     }
     if (context.customFiles && context.customFiles.length > 0) {
       lines.push(`  ${color.cyan(`Custom files preserved: ${context.customFiles.length}`)}`);
@@ -1250,18 +1250,18 @@ class Installer {
    */
   async quickUpdate(config) {
     const projectDir = path.resolve(config.directory);
-    const { bmadDir } = await this.findBmadDir(projectDir);
+    const { wizzDir } = await this.findWizzDir(projectDir);
 
-    // Check if bmad directory exists
-    if (!(await fs.pathExists(bmadDir))) {
-      throw new Error(`Wizz not installed at ${bmadDir}. Use regular install for first-time setup.`);
+    // Check if wizz directory exists
+    if (!(await fs.pathExists(wizzDir))) {
+      throw new Error(`Wizz not installed at ${wizzDir}. Use regular install for first-time setup.`);
     }
 
     // Detect existing installation
-    const existingInstall = await ExistingInstall.detect(bmadDir);
+    const existingInstall = await ExistingInstall.detect(wizzDir);
     const installedModules = existingInstall.moduleIds;
     const configuredIdes = existingInstall.ides;
-    const projectRoot = path.dirname(bmadDir);
+    const projectRoot = path.dirname(wizzDir);
 
     // Get available modules (what we have source for)
     const availableModulesData = await new OfficialModules().listAvailable();
@@ -1285,7 +1285,7 @@ class Installer {
     const customMgr = new CustomModuleManager();
     for (const moduleId of installedModules) {
       if (!availableModules.some((m) => m.id === moduleId)) {
-        const customSource = await customMgr.findModuleSourceByCode(moduleId, { bmadDir });
+        const customSource = await customMgr.findModuleSourceByCode(moduleId, { wizzDir });
         if (customSource) {
           availableModules.push({
             id: moduleId,
@@ -1313,7 +1313,7 @@ class Installer {
     // silently redecide it. Without this, modules previously on 'next' or
     // 'pinned' would trigger a stable-channel tag lookup at config-collection
     // time, burning GitHub API quota and potentially failing.
-    const manifestData = await this.manifest.read(bmadDir);
+    const manifestData = await this.manifest.read(wizzDir);
     const channelOptions = { global: null, nextSet: new Set(), pins: new Map(), warnings: [] };
     if (manifestData?.modulesDetailed) {
       const { fetchStableTags, classifyUpgrade, parseGitHubRepo } = require('../modules/channel-resolver');
@@ -1418,7 +1418,7 @@ class Installer {
   }
 
   /**
-   * Uninstall BMAD with selective removal options
+   * Uninstall WIZZ with selective removal options
    * @param {string} directory - Project directory
    * @param {Object} options - Uninstall options
    * @param {boolean} [options.removeModules=true] - Remove _wizz/ directory
@@ -1428,15 +1428,15 @@ class Installer {
    */
   async uninstall(directory, options = {}) {
     const projectDir = path.resolve(directory);
-    const { bmadDir } = await this.findBmadDir(projectDir);
+    const { wizzDir } = await this.findWizzDir(projectDir);
 
-    if (!(await fs.pathExists(bmadDir))) {
+    if (!(await fs.pathExists(wizzDir))) {
       return { success: false, reason: 'not-installed' };
     }
 
     // 1. DETECT: Read state BEFORE deleting anything
-    const existingInstall = await ExistingInstall.detect(bmadDir);
-    const outputFolder = await this._readOutputFolder(bmadDir);
+    const existingInstall = await ExistingInstall.detect(wizzDir);
+    const outputFolder = await this._readOutputFolder(wizzDir);
 
     const removed = { modules: false, ideConfigs: false, outputFolder: false };
 
@@ -1451,7 +1451,7 @@ class Installer {
       removed.outputFolder = await this.uninstallOutputFolder(projectDir, outputFolder);
     }
 
-    // 4. BMAD DIRECTORY (last, after everything that needs it)
+    // 4. WIZZ DIRECTORY (last, after everything that needs it)
     if (options.removeModules !== false) {
       removed.modules = await this.uninstallModules(projectDir);
     }
@@ -1502,9 +1502,9 @@ class Installer {
    * @returns {Promise<boolean>} Whether the directory was removed
    */
   async uninstallModules(projectDir) {
-    const { bmadDir } = await this.findBmadDir(projectDir);
-    if (await fs.pathExists(bmadDir)) {
-      await fs.remove(bmadDir);
+    const { wizzDir } = await this.findWizzDir(projectDir);
+    if (await fs.pathExists(wizzDir)) {
+      await fs.remove(wizzDir);
       return true;
     }
     return false;
@@ -1515,8 +1515,8 @@ class Installer {
    */
   async getStatus(directory) {
     const projectDir = path.resolve(directory);
-    const { bmadDir } = await this.findBmadDir(projectDir);
-    return await ExistingInstall.detect(bmadDir);
+    const { wizzDir } = await this.findWizzDir(projectDir);
+    return await ExistingInstall.detect(wizzDir);
   }
 
   /**
@@ -1528,37 +1528,37 @@ class Installer {
 
   /**
    * Get the configured output folder name for a project
-   * Resolves bmadDir internally from projectDir
+   * Resolves wizzDir internally from projectDir
    * @param {string} projectDir - Project directory
    * @returns {string} Output folder name (relative, default: '_wizz-output')
    */
   async getOutputFolder(projectDir) {
-    const { bmadDir } = await this.findBmadDir(projectDir);
-    return this._readOutputFolder(bmadDir);
+    const { wizzDir } = await this.findWizzDir(projectDir);
+    return this._readOutputFolder(wizzDir);
   }
 
   /**
-   * Find the bmad installation directory in a project
+   * Find the wizz installation directory in a project
    * Always uses the standard _wizz folder name
    * @param {string} projectDir - Project directory
-   * @returns {Promise<Object>} { bmadDir: string }
+   * @returns {Promise<Object>} { wizzDir: string }
    */
-  async findBmadDir(projectDir) {
-    const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
-    return { bmadDir };
+  async findWizzDir(projectDir) {
+    const wizzDir = path.join(projectDir, WIZZ_FOLDER_NAME);
+    return { wizzDir };
   }
 
   /**
    * Read the output_folder setting from module config files
    * Checks bmm/config.yaml first, then other module configs
-   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} wizzDir - WIZZ installation directory
    * @returns {string} Output folder path or default
    */
-  async _readOutputFolder(bmadDir) {
+  async _readOutputFolder(wizzDir) {
     const yaml = require('yaml');
 
     // Check bmm/config.yaml first (most common)
-    const bmmConfigPath = path.join(bmadDir, 'bmm', 'config.yaml');
+    const bmmConfigPath = path.join(wizzDir, 'bmm', 'config.yaml');
     if (await fs.pathExists(bmmConfigPath)) {
       try {
         const content = await fs.readFile(bmmConfigPath, 'utf8');
@@ -1574,10 +1574,10 @@ class Installer {
 
     // Scan other module config.yaml files
     try {
-      const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+      const entries = await fs.readdir(wizzDir, { withFileTypes: true });
       for (const entry of entries) {
         if (!entry.isDirectory() || entry.name === 'bmm' || entry.name.startsWith('_')) continue;
-        const configPath = path.join(bmadDir, entry.name, 'config.yaml');
+        const configPath = path.join(wizzDir, entry.name, 'config.yaml');
         if (await fs.pathExists(configPath)) {
           try {
             const content = await fs.readFile(configPath, 'utf8');

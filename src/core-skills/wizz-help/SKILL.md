@@ -1,13 +1,13 @@
 ---
 name: wizz-help
-description: 'Analyzes current state and user query to answer BMad questions or recommend the next skill(s) to use. Use when user asks for help, bmad help, what to do next, or what to start with in BMad.'
+description: 'Analyzes current state and user query to answer Wizz questions or recommend the next skill(s) to use. Use when user asks for help, wizz help, what to do next, or what to start with in Wizz.'
 ---
 
-# BMad Help
+# Wizz Help
 
 ## Purpose
 
-Help the user understand where they are in their BMad workflow and what to do next, and also answer broader questions when asked that could be augmented with remote sources such as module documentation sources.
+Help the user understand where they are in their Wizz workflow and what to do next, and also answer broader questions when asked that could be augmented with remote sources such as module documentation sources.
 
 ## Desired Outcomes
 

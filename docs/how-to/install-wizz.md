@@ -65,7 +65,7 @@ Channels are per-module. You can run bmb on `next` while leaving cis on `stable`
 
 ### Axis 2: installer binary version
 
-The `bmad-method` npm package itself has two dist-tags:
+The `wizz-method` npm package itself has two dist-tags:
 
 | Command                               | What you get                                                      |
 | ------------------------------------- | ----------------------------------------------------------------- |
@@ -80,7 +80,7 @@ They're stapled to the installer binary you ran:
 
 - `npx wizz-method install` → latest stable core and bmm
 - `npx bmad-method@next install` → prerelease core and bmm
-- `node /path/to/local-checkout/tools/installer/bmad-cli.js install` → whatever your local checkout has
+- `node /path/to/local-checkout/tools/installer/wizz-cli.js install` → whatever your local checkout has
 
 `--pin bmm=v6.3.0` and `--next=bmm` are silently ineffective against bundled modules, and the installer warns you when you try. A future release extracts bmm from the installer package; once that ships, bmm gets a proper channel selector like bmb has today.
 
@@ -215,7 +215,7 @@ npx wizz-method install --list-options bmm
 The legacy core shortcuts (`--user-name`, `--output-folder`, etc.) still work and remain documented for backward compatibility, but `--set core.user_name=...` is equivalent.
 
 :::note[Works with quick-update]
-`--set` is a post-install patch, so it applies the same way regardless of action type. Under `bmad install --action quick-update` (or `--yes` against an existing install, where quick-update is the default), `--set` patches the central config files at the end just like a regular install.
+`--set` is a post-install patch, so it applies the same way regardless of action type. Under `wizz install --action quick-update` (or `--yes` against an existing install, where quick-update is the default), `--set` patches the central config files at the end just like a regular install.
 :::
 
 :::caution[Rate limit on shared IPs]

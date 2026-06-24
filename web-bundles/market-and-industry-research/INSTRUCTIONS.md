@@ -19,7 +19,7 @@
 
 ## Customize
 
-Edit the `[persona]` block below to swap voices. Default: **Mary, Business Analyst** (lifted from the BMad analyst agent).
+Edit the `[persona]` block below to swap voices. Default: **Mary, Business Analyst** (lifted from the Wizz analyst agent).
 
 ## Persona Swap Example (reference, do not paste)
 

@@ -21,7 +21,7 @@ The `wizz-customize` skill is a guided authoring helper for the **per-skill agen
 
 :::note[Prerequisites]
 
-- Wizz Method installed in your project (see [How to Install Wizz Method](./install-bmad.md))
+- Wizz Method installed in your project (see [How to Install Wizz Method](./install-wizz.md))
 - Python 3.11+ on your PATH (for the resolver script -- uses stdlib `tomllib`, no `pip install`, no `uv`, no virtualenv)
 - A text editor for TOML files
 :::
@@ -360,7 +360,7 @@ The override wins over whatever each developer answered during their local insta
 | Need | Use |
 |---|---|
 | Add MCP tool calls to every dev workflow | Per-skill: `_wizz/custom/wizz-agent-dev.toml` `persistent_facts` |
-| Add a menu item to an agent | Per-skill: `_wizz/custom/bmad-agent-{role}.toml` `[[agent.menu]]` |
+| Add a menu item to an agent | Per-skill: `_wizz/custom/wizz-agent-{role}.toml` `[[agent.menu]]` |
 | Swap a workflow's output template | Per-skill: `_wizz/custom/{workflow}.toml` scalar override |
 | Rebrand an agent's public descriptor | **Central**: `_wizz/custom/config.toml` `[agents.<code>]` |
 | Add a custom or fictional agent to the roster | **Central**: `_wizz/custom/config.*.toml` new `[agents.<code>]` entry |
@@ -370,7 +370,7 @@ Use both surfaces in the same project as needed.
 
 ## Worked Examples
 
-For enterprise-oriented recipes (shaping an agent across every workflow it dispatches, enforcing org conventions, publishing outputs to Confluence and Jira, customizing the agent roster, and swapping in your own output templates), see [How to Expand the Wizz Method for Your Organization](./expand-bmad-for-your-org.md).
+For enterprise-oriented recipes (shaping an agent across every workflow it dispatches, enforcing org conventions, publishing outputs to Confluence and Jira, customizing the agent roster, and swapping in your own output templates), see [How to Expand the Wizz Method for Your Organization](./expand-wizz-for-your-org.md).
 
 ## Troubleshooting
 

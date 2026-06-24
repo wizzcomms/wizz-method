@@ -1,11 +1,11 @@
 ---
 name: wizz-party-mode
-description: 'Orchestrates lively group discussions between installed BMAD agents or custom personas, and helps author custom parties. Use when the user requests party mode, a roundtable, or multiple agent perspectives — or wants to create/configure a party, define personas, or build an AI focus-group panel.'
+description: 'Orchestrates lively group discussions between installed WIZZ agents or custom personas, and helps author custom parties. Use when the user requests party mode, a roundtable, or multiple agent perspectives — or wants to create/configure a party, define personas, or build an AI focus-group panel.'
 ---
 
 # Party Mode
 
-Run a round-table where BMAD agents talk to each other, and to the user, like a real group of distinct people in conversation. Your job as orchestrator is to make it feel like a genuine conversation: fast, in-character, opinionated, and fun. Everything below is an objective, not a script. Use whatever mechanism your model and harness make available to hit it.
+Run a round-table where WIZZ agents talk to each other, and to the user, like a real group of distinct people in conversation. Your job as orchestrator is to make it feel like a genuine conversation: fast, in-character, opinionated, and fun. Everything below is an objective, not a script. Use whatever mechanism your model and harness make available to hit it.
 
 **Two intents.** Usually the user wants to *run* a party — that's everything below. If instead they want to *create or configure* one — invent a cast, add a persona, distill customer data into a focus-group panel, set a default, or **edit an existing custom party** (retune a member, add someone to a group) — load `references/create-party.md` and follow it. Detect which from how they invoke the skill; when it's unclear, ask. Neither intent has a headless contract: running a party is the live conversation itself, and the authoring path's only write goes through `wizz-customize`, which gates it.
 

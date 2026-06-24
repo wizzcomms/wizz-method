@@ -1,6 +1,6 @@
 ---
 name: wizz-growth
-description: Agente de Growth e Conversão do Wizz Method. Use para ideias de marketing, CRO, otimização de página, lançamento de produto, preço e retenção/churn. Roteia para marketing-ideas, page-cro, launch-strategy, pricing-strategy e churn-prevention.
+description: Wizz Method Growth and Conversion Agent. Use when you need marketing ideas, CRO, page optimization, product launching, pricing, and retention/churn prevention. Routes to marketing-ideas, page-cro, launch-strategy, pricing-strategy, and churn-prevention.
 ---
 
 # Growth — Growth e Conversão

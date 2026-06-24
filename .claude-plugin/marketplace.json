@@ -1,21 +1,21 @@
 {
-  "name": "bmad-method",
+  "name": "wizz-method",
   "owner": {
-    "name": "Brian (BMad) Madison"
+    "name": "Brian (Wizz) Madison"
   },
   "description": "Breakthrough Method of Agile AI-driven Development — a full-lifecycle framework with agents and workflows for analysis, planning, architecture, and implementation.",
   "license": "MIT",
-  "homepage": "https://github.com/bmad-code-org/BMAD-METHOD",
-  "repository": "https://github.com/bmad-code-org/BMAD-METHOD",
-  "keywords": ["bmad", "agile", "ai", "orchestrator", "development", "methodology", "agents"],
+  "homepage": "https://github.com/bmad-code-org/WIZZ-METHOD",
+  "repository": "https://github.com/bmad-code-org/WIZZ-METHOD",
+  "keywords": ["wizz", "agile", "ai", "orchestrator", "development", "methodology", "agents"],
   "plugins": [
     {
-      "name": "bmad-pro-skills",
+      "name": "wizz-pro-skills",
       "source": "./",
       "description": "Next level skills for power users — advanced prompting techniques, agent management, and more.",
       "version": "6.8.0",
       "author": {
-        "name": "Brian (BMad) Madison"
+        "name": "Brian (Wizz) Madison"
       },
       "skills": [
         "./src/core-skills/wizz-help",
@@ -33,12 +33,12 @@
       ]
     },
     {
-      "name": "bmad-method-lifecycle",
+      "name": "wizz-method-lifecycle",
       "source": "./",
       "description": "Full-lifecycle AI development framework — agents and workflows for product analysis, planning, architecture, and implementation.",
       "version": "6.8.0",
       "author": {
-        "name": "Brian (BMad) Madison"
+        "name": "Brian (Wizz) Madison"
       },
       "skills": [
         "./src/bmm-skills/1-analysis/wizz-product-brief",

@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('../fs-native');
 const { getProjectRoot } = require('../project-root');
-const { BMAD_FOLDER_NAME } = require('../ide/shared/path-utils');
+const { WIZZ_FOLDER_NAME } = require('../ide/shared/path-utils');
 
 class InstallPaths {
   static async create(config) {
@@ -15,16 +15,16 @@ class InstallPaths {
     const projectRoot = path.resolve(config.directory);
     await ensureWritableDir(projectRoot, 'project root');
 
-    const bmadDir = path.join(projectRoot, BMAD_FOLDER_NAME);
-    const isUpdate = await fs.pathExists(bmadDir);
+    const wizzDir = path.join(projectRoot, WIZZ_FOLDER_NAME);
+    const isUpdate = await fs.pathExists(wizzDir);
 
-    const configDir = path.join(bmadDir, '_config');
-    const coreDir = path.join(bmadDir, 'core');
-    const scriptsDir = path.join(bmadDir, 'scripts');
-    const customDir = path.join(bmadDir, 'custom');
+    const configDir = path.join(wizzDir, '_config');
+    const coreDir = path.join(wizzDir, 'core');
+    const scriptsDir = path.join(wizzDir, 'scripts');
+    const customDir = path.join(wizzDir, 'custom');
 
     for (const [dir, label] of [
-      [bmadDir, 'bmad directory'],
+      [wizzDir, 'wizz directory'],
       [configDir, 'config directory'],
       [coreDir, 'core module directory'],
       [scriptsDir, 'shared scripts directory'],
@@ -37,7 +37,7 @@ class InstallPaths {
       srcDir,
       version,
       projectRoot,
-      bmadDir,
+      wizzDir,
       configDir,
       coreDir,
       scriptsDir,
@@ -55,10 +55,10 @@ class InstallPaths {
     return path.join(this.configDir, 'manifest.yaml');
   }
   centralConfig() {
-    return path.join(this.bmadDir, 'config.toml');
+    return path.join(this.wizzDir, 'config.toml');
   }
   centralUserConfig() {
-    return path.join(this.bmadDir, 'config.user.toml');
+    return path.join(this.wizzDir, 'config.user.toml');
   }
   filesManifest() {
     return path.join(this.configDir, 'files-manifest.csv');
@@ -67,10 +67,10 @@ class InstallPaths {
     return path.join(this.configDir, 'wizz-help.csv');
   }
   moduleDir(name) {
-    return path.join(this.bmadDir, name);
+    return path.join(this.wizzDir, name);
   }
   moduleConfig(name) {
-    return path.join(this.bmadDir, name, 'config.yaml');
+    return path.join(this.wizzDir, name, 'config.yaml');
   }
 }
 

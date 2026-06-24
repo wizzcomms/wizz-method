@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.11"
 # ///
-"""Enumerate customizable BMad skills installed alongside this one.
+"""Enumerate customizable Wizz skills installed alongside this one.
 
 Scans a skills directory (by default: the directory this script's own skill
 lives in, derived from __file__), finds every sibling directory containing a
@@ -11,7 +11,7 @@ top-level blocks, reads the skill's SKILL.md frontmatter description for a
 one-liner, and checks whether override files already exist in
 `{project-root}/_wizz/custom/`.
 
-Skills in BMad are loaded either from a project-local location (e.g. the
+Skills in Wizz are loaded either from a project-local location (e.g. the
 project's `.claude/skills/` or `.cursor/skills/`) or from a user-global
 location (e.g. `~/.claude/skills/`). We do not hardcode those paths — the
 running skill's own location is the source of truth for sibling discovery.
@@ -168,7 +168,7 @@ def scan_skills(
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "List customizable BMad skills installed alongside this one, "
+            "List customizable Wizz skills installed alongside this one, "
             "grouped by surface (agent vs workflow), with override status "
             "looked up against {project-root}/_wizz/custom/."
         )

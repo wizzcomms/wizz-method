@@ -146,7 +146,7 @@ def test_html_writes_selection_page(lib, tmp_path):
     assert brain.main(["--file", str(lib), "html", "--out", str(out)]) == 0
     doc = out.read_text(encoding="utf-8")
     assert doc.startswith("<!DOCTYPE html>")
-    assert "BMad Method Brainstorming Selection" in doc
+    assert "Wizz Method Brainstorming Selection" in doc
     for r in brain.load(lib):
         assert r["technique_name"] in doc  # every technique is selectable
     assert "&quot;yes and&quot;" in doc  # quotes in a description are escaped, not raw

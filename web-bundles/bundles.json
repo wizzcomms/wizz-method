@@ -16,7 +16,7 @@
       "swapPersona": {
         "name": "Mary",
         "title": "Strategic Business Analyst",
-        "lineage": "BMad analyst — research-first rigor"
+        "lineage": "Wizz analyst — research-first rigor"
       },
       "accentColor": "#3b82f6",
       "motif": "constellation",
@@ -33,7 +33,7 @@
       "defaultPersona": {
         "name": "Mary",
         "title": "Strategic Business Analyst",
-        "lineage": "BMad analyst"
+        "lineage": "Wizz analyst"
       },
       "swapPersona": {
         "name": "Iris",
@@ -55,7 +55,7 @@
       "defaultPersona": {
         "name": "Mary",
         "title": "Strategic Business Analyst",
-        "lineage": "BMad analyst"
+        "lineage": "Wizz analyst"
       },
       "swapPersona": {
         "name": "Bezos",
@@ -77,7 +77,7 @@
       "defaultPersona": {
         "name": "John",
         "title": "Product Manager",
-        "lineage": "BMad PM — Cagan lineage"
+        "lineage": "Wizz PM — Cagan lineage"
       },
       "swapPersona": {
         "name": "Ezra",
@@ -99,7 +99,7 @@
       "defaultPersona": {
         "name": "Sally",
         "title": "UX Designer",
-        "lineage": "BMad UX designer"
+        "lineage": "Wizz UX designer"
       },
       "swapPersona": {
         "name": "Kenji",
@@ -121,7 +121,7 @@
       "defaultPersona": {
         "name": "Mary",
         "title": "Strategic Business Analyst",
-        "lineage": "BMad analyst"
+        "lineage": "Wizz analyst"
       },
       "swapPersona": {
         "name": "Geoff",

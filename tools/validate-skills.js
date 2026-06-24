@@ -40,8 +40,8 @@ const positionalArgs = args.filter((a) => !a.startsWith('--'));
 
 // --- Constants ---
 
-// Aceita o namespace do motor BMAD (bmad-) e o namespace próprio da Wizz (wizz-).
-const NAME_REGEX = /^(bmad|wizz)-[a-z0-9]+(-[a-z0-9]+)*$/;
+// Aceita o namespace do motor WIZZ (wizz-) e o namespace próprio da Wizz (wizz-).
+const NAME_REGEX = /^(wizz|wizz)-[a-z0-9]+(-[a-z0-9]+)*$/;
 const STEP_FILENAME_REGEX = /^step-\d{2}[a-z]?-[a-z0-9-]+\.md$/;
 const TIME_ESTIMATE_PATTERNS = [/takes?\s+\d+\s*min/i, /~\s*\d+\s*min/i, /estimated\s+time/i, /\bETA\b/];
 
@@ -350,14 +350,19 @@ function validateSkill(skillDir) {
       });
     }
 
-    if (!/use\s+when\b/i.test(description) && !/use\s+if\b/i.test(description)) {
+    if (
+      !/use\s+when\b/i.test(description) &&
+      !/use\s+if\b/i.test(description) &&
+      !/use\s+para\b/i.test(description) &&
+      !/use\s+quando\b/i.test(description)
+    ) {
       findings.push({
         rule: 'SKILL-06',
         title: 'description Quality',
         severity: 'MEDIUM',
         file: 'SKILL.md',
-        detail: 'description does not contain "Use when" or "Use if" trigger phrase.',
-        fix: 'Append a "Use when..." clause to explain when to invoke this skill.',
+        detail: 'description does not contain "Use when", "Use if", "Use para", or "Use quando" trigger phrase.',
+        fix: 'Append a "Use when..." or "Use para..." clause to explain when to invoke this skill.',
       });
     }
   }

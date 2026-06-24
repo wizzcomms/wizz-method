@@ -354,12 +354,12 @@ class PluginResolver {
 
   /**
    * Format a kebab-case or snake_case name into a display name.
-   * Strips common prefixes like "bmad-" or "bmad-agent-".
+   * Strips common prefixes like "wizz-" or "wizz-agent-".
    * @param {string} name - Raw name
    * @returns {string} Formatted display name
    */
   _formatDisplayName(name) {
-    let cleaned = name.replace(/^bmad-agent-/, '').replace(/^bmad-/, '');
+    let cleaned = name.replace(/^wizz-agent-/, '').replace(/^wizz-/, '');
     return cleaned
       .split(/[-_]/)
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -373,7 +373,7 @@ class PluginResolver {
    * @returns {string} Menu code (e.g., "CC" for "code-coach")
    */
   _generateMenuCode(name) {
-    const cleaned = name.replace(/^bmad-agent-/, '').replace(/^bmad-/, '');
+    const cleaned = name.replace(/^wizz-agent-/, '').replace(/^wizz-/, '');
     const words = cleaned.split(/[-_]/).filter((w) => w.length > 0);
     return words
       .map((w) => w.charAt(0).toUpperCase())

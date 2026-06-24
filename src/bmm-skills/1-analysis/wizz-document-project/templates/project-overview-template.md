@@ -100,4 +100,4 @@ For detailed information, see:
 
 ---
 
-_Generated using BMAD Method `document-project` workflow_
+_Generated using WIZZ Method `document-project` workflow_

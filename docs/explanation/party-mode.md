@@ -67,7 +67,7 @@ Start a party with `--mode subagent` (or `auto`, `agent-team`, `session`) to ove
 
 ## Custom parties
 
-Out of the box, a party uses your installed Wizz Method agents. The larger use is building your own cast from any set of personas you can describe, then saving it to reuse. You author a party through the same skill. It detects whether you want to run one or build one, and writes the result to your overrides through [wizz-customize](../how-to/customize-bmad.md).
+Out of the box, a party uses your installed Wizz Method agents. The larger use is building your own cast from any set of personas you can describe, then saving it to reuse. You author a party through the same skill. It detects whether you want to run one or build one, and writes the result to your overrides through [wizz-customize](../how-to/customize-wizz.md).
 
 Party mode is customizable like every Wizz Method skill. Run `/wizz-customize wizz-party-mode` to set its defaults directly: pin any group you've built as the default party so it loads without a flag, choose which mode it starts in, and set any house rules the room should hold for the whole session.
 

@@ -230,16 +230,16 @@ async function tomlHasKey(filePath, section, key) {
  * (not in either file yet), team scope is the safe default.
  *
  * @param {Object<string, Object<string, string>>} overrides
- * @param {string} bmadDir absolute path to `_wizz/`
+ * @param {string} wizzDir absolute path to `_wizz/`
  * @returns {Promise<Array<{module:string,key:string,scope:'team'|'user',file:string}>>}
  *          a list of applied entries (for caller logging)
  */
-async function applySetOverrides(overrides, bmadDir) {
+async function applySetOverrides(overrides, wizzDir) {
   const applied = [];
   if (!overrides || typeof overrides !== 'object') return applied;
 
-  const teamPath = path.join(bmadDir, 'config.toml');
-  const userPath = path.join(bmadDir, 'config.user.toml');
+  const teamPath = path.join(wizzDir, 'config.toml');
+  const userPath = path.join(wizzDir, 'config.user.toml');
 
   for (const moduleCode of Object.keys(overrides)) {
     // Skip overrides for modules not actually installed. The installer writes
@@ -247,7 +247,7 @@ async function applySetOverrides(overrides, bmadDir) {
     // so its presence is a reliable "is this module here?" signal that works
     // for both fresh installs and quick-updates without coupling to caller-
     // supplied module lists.
-    const moduleConfigYaml = path.join(bmadDir, moduleCode, 'config.yaml');
+    const moduleConfigYaml = path.join(wizzDir, moduleCode, 'config.yaml');
     if (!(await fs.pathExists(moduleConfigYaml))) {
       continue;
     }
@@ -291,7 +291,7 @@ async function applySetOverrides(overrides, bmadDir) {
     // value lives in the per-module yaml but won't be re-emitted into
     // config.toml on the next install (the schema-strict partition drops
     // it); re-pass `--set` if you need it sticky.
-    const moduleYamlPath = path.join(bmadDir, moduleCode, 'config.yaml');
+    const moduleYamlPath = path.join(wizzDir, moduleCode, 'config.yaml');
     if (await fs.pathExists(moduleYamlPath)) {
       try {
         const text = await fs.readFile(moduleYamlPath, 'utf8');

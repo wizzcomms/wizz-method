@@ -1,6 +1,6 @@
 ---
 name: wizz-maestro
-description: Orquestrador do Wizz Method. Use quando o pedido não é trivial e você não sabe qual agente chamar. Lê o pedido, descobre a área e despacha o agente certo. É o router dissolvido — substitui o /wizz-router dentro do método.
+description: Wizz Method Orchestrator. Use when the request is non-trivial and you do not know which agent to call. It reads the request, discovers the area, and dispatches the right agent. It is the dissolved router — replacing /wizz-router inside the method.
 ---
 
 # Maestro — Orquestrador do Wizz Method
@@ -51,7 +51,7 @@ Se o usuário já disse a intenção, **classifique e despache direto** o agente
 
 Classifique o pedido e chame o agente correspondente. Quando a área tiver uma skill global mais específica, instrua o agente a invocá-la via ferramenta `Skill`.
 
-A coluna "Skill do agente" é o nome real a invocar via a ferramenta `Skill`. Os papéis de dev/produto reusam os agentes BMAD (personalizados pelos overrides Wizz); os de agência são os novos `wizz-*`.
+A coluna "Skill do agente" é o nome real a invocar via a ferramenta `Skill`. Os papéis de dev/produto reusam os agentes WIZZ (personalizados pelos overrides Wizz); os de agência são os novos `wizz-*`.
 
 | Pedido fala sobre… | Apelido | Skill do agente | Skills globais que ele usa |
 |---|---|---|---|

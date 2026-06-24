@@ -1,25 +1,25 @@
 ---
 name: wizz-customize
-description: Authors and updates customization overrides for installed BMad skills. Use when the user says 'customize bmad', 'override a skill', 'change agent behavior', or 'customize a workflow'.
+description: Authors and updates customization overrides for installed Wizz skills. Use when the user says 'customize wizz', 'override a skill', 'change agent behavior', or 'customize a workflow'.
 ---
 
-# BMad Customize
+# Wizz Customize
 
 Translate the user's intent into a correctly-placed TOML override file under `{project-root}/_wizz/custom/` for a customizable agent or workflow skill. Discover, route, author, write, verify.
 
-Scope v1: per-skill `[agent]` overrides (`bmad-agent-<role>.toml` / `.user.toml`) and per-skill `[workflow]` overrides (`bmad-<workflow>.toml` / `.user.toml`). Central config (`{project-root}/_wizz/custom/config.toml`) is out of scope — point users at the [How to Customize BMad guide](https://docs.bmad-method.org/how-to/customize-bmad/).
+Scope v1: per-skill `[agent]` overrides (`wizz-agent-<role>.toml` / `.user.toml`) and per-skill `[workflow]` overrides (`wizz-<workflow>.toml` / `.user.toml`). Central config (`{project-root}/_wizz/custom/config.toml`) is out of scope — point users at the [How to Customize Wizz guide](https://docs.wizz-method.org/how-to/customize-wizz/).
 
 When the target's `customize.toml` doesn't expose what the user wants, say so plainly. Don't invent fields.
 
 ## Preflight
 
-- No `{project-root}/_wizz/` → BMad isn't installed. Say so, stop.
+- No `{project-root}/_wizz/` → Wizz isn't installed. Say so, stop.
 - `{project-root}/_wizz/scripts/resolve_customization.py` missing → continue, but Step 6 verify falls back to manual merge.
 - Both present → proceed.
 
 ## Activation
 
-Load `_wizz/config.toml` and `_wizz/config.user.toml` from `{project-root}` for `user_name` (default `BMad`) and `communication_language` (default `English`). Greet. If the user's invocation already names a target skill AND a specific change, jump to Step 3.
+Load `_wizz/config.toml` and `_wizz/config.user.toml` from `{project-root}` for `user_name` (default `Wizz`) and `communication_language` (default `English`). Greet. If the user's invocation already names a target skill AND a specific change, jump to Step 3.
 
 ## Step 1: Classify intent
 
@@ -106,6 +106,6 @@ Otherwise the skill isn't done — finish or tell the user they're exiting incom
 
 ## When this skill can't help
 
-- **Central config** (`{project-root}/_wizz/custom/config.toml`) — see the [How to Customize BMad guide](https://docs.bmad-method.org/how-to/customize-bmad/).
+- **Central config** (`{project-root}/_wizz/custom/config.toml`) — see the [How to Customize Wizz guide](https://docs.wizz-method.org/how-to/customize-wizz/).
 - **Step logic, ordering, behavior not in `customize.toml`** — open a feature request, or use `bmad-builder` to create a custom skill. Offer to help with either.
 - **Skills without a `customize.toml`** — not customizable.

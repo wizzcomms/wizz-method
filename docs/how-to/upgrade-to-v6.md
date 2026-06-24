@@ -9,7 +9,7 @@ Use the Wizz Method installer to upgrade from v4 to v6, which includes automatic
 
 ## When to Use This
 
-- You have Wizz Method v4 installed (`.bmad-method` folder)
+- You have Wizz Method v4 installed (`.wizz-method` folder)
 - You want to migrate to the new v6 architecture
 - You have existing planning artifacts to preserve
 
@@ -23,20 +23,20 @@ Use the Wizz Method installer to upgrade from v4 to v6, which includes automatic
 
 ### 1. Run the Installer
 
-Follow the [Installer Instructions](./install-bmad.md).
+Follow the [Installer Instructions](./install-wizz.md).
 
 ### 2. Handle Legacy Installation
 
 When v4 is detected, you can:
 
-- Allow the installer to back up and remove `.bmad-method`
+- Allow the installer to back up and remove `.wizz-method`
 - Exit and handle cleanup manually
 
-If you named your bmad method folder something else - you will need to manually remove the folder yourself.
+If you named your wizz method folder something else - you will need to manually remove the folder yourself.
 
 ### 3. Clean Up IDE Skills
 
-Manually remove legacy v4 IDE commands/skills - for example if you have Claude Code, look for any nested folders that start with bmad and remove them:
+Manually remove legacy v4 IDE commands/skills - for example if you have Claude Code, look for any nested folders that start with wizz and remove them:
 
 - `.claude/commands/`
 
@@ -85,11 +85,11 @@ your-project/
 
 | v4 Module                     | v6 Status                                 |
 | ----------------------------- | ----------------------------------------- |
-| `.bmad-2d-phaser-game-dev`    | Integrated into BMGD Module               |
-| `.bmad-2d-unity-game-dev`     | Integrated into BMGD Module               |
-| `.bmad-godot-game-dev`        | Integrated into BMGD Module               |
-| `.bmad-infrastructure-devops` | Deprecated — new DevOps agent coming soon |
-| `.bmad-creative-writing`      | Not adapted — new v6 module coming soon   |
+| `.wizz-2d-phaser-game-dev`    | Integrated into BMGD Module               |
+| `.wizz-2d-unity-game-dev`     | Integrated into BMGD Module               |
+| `.wizz-godot-game-dev`        | Integrated into BMGD Module               |
+| `.wizz-infrastructure-devops` | Deprecated — new DevOps agent coming soon |
+| `.wizz-creative-writing`      | Not adapted — new v6 module coming soon   |
 
 ## Key Changes
 

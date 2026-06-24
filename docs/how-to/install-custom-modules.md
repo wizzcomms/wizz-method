@@ -170,7 +170,7 @@ Custom modules participate in the normal update flow:
 Use [Wizz Builder](https://github.com/wizzcomms/wizz-method) to create modules that others can install:
 
 1. Run `bmad-module-builder` to scaffold your module structure
-2. Add skills, agents, and workflows with the various bmad builder tools
+2. Add skills, agents, and workflows with the various wizz builder tools
 3. Publish to a Git repository or share the folder collection
 4. Others install with `--custom-source <your-repo-url>`
 

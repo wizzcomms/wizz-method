@@ -21,7 +21,7 @@ async function readModuleCode(yamlPath) {
 /**
  * Discover module.yaml files for officials we can read locally:
  *   - core, bmm: bundled in src/ (always present)
- *   - external officials: only if previously cloned to ~/.bmad/cache/external-modules/
+ *   - external officials: only if previously cloned to ~/.wizz/cache/external-modules/
  *
  * Each result's `code` is the `code:` field from the module.yaml when present;
  * that's the value `--set <module>.<key>=<value>` matches against.
@@ -77,7 +77,7 @@ async function discoverOfficialModuleYamls() {
     }
   }
 
-  // External cache (~/.bmad/cache/external-modules/<code>/...).
+  // External cache (~/.wizz/cache/external-modules/<code>/...).
   const cacheRoot = getExternalModuleCachePath('').replace(/\/$/, '');
   if (await fs.pathExists(cacheRoot)) {
     const rawEntries = await fs.readdir(cacheRoot, { withFileTypes: true });
@@ -164,7 +164,7 @@ async function formatOptionsList(moduleCode) {
         '',
         'Built-in modules (core, bmm) are always available. External officials',
         'appear here after they have been installed at least once on this machine',
-        '(they are cached under ~/.bmad/cache/external-modules/).',
+        '(they are cached under ~/.wizz/cache/external-modules/).',
         '',
         'For community or custom modules, read the module.yaml file in that',
         "module's source repository directly.",

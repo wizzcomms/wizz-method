@@ -4,7 +4,7 @@
 # ///
 """Resolve the party-mode roster, lazily.
 
-Merges the installed BMAD agents with the user's custom `party_members`
+Merges the installed WIZZ agents with the user's custom `party_members`
 into one collective, then projects only what the moment needs:
 
   * default (no flag) — the active roster to load on entry: the
@@ -85,7 +85,7 @@ def load_workflow(project_root: Path, skill_root: Path):
 
 def _alias(code: str) -> str:
     """Short alias for an installed agent code: wizz-agent-analyst -> analyst."""
-    for prefix in ("bmad-agent-", "bmad-"):
+    for prefix in ("wizz-agent-", "wizz-"):
         if code.startswith(prefix):
             return code[len(prefix):]
     return code

@@ -1,7 +1,7 @@
 /**
  * File Reference Validator
  *
- * Validates cross-file references in BMAD source files (agents, workflows, tasks, steps).
+ * Validates cross-file references in WIZZ source files (agents, workflows, tasks, steps).
  * Catches broken file paths, missing referenced files, and absolute path leaks.
  *
  * What it checks:
@@ -48,7 +48,7 @@ const SKIP_DIRS = new Set(['node_modules', '.git']);
 const PROJECT_ROOT_REF = /\{project-root\}\/_wizz\/([^\s'"<>})\]`]+)/g;
 
 // Pattern: {_wizz}/ shorthand references
-const BMAD_SHORTHAND_REF = /\{_wizz\}\/([^\s'"<>})\]`]+)/g;
+const WIZZ_SHORTHAND_REF = /\{_wizz\}\/([^\s'"<>})\]`]+)/g;
 
 // Pattern: exec="..." attributes
 const EXEC_ATTR = /exec="([^"]+)"/g;
@@ -279,7 +279,7 @@ function extractMarkdownRefs(filePath, content) {
   runPattern(PROJECT_ROOT_REF, 'project-root');
 
   // {_wizz}/ shorthand
-  runPattern(BMAD_SHORTHAND_REF, 'project-root');
+  runPattern(WIZZ_SHORTHAND_REF, 'project-root');
 
   // exec="..." attributes
   runPattern(EXEC_ATTR, 'exec-attr');

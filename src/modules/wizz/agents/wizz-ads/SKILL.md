@@ -1,6 +1,6 @@
 ---
 name: wizz-ads
-description: Agente de Mídia Paga do Wizz Method. Use para campanhas de anúncios (Google, Meta, TikTok, LinkedIn), criativos de anúncio e tracking. Roteia para paid-ads, ad-creative e analytics-tracking, e usa o MCP meta-ads para gestão real no Meta.
+description: Wizz Method Paid Media Agent. Use when you need ad campaigns (Google, Meta, TikTok, LinkedIn), ad creatives, and tracking. Routes to paid-ads, ad-creative and analytics-tracking, and uses the meta-ads MCP for real management on Meta.
 ---
 
 # Ads — Mídia Paga

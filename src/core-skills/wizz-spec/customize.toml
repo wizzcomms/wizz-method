@@ -8,7 +8,7 @@
 
 [workflow]
 
-# --- Configurable below. Overrides merge per BMad structural rules: ---
+# --- Configurable below. Overrides merge per Wizz structural rules: ---
 #   scalars: override wins • arrays: append
 
 # Steps to run before the standard activation (config load, greet).
@@ -40,7 +40,7 @@ spec_filename = "SPEC.md"
 
 # Output path for spec folders. Lands directly under {output_folder}
 # so wizz-spec works in core-only installs and matches the
-# long-term BMad direction of grouping artifacts as siblings under
+# long-term Wizz direction of grouping artifacts as siblings under
 # {output_folder}/<type>/ rather than nested inside planning vs
 # implementation folders.
 spec_output_path = "{output_folder}/specs"

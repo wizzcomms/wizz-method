@@ -1,6 +1,6 @@
 ---
 title: Fix Documentation References
-description: Corrects workflow, agent, and command references in BMad documentation
+description: Corrects workflow, agent, and command references in Wizz documentation
 ---
 
 # Fix Documentation References
@@ -11,7 +11,7 @@ Fix reference patterns ONLY. Do not modify links, formatting, structure, or othe
 
 ## Purpose
 
-Fix incorrect references to workflows, agents, and commands in BMad documentation files.
+Fix incorrect references to workflows, agents, and commands in Wizz documentation files.
 
 ## Step 1: Establish Target Audience
 
@@ -23,9 +23,9 @@ Before fixing references, determine who the document is for:
 | **Experienced** | reference/, explanation/ | Drop "workflow", no platform hints |
 | **How-To** | how-to/ | **Ask** — depends on the task |
 
-**How-To guides require judgment**: Don't assume experienced. Ask: "Does this task require prior BMad knowledge?" Early-journey tasks (first PRD, first sprint) are newbie docs. Customization and advanced features are experienced.
+**How-To guides require judgment**: Don't assume experienced. Ask: "Does this task require prior Wizz knowledge?" Early-journey tasks (first PRD, first sprint) are newbie docs. Customization and advanced features are experienced.
 
-**If unclear**: Ask the user "Who is the target audience for this document — new users learning BMad, or experienced users who know the system?"
+**If unclear**: Ask the user "Who is the target audience for this document — new users learning Wizz, or experienced users who know the system?"
 
 This determines whether helper words like "workflow" and platform hints are helpful context or just noise.
 

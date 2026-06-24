@@ -68,9 +68,9 @@ If no findings are generated (from either pass), the skill passes validation.
 
 - **Severity:** HIGH
 - **Applies to:** `SKILL.md`
-- **Rule:** The `name` value must start with `bmad-` (motor) or `wizz-` (camada Wizz), use only lowercase letters, numbers, and single hyphens between segments.
-- **Detection:** Regex test: `^(bmad|wizz)-[a-z0-9]+(-[a-z0-9]+)*$`.
-- **Fix:** Rename to comply with the format (e.g., `wizz-my-skill` ou `bmad-my-skill`).
+- **Rule:** The `name` value must start with `wizz-` (motor) or `wizz-` (camada Wizz), use only lowercase letters, numbers, and single hyphens between segments.
+- **Detection:** Regex test: `^(wizz|wizz)-[a-z0-9]+(-[a-z0-9]+)*$`.
+- **Fix:** Rename to comply with the format (e.g., `wizz-my-skill` ou `wizz-my-skill`).
 
 ### SKILL-05 — `name` Must Match Directory Name
 
@@ -85,8 +85,8 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Severity:** MEDIUM
 - **Applies to:** `SKILL.md`
 - **Rule:** The `description` must state both what the skill does AND when to use it. Max 1024 characters.
-- **Detection:** Check length. Look for trigger phrases like "Use when" or "Use if" — their absence suggests the description only says _what_ but not _when_.
-- **Fix:** Append a "Use when..." clause to the description.
+- **Detection:** Check length. Look for trigger phrases like "Use when", "Use if", "Use para", or "Use quando" — their absence suggests the description only says _what_ but not _when_.
+- **Fix:** Append a "Use when..." or "Use para..." clause to the description.
 
 ### SKILL-07 — SKILL.md Must Have Body Content
 
@@ -281,7 +281,7 @@ If no findings are generated (from either pass), the skill passes validation.
 - **Severity:** HIGH
 - **Applies to:** all files
 - **Rule:** When a skill references another skill by name, the surrounding instruction must use the word "invoke". The canonical form is `Invoke the \`skill-name\` skill`. Phrases like "Read fully and follow", "Execute", "Run", "Load", "Open", or "Follow" are invalid — they imply file-level operations on a document, not skill invocation. A skill is a unit that is invoked, not a file that is read.
-- **Detection:** Find all references to other skills by name (typically backtick-quoted skill names like \`bmad-foo\`). Check the surrounding instruction text (same sentence or directive) for file-oriented verbs: "read", "follow", "load", "execute", "run", "open". Flag any that do not use "invoke" (or a close synonym like "activate" or "launch").
+- **Detection:** Find all references to other skills by name (typically backtick-quoted skill names like \`wizz-foo\`). Check the surrounding instruction text (same sentence or directive) for file-oriented verbs: "read", "follow", "load", "execute", "run", "open". Flag any that do not use "invoke" (or a close synonym like "activate" or "launch").
 - **Fix:** Replace the instruction with `Invoke the \`skill-name\` skill`. Remove any "read fully and follow" or similar file-oriented phrasing. Do NOT add a `skill:` prefix to the name — use natural language.
 
 ---

@@ -16,7 +16,7 @@ The Wizz Method's agent model rests on three primitives that compose:
 | Primitive | What it provides | Where it lives |
 |---|---|---|
 | **Skill** | Capability — a discrete thing the assistant can do (brainstorm, draft a PRD, implement a story) | `.claude/skills/{skill-name}/SKILL.md` (or your IDE's equivalent) |
-| **Named agent** | Persona continuity — a recognizable identity that wraps a menu of related skills with consistent voice, principles, and visual cues | Skills whose directory starts with `bmad-agent-*` |
+| **Named agent** | Persona continuity — a recognizable identity that wraps a menu of related skills with consistent voice, principles, and visual cues | Skills whose directory starts with `wizz-agent-*` |
 | **Customization** | Makes it yours — overrides that reshape an agent's behavior, add MCP integrations, swap templates, layer in org conventions | `_wizz/custom/{skill-name}.toml` (committed team overrides) and `.user.toml` (personal, gitignored) |
 
 Pull any leg away and the experience collapses:
@@ -73,7 +73,7 @@ Named agents add structure without closing off freedom. The persona stays consis
 
 The customization model is what lets this scale beyond a single developer.
 
-Every agent ships a `customize.toml` with sensible defaults. Teams commit overrides to `_wizz/custom/bmad-agent-{role}.toml`. Individuals can layer personal preferences in `.user.toml` (gitignored). The resolver merges all three at activation time with predictable structural rules.
+Every agent ships a `customize.toml` with sensible defaults. Teams commit overrides to `_wizz/custom/wizz-agent-{role}.toml`. Individuals can layer personal preferences in `.user.toml` (gitignored). The resolver merges all three at activation time with predictable structural rules.
 
 Most users never hand-author these files. The `wizz-customize` skill walks through picking the target, choosing agent vs workflow scope, authoring the override, and verifying the merge — so the customization surface stays accessible to anyone who understands their intent, not just those fluent in TOML.
 
@@ -83,8 +83,8 @@ There's also a second customization surface for *cross-cutting* concerns: the ce
 
 For the full customization surface and worked examples, see:
 
-- [How to Customize Wizz Method](../how-to/customize-bmad.md) — the reference for what's customizable and how merge works
-- [How to Expand Wizz Method for Your Organization](../how-to/expand-bmad-for-your-org.md) — five worked recipes spanning agent-wide rules, workflow conventions, external publishing, template swaps, and agent roster customization
+- [How to Customize Wizz Method](../how-to/customize-wizz.md) — the reference for what's customizable and how merge works
+- [How to Expand Wizz Method for Your Organization](../how-to/expand-wizz-for-your-org.md) — five worked recipes spanning agent-wide rules, workflow conventions, external publishing, template swaps, and agent roster customization
 - `wizz-customize` skill — the guided authoring helper that turns intent into a correctly-placed, verified override file
 
 ## The Bigger Idea

@@ -20,7 +20,7 @@ AGENTS = {
 class TestAlias(unittest.TestCase):
     def test_strips_known_prefixes(self):
         self.assertEqual(rp._alias("wizz-agent-analyst"), "analyst")
-        self.assertEqual(rp._alias("bmad-foo"), "foo")
+        self.assertEqual(rp._alias("wizz-foo"), "foo")
 
     def test_passes_through_unprefixed(self):
         self.assertEqual(rp._alias("morpheus"), "morpheus")

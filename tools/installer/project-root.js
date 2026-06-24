@@ -4,21 +4,21 @@ const yaml = require('yaml');
 const fs = require('./fs-native');
 
 /**
- * Find the BMAD project root directory by looking for package.json
- * or specific BMAD markers
+ * Find the WIZZ project root directory by looking for package.json
+ * or specific WIZZ markers
  */
 function findProjectRoot(startPath = __dirname) {
   let currentPath = path.resolve(startPath);
 
-  // Keep going up until we find package.json with bmad-method
+  // Keep going up until we find package.json with wizz-method
   while (currentPath !== path.dirname(currentPath)) {
     const packagePath = path.join(currentPath, 'package.json');
 
     if (fs.existsSync(packagePath)) {
       try {
         const pkg = fs.readJsonSync(packagePath);
-        // Check if this is the BMAD project
-        if (pkg.name === 'bmad-method' || fs.existsSync(path.join(currentPath, 'src', 'core-skills'))) {
+        // Check if this is the WIZZ project
+        if (pkg.name === 'wizz-method' || fs.existsSync(path.join(currentPath, 'src', 'core-skills'))) {
           return currentPath;
         }
       } catch {
@@ -77,7 +77,7 @@ function getModulePath(moduleName, ...segments) {
  * by ExternalModuleManager during install and are not copied into <src>/modules/.
  */
 function getExternalModuleCachePath(moduleName, ...segments) {
-  const base = process.env.BMAD_EXTERNAL_MODULES_CACHE || path.join(os.homedir(), '.bmad', 'cache', 'external-modules');
+  const base = process.env.WIZZ_EXTERNAL_MODULES_CACHE || path.join(os.homedir(), '.wizz', 'cache', 'external-modules');
   return path.join(base, moduleName, ...segments);
 }
 
@@ -85,9 +85,9 @@ function getExternalModuleCachePath(moduleName, ...segments) {
  * Locate an installed module's `module.yaml` by filesystem lookup only.
  *
  * Built-in modules (core, bmm) live under <src>. External official modules are
- * cloned into ~/.bmad/cache/external-modules/<name>/ with varying internal
+ * cloned into ~/.wizz/cache/external-modules/<name>/ with varying internal
  * layouts (some at src/module.yaml, some at skills/module.yaml, some nested).
- * Url-source custom modules are cloned into ~/.bmad/cache/custom-modules/<host>/<owner>/<repo>/
+ * Url-source custom modules are cloned into ~/.wizz/cache/custom-modules/<host>/<owner>/<repo>/
  * and are resolved by walking the cache and matching `code` or `name` from the
  * discovered module.yaml. Local custom-source modules are not cached; their
  * path is read from the CustomModuleManager resolution cache set during the
@@ -155,11 +155,11 @@ async function resolveInstalledModuleYaml(moduleName) {
     if (found) return found;
   }
 
-  // Community modules are cloned to ~/.bmad/cache/community-modules/<name>/
+  // Community modules are cloned to ~/.wizz/cache/community-modules/<name>/
   // (parallel to the external-modules cache used above). Search there too so
   // collectAgentsFromModuleYaml and writeCentralConfig can locate community
   // module.yaml files regardless of how nested the layout is.
-  const communityCacheRoot = path.join(os.homedir(), '.bmad', 'cache', 'community-modules', moduleName);
+  const communityCacheRoot = path.join(os.homedir(), '.wizz', 'cache', 'community-modules', moduleName);
   if (await fs.pathExists(communityCacheRoot)) {
     const found = await searchRoot(communityCacheRoot);
     if (found) return found;
@@ -180,15 +180,15 @@ async function resolveInstalledModuleYaml(moduleName) {
     // Resolution cache unavailable — continue
   }
 
-  // Fallback: url-source custom modules cloned to ~/.bmad/cache/custom-modules/.
+  // Fallback: url-source custom modules cloned to ~/.wizz/cache/custom-modules/.
   // Walk every cached repo, enumerate ALL module.yaml files via searchRootAll
   // (a single repo can host multiple plugins in discovery mode), and match by
   // the yaml's `code` or `name` field. This works on re-install runs where
   // _resolutionCache is empty and covers both discovery-mode (with marketplace.json)
-  // and direct-mode modules, since we identify repo roots by .bmad-source.json
+  // and direct-mode modules, since we identify repo roots by .wizz-source.json
   // (written by cloneRepo) or .claude-plugin/ rather than by marketplace.json.
   try {
-    const customCacheDir = path.join(os.homedir(), '.bmad', 'cache', 'custom-modules');
+    const customCacheDir = path.join(os.homedir(), '.wizz', 'cache', 'custom-modules');
     if (await fs.pathExists(customCacheDir)) {
       const { CustomModuleManager } = require('./modules/custom-module-manager');
       const customMgr = new CustomModuleManager();

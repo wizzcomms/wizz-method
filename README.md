@@ -16,7 +16,7 @@ O ponto de entrada é um só. Invoque o `wizz-maestro`, mande o pedido, ele desp
 
 | Agente | Faz | Rota para (skills globais) |
 |---|---|---|
-| 🧭 `wizz-maestro` | Lê o pedido e despacha o agente certo | todos os agentes wizz/bmad |
+| 🧭 `wizz-maestro` | Lê o pedido e despacha o agente certo | todos os agentes wizz/wizz |
 | 🎨 `wizz-designer` | Design visual, landing, motion, 3D | premium-landing-ui-researcher, ui-ux-pro-max, motion-3d-director, taste-skill, ui-component-curator |
 | ✍️ `wizz-copy` | Copy, e-mail, headlines | copywriting, email-sequence, humanizer, copy-editing |
 | 🔍 `wizz-seo` | SEO tradicional e de IA | seo-audit, ai-seo, schema-markup, programmatic-seo, site-architecture |
@@ -24,7 +24,7 @@ O ponto de entrada é um só. Invoque o `wizz-maestro`, mande o pedido, ele desp
 | 📢 `wizz-ads` | Mídia paga | paid-ads, ad-creative, analytics-tracking, MCP meta-ads |
 | 🧠 `wizz-memoria` | Memória do projeto | cerebro |
 
-Os papéis de dev e produto reusam os agentes BMAD (Mary, John, Winston, Amelia, Sally, Paige), personalizados em PT-BR pelos overrides em `src/modules/wizz/overrides/`.
+Os papéis de dev e produto reusam os agentes WIZZ (Mary, John, Winston, Amelia, Sally, Paige), personalizados em PT-BR pelos overrides em `src/modules/wizz/overrides/`.
 
 A camada Wizz vale para todos os agentes: encerramento padrão (✅/➡️/🎯), economia de token (graphify, depois cérebro, depois grep antes de abrir arquivos), auto-load leve do cérebro na ativação e idioma à sua escolha. Detalhes em [src/modules/wizz/README.md](src/modules/wizz/README.md).
 
@@ -59,7 +59,7 @@ Sem TTY, o idioma padrão é "Português (BR)". Use `--lang` ou a variável `WIZ
 
 ## Origem
 
-O Wizz Method é um fork independente do [BMad Method](https://github.com/bmad-code-org/BMAD-METHOD), mantido pela Wizz! comms. O motor continua o BMAD: workflows, agentes de dev e produto e a arquitetura de skills. A camada Wizz adiciona marca, idioma, roteamento e os 7 agentes de agência por cima desse motor. Crédito e agradecimento ao projeto original.
+O Wizz Method é um fork independente do [Wizz Method](https://github.com/bmad-code-org/WIZZ-METHOD), mantido pela Wizz! comms. O motor continua o WIZZ: workflows, agentes de dev e produto e a arquitetura de skills. A camada Wizz adiciona marca, idioma, roteamento e os 7 agentes de agência por cima desse motor. Crédito e agradecimento ao projeto original.
 
 ## Documentação
 
@@ -69,4 +69,4 @@ O Wizz Method é um fork independente do [BMad Method](https://github.com/bmad-c
 
 Licença MIT, veja [LICENSE](LICENSE) para detalhes.
 
-**BMad** e **BMAD-METHOD** são marcas da BMad Code, LLC. **Wizz Method** é marca própria da Wizz! comms. A licença MIT cobre apenas o código. Veja [TRADEMARK.md](TRADEMARK.md).
+**Wizz** e **WIZZ-METHOD** são marcas da BMad Code, LLC. **Wizz Method** é marca própria da Wizz! comms. A licença MIT cobre apenas o código. Veja [TRADEMARK.md](TRADEMARK.md).

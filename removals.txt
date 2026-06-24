@@ -1,62 +1,62 @@
-# BMad Method - Skill Removal List
+# Wizz Method - Skill Removal List
 # Entries listed here will be removed from IDE skill directories during install/update.
 # One entry per line. Lines starting with # are comments.
 # Each entry is a skill directory name (canonicalId) that was removed or renamed.
 
 # Removed agents (v6.2.0 - v6.2.2)
-bmad-agent-sm
-bmad-agent-qa
-bmad-agent-quick-flow-solo-dev
+wizz-agent-sm
+wizz-agent-qa
+wizz-agent-quick-flow-solo-dev
 
 # Removed skills (v6.2.0 - v6.2.2)
-bmad-create-product-brief
-bmad-product-brief-preview
-bmad-quick-spec
-bmad-quick-flow
-bmad-quick-dev-new-preview
-bmad-init
+wizz-create-product-brief
+wizz-product-brief-preview
+wizz-quick-spec
+wizz-quick-flow
+wizz-quick-dev-new-preview
+wizz-init
 
 # Pre-v6.2.0 wrapper skills (module-prefixed naming, dropped in v6.2.0).
 # Users upgrading from v6.0.x / v6.1.x had these installed and the cleanup
 # never knew to remove them; they remained alongside the new self-contained
 # skills causing duplicates and broken-file errors. See issue #2309.
-bmad-agent-bmm-analyst
-bmad-agent-bmm-architect
-bmad-agent-bmm-dev
-bmad-agent-bmm-pm
-bmad-agent-bmm-qa
-bmad-agent-bmm-quick-flow-solo-dev
-bmad-agent-bmm-sm
-bmad-agent-bmm-tech-writer
-bmad-agent-bmm-ux-designer
-bmad-bmm-check-implementation-readiness
-bmad-bmm-code-review
-bmad-bmm-correct-course
-bmad-bmm-create-architecture
-bmad-bmm-create-epics-and-stories
-bmad-bmm-create-prd
-bmad-bmm-create-product-brief
-bmad-bmm-create-story
-bmad-bmm-create-ux-design
-bmad-bmm-dev-story
-bmad-bmm-document-project
-bmad-bmm-domain-research
-bmad-bmm-edit-prd
-bmad-bmm-generate-project-context
-bmad-bmm-market-research
-bmad-bmm-qa-generate-e2e-tests
-bmad-bmm-quick-dev
-bmad-bmm-quick-spec
-bmad-bmm-retrospective
-bmad-bmm-sprint-planning
-bmad-bmm-sprint-status
-bmad-bmm-technical-research
-bmad-bmm-validate-prd
+wizz-agent-bmm-analyst
+wizz-agent-bmm-architect
+wizz-agent-bmm-dev
+wizz-agent-bmm-pm
+wizz-agent-bmm-qa
+wizz-agent-bmm-quick-flow-solo-dev
+wizz-agent-bmm-sm
+wizz-agent-bmm-tech-writer
+wizz-agent-bmm-ux-designer
+wizz-bmm-check-implementation-readiness
+wizz-bmm-code-review
+wizz-bmm-correct-course
+wizz-bmm-create-architecture
+wizz-bmm-create-epics-and-stories
+wizz-bmm-create-prd
+wizz-bmm-create-product-brief
+wizz-bmm-create-story
+wizz-bmm-create-ux-design
+wizz-bmm-dev-story
+wizz-bmm-document-project
+wizz-bmm-domain-research
+wizz-bmm-edit-prd
+wizz-bmm-generate-project-context
+wizz-bmm-market-research
+wizz-bmm-qa-generate-e2e-tests
+wizz-bmm-quick-dev
+wizz-bmm-quick-spec
+wizz-bmm-retrospective
+wizz-bmm-sprint-planning
+wizz-bmm-sprint-status
+wizz-bmm-technical-research
+wizz-bmm-validate-prd
 
 # Removed skills (post-v6.7.x)
-# bmad-distillator: superseded by bmad-spec (universal intent distiller with
+# wizz-distillator: superseded by wizz-spec (universal intent distiller with
 # preservation-validated contract for downstream skills).
-bmad-distillator
-# bmad-create-ux-design: renamed to bmad-ux (spine-based skill with separate
+wizz-distillator
+# wizz-create-ux-design: renamed to wizz-ux (spine-based skill with separate
 # DESIGN.md and EXPERIENCE.md outputs).
-bmad-create-ux-design
+wizz-create-ux-design

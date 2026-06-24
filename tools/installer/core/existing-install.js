@@ -4,7 +4,7 @@ const yaml = require('yaml');
 const { Manifest } = require('./manifest');
 
 /**
- * Immutable snapshot of an existing BMAD installation.
+ * Immutable snapshot of an existing WIZZ installation.
  * Pure query object — no filesystem operations after construction.
  */
 class ExistingInstall {
@@ -38,12 +38,12 @@ class ExistingInstall {
   }
 
   /**
-   * Scan a bmad directory and return an immutable snapshot of what's installed.
-   * @param {string} bmadDir - Path to bmad directory
+   * Scan a wizz directory and return an immutable snapshot of what's installed.
+   * @param {string} wizzDir - Path to wizz directory
    * @returns {Promise<ExistingInstall>}
    */
-  static async detect(bmadDir) {
-    if (!(await fs.pathExists(bmadDir))) {
+  static async detect(wizzDir) {
+    if (!(await fs.pathExists(wizzDir))) {
       return ExistingInstall.empty();
     }
 
@@ -53,7 +53,7 @@ class ExistingInstall {
     let ides = [];
 
     const manifest = new Manifest();
-    const manifestData = await manifest.read(bmadDir);
+    const manifestData = await manifest.read(wizzDir);
     if (manifestData) {
       version = manifestData.version;
       if (manifestData.ides) {
@@ -61,7 +61,7 @@ class ExistingInstall {
       }
     }
 
-    const corePath = path.join(bmadDir, 'core');
+    const corePath = path.join(wizzDir, 'core');
     if (await fs.pathExists(corePath)) {
       hasCore = true;
 
@@ -83,7 +83,7 @@ class ExistingInstall {
 
     if (manifestData && manifestData.modules && manifestData.modules.length > 0) {
       for (const moduleId of manifestData.modules) {
-        const modulePath = path.join(bmadDir, moduleId);
+        const modulePath = path.join(wizzDir, moduleId);
         const moduleConfigPath = path.join(modulePath, 'config.yaml');
 
         const moduleInfo = {

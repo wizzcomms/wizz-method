@@ -264,27 +264,27 @@ class OfficialModules {
   /**
    * Install a module
    * @param {string} moduleName - Code of the module to install (from module.yaml)
-   * @param {string} bmadDir - Target bmad directory
+   * @param {string} wizzDir - Target wizz directory
    * @param {Function} fileTrackingCallback - Optional callback to track installed files
    * @param {Object} options - Additional installation options
    * @param {Array<string>} options.installedIDEs - Array of IDE codes that were installed
    * @param {Object} options.moduleConfig - Module configuration from config collector
    * @param {Object} options.logger - Logger instance for output
    */
-  async install(moduleName, bmadDir, fileTrackingCallback = null, options = {}) {
+  async install(moduleName, wizzDir, fileTrackingCallback = null, options = {}) {
     // Check if this module has a plugin resolution (custom marketplace install)
     const { CustomModuleManager } = require('./custom-module-manager');
     const customMgr = new CustomModuleManager();
     const resolved = customMgr.getResolution(moduleName);
     if (resolved) {
-      return this.installFromResolution(resolved, bmadDir, fileTrackingCallback, options);
+      return this.installFromResolution(resolved, wizzDir, fileTrackingCallback, options);
     }
 
     const sourcePath = await this.findModuleSource(moduleName, {
       silent: options.silent,
       channelOptions: options.channelOptions,
     });
-    const targetPath = path.join(bmadDir, moduleName);
+    const targetPath = path.join(wizzDir, moduleName);
 
     if (!sourcePath) {
       throw new Error(
@@ -299,18 +299,18 @@ class OfficialModules {
     await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
 
     if (!options.skipModuleInstaller) {
-      await this.createModuleDirectories(moduleName, bmadDir, options);
+      await this.createModuleDirectories(moduleName, wizzDir, options);
     }
 
     const { Manifest } = require('../core/manifest');
     const manifestObj = new Manifest();
-    const versionInfo = await manifestObj.getModuleVersionInfo(moduleName, bmadDir, sourcePath);
+    const versionInfo = await manifestObj.getModuleVersionInfo(moduleName, wizzDir, sourcePath);
 
     // Pick up channel resolution recorded by the external manager (the only
     // manager that does pre-clone resolution now that community is retired).
     const resolution = this.externalModuleManager.getResolution(moduleName);
 
-    await manifestObj.addModule(bmadDir, moduleName, {
+    await manifestObj.addModule(wizzDir, moduleName, {
       version: resolution?.version || versionInfo.version,
       source: versionInfo.source,
       npmPackage: versionInfo.npmPackage,
@@ -326,12 +326,12 @@ class OfficialModules {
    * Install a module from a PluginResolver resolution result.
    * Copies specific skill directories and places module-help.csv at the target root.
    * @param {Object} resolved - ResolvedModule from PluginResolver
-   * @param {string} bmadDir - Target bmad directory
+   * @param {string} wizzDir - Target wizz directory
    * @param {Function} fileTrackingCallback - Optional callback to track installed files
    * @param {Object} options - Installation options
    */
-  async installFromResolution(resolved, bmadDir, fileTrackingCallback = null, options = {}) {
-    const targetPath = path.join(bmadDir, resolved.code);
+  async installFromResolution(resolved, wizzDir, fileTrackingCallback = null, options = {}) {
+    const targetPath = path.join(wizzDir, resolved.code);
 
     if (await fs.pathExists(targetPath)) {
       await fs.remove(targetPath);
@@ -361,7 +361,7 @@ class OfficialModules {
 
     // Create directories declared in module.yaml (strategies 1-4 may have these)
     if (!options.skipModuleInstaller) {
-      await this.createModuleDirectories(resolved.code, bmadDir, options);
+      await this.createModuleDirectories(resolved.code, wizzDir, options);
     }
 
     // Update manifest. For custom-source installs we derive channel from the
@@ -382,7 +382,7 @@ class OfficialModules {
       if (resolved.rawInput) manifestEntry.rawSource = resolved.rawInput;
     }
     if (resolved.localPath) manifestEntry.localPath = resolved.localPath;
-    await manifestObj.addModule(bmadDir, resolved.code, manifestEntry);
+    await manifestObj.addModule(wizzDir, resolved.code, manifestEntry);
 
     return {
       success: true,
@@ -400,11 +400,11 @@ class OfficialModules {
   /**
    * Update an existing module
    * @param {string} moduleName - Name of the module to update
-   * @param {string} bmadDir - Target bmad directory
+   * @param {string} wizzDir - Target wizz directory
    */
-  async update(moduleName, bmadDir) {
+  async update(moduleName, wizzDir) {
     const sourcePath = await this.findModuleSource(moduleName);
-    const targetPath = path.join(bmadDir, moduleName);
+    const targetPath = path.join(wizzDir, moduleName);
 
     if (!sourcePath) {
       throw new Error(`Module '${moduleName}' not found in any source location`);
@@ -426,10 +426,10 @@ class OfficialModules {
   /**
    * Remove a module
    * @param {string} moduleName - Name of the module to remove
-   * @param {string} bmadDir - Target bmad directory
+   * @param {string} wizzDir - Target wizz directory
    */
-  async remove(moduleName, bmadDir) {
-    const targetPath = path.join(bmadDir, moduleName);
+  async remove(moduleName, wizzDir) {
+    const targetPath = path.join(wizzDir, moduleName);
 
     if (!(await fs.pathExists(targetPath))) {
       throw new Error(`Module '${moduleName}' is not installed`);
@@ -446,22 +446,22 @@ class OfficialModules {
   /**
    * Check if a module is installed
    * @param {string} moduleName - Name of the module
-   * @param {string} bmadDir - Target bmad directory
+   * @param {string} wizzDir - Target wizz directory
    * @returns {boolean} True if module is installed
    */
-  async isInstalled(moduleName, bmadDir) {
-    const targetPath = path.join(bmadDir, moduleName);
+  async isInstalled(moduleName, wizzDir) {
+    const targetPath = path.join(wizzDir, moduleName);
     return await fs.pathExists(targetPath);
   }
 
   /**
    * Get installed module info
    * @param {string} moduleName - Name of the module
-   * @param {string} bmadDir - Target bmad directory
+   * @param {string} wizzDir - Target wizz directory
    * @returns {Object|null} Module info or null if not installed
    */
-  async getInstalledInfo(moduleName, bmadDir) {
-    const targetPath = path.join(bmadDir, moduleName);
+  async getInstalledInfo(moduleName, wizzDir) {
+    const targetPath = path.join(wizzDir, moduleName);
 
     if (!(await fs.pathExists(targetPath))) {
       return null;
@@ -557,17 +557,17 @@ class OfficialModules {
    * This replaces the security-risky module installer pattern with declarative config
    * During updates, if a directory path changed, moves the old directory to the new path
    * @param {string} moduleName - Name of the module
-   * @param {string} bmadDir - Target bmad directory
+   * @param {string} wizzDir - Target wizz directory
    * @param {Object} options - Installation options
    * @param {Object} options.moduleConfig - Module configuration from config collector
    * @param {Object} options.existingModuleConfig - Previous module config (for detecting path changes during updates)
    * @param {Object} options.coreConfig - Core configuration
    * @returns {Promise<{createdDirs: string[], movedDirs: string[], createdWdsFolders: string[]}>} Created directories info
    */
-  async createModuleDirectories(moduleName, bmadDir, options = {}) {
+  async createModuleDirectories(moduleName, wizzDir, options = {}) {
     const moduleConfig = options.moduleConfig || {};
     const existingModuleConfig = options.existingModuleConfig || {};
-    const projectRoot = path.dirname(bmadDir);
+    const projectRoot = path.dirname(wizzDir);
     const emptyResult = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
 
     // Special handling for core module - it's in src/core-skills not src/modules
@@ -781,16 +781,16 @@ class OfficialModules {
   // ─── Config collection methods (merged from ConfigCollector) ───
 
   /**
-   * Find the bmad installation directory in a project
+   * Find the wizz installation directory in a project
    * V6+ installations can use ANY folder name but ALWAYS have _config/manifest.yaml
    * @param {string} projectDir - Project directory
-   * @returns {Promise<string>} Path to bmad directory
+   * @returns {Promise<string>} Path to wizz directory
    */
-  async findBmadDir(projectDir) {
+  async findWizzDir(projectDir) {
     // Check if project directory exists
     if (!(await fs.pathExists(projectDir))) {
       // Project doesn't exist yet, return default
-      return path.join(projectDir, 'bmad');
+      return path.join(projectDir, 'wizz');
     }
 
     // V6+ strategy: Look for ANY directory with _config/manifest.yaml
@@ -812,15 +812,15 @@ class OfficialModules {
 
     // No V6+ installation found, return default
     // This will be used for new installations
-    return path.join(projectDir, 'bmad');
+    return path.join(projectDir, 'wizz');
   }
 
   /**
-   * Detect the existing BMAD folder name in a project
+   * Detect the existing WIZZ folder name in a project
    * @param {string} projectDir - Project directory
    * @returns {Promise<string|null>} Folder name (just the name, not full path) or null if not found
    */
-  async detectExistingBmadFolder(projectDir) {
+  async detectExistingWizzFolder(projectDir) {
     // Check if project directory exists
     if (!(await fs.pathExists(projectDir))) {
       return null;
@@ -857,11 +857,11 @@ class OfficialModules {
       return false;
     }
 
-    // Find the actual bmad directory (handles custom folder names)
-    const bmadDir = await this.findBmadDir(projectDir);
+    // Find the actual wizz directory (handles custom folder names)
+    const wizzDir = await this.findWizzDir(projectDir);
 
-    // Check if bmad directory exists
-    if (!(await fs.pathExists(bmadDir))) {
+    // Check if wizz directory exists
+    if (!(await fs.pathExists(wizzDir))) {
       return false;
     }
 
@@ -871,7 +871,7 @@ class OfficialModules {
     // every reinstall.
     let foundAny = false;
     for (const fileName of ['config.toml', 'config.user.toml']) {
-      const tomlPath = path.join(bmadDir, fileName);
+      const tomlPath = path.join(wizzDir, fileName);
       if (!(await fs.pathExists(tomlPath))) continue;
       try {
         const content = await fs.readFile(tomlPath, 'utf8');
@@ -893,7 +893,7 @@ class OfficialModules {
     }
 
     // Fallback: legacy per-module config.yaml files (pre-v6 installations).
-    const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+    const entries = await fs.readdir(wizzDir, { withFileTypes: true });
     const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
     for (const entry of entries) {
       if (entry.isDirectory()) {
@@ -901,7 +901,7 @@ class OfficialModules {
           continue;
         }
 
-        const moduleConfigPath = path.join(bmadDir, entry.name, 'config.yaml');
+        const moduleConfigPath = path.join(wizzDir, entry.name, 'config.yaml');
 
         if (await fs.pathExists(moduleConfigPath)) {
           try {
@@ -1447,7 +1447,7 @@ class OfficialModules {
         result = username.charAt(0).toUpperCase() + username.slice(1);
       }
     } catch {
-      // Do nothing, just return 'BMad'
+      // Do nothing, just return 'Wizz'
     }
     return result;
   }

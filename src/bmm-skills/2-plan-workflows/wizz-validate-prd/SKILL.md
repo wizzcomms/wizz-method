@@ -1,6 +1,6 @@
 ---
 name: wizz-validate-prd
-description: 'DEPRECATED — consolidated into wizz-prd validate intent - this skill will be removed in v7 in favor of `wizz-prd`.'
+description: 'DEPRECATED — consolidated into wizz-prd validate intent - this skill will be removed in v7 in favor of `wizz-prd`. Use when needed for backwards compatibility.'
 ---
 
 # DEPRECATED — forwards to wizz-prd (validate intent)

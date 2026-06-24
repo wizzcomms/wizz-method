@@ -20,14 +20,12 @@
   },
   "license": "MIT",
   "author": "Wizz! comms. (wizzcomms)",
-  "main": "tools/installer/bmad-cli.js",
+  "main": "tools/installer/wizz-cli.js",
   "bin": {
-    "wizz": "tools/installer/bmad-cli.js",
-    "wizz-method": "tools/installer/bmad-cli.js"
+    "wizz": "tools/installer/wizz-cli.js",
+    "wizz-method": "tools/installer/wizz-cli.js"
   },
   "scripts": {
-    "bmad:install": "node tools/installer/bmad-cli.js install",
-    "bmad:uninstall": "node tools/installer/bmad-cli.js uninstall",
     "docs:build": "node tools/build-docs.mjs",
     "docs:dev": "astro dev --root website",
     "docs:fix-links": "node tools/fix-doc-links.js",
@@ -37,7 +35,7 @@
     "format:check": "prettier --check \"**/*.{js,cjs,mjs,json,yaml}\"",
     "format:fix": "prettier --write \"**/*.{js,cjs,mjs,json,yaml}\"",
     "format:fix:staged": "prettier --write",
-    "install:bmad": "node tools/installer/bmad-cli.js install",
+    "install:wizz": "node tools/installer/wizz-cli.js install",
     "lint": "eslint . --ext .js,.cjs,.mjs,.yaml --max-warnings=0",
     "lint:fix": "eslint . --ext .js,.cjs,.mjs,.yaml --fix",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
@@ -50,7 +48,9 @@
     "test:refs": "node test/test-file-refs-csv.js",
     "test:urls": "node test/test-parse-source-urls.js",
     "validate:refs": "node tools/validate-file-refs.js --strict",
-    "validate:skills": "node tools/validate-skills.js --strict"
+    "validate:skills": "node tools/validate-skills.js --strict",
+    "wizz:install": "node tools/installer/wizz-cli.js install",
+    "wizz:uninstall": "node tools/installer/wizz-cli.js uninstall"
   },
   "lint-staged": {
     "*.{js,cjs,mjs}": [

@@ -190,13 +190,13 @@ def test_set_preserves_body(ws):
 
 def test_set_can_add_new_field(ws):
     init(ws)
-    memlog.main(["set", "--workspace", ws, "--key", "owner", "--value", "BMad"])
-    assert memlog.split(read(ws))[0]["owner"] == "BMad"
+    memlog.main(["set", "--workspace", ws, "--key", "owner", "--value", "Wizz"])
+    assert memlog.split(read(ws))[0]["owner"] == "Wizz"
 
 
 def test_updated_stays_last(ws):
     init(ws)
-    memlog.main(["set", "--workspace", ws, "--key", "owner", "--value", "BMad"])
+    memlog.main(["set", "--workspace", ws, "--key", "owner", "--value", "Wizz"])
     meta = memlog.split(read(ws))[0]
     assert list(meta)[-1] == "updated"
 

@@ -1,13 +1,13 @@
-# BMAD Method Documentation Site
+# WIZZ Method Documentation Site
 
-This directory contains the Astro + Starlight configuration for the BMAD Method documentation site.
+This directory contains the Astro + Starlight configuration for the WIZZ Method documentation site.
 
 ## Architecture
 
 The documentation uses a symlink architecture to keep content in `docs/` at the repo root while serving it through Astro:
 
 ```
-bmad2/
+wizz2/
 ├── docs/                          # Content lives here (repo root)
 │   ├── index.md
 │   ├── tutorials/

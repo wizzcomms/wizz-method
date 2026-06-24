@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Resolve BMad's central config using four-layer TOML merge.
+Resolve Wizz's central config using four-layer TOML merge.
 
 Reads from four layers (highest priority last):
   1. {project-root}/_wizz/config.toml              (installer-owned team)
@@ -136,7 +136,7 @@ def extract_key(data, dotted_key: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Resolve BMad central config using four-layer TOML merge.",
+        description="Resolve Wizz central config using four-layer TOML merge.",
     )
     parser.add_argument(
         "--project-root", "-p", required=True,
@@ -149,12 +149,12 @@ def main():
     args = parser.parse_args()
 
     project_root = Path(args.project_root).resolve()
-    bmad_dir = project_root / "_wizz"
+    wizz_dir = project_root / "_wizz"
 
-    base_team = load_toml(bmad_dir / "config.toml", required=True)
-    base_user = load_toml(bmad_dir / "config.user.toml")
-    custom_team = load_toml(bmad_dir / "custom" / "config.toml")
-    custom_user = load_toml(bmad_dir / "custom" / "config.user.toml")
+    base_team = load_toml(wizz_dir / "config.toml", required=True)
+    base_user = load_toml(wizz_dir / "config.user.toml")
+    custom_team = load_toml(wizz_dir / "custom" / "config.toml")
+    custom_user = load_toml(wizz_dir / "custom" / "config.user.toml")
 
     merged = deep_merge(base_team, base_user)
     merged = deep_merge(merged, custom_team)

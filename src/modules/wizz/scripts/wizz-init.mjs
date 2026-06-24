@@ -1,10 +1,10 @@
-// wizz-init — aplica a personalização Wizz num projeto que já tem o BMAD instalado.
+// wizz-init — aplica a personalização Wizz num projeto que já tem o WIZZ instalado.
 //
 // O que faz (idempotente, seguro de rodar de novo):
 //   1. Pergunta o idioma e o seta em _wizz/bmm/config.yaml (communication_language
 //      e document_output_language).
 //   2. Copia os overrides Wizz (overrides/*.toml) para _wizz/custom/, dando aos
-//      agentes BMAD o tom fácil + protocolo de encerramento.
+//      agentes WIZZ o tom fácil + protocolo de encerramento.
 //
 // Uso:
 //   node src/modules/wizz/scripts/wizz-init.mjs [caminho-do-projeto] [--lang "<idioma>"]
@@ -116,17 +116,17 @@ function projectArg(argv) {
 
 async function main() {
   const projectRoot = path.resolve(projectArg(process.argv.slice(2)) || process.cwd());
-  const bmadDir = path.join(projectRoot, '_wizz');
+  const wizzDir = path.join(projectRoot, '_wizz');
 
-  if (!(await exists(bmadDir))) {
-    throw new Error(`Não achei _wizz/ em ${projectRoot}. Rode o instalador do BMAD primeiro.`);
+  if (!(await exists(wizzDir))) {
+    throw new Error(`Não achei _wizz/ em ${projectRoot}. Rode o instalador do WIZZ primeiro.`);
   }
 
   const done = [];
 
   // 1) Idioma escolhido no config do bmm.
   const { lang, source } = await pickLanguage(process.argv.slice(2));
-  const bmmConfig = path.join(bmadDir, 'bmm', 'config.yaml');
+  const bmmConfig = path.join(wizzDir, 'bmm', 'config.yaml');
   if (await exists(bmmConfig)) {
     let content = await readFile(bmmConfig, 'utf8');
     content = upsertYamlKey(content, 'communication_language', lang);
@@ -138,7 +138,7 @@ async function main() {
   }
 
   // 2) Copia overrides Wizz para _wizz/custom/.
-  const customDir = path.join(bmadDir, 'custom');
+  const customDir = path.join(wizzDir, 'custom');
   await mkdir(customDir, { recursive: true });
   if (await exists(overridesDir)) {
     const entries = await readdir(overridesDir);

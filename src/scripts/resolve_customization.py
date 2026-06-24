@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Resolve customization for a BMad skill using three-layer TOML merge.
+Resolve customization for a Wizz skill using three-layer TOML merge.
 
 Reads customization from three layers (highest priority first):
   1. {project-root}/_wizz/custom/{name}.user.toml  (personal, gitignored)
@@ -187,7 +187,7 @@ def write_json_stdout(output):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Resolve customization for a BMad skill using three-layer TOML merge.",
+        description="Resolve customization for a Wizz skill using three-layer TOML merge.",
         add_help=True,
     )
     parser.add_argument(

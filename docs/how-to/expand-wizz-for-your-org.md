@@ -9,8 +9,8 @@ The Wizz Method's customization surface lets an organization reshape behavior wi
 
 :::note[Prerequisites]
 
-- Wizz Method installed in your project (see [How to Install Wizz Method](./install-bmad.md))
-- Familiarity with the customization model (see [How to Customize Wizz Method](./customize-bmad.md))
+- Wizz Method installed in your project (see [How to Install Wizz Method](./install-wizz.md))
+- Familiarity with the customization model (see [How to Customize Wizz Method](./customize-wizz.md))
 - Python 3.11+ on PATH (for the resolver — stdlib only, no `pip install`)
 :::
 
@@ -24,7 +24,7 @@ Before picking a recipe, know where your override lands:
 
 | Layer | Where overrides live | Scope |
 |---|---|---|
-| **Agent** (e.g. Amelia, Mary, John) | `[agent]` section of `_wizz/custom/bmad-agent-{role}.toml` | Travels with the persona into **every workflow the agent dispatches** |
+| **Agent** (e.g. Amelia, Mary, John) | `[agent]` section of `_wizz/custom/wizz-agent-{role}.toml` | Travels with the persona into **every workflow the agent dispatches** |
 | **Workflow** (e.g. product-brief, create-prd) | `[workflow]` section of `_wizz/custom/{workflow-name}.toml` | Applies only to that workflow's run |
 | **Central config** | `[agents.*]`, `[core]`, `[modules.*]` in `_wizz/custom/config.toml` | Agent roster (who's available for party-mode, retrospective, elicitation), install-time settings pinned org-wide |
 
@@ -321,7 +321,7 @@ Result: Mary loads the regulatory-review rule at persona activation. When the us
 
 ## Troubleshooting
 
-**Override not taking effect?** Check that the file is under `_wizz/custom/` with the exact skill directory name (e.g. `wizz-agent-dev.toml`, not `bmad-dev.toml`). See [How to Customize Wizz Method](./customize-bmad.md#troubleshooting).
+**Override not taking effect?** Check that the file is under `_wizz/custom/` with the exact skill directory name (e.g. `wizz-agent-dev.toml`, not `wizz-dev.toml`). See [How to Customize Wizz Method](./customize-wizz.md#troubleshooting).
 
 **MCP tool name unknown?** Use the exact name the MCP server exposes in the current session. Ask Claude Code to list available MCP tools if unsure. Hardcoded names in `persistent_facts` or `on_complete` won't work if the MCP server isn't connected.
 

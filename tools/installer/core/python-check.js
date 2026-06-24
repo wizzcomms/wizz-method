@@ -3,14 +3,14 @@ const prompts = require('../prompts');
 
 // Python 3.11 added stdlib `tomllib` (PEP 680), which the shared scripts in
 // src/scripts/ (resolve_config.py, resolve_customization.py) require to read
-// BMAD's TOML config files. memlog.py is more lenient and runs on 3.8+.
+// WIZZ's TOML config files. memlog.py is more lenient and runs on 3.8+.
 const PYTHON_FULL_SUPPORT = { major: 3, minor: 11 };
 const PYTHON_PARTIAL_SUPPORT = { major: 3, minor: 8 };
 
 // Every runtime call site (skill steps, on_complete hooks) invokes a literal
-// `python3`, so only that command's version vouches for BMAD features. The
+// `python3`, so only that command's version vouches for WIZZ features. The
 // fallback probes exist to tell the user "Python is installed, but not under
-// the name BMAD uses" instead of a misleading "No Python found".
+// the name WIZZ uses" instead of a misleading "No Python found".
 const RUNTIME_COMMAND = 'python3';
 const PROBE_CANDIDATES =
   process.platform === 'win32'
@@ -43,7 +43,7 @@ function parsePythonVersion(output) {
 }
 
 /**
- * Classify a detected Python version against BMAD's feature requirements.
+ * Classify a detected Python version against WIZZ's feature requirements.
  * @param {{major: number, minor: number}|null} version
  * @returns {'full'|'partial'|'unsupported'|'none'}
  */
@@ -88,7 +88,7 @@ function probeVersion(candidate) {
  * Probe the local environment for a Python interpreter.
  * Tries each candidate command and returns the first that reports a version.
  * `isRuntimeCommand` is true only when the match is `python3` — the command
- * BMAD scripts actually invoke.
+ * WIZZ scripts actually invoke.
  * @returns {{command: string, version: {major: number, minor: number, patch: number, raw: string}, isRuntimeCommand: boolean}|null}
  */
 function detectPython() {
@@ -117,9 +117,9 @@ function upgradeHints() {
 }
 
 /**
- * Check the local Python environment and warn about degraded BMAD features.
+ * Check the local Python environment and warn about degraded WIZZ features.
  *
- * Warn-don't-block: most of BMAD works without Python, so the install always
+ * Warn-don't-block: most of WIZZ works without Python, so the install always
  * may proceed — but the user must explicitly acknowledge the warning so it
  * can't scroll past unseen. In non-interactive runs (--yes, or stdin is not
  * a TTY) the warning is logged and the install continues without a prompt.

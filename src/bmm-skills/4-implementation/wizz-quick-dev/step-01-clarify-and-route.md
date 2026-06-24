@@ -69,7 +69,7 @@ If the spec is an epic story and `{sprint_status}` exists: find the `development
      6. **Resolve `{story_key}`.** If not already set by an earlier early-exit path, run **Story-key resolution** (above) now.
 
      **B) Freeform path** — if the intent is not an epic story:
-     - Planning artifacts are the output of BMAD phases 1-3. Typical files include:
+     - Planning artifacts are the output of WIZZ phases 1-3. Typical files include:
        - **PRD** (`*prd*`) — product requirements and success criteria
        - **Architecture** (`*architecture*`) — technical design decisions and constraints
        - **UX/Design** (`*ux*`) — user experience and interaction design

@@ -2,7 +2,7 @@
 
 ## Goal
 
-Create a reference documentation page at `docs/reference/modules.md` that lists all official external BMad modules with descriptions and links.
+Create a reference documentation page at `docs/reference/modules.md` that lists all official external Wizz modules with descriptions and links.
 
 ## Source of Truth
 
@@ -41,7 +41,7 @@ title: Official Modules
 
 ## Content Requirements
 
-- Start with a brief intro explaining that BMad extends through official modules selected during installation
+- Start with a brief intro explaining that Wizz extends through official modules selected during installation
 - For each module include:
   - `##` header with module name
   - 1-2 sentence description (sourced from GitHub README, not just the registry's short description)

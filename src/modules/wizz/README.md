@@ -1,12 +1,12 @@
 # Módulo Wizz — método de agência em PT-BR
 
-Personalização do BMAD para a Wizz: linguagem fácil e resumida, cada agente termina com **✅ o que fiz / ➡️ próximo passo / 🎯 comando**, e o roteamento (`/wizz-router`) está dissolvido nos menus dos agentes, ligando-os às ~80 skills globais.
+Personalização do WIZZ para a Wizz: linguagem fácil e resumida, cada agente termina com **✅ o que fiz / ➡️ próximo passo / 🎯 comando**, e o roteamento (`/wizz-router`) está dissolvido nos menus dos agentes, ligando-os às ~80 skills globais.
 
 ## Agentes
 
 | Agente | Ícone | Faz | Rota para (skills globais) |
 |---|---|---|---|
-| `wizz-maestro` | 🧭 | Lê o pedido e despacha o agente certo (router dissolvido) | todos os agentes wizz/bmad |
+| `wizz-maestro` | 🧭 | Lê o pedido e despacha o agente certo (router dissolvido) | todos os agentes wizz/wizz |
 | `wizz-designer` | 🎨 | Design visual, landing, motion, 3D | premium-landing-ui-researcher, ui-ux-pro-max, motion-3d-director, taste-skill, ui-component-curator |
 | `wizz-copy` | ✍️ | Copy, e-mail, headlines | copywriting, email-sequence, humanizer, copy-editing |
 | `wizz-seo` | 🔍 | SEO tradicional e de IA | seo-audit, ai-seo, schema-markup, programmatic-seo, site-architecture |
@@ -14,7 +14,7 @@ Personalização do BMAD para a Wizz: linguagem fácil e resumida, cada agente t
 | `wizz-ads` | 📢 | Mídia paga | paid-ads, ad-creative, analytics-tracking, MCP meta-ads |
 | `wizz-memoria` | 🧠 | Memória do projeto | cerebro |
 
-Os papéis de dev/produto reusam os agentes BMAD (Mary, John, Winston, Amelia, Sally, Paige), personalizados em PT-BR pelos overrides em `overrides/`.
+Os papéis de dev/produto reusam os agentes WIZZ (Mary, John, Winston, Amelia, Sally, Paige), personalizados em PT-BR pelos overrides em `overrides/`.
 
 ## Camada Wizz (em todos os agentes)
 
@@ -26,8 +26,8 @@ Os papéis de dev/produto reusam os agentes BMAD (Mary, John, Winston, Amelia, S
 
 ## Instalação
 
-1. Instale o BMAD no projeto (o módulo `wizz` aparece como bundled em `src/modules/wizz`).
-2. Rode a personalização Wizz (escolha do idioma + overrides dos agentes BMAD):
+1. Instale o WIZZ no projeto (o módulo `wizz` aparece como bundled em `src/modules/wizz`).
+2. Rode a personalização Wizz (escolha do idioma + overrides dos agentes WIZZ):
    ```bash
    node <caminho-do-wizz-method>/src/modules/wizz/scripts/wizz-init.mjs .
    ```

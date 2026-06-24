@@ -3,8 +3,8 @@ const fs = require('../fs-native');
 const yaml = require('yaml');
 const prompts = require('../prompts');
 const csv = require('csv-parse/sync');
-const { BMAD_FOLDER_NAME } = require('./shared/path-utils');
-const { getInstalledCanonicalIds, isBmadOwnedEntry } = require('./shared/installed-skills');
+const { WIZZ_FOLDER_NAME } = require('./shared/path-utils');
+const { getInstalledCanonicalIds, isWizzOwnedEntry } = require('./shared/installed-skills');
 
 // Reserved OpenCode slash commands. A skill whose canonicalId collides with
 // one of these is skipped during command-pointer generation so it doesn't
@@ -61,24 +61,24 @@ const DEFAULT_COMMANDS_BODY_TEMPLATE = '@skills/{canonicalId}';
 // Used by platforms that surface only persona agents (e.g. Copilot's Custom
 // Agents picker). Signal: the skill's source `customize.toml` has an
 // `[agent]` section. This is the actual configuration source of truth —
-// every BMAD persona is configured via [agent] in its customize.toml,
+// every WIZZ persona is configured via [agent] in its customize.toml,
 // every workflow uses [workflow], every standalone skill has no
 // customize.toml at all. Verified against the full installed manifest:
 // catches exactly the 20 description-confirmed personas across BMM, CIS,
 // GDS, WDS, TEA, and correctly excludes meta-skills like
-// `bmad-agent-builder` (a skill-builder workflow whose canonical id
+// `wizz-agent-builder` (a skill-builder workflow whose canonical id
 // contains `-agent-` but which has no [agent] section because it isn't a
 // persona itself).
 //
 // Reading the source toml — at install time the source skill directory
 // (resolved from manifest record.path) still exists; cleanup runs later
 // in the install flow.
-async function isAgentSkill(record, bmadDir) {
-  if (!record?.path || !bmadDir) return false;
-  const bmadFolderName = path.basename(bmadDir);
-  const bmadPrefix = bmadFolderName + '/';
-  const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
-  const tomlPath = path.join(bmadDir, path.dirname(relativePath), 'customize.toml');
+async function isAgentSkill(record, wizzDir) {
+  if (!record?.path || !wizzDir) return false;
+  const wizzFolderName = path.basename(wizzDir);
+  const wizzPrefix = wizzFolderName + '/';
+  const relativePath = record.path.startsWith(wizzPrefix) ? record.path.slice(wizzPrefix.length) : record.path;
+  const tomlPath = path.join(wizzDir, path.dirname(relativePath), 'customize.toml');
   if (!(await fs.pathExists(tomlPath))) return false;
   try {
     const content = await fs.readFile(tomlPath, 'utf8');
@@ -128,7 +128,7 @@ function looksLikeGeneratorOutput(content, canonicalId, { template, targetDir })
 /**
  * Config-driven IDE setup handler
  *
- * This class provides a standardized way to install BMAD artifacts to IDEs
+ * This class provides a standardized way to install WIZZ artifacts to IDEs
  * based on configuration in platform-codes.yaml. It eliminates the need for
  * individual installer files for each IDE.
  *
@@ -144,19 +144,19 @@ class ConfigDrivenIdeSetup {
     this.preferred = platformConfig.preferred || false;
     this.platformConfig = platformConfig;
     this.installerConfig = platformConfig.installer || null;
-    this.bmadFolderName = BMAD_FOLDER_NAME;
+    this.wizzFolderName = WIZZ_FOLDER_NAME;
 
     // Set configDir from target_dir so detect() works
     this.configDir = this.installerConfig?.target_dir || null;
   }
 
-  setBmadFolderName(bmadFolderName) {
-    this.bmadFolderName = bmadFolderName;
+  setWizzFolderName(wizzFolderName) {
+    this.wizzFolderName = wizzFolderName;
   }
 
   /**
    * Detect whether this IDE already has configuration in the project.
-   * Checks for bmad-prefixed entries in target_dir.
+   * Checks for wizz-prefixed entries in target_dir.
    * @param {string} projectDir - Project directory
    * @returns {Promise<boolean>}
    */
@@ -174,28 +174,28 @@ class ConfigDrivenIdeSetup {
       return false;
     }
 
-    const bmadDir = await this._findBmadDir(root);
-    const canonicalIds = await getInstalledCanonicalIds(bmadDir);
-    return entries.some((e) => isBmadOwnedEntry(e, canonicalIds));
+    const wizzDir = await this._findWizzDir(root);
+    const canonicalIds = await getInstalledCanonicalIds(wizzDir);
+    return entries.some((e) => isWizzOwnedEntry(e, canonicalIds));
   }
 
   /**
    * Main setup method - called by IdeManager
    * @param {string} projectDir - Project directory
-   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} wizzDir - WIZZ installation directory
    * @param {Object} options - Setup options
    * @returns {Promise<Object>} Setup result
    */
-  async setup(projectDir, bmadDir, options = {}) {
-    // Check for BMAD files in ancestor directories that would cause duplicates
+  async setup(projectDir, wizzDir, options = {}) {
+    // Check for WIZZ files in ancestor directories that would cause duplicates
     if (this.installerConfig?.ancestor_conflict_check) {
       const conflict = await this.findAncestorConflict(projectDir);
       if (conflict) {
         await prompts.log.error(
-          `Found existing BMAD skills in ancestor installation: ${conflict}\n` +
+          `Found existing WIZZ skills in ancestor installation: ${conflict}\n` +
             `  ${this.name} inherits skills from parent directories, so this would cause duplicates.\n` +
-            `  Please remove the BMAD files from that directory first:\n` +
-            `    rm -rf "${conflict}"/bmad*`,
+            `  Please remove the WIZZ files from that directory first:\n` +
+            `    rm -rf "${conflict}"/wizz*`,
         );
         return {
           success: false,
@@ -208,8 +208,8 @@ class ConfigDrivenIdeSetup {
 
     if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
-    // Clean up any old BMAD installation first
-    await this.cleanup(projectDir, options, bmadDir);
+    // Clean up any old WIZZ installation first
+    await this.cleanup(projectDir, options, wizzDir);
 
     if (!this.installerConfig) {
       return { success: false, reason: 'no-config' };
@@ -222,13 +222,13 @@ class ConfigDrivenIdeSetup {
     if (options.skipTarget) {
       const results = { skills: 0, sharedTargetHandledByPeer: true };
       if (this.installerConfig.commands_target_dir) {
-        results.commands = await this.installCommandPointers(projectDir, bmadDir, this.installerConfig, options);
+        results.commands = await this.installCommandPointers(projectDir, wizzDir, this.installerConfig, options);
       }
       return { success: true, results };
     }
 
     if (this.installerConfig.target_dir) {
-      return this.installToTarget(projectDir, bmadDir, this.installerConfig, options);
+      return this.installToTarget(projectDir, wizzDir, this.installerConfig, options);
     }
 
     return { success: false, reason: 'invalid-config' };
@@ -237,12 +237,12 @@ class ConfigDrivenIdeSetup {
   /**
    * Install to a single target directory
    * @param {string} projectDir - Project directory
-   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} wizzDir - WIZZ installation directory
    * @param {Object} config - Installation configuration
    * @param {Object} options - Setup options
    * @returns {Promise<Object>} Installation result
    */
-  async installToTarget(projectDir, bmadDir, config, options) {
+  async installToTarget(projectDir, wizzDir, config, options) {
     const { target_dir } = config;
     const targetPath = path.join(projectDir, target_dir);
     await fs.ensureDir(targetPath);
@@ -250,11 +250,11 @@ class ConfigDrivenIdeSetup {
     this.skillWriteTracker = new Set();
     const results = { skills: 0 };
 
-    results.skills = await this.installVerbatimSkills(projectDir, bmadDir, targetPath, config);
+    results.skills = await this.installVerbatimSkills(projectDir, wizzDir, targetPath, config);
     results.skillDirectories = this.skillWriteTracker.size;
 
     if (config.commands_target_dir) {
-      results.commands = await this.installCommandPointers(projectDir, bmadDir, config, options);
+      results.commands = await this.installCommandPointers(projectDir, wizzDir, config, options);
     }
 
     await this.printSummary(results, target_dir, options);
@@ -283,13 +283,13 @@ class ConfigDrivenIdeSetup {
    * skill copy that already succeeded.
    *
    * @param {string} projectDir
-   * @param {string} bmadDir
+   * @param {string} wizzDir
    * @param {Object} config - Installer config; reads commands_target_dir.
    * @param {Object} options - Setup options. forceCommands overwrites existing
    *   files unconditionally (including hand-modified ones).
    * @returns {Promise<Object>} { created, updated, skippedExisting, skippedCollision, skippedInvalidId, writeFailures, fallbackDescription }
    */
-  async installCommandPointers(projectDir, bmadDir, config, options = {}) {
+  async installCommandPointers(projectDir, wizzDir, config, options = {}) {
     const result = {
       created: 0,
       updated: 0,
@@ -301,7 +301,7 @@ class ConfigDrivenIdeSetup {
       fallbackDescription: 0,
     };
 
-    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    const csvPath = path.join(wizzDir, '_config', 'skill-manifest.csv');
     if (!(await fs.pathExists(csvPath))) return result;
 
     const commandsPath = path.join(projectDir, config.commands_target_dir);
@@ -332,7 +332,7 @@ class ConfigDrivenIdeSetup {
       // persona agents (e.g. Copilot's Custom Agents picker) skip
       // workflow/tool skills here so the picker isn't cluttered with
       // 90+ unrelated entries.
-      if (filter === 'agents-only' && !(await isAgentSkill(record, bmadDir))) {
+      if (filter === 'agents-only' && !(await isAgentSkill(record, wizzDir))) {
         result.skippedFiltered++;
         continue;
       }
@@ -409,15 +409,15 @@ class ConfigDrivenIdeSetup {
    * Copies the entire source directory as-is into the IDE skill directory.
    * The source SKILL.md is used directly — no frontmatter transformation or file generation.
    * @param {string} projectDir - Project directory
-   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} wizzDir - WIZZ installation directory
    * @param {string} targetPath - Target skills directory
    * @param {Object} config - Installation configuration
    * @returns {Promise<number>} Count of skills installed
    */
-  async installVerbatimSkills(projectDir, bmadDir, targetPath, config) {
-    const bmadFolderName = path.basename(bmadDir);
-    const bmadPrefix = bmadFolderName + '/';
-    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+  async installVerbatimSkills(projectDir, wizzDir, targetPath, config) {
+    const wizzFolderName = path.basename(wizzDir);
+    const wizzPrefix = wizzFolderName + '/';
+    const csvPath = path.join(wizzDir, '_config', 'skill-manifest.csv');
 
     if (!(await fs.pathExists(csvPath))) return 0;
 
@@ -434,10 +434,10 @@ class ConfigDrivenIdeSetup {
       if (!canonicalId) continue;
 
       // Derive source directory from path column
-      // path is like "_wizz/bmm/workflows/bmad-quick-flow/bmad-quick-dev-new-preview/SKILL.md"
-      // Strip bmadFolderName prefix and join with bmadDir, then get dirname
-      const relativePath = record.path.startsWith(bmadPrefix) ? record.path.slice(bmadPrefix.length) : record.path;
-      const sourceFile = path.join(bmadDir, relativePath);
+      // path is like "_wizz/bmm/workflows/wizz-quick-flow/wizz-quick-dev-new-preview/SKILL.md"
+      // Strip wizzFolderName prefix and join with wizzDir, then get dirname
+      const relativePath = record.path.startsWith(wizzPrefix) ? record.path.slice(wizzPrefix.length) : record.path;
+      const sourceFile = path.join(wizzDir, relativePath);
       const sourceDir = path.dirname(sourceFile);
 
       if (!(await fs.pathExists(sourceDir))) continue;
@@ -496,36 +496,36 @@ class ConfigDrivenIdeSetup {
    * Cleanup IDE configuration
    * @param {string} projectDir - Project directory
    */
-  async cleanup(projectDir, options = {}, bmadDir = null) {
-    const resolvedBmadDir = bmadDir || (await this._findBmadDir(projectDir));
+  async cleanup(projectDir, options = {}, wizzDir = null) {
+    const resolvedWizzDir = wizzDir || (await this._findWizzDir(projectDir));
 
     // Build removal set: previously installed skills + removals.txt entries
     let removalSet;
     if (options.previousSkillIds) {
       // Install/update flow: use pre-captured skill IDs (before manifest was overwritten)
       removalSet = new Set(options.previousSkillIds);
-      if (resolvedBmadDir) {
-        const removals = await this.loadRemovalLists(resolvedBmadDir);
+      if (resolvedWizzDir) {
+        const removals = await this.loadRemovalLists(resolvedWizzDir);
         for (const entry of removals) removalSet.add(entry);
       }
-    } else if (resolvedBmadDir) {
+    } else if (resolvedWizzDir) {
       // Uninstall flow: read from current skill-manifest.csv + removals.txt
-      removalSet = await this._buildUninstallSet(resolvedBmadDir);
+      removalSet = await this._buildUninstallSet(resolvedWizzDir);
     } else {
       removalSet = new Set();
     }
 
-    // Strip BMAD markers from copilot-instructions.md if present
+    // Strip WIZZ markers from copilot-instructions.md if present
     if (this.name === 'github-copilot') {
       await this.cleanupCopilotInstructions(projectDir, options);
     }
 
-    // Strip BMAD modes from .kilocodemodes if present
+    // Strip WIZZ modes from .kilocodemodes if present
     if (this.name === 'kilo') {
       await this.cleanupKiloModes(projectDir, options);
     }
 
-    // Strip BMAD entries from .rovodev/prompts.yml if present
+    // Strip WIZZ entries from .rovodev/prompts.yml if present
     if (this.name === 'rovo-dev') {
       await this.cleanupRovoDevPrompts(projectDir, options);
     }
@@ -548,7 +548,7 @@ class ConfigDrivenIdeSetup {
       // cleanupByList), don't spare anything; the IDE itself is going away,
       // so its pointers should go with it.
       const isInstallFlow = !!options.previousSkillIds;
-      const activeSkillIds = isInstallFlow ? await this._readActiveSkillIds(resolvedBmadDir) : new Set();
+      const activeSkillIds = isInstallFlow ? await this._readActiveSkillIds(resolvedWizzDir) : new Set();
       const extension = this.installerConfig.commands_extension || '.md';
       await this.cleanupCommandPointers(
         projectDir,
@@ -574,24 +574,24 @@ class ConfigDrivenIdeSetup {
   /**
    * Find the _wizz directory in a project
    * @param {string} projectDir - Project directory
-   * @returns {string|null} Path to bmad dir or null
+   * @returns {string|null} Path to wizz dir or null
    */
-  async _findBmadDir(projectDir) {
-    const bmadDir = path.join(projectDir, BMAD_FOLDER_NAME);
-    return (await fs.pathExists(bmadDir)) ? bmadDir : null;
+  async _findWizzDir(projectDir) {
+    const wizzDir = path.join(projectDir, WIZZ_FOLDER_NAME);
+    return (await fs.pathExists(wizzDir)) ? wizzDir : null;
   }
 
   /**
    * Build the full set of entries to remove for uninstall.
    * Reads skill-manifest.csv to know exactly what was installed, plus removal lists.
-   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} wizzDir - WIZZ installation directory
    * @returns {Set<string>} Set of entries to remove
    */
-  async _buildUninstallSet(bmadDir) {
-    const removals = await this.loadRemovalLists(bmadDir);
+  async _buildUninstallSet(wizzDir) {
+    const removals = await this.loadRemovalLists(wizzDir);
 
     // Also add all currently installed skills from skill-manifest.csv
-    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    const csvPath = path.join(wizzDir, '_config', 'skill-manifest.csv');
     try {
       if (await fs.pathExists(csvPath)) {
         const content = await fs.readFile(csvPath, 'utf8');
@@ -610,12 +610,12 @@ class ConfigDrivenIdeSetup {
   }
 
   /**
-   * Load removal lists from all module sources in the bmad directory.
+   * Load removal lists from all module sources in the wizz directory.
    * Each module can have an optional removals.txt listing entries to remove.
-   * @param {string} bmadDir - BMAD installation directory
+   * @param {string} wizzDir - WIZZ installation directory
    * @returns {Set<string>} Set of entries to remove
    */
-  async loadRemovalLists(bmadDir) {
+  async loadRemovalLists(wizzDir) {
     const removals = new Set();
     const { getProjectRoot } = require('../project-root');
 
@@ -625,14 +625,14 @@ class ConfigDrivenIdeSetup {
 
     // Read per-module removals.txt from installed module directories
     try {
-      const entries = await fs.readdir(bmadDir);
+      const entries = await fs.readdir(wizzDir);
       for (const entry of entries) {
         if (entry.startsWith('_')) continue;
-        const removalPath = path.join(bmadDir, entry, 'removals.txt');
+        const removalPath = path.join(wizzDir, entry, 'removals.txt');
         await this._readRemovalFile(removalPath, removals);
       }
     } catch {
-      // bmadDir may not exist yet on fresh install
+      // wizzDir may not exist yet on fresh install
     }
 
     return removals;
@@ -729,13 +729,13 @@ class ConfigDrivenIdeSetup {
    * Read the canonicalIds currently present in the skill-manifest.csv.
    * Used by cleanup to distinguish "re-install of an existing skill"
    * (preserve pointer) from "skill truly being removed" (delete pointer).
-   * @param {string|null} bmadDir
+   * @param {string|null} wizzDir
    * @returns {Promise<Set<string>>}
    */
-  async _readActiveSkillIds(bmadDir) {
+  async _readActiveSkillIds(wizzDir) {
     const ids = new Set();
-    if (!bmadDir) return ids;
-    const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+    if (!wizzDir) return ids;
+    const csvPath = path.join(wizzDir, '_config', 'skill-manifest.csv');
     if (!(await fs.pathExists(csvPath))) return ids;
     try {
       const content = await fs.readFile(csvPath, 'utf8');
@@ -753,7 +753,7 @@ class ConfigDrivenIdeSetup {
   /**
    * Cleanup a specific target directory.
    * When removalSet is provided, only removes entries in that set.
-   * When removalSet is null (legacy dirs), removes all bmad-prefixed entries.
+   * When removalSet is null (legacy dirs), removes all wizz-prefixed entries.
    * @param {string} projectDir - Project directory
    * @param {string} targetDir - Target directory to clean
    * @param {Object} options - Cleanup options
@@ -786,11 +786,11 @@ class ConfigDrivenIdeSetup {
     for (const entry of entries) {
       if (!entry || typeof entry !== 'string') continue;
 
-      // Always preserve bmad-os-* utility skills regardless of cleanup mode
-      if (entry.startsWith('bmad-os-')) continue;
+      // Always preserve wizz-os-* utility skills regardless of cleanup mode
+      if (entry.startsWith('wizz-os-')) continue;
 
       // Surgical removal from set, or fallback to manifest+prefix detection when null
-      const shouldRemove = removalSet ? removalSet.has(entry) : isBmadOwnedEntry(entry, null);
+      const shouldRemove = removalSet ? removalSet.has(entry) : isWizzOwnedEntry(entry, null);
 
       if (shouldRemove) {
         try {
@@ -819,8 +819,8 @@ class ConfigDrivenIdeSetup {
   }
 
   /**
-   * Strip BMAD-owned content from .github/copilot-instructions.md.
-   * The old custom installer injected content between <!-- BMAD:START --> and <!-- BMAD:END --> markers.
+   * Strip WIZZ-owned content from .github/copilot-instructions.md.
+   * The old custom installer injected content between <!-- WIZZ:START --> and <!-- WIZZ:END --> markers.
    * Deletes the file if nothing remains. Restores .bak backup if one exists.
    */
   async cleanupCopilotInstructions(projectDir, options = {}) {
@@ -830,12 +830,12 @@ class ConfigDrivenIdeSetup {
 
     try {
       const content = await fs.readFile(filePath, 'utf8');
-      const startIdx = content.indexOf('<!-- BMAD:START -->');
-      const endIdx = content.indexOf('<!-- BMAD:END -->');
+      const startIdx = content.indexOf('<!-- WIZZ:START -->');
+      const endIdx = content.indexOf('<!-- WIZZ:END -->');
 
       if (startIdx === -1 || endIdx === -1 || endIdx <= startIdx) return;
 
-      const cleaned = content.slice(0, startIdx) + content.slice(endIdx + '<!-- BMAD:END -->'.length);
+      const cleaned = content.slice(0, startIdx) + content.slice(endIdx + '<!-- WIZZ:END -->'.length);
 
       if (cleaned.trim().length === 0) {
         await fs.remove(filePath);
@@ -850,16 +850,16 @@ class ConfigDrivenIdeSetup {
         if (await fs.pathExists(backupPath)) await fs.remove(backupPath);
       }
 
-      if (!options.silent) await prompts.log.message('  Cleaned BMAD markers from copilot-instructions.md');
+      if (!options.silent) await prompts.log.message('  Cleaned WIZZ markers from copilot-instructions.md');
     } catch {
-      if (!options.silent) await prompts.log.warn('  Warning: Could not clean BMAD markers from copilot-instructions.md');
+      if (!options.silent) await prompts.log.warn('  Warning: Could not clean WIZZ markers from copilot-instructions.md');
     }
   }
 
   /**
-   * Strip BMAD-owned modes from .kilocodemodes.
-   * The old custom kilo.js installer added modes with slug starting with 'bmad-'.
-   * Parses YAML, filters out BMAD modes, rewrites. Leaves file as-is on parse failure.
+   * Strip WIZZ-owned modes from .kilocodemodes.
+   * The old custom kilo.js installer added modes with slug starting with 'wizz-'.
+   * Parses YAML, filters out WIZZ modes, rewrites. Leaves file as-is on parse failure.
    */
   async cleanupKiloModes(projectDir, options = {}) {
     const kiloModesPath = path.join(projectDir, '.kilocodemodes');
@@ -879,13 +879,13 @@ class ConfigDrivenIdeSetup {
     if (!Array.isArray(config.customModes)) return;
 
     const originalCount = config.customModes.length;
-    config.customModes = config.customModes.filter((mode) => mode && (!mode.slug || !mode.slug.startsWith('bmad-')));
+    config.customModes = config.customModes.filter((mode) => mode && (!mode.slug || !mode.slug.startsWith('wizz-')));
     const removedCount = originalCount - config.customModes.length;
 
     if (removedCount > 0) {
       try {
         await fs.writeFile(kiloModesPath, yaml.stringify(config, { lineWidth: 0 }));
-        if (!options.silent) await prompts.log.message(`  Removed ${removedCount} BMAD modes from .kilocodemodes`);
+        if (!options.silent) await prompts.log.message(`  Removed ${removedCount} WIZZ modes from .kilocodemodes`);
       } catch {
         if (!options.silent) await prompts.log.warn('  Warning: Could not write .kilocodemodes during cleanup');
       }
@@ -893,9 +893,9 @@ class ConfigDrivenIdeSetup {
   }
 
   /**
-   * Strip BMAD-owned entries from .rovodev/prompts.yml.
+   * Strip WIZZ-owned entries from .rovodev/prompts.yml.
    * The old custom rovodev.js installer registered workflows in prompts.yml.
-   * Parses YAML, filters out entries with name starting with 'bmad-', rewrites.
+   * Parses YAML, filters out entries with name starting with 'wizz-', rewrites.
    * Removes the file if no entries remain.
    */
   async cleanupRovoDevPrompts(projectDir, options = {}) {
@@ -916,7 +916,7 @@ class ConfigDrivenIdeSetup {
     if (!Array.isArray(config.prompts)) return;
 
     const originalCount = config.prompts.length;
-    config.prompts = config.prompts.filter((entry) => entry && (!entry.name || !entry.name.startsWith('bmad-')));
+    config.prompts = config.prompts.filter((entry) => entry && (!entry.name || !entry.name.startsWith('wizz-')));
     const removedCount = originalCount - config.prompts.length;
 
     if (removedCount > 0) {
@@ -926,7 +926,7 @@ class ConfigDrivenIdeSetup {
         } else {
           await fs.writeFile(promptsPath, yaml.stringify(config, { lineWidth: 0 }));
         }
-        if (!options.silent) await prompts.log.message(`  Removed ${removedCount} BMAD entries from prompts.yml`);
+        if (!options.silent) await prompts.log.message(`  Removed ${removedCount} WIZZ entries from prompts.yml`);
       } catch {
         if (!options.silent) await prompts.log.warn('  Warning: Could not write prompts.yml during cleanup');
       }
@@ -934,7 +934,7 @@ class ConfigDrivenIdeSetup {
   }
 
   /**
-   * Check ancestor directories for existing BMAD files in the same target_dir.
+   * Check ancestor directories for existing WIZZ files in the same target_dir.
    * IDEs like Claude Code inherit commands from parent directories, so an existing
    * installation in an ancestor would cause duplicate commands.
    * @param {string} projectDir - Project directory being installed to
@@ -953,9 +953,9 @@ class ConfigDrivenIdeSetup {
       try {
         if (await fs.pathExists(candidatePath)) {
           const entries = await fs.readdir(candidatePath);
-          const ancestorBmadDir = await this._findBmadDir(current);
-          const canonicalIds = await getInstalledCanonicalIds(ancestorBmadDir);
-          if (entries.some((e) => isBmadOwnedEntry(e, canonicalIds))) {
+          const ancestorWizzDir = await this._findWizzDir(current);
+          const canonicalIds = await getInstalledCanonicalIds(ancestorWizzDir);
+          if (entries.some((e) => isWizzOwnedEntry(e, canonicalIds))) {
             return candidatePath;
           }
         }

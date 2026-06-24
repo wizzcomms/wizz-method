@@ -2,7 +2,7 @@
 name: wizz-architecture
 description: 'Produce the architecture: a lean spine of invariants that keeps everything built from it consistent, projected into whatever format the work needs. Use when the user says "create the architecture", "create technical architecture", "architecture spine", or "create a solution design".'
 ---
-# BMad Architecture
+# Wizz Architecture
 
 ## Overview
 
@@ -52,7 +52,7 @@ Writes go through the shared script (don't read the file back except on resume):
 
 1. Resolve customization: `python3 {project-root}/_wizz/scripts/resolve_customization.py --skill {skill-root} --key workflow` (on failure read `{skill-root}/customize.toml`, use defaults). Run `{workflow.activation_steps_prepend}`, then `{workflow.activation_steps_append}`. Hold `{workflow.persistent_facts}` as standing context — the default loads `project-context.md`, load-bearing for brownfield — and consult `{workflow.external_sources}` on demand.
 2. Load `{project-root}/_wizz/bmm/config.yaml` (+ `config.user.yaml`) for `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`; missing keys take neutral defaults, never block.
-3. Headless (no interactive user) → follow `references/headless.md` for the whole run. Otherwise greet `{user_name}` in `{communication_language}`. Detect the intent from the conversation and input — **create** (the default), **update** an existing spine, or **validate** one (see those sections). If the real ask is requirements / UX / a capability contract / epic breakdown / an agent, invoke the `wizz-prd`, `wizz-ux`, `wizz-spec`, `wizz-create-epics-and-stories`, or `bmad-workflow-builder` (if the BMad Builder module is installed) skill instead.
+3. Headless (no interactive user) → follow `references/headless.md` for the whole run. Otherwise greet `{user_name}` in `{communication_language}`. Detect the intent from the conversation and input — **create** (the default), **update** an existing spine, or **validate** one (see those sections). If the real ask is requirements / UX / a capability contract / epic breakdown / an agent, invoke the `wizz-prd`, `wizz-ux`, `wizz-spec`, `wizz-create-epics-and-stories`, or `wizz-workflow-builder` (if the Wizz Builder module is installed) skill instead.
 4. If a run folder for this target already exists under `{workflow.spine_output_path}`, offer to resume from its memlog rather than restart.
 5. Interactive create: offer the working mode in `{communication_language}` — **Coaching path** (default) or **Fast path** (see *How you work*) — before any drafting; default to Coaching unless the user asks for speed.
 6. **Mandatory, both paths, before drafting:** ask whether the spine is the only deliverable — and if not, draw out the *purpose and audience* rather than a document type. "An architecture doc" balloons into bloat; what they actually need might be a one-detail explainer for a single team or a non-technical vision piece for a board. Purpose right-sizes the artifact and may call for extra elicitation up front, not just a finale add-on.

@@ -1,6 +1,6 @@
 ---
 name: wizz-edit-prd
-description: 'DEPRECATED — consolidated into wizz-prd update intent - this skill will be removed in v7 in favor of `wizz-prd`.'
+description: 'DEPRECATED — consolidated into wizz-prd update intent - this skill will be removed in v7 in favor of `wizz-prd`. Use when needed for backwards compatibility.'
 ---
 
 # DEPRECATED — forwards to wizz-prd (update intent)

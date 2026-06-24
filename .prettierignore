@@ -4,14 +4,14 @@ test/fixtures/**
 # Contributor Covenant (external standard)
 CODE_OF_CONDUCT.md
 
-# BMAD runtime folders (user-specific, not in repo)
+# WIZZ runtime folders (user-specific, not in repo)
 _wizz/
 _wizz*/
 
 # IDE integration folders (user-specific, not in repo)
 .junie/
 
-# Quality scan artifacts produced by bmad-workflow-builder
+# Quality scan artifacts produced by wizz-workflow-builder
 # (per-skill .analysis/ folders contain JSON/HTML reports that should
 # not block commits with formatting checks)
 **/.analysis/

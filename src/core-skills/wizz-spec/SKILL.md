@@ -3,10 +3,10 @@ name: wizz-spec
 description: Distill any intent input into the SPEC kernel + companions — the canonical, preservation-validated machine contract for downstream work. Use when the user says "create a spec", "distill this into a spec", "validate this spec", or "update the spec".
 ---
 
-# BMad Spec
+# Wizz Spec
 ## Overview
 
-Canonical transformer for the BMad spec-kernel ecosystem. Takes any intent input — vague idea, brain dump, PRD, GDD, RFC, brief, Slack thread, customer email, meeting transcript, mockups, mixed multi-source — and produces **SPEC.md** carrying the five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files for load-bearing content that does not fit or would bloat the kernel with expansive line-item detail. Together they are the machine contract every downstream BMad skill consumes.
+Canonical transformer for the Wizz spec-kernel ecosystem. Takes any intent input — vague idea, brain dump, PRD, GDD, RFC, brief, Slack thread, customer email, meeting transcript, mockups, mixed multi-source — and produces **SPEC.md** carrying the five-field kernel (Why, Capabilities, Constraints, Non-goals, Success signal) plus companion files for load-bearing content that does not fit or would bloat the kernel with expansive line-item detail. Together they are the machine contract every downstream Wizz skill consumes.
 
 Multiple skills may call to update the same spec over time.
 
@@ -65,7 +65,7 @@ Writes go through the shared script — `{project-root}/_wizz/scripts/memlog.py`
 
 Read the input and its ancillary linked materials. If there is no input, follow the no-input branch in **Workspace** (ask or block). If a prior `.memlog.md` exists at the target folder, read it — the operation becomes an update, and the memlog (not the rendered `SPEC.md`) is the authority on what was decided and on capability IDs. Preserve those IDs; new capabilities get the next unused `CAP-N`; never reuse retired IDs. Otherwise this is a create, and the first move is `memlog.py init`.
 
-When the input is structured and pre-sorted (a PRD with an addendum, a GDD, a brief produced by an upstream BMad skill), trust the authored separation: lift kernel-fitting content into SPEC.md, lift overflow into appropriately-named companions. When the input is mixed (a brain dump, a transcript, an RFC, a customer email), do the sorting yourself: walk each claim, apply the three-lens load-bearing test (Spec Law rule 7), and route to the kernel field or a companion.
+When the input is structured and pre-sorted (a PRD with an addendum, a GDD, a brief produced by an upstream Wizz skill), trust the authored separation: lift kernel-fitting content into SPEC.md, lift overflow into appropriately-named companions. When the input is mixed (a brain dump, a transcript, an RFC, a customer email), do the sorting yourself: walk each claim, apply the three-lens load-bearing test (Spec Law rule 7), and route to the kernel field or a companion.
 
 Distill the input into the five-field kernel using `{workflow.spec_template}` as the skeleton. When input is rich, extract directly — no elicitation. When input is sparse, choose: **express** (best-effort distill, every gap becomes an `open_questions[]` entry) or **guided** (walk the five fields with the user one at a time). Headless defaults to express and logs the choice. Interactive asks.
 

@@ -2,14 +2,14 @@
 name: wizz-prd
 description: Create, update, or validate a PRD. Use when the user wants help producing, editing, or validating a PRD.
 ---
-# BMad PRD
+# Wizz PRD
 
 You are a master facilitator and coach helping the user create, edit, or validate a high quality PRD scoped to the level and rigor appropriate to their stated needs. Fight the urge to do the thinking for them unless they put you into Fast path.
 
 ## Conventions
 
 - Bare paths resolve from skill root; `{skill-root}` is this skill's install dir; `{project-root}` is the project working dir.
-- `{workflow.<name>}` resolves to fields in `customize.toml`'s `[workflow]` table (overrides win per BMad merge rules).
+- `{workflow.<name>}` resolves to fields in `customize.toml`'s `[workflow]` table (overrides win per Wizz merge rules).
 - `{doc_workspace}` is the bound run folder.
 - **File roles.** `.decision-log.md` is canonical memory and audit trail — every decision, change, and override (including headless overrides) is recorded there as the conversation unfolds. `addendum.md` preserves user-contributed depth that belongs in a downstream document (architecture, solution design, UX spec) or earned a place but does not fit the PRD itself — rejected-alternative rationale, options-considered matrices, mechanism/transport decisions, technical-how, in-depth personas, sizing data. Capture to the addendum *during* the conversation when the user volunteers such content — do not wait for finalize. Audit and override information never goes in the addendum.
 
@@ -18,7 +18,7 @@ You are a master facilitator and coach helping the user create, edit, or validat
 1. Resolve customization: `python3 {project-root}/_wizz/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
 2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (entries prefixed `file:` are loaded). `{workflow.external_sources}` is an org-configured registry of internal tools (knowledge bases, MCP tools); consult them alongside generic web research on the same triggers, org tools preferred when their directive matches. Research itself fires during Discovery — see **Research subagents**.
 3. Load `{project-root}/_wizz/bmm/config.yaml` (+ `config.user.yaml` if present). Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`. Missing keys → neutral defaults; never block.
-4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn for the entire run, not just the greeting. In the greeting, let the user know that at any point they can invoke `wizz-party-mode` for multi-agent perspectives or `wizz-advanced-elicitation` for deeper exploration on a specific section. Then scan for misroute on the first message: if the signal points elsewhere (game → BMad GDS; express build → `wizz-quick-dev`; one-pager → `wizz-product-brief`; vet product idea → `wizz-prfaq`; agent skill or custom agent → `bmad-workflow-builder`), suggest they might want the other options before continuing.
+4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn for the entire run, not just the greeting. In the greeting, let the user know that at any point they can invoke `wizz-party-mode` for multi-agent perspectives or `wizz-advanced-elicitation` for deeper exploration on a specific section. Then scan for misroute on the first message: if the signal points elsewhere (game → Wizz GDS; express build → `wizz-quick-dev`; one-pager → `wizz-product-brief`; vet product idea → `wizz-prfaq`; agent skill or custom agent → `wizz-workflow-builder`), suggest they might want the other options before continuing.
 5. Detect intent: **Create** (no PRD), **Update** (existing PRD), **Validate** (critique only). If ambiguous, ask. For Create intent, before binding a fresh workspace, scan `{workflow.prd_output_path}` for prior in-progress runs (folders matching `{workflow.run_folder_pattern}` whose `prd.md` frontmatter `status` is not `final`); if any exist, offer to resume rather than starting over.
 
 Run `{workflow.activation_steps_append}`.

@@ -117,7 +117,7 @@ Wizz-Help will detect what you've completed and recommend exactly what to do nex
 :::
 
 :::note[How to Load Agents and Run Workflows]
-Each workflow has a **skill** you invoke by name in your IDE (e.g., `wizz-prd`). Your AI tool will recognize the `bmad-*` name and run it — you don't need to load agents separately. You can also invoke an agent skill directly for general conversation (e.g., `wizz-agent-pm` for the PM agent).
+Each workflow has a **skill** you invoke by name in your IDE (e.g., `wizz-prd`). Your AI tool will recognize the `wizz-*` name and run it — you don't need to load agents separately. You can also invoke an agent skill directly for general conversation (e.g., `wizz-agent-pm` for the PM agent).
 :::
 
 :::caution[Fresh Chats]
@@ -277,7 +277,7 @@ Wizz-Help inspects your project, detects what you've completed, and tells you ex
 :::
 
 - **During workflows** — Agents guide you with questions and explanations
-- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#bmad-method-help, #report-bugs-and-issues)
+- **Community** — [Discord](https://discord.gg/gk8jAdXWmj) (#wizz-method-help, #report-bugs-and-issues)
 
 ## Key Takeaways
 

@@ -1,6 +1,6 @@
 ---
 name: wizz-memoria
-description: Cérebro do projeto no Wizz Method. Use para recuperar o que já foi decidido, salvar decisões/aprendizados e ver o estado do projeto. Roteia para a skill global cerebro (/ver, /salvar, /decisao, /dump).
+description: Wizz Method Project Brain. Use when you need to retrieve what has already been decided, save decisions/learnings, and view the project state. Routes to the global skill cerebro (/view, /save, /decision, /dump).
 ---
 
 # Memória — Cérebro do Projeto

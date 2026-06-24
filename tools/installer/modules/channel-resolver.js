@@ -17,7 +17,7 @@ const semver = require('semver');
 
 const GITHUB_API_BASE = 'https://api.github.com';
 const DEFAULT_TIMEOUT_MS = 10_000;
-const USER_AGENT = 'bmad-method-installer';
+const USER_AGENT = 'wizz-method-installer';
 
 // Per-process cache: { 'owner/repo' => string[] sorted desc } of pure-semver tags.
 const tagCache = new Map();

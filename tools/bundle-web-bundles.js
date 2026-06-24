@@ -109,7 +109,7 @@ function main() {
   console.log('\nNext step — create or update the GitHub Release:\n');
   console.log(`  gh release create ${releaseTag} dist/web-bundles/*.zip \\`);
   console.log(`    --title "${releaseTag}" \\`);
-  console.log(`    --notes "BMad web bundles for Gemini Gems and ChatGPT Custom GPTs. See https://bmadcode.com/web-bundles/"\n`);
+  console.log(`    --notes "Wizz web bundles for Gemini Gems and ChatGPT Custom GPTs. See https://bmadcode.com/web-bundles/"\n`);
   console.log('Or, to refresh an existing release:\n');
   console.log(`  gh release upload ${releaseTag} dist/web-bundles/*.zip --clobber\n`);
 }

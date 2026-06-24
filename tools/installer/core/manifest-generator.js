@@ -33,20 +33,20 @@ class ManifestGenerator {
 
   /**
    * Generate all manifests for the installation
-   * @param {string} bmadDir - _wizz
+   * @param {string} wizzDir - _wizz
    * @param {Array} selectedModules - Selected modules for installation
    * @param {Array} installedFiles - All installed files (optional, for hash tracking)
    */
-  async generateManifests(bmadDir, selectedModules, installedFiles = [], options = {}) {
+  async generateManifests(wizzDir, selectedModules, installedFiles = [], options = {}) {
     // Create _config directory if it doesn't exist
-    const cfgDir = path.join(bmadDir, '_config');
+    const cfgDir = path.join(wizzDir, '_config');
     await fs.ensureDir(cfgDir);
 
     // Store modules list (all modules including preserved ones)
     const preservedModules = options.preservedModules || [];
 
-    // Scan the bmad directory to find all actually installed modules
-    const installedModules = await this.scanInstalledModules(bmadDir);
+    // Scan the wizz directory to find all actually installed modules
+    const installedModules = await this.scanInstalledModules(wizzDir);
 
     // Since custom modules are now installed the same way as regular modules,
     // we don't need to exclude them from manifest generation
@@ -55,8 +55,8 @@ class ManifestGenerator {
     this.modules = allModules;
     this.updatedModules = allModules; // Include ALL modules (including custom) for scanning
 
-    this.bmadDir = bmadDir;
-    this.bmadFolderName = path.basename(bmadDir); // Get the actual folder name (e.g., '_wizz' or 'bmad')
+    this.wizzDir = wizzDir;
+    this.wizzFolderName = path.basename(wizzDir); // Get the actual folder name (e.g., '_wizz' or 'wizz')
     this.allInstalledFiles = installedFiles;
 
     if (!Object.prototype.hasOwnProperty.call(options, 'ides')) {
@@ -81,7 +81,7 @@ class ManifestGenerator {
     await this.collectAgentsFromModuleYaml();
 
     // Write manifest files and collect their paths
-    const [teamConfigPath, userConfigPath] = await this.writeCentralConfig(bmadDir, options.moduleConfigs || {});
+    const [teamConfigPath, userConfigPath] = await this.writeCentralConfig(wizzDir, options.moduleConfigs || {});
     const manifestFiles = [
       await this.writeMainManifest(cfgDir),
       await this.writeSkillManifest(cfgDir),
@@ -90,7 +90,7 @@ class ManifestGenerator {
       await this.writeFilesManifest(cfgDir),
     ];
 
-    await this.ensureCustomConfigStubs(bmadDir);
+    await this.ensureCustomConfigStubs(wizzDir);
 
     return {
       skills: this.skills.length,
@@ -110,10 +110,10 @@ class ManifestGenerator {
   async collectSkills() {
     this.skills = [];
     this.skillClaimedDirs = new Set();
-    const debug = process.env.BMAD_DEBUG_MANIFEST === 'true';
+    const debug = process.env.WIZZ_DEBUG_MANIFEST === 'true';
 
     for (const moduleName of this.updatedModules) {
-      const modulePath = path.join(this.bmadDir, moduleName);
+      const modulePath = path.join(this.wizzDir, moduleName);
       if (!(await fs.pathExists(modulePath))) continue;
 
       // Recursive walk skipping . and _ prefixed dirs
@@ -136,8 +136,8 @@ class ManifestGenerator {
           // Build path relative from module root (points to SKILL.md — the permanent entrypoint)
           const relativePath = path.relative(modulePath, dir).split(path.sep).join('/');
           const installPath = relativePath
-            ? `${this.bmadFolderName}/${moduleName}/${relativePath}/${skillFile}`
-            : `${this.bmadFolderName}/${moduleName}/${skillFile}`;
+            ? `${this.wizzFolderName}/${moduleName}/${relativePath}/${skillFile}`
+            : `${this.wizzFolderName}/${moduleName}/${skillFile}`;
 
           // Native SKILL.md entrypoints always derive canonicalId from directory name.
           const canonicalId = dirName;
@@ -241,12 +241,12 @@ class ManifestGenerator {
    */
   async collectAgentsFromModuleYaml() {
     this.agents = [];
-    const debug = process.env.BMAD_DEBUG_MANIFEST === 'true';
+    const debug = process.env.WIZZ_DEBUG_MANIFEST === 'true';
 
     for (const moduleName of this.updatedModules) {
       const moduleYamlPath = await resolveInstalledModuleYaml(moduleName);
       if (!moduleYamlPath) {
-        // External modules live in ~/.bmad/cache/external-modules, not src/modules.
+        // External modules live in ~/.wizz/cache/external-modules, not src/modules.
         // Warn rather than silently skip so missing agent rosters don't vanish
         // from config.toml without notice.
         console.warn(
@@ -335,7 +335,7 @@ class ManifestGenerator {
 
     for (const moduleName of this.modules) {
       // Get fresh version info from source
-      const versionInfo = await manifestObj.getModuleVersionInfo(moduleName, this.bmadDir);
+      const versionInfo = await manifestObj.getModuleVersionInfo(moduleName, this.wizzDir);
 
       // Get existing install date if available
       const existing = existingModulesMap.get(moduleName);
@@ -425,9 +425,9 @@ class ManifestGenerator {
    * _wizz/custom/config.toml and _wizz/custom/config.user.toml (never touched by installer).
    * @returns {string[]} Paths to the written config files
    */
-  async writeCentralConfig(bmadDir, moduleConfigs) {
-    const teamPath = path.join(bmadDir, 'config.toml');
-    const userPath = path.join(bmadDir, 'config.user.toml');
+  async writeCentralConfig(wizzDir, moduleConfigs) {
+    const teamPath = path.join(wizzDir, 'config.toml');
+    const userPath = path.join(wizzDir, 'config.user.toml');
 
     // Load each module's source module.yaml to determine scope per prompt key.
     // Default scope is 'team' when the prompt doesn't declare one.
@@ -623,8 +623,8 @@ class ManifestGenerator {
    * Create empty _wizz/custom/config.toml and _wizz/custom/config.user.toml stubs
    * on first install only. Installer never touches these files again after creation.
    */
-  async ensureCustomConfigStubs(bmadDir) {
-    const customDir = path.join(bmadDir, 'custom');
+  async ensureCustomConfigStubs(wizzDir) {
+    const customDir = path.join(wizzDir, 'custom');
     await fs.ensureDir(customDir);
 
     const stubs = [
@@ -689,8 +689,8 @@ class ManifestGenerator {
     if (this.allInstalledFiles && this.allInstalledFiles.length > 0) {
       // Process all installed files
       for (const filePath of this.allInstalledFiles) {
-        // Store paths relative to bmadDir (no folder prefix)
-        const relativePath = filePath.replace(this.bmadDir, '').replaceAll('\\', '/').replace(/^\//, '');
+        // Store paths relative to wizzDir (no folder prefix)
+        const relativePath = filePath.replace(this.wizzDir, '').replaceAll('\\', '/').replace(/^\//, '');
         const ext = path.extname(filePath).toLowerCase();
         const fileName = path.basename(filePath, ext);
 
@@ -713,8 +713,8 @@ class ManifestGenerator {
       // Fallback: use the collected workflows/agents/tasks
       for (const file of this.files) {
         // Strip the folder prefix if present (for consistency)
-        const relPath = file.path.replace(this.bmadFolderName + '/', '');
-        const filePath = path.join(this.bmadDir, relPath);
+        const relPath = file.path.replace(this.wizzFolderName + '/', '');
+        const filePath = path.join(this.wizzDir, relPath);
         const hash = await this.calculateFileHash(filePath);
         allFiles.push({
           ...file,
@@ -741,15 +741,15 @@ class ManifestGenerator {
   }
 
   /**
-   * Scan the bmad directory to find all installed modules
-   * @param {string} bmadDir - Path to bmad directory
+   * Scan the wizz directory to find all installed modules
+   * @param {string} wizzDir - Path to wizz directory
    * @returns {Array} List of module names
    */
-  async scanInstalledModules(bmadDir) {
+  async scanInstalledModules(wizzDir) {
     const modules = [];
 
     try {
-      const entries = await fs.readdir(bmadDir, { withFileTypes: true });
+      const entries = await fs.readdir(wizzDir, { withFileTypes: true });
 
       for (const entry of entries) {
         // Skip if not a directory or is a special directory
@@ -758,7 +758,7 @@ class ManifestGenerator {
         }
 
         // Check if this looks like a module (has agents directory or skill manifests)
-        const modulePath = path.join(bmadDir, entry.name);
+        const modulePath = path.join(wizzDir, entry.name);
         const hasAgents = await fs.pathExists(path.join(modulePath, 'agents'));
         const hasSkills = await this._hasSkillMdRecursive(modulePath);
 

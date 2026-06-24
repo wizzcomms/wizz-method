@@ -318,4 +318,4 @@ Run both `wizz-review-adversarial-general` and `wizz-review-edge-case-hunter` to
 
 **Output:** TOML override files under `_wizz/custom/`
 
-For a detailed guide on customizing the Wizz Method, see [How to Customize Wizz Method](../how-to/customize-bmad.md).
+For a detailed guide on customizing the Wizz Method, see [How to Customize Wizz Method](../how-to/customize-wizz.md).

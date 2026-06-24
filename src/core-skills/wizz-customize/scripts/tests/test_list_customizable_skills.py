@@ -93,19 +93,19 @@ class ScannerTest(unittest.TestCase):
     def test_dual_surface_skill_emits_two_entries(self):
         _make_skill(
             self.skills,
-            "bmad-dual",
+            "wizz-dual",
             "[agent]\nicon = \"x\"\n\n[workflow]\npersistent_facts = []\n",
-            "---\nname: bmad-dual\ndescription: Dual.\n---\n",
+            "---\nname: wizz-dual\ndescription: Dual.\n---\n",
         )
         result = MODULE.scan_skills([self.skills], self.root)
         self.assertEqual(len(result["agents"]), 1)
         self.assertEqual(len(result["workflows"]), 1)
-        self.assertEqual(result["agents"][0]["name"], "bmad-dual")
-        self.assertEqual(result["workflows"][0]["name"], "bmad-dual")
+        self.assertEqual(result["agents"][0]["name"], "wizz-dual")
+        self.assertEqual(result["workflows"][0]["name"], "wizz-dual")
 
     def test_skill_without_customize_toml_ignored(self):
-        (self.skills / "bmad-plain").mkdir()
-        (self.skills / "bmad-plain" / "SKILL.md").write_text("# plain\n")
+        (self.skills / "wizz-plain").mkdir()
+        (self.skills / "wizz-plain" / "SKILL.md").write_text("# plain\n")
         result = MODULE.scan_skills([self.skills], self.root)
         self.assertEqual(len(result["agents"]) + len(result["workflows"]), 0)
         self.assertEqual(result["errors"], [])
@@ -124,34 +124,34 @@ class ScannerTest(unittest.TestCase):
         self.assertFalse(entry["has_user_override"])
 
     def test_missing_surface_block_reports_error(self):
-        _make_skill(self.skills, "bmad-broken", "[not_a_surface]\nfoo = 1\n")
+        _make_skill(self.skills, "wizz-broken", "[not_a_surface]\nfoo = 1\n")
         result = MODULE.scan_skills([self.skills], self.root)
         self.assertEqual(len(result["agents"]) + len(result["workflows"]), 0)
         self.assertEqual(len(result["errors"]), 1)
         self.assertIn("no [agent] or [workflow] block", result["errors"][0])
 
     def test_malformed_toml_reports_error_without_aborting(self):
-        skill_dir = self.skills / "bmad-bad"
+        skill_dir = self.skills / "wizz-bad"
         skill_dir.mkdir()
         (skill_dir / "customize.toml").write_text("this is not [valid toml\n")
         # Plus a good sibling to confirm scanning continues.
         _make_skill(
             self.skills,
-            "bmad-good",
+            "wizz-good",
             "[agent]\nicon = \"x\"\n",
-            "---\nname: bmad-good\ndescription: Good.\n---\n",
+            "---\nname: wizz-good\ndescription: Good.\n---\n",
         )
         result = MODULE.scan_skills([self.skills], self.root)
         self.assertEqual(len(result["agents"]), 1)
-        self.assertEqual(result["agents"][0]["name"], "bmad-good")
+        self.assertEqual(result["agents"][0]["name"], "wizz-good")
         self.assertTrue(any("failed to parse" in e for e in result["errors"]))
 
     def test_description_with_double_quotes_stripped(self):
         _make_skill(
             self.skills,
-            "bmad-q",
+            "wizz-q",
             "[agent]\nicon = \"x\"\n",
-            '---\nname: bmad-q\ndescription: "Double-quoted desc."\n---\n',
+            '---\nname: wizz-q\ndescription: "Double-quoted desc."\n---\n',
         )
         result = MODULE.scan_skills([self.skills], self.root)
         self.assertEqual(result["agents"][0]["description"], "Double-quoted desc.")

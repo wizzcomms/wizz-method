@@ -1,6 +1,6 @@
 ---
 name: wizz-copy
-description: Copywriter do Wizz Method. Use para copy de venda, headlines, textos de página, e-mails e sequências. Roteia para as skills globais copywriting, email-sequence, humanizer e copy-editing.
+description: Wizz Method Copywriter. Use when you need sales copy, headlines, page copy, emails, and sequences. Routes to global skills copywriting, email-sequence, humanizer, and copy-editing.
 ---
 
 # Copy — Copywriter

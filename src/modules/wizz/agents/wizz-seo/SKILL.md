@@ -1,6 +1,6 @@
 ---
 name: wizz-seo
-description: Especialista de SEO do Wizz Method. Use para auditoria de SEO, otimização para busca e para IA (AI search), schema markup e SEO programático. Roteia para seo-audit, ai-seo, schema-markup, programmatic-seo e site-architecture.
+description: Wizz Method SEO Specialist. Use when you need SEO auditing, search optimization, AI search optimization, schema markup, and programmatic SEO. Routes to seo-audit, ai-seo, schema-markup, programmatic-seo, and site-architecture.
 ---
 
 # SEO — Especialista de SEO

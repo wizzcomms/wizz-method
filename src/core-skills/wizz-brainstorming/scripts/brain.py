@@ -213,11 +213,11 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BMad Method Brainstorming Selection</title>
+<title>Wizz Method Brainstorming Selection</title>
 <script>
 /* set the theme before first paint so there's no light-mode flash */
 (function(){ try {
-  var t = localStorage.getItem('bmad-theme');
+  var t = localStorage.getItem('wizz-theme');
   if (!t) { t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'; }
   document.documentElement.setAttribute('data-theme', t);
 } catch(e){} })();
@@ -305,7 +305,7 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
 <header>
   <div class="hwrap">
   <div class="titlerow">
-    <h1>BMad Method Brainstorming Selection</h1>
+    <h1>Wizz Method Brainstorming Selection</h1>
     <button id="theme" class="themebtn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode"></button>
   </div>
   <p class="sub">Compose your session, hit <strong>Copy prompt</strong>, and paste it back into the chat to begin. {{TOTAL}}</p>
@@ -343,7 +343,7 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
 <main>
 {{BODY}}
 </main>
-<footer>BMad Method &middot; Brainstorming</footer>
+<footer>Wizz Method &middot; Brainstorming</footer>
 <script>
 (function(){
   var $ = function(id){ return document.getElementById(id); };
@@ -366,7 +366,7 @@ SELECTOR_TEMPLATE = r"""<!DOCTYPE html>
   themeBtn.addEventListener('click', function(){
     var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
-    try { localStorage.setItem('bmad-theme', next); } catch(e){}
+    try { localStorage.setItem('wizz-theme', next); } catch(e){}
     setThemeIcon();
   });
 

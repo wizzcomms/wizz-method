@@ -125,7 +125,7 @@ The core module includes 12 built-in tools — specs, reviews, brainstorming, cu
 
 ## Naming Convention
 
-All skills use the `bmad-` prefix followed by a descriptive name (e.g., `wizz-agent-dev`, `wizz-prd`, `wizz-help`). See [Modules](./modules.md) for available modules.
+All skills use the `wizz-` prefix followed by a descriptive name (e.g., `wizz-agent-dev`, `wizz-prd`, `wizz-help`). See [Modules](./modules.md) for available modules.
 
 ## Troubleshooting
 

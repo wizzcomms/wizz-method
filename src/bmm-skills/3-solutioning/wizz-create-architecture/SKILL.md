@@ -1,6 +1,6 @@
 ---
 name: wizz-create-architecture
-description: 'DEPRECATED — consolidated into wizz-architecture create intent - this skill will be removed in v7 in favor of `wizz-architecture`.'
+description: 'DEPRECATED — consolidated into wizz-architecture create intent - this skill will be removed in v7 in favor of `wizz-architecture`. Use when needed for backwards compatibility.'
 ---
 
 # DEPRECATED — forwards to wizz-architecture (create intent)

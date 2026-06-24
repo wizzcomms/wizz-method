@@ -49,8 +49,8 @@ function assert(condition, testName, errorMessage = '') {
   }
 }
 
-async function createTestBmadFixture() {
-  const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-'));
+async function createTestWizzFixture() {
+  const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-fixture-'));
   const fixtureDir = path.join(fixtureRoot, '_wizz');
   await fs.ensureDir(fixtureDir);
 
@@ -60,19 +60,19 @@ async function createTestBmadFixture() {
     path.join(fixtureDir, '_config', 'skill-manifest.csv'),
     [
       'canonicalId,name,description,module,path',
-      '"bmad-master","bmad-master","Minimal test agent fixture","core","_wizz/core/bmad-master/SKILL.md"',
+      '"wizz-master","wizz-master","Minimal test agent fixture","core","_wizz/core/wizz-master/SKILL.md"',
       '',
     ].join('\n'),
   );
 
   // Minimal SKILL.md for the skill entry
-  const skillDir = path.join(fixtureDir, 'core', 'bmad-master');
+  const skillDir = path.join(fixtureDir, 'core', 'wizz-master');
   await fs.ensureDir(skillDir);
   await fs.writeFile(
     path.join(skillDir, 'SKILL.md'),
     [
       '---',
-      'name: bmad-master',
+      'name: wizz-master',
       'description: Minimal test agent fixture',
       '---',
       '',
@@ -86,7 +86,7 @@ async function createTestBmadFixture() {
 }
 
 async function createSkillCollisionFixture() {
-  const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-skill-collision-'));
+  const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-skill-collision-'));
   const fixtureDir = path.join(fixtureRoot, '_wizz');
   const configDir = path.join(fixtureDir, '_config');
   await fs.ensureDir(configDir);
@@ -110,13 +110,13 @@ async function createSkillCollisionFixture() {
   const agentDir = path.join(fixtureDir, 'core', 'agents');
   await fs.ensureDir(agentDir);
   await fs.writeFile(
-    path.join(agentDir, 'bmad-master.md'),
-    ['---', 'name: BMAD Master', 'description: Master agent', '---', '', '<agent name="BMAD Master" title="Master">', '</agent>'].join(
+    path.join(agentDir, 'wizz-master.md'),
+    ['---', 'name: WIZZ Master', 'description: Master agent', '---', '', '<agent name="WIZZ Master" title="Master">', '</agent>'].join(
       '\n',
     ),
   );
 
-  return { root: fixtureRoot, bmadDir: fixtureDir };
+  return { root: fixtureRoot, wizzDir: fixtureDir };
 }
 
 /**
@@ -141,23 +141,23 @@ async function runTests() {
 
     assert(windsurfInstaller?.target_dir === '.agents/skills', 'Windsurf target_dir uses native skills path');
 
-    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-windsurf-test-'));
-    const installedBmadDir = await createTestBmadFixture();
+    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-windsurf-test-'));
+    const installedWizzDir = await createTestWizzFixture();
 
     const ideManager = new IdeManager();
     await ideManager.ensureInitialized();
-    const result = await ideManager.setup('windsurf', tempProjectDir, installedBmadDir, {
+    const result = await ideManager.setup('windsurf', tempProjectDir, installedWizzDir, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result.success === true, 'Windsurf setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'Windsurf install writes SKILL.md directory output');
 
     await fs.remove(tempProjectDir);
-    await fs.remove(path.dirname(installedBmadDir));
+    await fs.remove(path.dirname(installedWizzDir));
   } catch (error) {
     assert(false, 'Windsurf native skills migration test succeeds', error.message);
   }
@@ -176,23 +176,23 @@ async function runTests() {
 
     assert(kiroInstaller?.target_dir === '.kiro/skills', 'Kiro target_dir uses native skills path');
 
-    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-kiro-test-'));
-    const installedBmadDir = await createTestBmadFixture();
+    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-kiro-test-'));
+    const installedWizzDir = await createTestWizzFixture();
 
     const ideManager = new IdeManager();
     await ideManager.ensureInitialized();
-    const result = await ideManager.setup('kiro', tempProjectDir, installedBmadDir, {
+    const result = await ideManager.setup('kiro', tempProjectDir, installedWizzDir, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result.success === true, 'Kiro setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.kiro', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.kiro', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'Kiro install writes SKILL.md directory output');
 
     await fs.remove(tempProjectDir);
-    await fs.remove(path.dirname(installedBmadDir));
+    await fs.remove(path.dirname(installedWizzDir));
   } catch (error) {
     assert(false, 'Kiro native skills migration test succeeds', error.message);
   }
@@ -211,23 +211,23 @@ async function runTests() {
 
     assert(antigravityInstaller?.target_dir === '.agent/skills', 'Antigravity target_dir uses native skills path');
 
-    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-antigravity-test-'));
-    const installedBmadDir = await createTestBmadFixture();
+    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-antigravity-test-'));
+    const installedWizzDir = await createTestWizzFixture();
 
     const ideManager = new IdeManager();
     await ideManager.ensureInitialized();
-    const result = await ideManager.setup('antigravity', tempProjectDir, installedBmadDir, {
+    const result = await ideManager.setup('antigravity', tempProjectDir, installedWizzDir, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result.success === true, 'Antigravity setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.agent', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.agent', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'Antigravity install writes SKILL.md directory output');
 
     await fs.remove(tempProjectDir);
-    await fs.remove(path.dirname(installedBmadDir));
+    await fs.remove(path.dirname(installedWizzDir));
   } catch (error) {
     assert(false, 'Antigravity native skills migration test succeeds', error.message);
   }
@@ -251,23 +251,23 @@ async function runTests() {
       'Auggie installer does not enable ancestor conflict checks without verified inheritance',
     );
 
-    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-auggie-test-'));
-    const installedBmadDir = await createTestBmadFixture();
+    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-auggie-test-'));
+    const installedWizzDir = await createTestWizzFixture();
 
     const ideManager = new IdeManager();
     await ideManager.ensureInitialized();
-    const result = await ideManager.setup('auggie', tempProjectDir, installedBmadDir, {
+    const result = await ideManager.setup('auggie', tempProjectDir, installedWizzDir, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result.success === true, 'Auggie setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'Auggie install writes SKILL.md directory output');
 
     await fs.remove(tempProjectDir);
-    await fs.remove(path.dirname(installedBmadDir));
+    await fs.remove(path.dirname(installedWizzDir));
   } catch (error) {
     assert(false, 'Auggie native skills migration test succeeds', error.message);
   }
@@ -290,33 +290,33 @@ async function runTests() {
       'OpenCode commands_target_dir is configured for /<skill> slash commands',
     );
 
-    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-test-'));
-    const installedBmadDir = await createTestBmadFixture();
+    const tempProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-opencode-test-'));
+    const installedWizzDir = await createTestWizzFixture();
 
     const ideManager = new IdeManager();
     await ideManager.ensureInitialized();
-    const result = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
+    const result = await ideManager.setup('opencode', tempProjectDir, installedWizzDir, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result.success === true, 'OpenCode setup succeeds against temp project');
 
-    const skillFile = path.join(tempProjectDir, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile = path.join(tempProjectDir, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile), 'OpenCode install writes SKILL.md directory output');
 
     // Command pointer assertions: a /<canonicalId> slash command should exist
     // for each installed skill so users can invoke skills directly without
     // going through the /skills menu.
-    const commandFile = path.join(tempProjectDir, '.opencode', 'commands', 'bmad-master.md');
+    const commandFile = path.join(tempProjectDir, '.opencode', 'commands', 'wizz-master.md');
     assert(await fs.pathExists(commandFile), 'OpenCode install writes per-skill command pointer file');
 
     const commandContent = await fs.readFile(commandFile, 'utf8');
-    assert(commandContent.includes('@skills/bmad-master'), 'Command pointer body references the skill via @skills/<canonicalId>');
+    assert(commandContent.includes('@skills/wizz-master'), 'Command pointer body references the skill via @skills/<canonicalId>');
     assert(commandContent.includes('description:'), 'Command pointer carries a description in YAML frontmatter');
 
     // Idempotency: re-running install must not duplicate or rewrite pointers.
-    const result2 = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
+    const result2 = await ideManager.setup('opencode', tempProjectDir, installedWizzDir, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -326,12 +326,12 @@ async function runTests() {
     // Description-update propagation: when the manifest description changes
     // and the on-disk pointer still matches the generator pattern, refresh
     // the file so users see the updated description.
-    const csvPath = path.join(installedBmadDir, '_config', 'skill-manifest.csv');
+    const csvPath = path.join(installedWizzDir, '_config', 'skill-manifest.csv');
     const updatedCsv =
       'canonicalId,name,description,module,path\n' +
-      '"bmad-master","bmad-master","UPDATED description for the test agent","core","_wizz/core/bmad-master/SKILL.md"\n';
+      '"wizz-master","wizz-master","UPDATED description for the test agent","core","_wizz/core/wizz-master/SKILL.md"\n';
     await fs.writeFile(csvPath, updatedCsv);
-    const result3 = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
+    const result3 = await ideManager.setup('opencode', tempProjectDir, installedWizzDir, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -345,17 +345,17 @@ async function runTests() {
     const SENTINEL = 'HAND_EDITED_BY_USER_SHOULD_SURVIVE';
     const handEditedBody = `---\ndescription: my custom description\n---\n\n${SENTINEL}\n`;
     await fs.writeFile(commandFile, handEditedBody);
-    const result4 = await ideManager.setup('opencode', tempProjectDir, installedBmadDir, {
+    const result4 = await ideManager.setup('opencode', tempProjectDir, installedWizzDir, {
       silent: true,
       selectedModules: ['bmm'],
-      previousSkillIds: new Set(['bmad-master']),
+      previousSkillIds: new Set(['wizz-master']),
     });
     assert(result4.success === true, 'Fourth OpenCode install succeeds with hand-edited pointer present');
     const afterReinstall = await fs.readFile(commandFile, 'utf8');
     assert(afterReinstall.includes(SENTINEL), 'Hand-edited pointer survives a routine reinstall (cleanup spares active-manifest IDs)');
 
     await fs.remove(tempProjectDir);
-    await fs.remove(path.dirname(installedBmadDir));
+    await fs.remove(path.dirname(installedWizzDir));
   } catch (error) {
     assert(false, 'OpenCode native skills migration test succeeds', error.message);
   }
@@ -374,28 +374,28 @@ async function runTests() {
 
     assert(claudeInstaller?.target_dir === '.claude/skills', 'Claude Code target_dir uses native skills path');
 
-    const tempProjectDir9 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-claude-code-test-'));
-    const installedBmadDir9 = await createTestBmadFixture();
+    const tempProjectDir9 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-claude-code-test-'));
+    const installedWizzDir9 = await createTestWizzFixture();
 
     const ideManager9 = new IdeManager();
     await ideManager9.ensureInitialized();
-    const result9 = await ideManager9.setup('claude-code', tempProjectDir9, installedBmadDir9, {
+    const result9 = await ideManager9.setup('claude-code', tempProjectDir9, installedWizzDir9, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result9.success === true, 'Claude Code setup succeeds against temp project');
 
-    const skillFile9 = path.join(tempProjectDir9, '.claude', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile9 = path.join(tempProjectDir9, '.claude', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile9), 'Claude Code install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent9 = await fs.readFile(skillFile9, 'utf8');
     const nameMatch9 = skillContent9.match(/^name:\s*(.+)$/m);
-    assert(nameMatch9 && nameMatch9[1].trim() === 'bmad-master', 'Claude Code skill name frontmatter matches directory name exactly');
+    assert(nameMatch9 && nameMatch9[1].trim() === 'wizz-master', 'Claude Code skill name frontmatter matches directory name exactly');
 
     await fs.remove(tempProjectDir9);
-    await fs.remove(path.dirname(installedBmadDir9));
+    await fs.remove(path.dirname(installedWizzDir9));
   } catch (error) {
     assert(false, 'Claude Code native skills migration test succeeds', error.message);
   }
@@ -416,28 +416,28 @@ async function runTests() {
 
     assert(codexInstaller?.target_dir === '.agents/skills', 'Codex target_dir uses native skills path');
 
-    const tempProjectDir11 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codex-test-'));
-    const installedBmadDir11 = await createTestBmadFixture();
+    const tempProjectDir11 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-codex-test-'));
+    const installedWizzDir11 = await createTestWizzFixture();
 
     const ideManager11 = new IdeManager();
     await ideManager11.ensureInitialized();
-    const result11 = await ideManager11.setup('codex', tempProjectDir11, installedBmadDir11, {
+    const result11 = await ideManager11.setup('codex', tempProjectDir11, installedWizzDir11, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result11.success === true, 'Codex setup succeeds against temp project');
 
-    const skillFile11 = path.join(tempProjectDir11, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile11 = path.join(tempProjectDir11, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile11), 'Codex install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent11 = await fs.readFile(skillFile11, 'utf8');
     const nameMatch11 = skillContent11.match(/^name:\s*(.+)$/m);
-    assert(nameMatch11 && nameMatch11[1].trim() === 'bmad-master', 'Codex skill name frontmatter matches directory name exactly');
+    assert(nameMatch11 && nameMatch11[1].trim() === 'wizz-master', 'Codex skill name frontmatter matches directory name exactly');
 
     await fs.remove(tempProjectDir11);
-    await fs.remove(path.dirname(installedBmadDir11));
+    await fs.remove(path.dirname(installedWizzDir11));
   } catch (error) {
     assert(false, 'Codex native skills migration test succeeds', error.message);
   }
@@ -458,23 +458,23 @@ async function runTests() {
 
     assert(codewhaleInstaller?.target_dir === '.codewhale/skills', 'CodeWhale target_dir uses native skills path');
 
-    const tempProjectDir12b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codewhale-test-'));
-    const installedBmadDir12b = await createTestBmadFixture();
+    const tempProjectDir12b = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-codewhale-test-'));
+    const installedWizzDir12b = await createTestWizzFixture();
 
     const ideManager12b = new IdeManager();
     await ideManager12b.ensureInitialized();
-    const result12b = await ideManager12b.setup('codewhale', tempProjectDir12b, installedBmadDir12b, {
+    const result12b = await ideManager12b.setup('codewhale', tempProjectDir12b, installedWizzDir12b, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result12b.success === true, 'CodeWhale setup succeeds against temp project');
 
-    const skillFile12b = path.join(tempProjectDir12b, '.codewhale', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile12b = path.join(tempProjectDir12b, '.codewhale', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile12b), 'CodeWhale install writes SKILL.md directory output');
 
     await fs.remove(tempProjectDir12b);
-    await fs.remove(path.dirname(installedBmadDir12b));
+    await fs.remove(path.dirname(installedWizzDir12b));
   } catch (error) {
     assert(false, 'CodeWhale native skills migration test succeeds', error.message);
   }
@@ -495,28 +495,28 @@ async function runTests() {
 
     assert(!cursorInstaller?.ancestor_conflict_check, 'Cursor installer does not enable ancestor conflict checks');
 
-    const tempProjectDir13c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-cursor-test-'));
-    const installedBmadDir13c = await createTestBmadFixture();
+    const tempProjectDir13c = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-cursor-test-'));
+    const installedWizzDir13c = await createTestWizzFixture();
 
     const ideManager13c = new IdeManager();
     await ideManager13c.ensureInitialized();
-    const result13c = await ideManager13c.setup('cursor', tempProjectDir13c, installedBmadDir13c, {
+    const result13c = await ideManager13c.setup('cursor', tempProjectDir13c, installedWizzDir13c, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result13c.success === true, 'Cursor setup succeeds against temp project');
 
-    const skillFile13c = path.join(tempProjectDir13c, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile13c = path.join(tempProjectDir13c, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile13c), 'Cursor install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent13c = await fs.readFile(skillFile13c, 'utf8');
     const nameMatch13c = skillContent13c.match(/^name:\s*(.+)$/m);
-    assert(nameMatch13c && nameMatch13c[1].trim() === 'bmad-master', 'Cursor skill name frontmatter matches directory name exactly');
+    assert(nameMatch13c && nameMatch13c[1].trim() === 'wizz-master', 'Cursor skill name frontmatter matches directory name exactly');
 
     await fs.remove(tempProjectDir13c);
-    await fs.remove(path.dirname(installedBmadDir13c));
+    await fs.remove(path.dirname(installedWizzDir13c));
   } catch (error) {
     assert(false, 'Cursor native skills migration test succeeds', error.message);
   }
@@ -535,31 +535,31 @@ async function runTests() {
 
     assert(rooInstaller?.target_dir === '.agents/skills', 'Roo target_dir uses native skills path');
 
-    const tempProjectDir13 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-roo-test-'));
-    const installedBmadDir13 = await createTestBmadFixture();
+    const tempProjectDir13 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-roo-test-'));
+    const installedWizzDir13 = await createTestWizzFixture();
 
     const ideManager13 = new IdeManager();
     await ideManager13.ensureInitialized();
-    const result13 = await ideManager13.setup('roo', tempProjectDir13, installedBmadDir13, {
+    const result13 = await ideManager13.setup('roo', tempProjectDir13, installedWizzDir13, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result13.success === true, 'Roo setup succeeds against temp project');
 
-    const skillFile13 = path.join(tempProjectDir13, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile13 = path.join(tempProjectDir13, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile13), 'Roo install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name (Roo constraint: lowercase alphanumeric + hyphens)
     const skillContent13 = await fs.readFile(skillFile13, 'utf8');
     const nameMatch13 = skillContent13.match(/^name:\s*(.+)$/m);
     assert(
-      nameMatch13 && nameMatch13[1].trim() === 'bmad-master',
+      nameMatch13 && nameMatch13[1].trim() === 'wizz-master',
       'Roo skill name frontmatter matches directory name exactly (lowercase alphanumeric + hyphens)',
     );
 
     // Reinstall/upgrade: run setup again over existing skills output
-    const result13b = await ideManager13.setup('roo', tempProjectDir13, installedBmadDir13, {
+    const result13b = await ideManager13.setup('roo', tempProjectDir13, installedWizzDir13, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -568,7 +568,7 @@ async function runTests() {
     assert(await fs.pathExists(skillFile13), 'Roo reinstall preserves SKILL.md output');
 
     await fs.remove(tempProjectDir13);
-    await fs.remove(path.dirname(installedBmadDir13));
+    await fs.remove(path.dirname(installedWizzDir13));
   } catch (error) {
     assert(false, 'Roo native skills migration test succeeds', error.message);
   }
@@ -606,8 +606,8 @@ async function runTests() {
       'GitHub Copilot filters Custom Agents picker to persona agents only (agents-only)',
     );
 
-    const tempProjectDir17 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-copilot-test-'));
-    const installedBmadDir17 = await createTestBmadFixture();
+    const tempProjectDir17 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-copilot-test-'));
+    const installedWizzDir17 = await createTestWizzFixture();
 
     // Extend the fixture to exercise the agents-only filter, which detects
     // persona agents by the `[agent]` section in each skill's source
@@ -618,32 +618,32 @@ async function runTests() {
     //      (verifies the filter doesn't depend on `-agent-` naming)
     //   3. Meta-skill whose id contains `-agent-` but isn't a
     //      persona — has customize.toml with [workflow]          → EXCLUDED
-    //      (mirrors `bmad-agent-builder` in the real manifest)
+    //      (mirrors `wizz-agent-builder` in the real manifest)
     //   4. Workflow skill — no customize.toml at all             → EXCLUDED
     //   5. `wizz-help` — meta-help skill with no customize.toml;
     //      every persona agent's activation already advertises it,
     //      so it's correctly excluded from the picker as redundant    → EXCLUDED
-    const fixtureCsvPath17 = path.join(installedBmadDir17, '_config', 'skill-manifest.csv');
+    const fixtureCsvPath17 = path.join(installedWizzDir17, '_config', 'skill-manifest.csv');
     await fs.writeFile(
       fixtureCsvPath17,
       [
         'canonicalId,name,description,module,path',
-        '"bmad-master","bmad-master","Workflow with no customize.toml — should NOT appear in Copilot agents picker","core","_wizz/core/bmad-master/SKILL.md"',
-        '"bmad-agent-fixture","bmad-agent-fixture","Persona agent — customize.toml has [agent], SHOULD appear","core","_wizz/core/bmad-agent-fixture/SKILL.md"',
-        '"bmad-tea","bmad-tea","Non-conventional id but [agent] in customize.toml — SHOULD appear","core","_wizz/core/bmad-tea/SKILL.md"',
-        '"bmad-agent-builder","bmad-agent-builder","Skill-builder workflow — id contains -agent- but customize.toml has [workflow] — should NOT appear","core","_wizz/core/bmad-agent-builder/SKILL.md"',
+        '"wizz-master","wizz-master","Workflow with no customize.toml — should NOT appear in Copilot agents picker","core","_wizz/core/wizz-master/SKILL.md"',
+        '"wizz-agent-fixture","wizz-agent-fixture","Persona agent — customize.toml has [agent], SHOULD appear","core","_wizz/core/wizz-agent-fixture/SKILL.md"',
+        '"wizz-tea","wizz-tea","Non-conventional id but [agent] in customize.toml — SHOULD appear","core","_wizz/core/wizz-tea/SKILL.md"',
+        '"wizz-agent-builder","wizz-agent-builder","Skill-builder workflow — id contains -agent- but customize.toml has [workflow] — should NOT appear","core","_wizz/core/wizz-agent-builder/SKILL.md"',
         '"wizz-help","wizz-help","Meta-help skill — no customize.toml; SHOULD NOT appear in agents picker (toml-driven filter)","core","_wizz/core/wizz-help/SKILL.md"',
         '',
       ].join('\n'),
     );
 
     // Materialise the source skill directories so the agents-only filter
-    // can read their customize.toml. The bmad-master and bmad-agent-builder
-    // SKILL.md files were already populated by createTestBmadFixture (they
-    // share the bmad-master target_dir layout); only the customize.toml
+    // can read their customize.toml. The wizz-master and wizz-agent-builder
+    // SKILL.md files were already populated by createTestWizzFixture (they
+    // share the wizz-master target_dir layout); only the customize.toml
     // and the new agent fixtures need to be created here.
-    for (const id of ['bmad-agent-fixture', 'bmad-tea', 'bmad-agent-builder', 'wizz-help']) {
-      const dir17 = path.join(installedBmadDir17, 'core', id);
+    for (const id of ['wizz-agent-fixture', 'wizz-tea', 'wizz-agent-builder', 'wizz-help']) {
+      const dir17 = path.join(installedWizzDir17, 'core', id);
       await fs.ensureDir(dir17);
       await fs.writeFile(
         path.join(dir17, 'SKILL.md'),
@@ -655,17 +655,17 @@ async function runTests() {
     // customize.toml is correctly kept out of the Copilot agents picker).
     // [agent] customize.toml for the two persona fixtures.
     await fs.writeFile(
-      path.join(installedBmadDir17, 'core', 'bmad-agent-fixture', 'customize.toml'),
+      path.join(installedWizzDir17, 'core', 'wizz-agent-fixture', 'customize.toml'),
       ['[agent]', 'name = "Fixture Agent"', 'title = "Test Persona"', ''].join('\n'),
     );
     await fs.writeFile(
-      path.join(installedBmadDir17, 'core', 'bmad-tea', 'customize.toml'),
+      path.join(installedWizzDir17, 'core', 'wizz-tea', 'customize.toml'),
       ['[agent]', 'name = "Murat"', 'title = "Test Architect"', ''].join('\n'),
     );
     // [workflow] customize.toml for the meta-skill — its id contains `-agent-`
-    // but it is NOT a persona (mirrors bmad-agent-builder in production).
+    // but it is NOT a persona (mirrors wizz-agent-builder in production).
     await fs.writeFile(
-      path.join(installedBmadDir17, 'core', 'bmad-agent-builder', 'customize.toml'),
+      path.join(installedWizzDir17, 'core', 'wizz-agent-builder', 'customize.toml'),
       ['[workflow]', '', '# Meta-skill that builds agents but is not itself a persona.', ''].join('\n'),
     );
 
@@ -673,31 +673,31 @@ async function runTests() {
     await fs.ensureDir(path.dirname(copilotInstructionsPath17));
     await fs.writeFile(
       copilotInstructionsPath17,
-      'User content before\n<!-- BMAD:START -->\nBMAD generated content\n<!-- BMAD:END -->\nUser content after\n',
+      'User content before\n<!-- WIZZ:START -->\nWIZZ generated content\n<!-- WIZZ:END -->\nUser content after\n',
     );
 
     const ideManager17 = new IdeManager();
     await ideManager17.ensureInitialized();
-    const result17 = await ideManager17.setup('github-copilot', tempProjectDir17, installedBmadDir17, {
+    const result17 = await ideManager17.setup('github-copilot', tempProjectDir17, installedWizzDir17, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result17.success === true, 'GitHub Copilot setup succeeds against temp project');
 
-    const skillFile17 = path.join(tempProjectDir17, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile17 = path.join(tempProjectDir17, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile17), 'GitHub Copilot install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent17 = await fs.readFile(skillFile17, 'utf8');
     const nameMatch17 = skillContent17.match(/^name:\s*(.+)$/m);
-    assert(nameMatch17 && nameMatch17[1].trim() === 'bmad-master', 'GitHub Copilot skill name frontmatter matches directory name exactly');
+    assert(nameMatch17 && nameMatch17[1].trim() === 'wizz-master', 'GitHub Copilot skill name frontmatter matches directory name exactly');
 
-    // Verify copilot-instructions.md BMAD markers were stripped but user content preserved
+    // Verify copilot-instructions.md WIZZ markers were stripped but user content preserved
     const cleanedInstructions17 = await fs.readFile(copilotInstructionsPath17, 'utf8');
     assert(
-      !cleanedInstructions17.includes('BMAD:START') && !cleanedInstructions17.includes('BMAD generated content'),
-      'GitHub Copilot setup strips BMAD markers from copilot-instructions.md',
+      !cleanedInstructions17.includes('WIZZ:START') && !cleanedInstructions17.includes('WIZZ generated content'),
+      'GitHub Copilot setup strips WIZZ markers from copilot-instructions.md',
     );
     assert(
       cleanedInstructions17.includes('User content before') && cleanedInstructions17.includes('User content after'),
@@ -710,11 +710,11 @@ async function runTests() {
     // customize.toml at all) do NOT — the agents-only filter keeps the
     // picker uncluttered and the signal is naming-independent.
     const agentsDir17 = path.join(tempProjectDir17, '.github', 'agents');
-    const agentFileForPersona17 = path.join(agentsDir17, 'bmad-agent-fixture.agent.md');
-    const agentFileForTea17 = path.join(agentsDir17, 'bmad-tea.agent.md');
-    const agentFileForWorkflow17 = path.join(agentsDir17, 'bmad-master.agent.md');
-    const agentFileForMetaSkill17 = path.join(agentsDir17, 'bmad-agent-builder.agent.md');
-    const agentFileForBmadHelp17 = path.join(agentsDir17, 'wizz-help.agent.md');
+    const agentFileForPersona17 = path.join(agentsDir17, 'wizz-agent-fixture.agent.md');
+    const agentFileForTea17 = path.join(agentsDir17, 'wizz-tea.agent.md');
+    const agentFileForWorkflow17 = path.join(agentsDir17, 'wizz-master.agent.md');
+    const agentFileForMetaSkill17 = path.join(agentsDir17, 'wizz-agent-builder.agent.md');
+    const agentFileForWizzHelp17 = path.join(agentsDir17, 'wizz-help.agent.md');
 
     assert(
       await fs.pathExists(agentFileForPersona17),
@@ -723,7 +723,7 @@ async function runTests() {
     assert(await fs.pathExists(agentFileForTea17), 'Non-conventional id with [agent] in customize.toml is included (no allowlist needed)');
     assert(!(await fs.pathExists(agentFileForWorkflow17)), 'Workflow skill (no customize.toml) is FILTERED OUT of .github/agents/');
     assert(
-      !(await fs.pathExists(agentFileForBmadHelp17)),
+      !(await fs.pathExists(agentFileForWizzHelp17)),
       'wizz-help is excluded from Copilot agents picker (no customize.toml; allowlist removed per maintainer feedback)',
     );
     assert(
@@ -739,14 +739,14 @@ async function runTests() {
       'Copilot agent pointer carries a description in YAML frontmatter (drives the agents picker label)',
     );
     assert(
-      personaAgentContent17.includes('{project-root}/.agents/skills/bmad-agent-fixture/SKILL.md'),
+      personaAgentContent17.includes('{project-root}/.agents/skills/wizz-agent-fixture/SKILL.md'),
       'Copilot agent pointer body resolves to the skill via LOAD {project-root}/<target_dir>/<id>/SKILL.md',
     );
 
     // Idempotency: re-running setup must not duplicate or rewrite the agent
     // pointer when the source manifest is unchanged, AND must not start
     // emitting workflow-skill agent files.
-    const result17b = await ideManager17.setup('github-copilot', tempProjectDir17, installedBmadDir17, {
+    const result17b = await ideManager17.setup('github-copilot', tempProjectDir17, installedWizzDir17, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -755,7 +755,7 @@ async function runTests() {
     assert(!(await fs.pathExists(agentFileForWorkflow17)), 'Workflow skill remains filtered out of agents picker on second install');
 
     await fs.remove(tempProjectDir17);
-    await fs.remove(path.dirname(installedBmadDir17));
+    await fs.remove(path.dirname(installedWizzDir17));
   } catch (error) {
     assert(false, 'GitHub Copilot native skills migration test succeeds', error.message);
   }
@@ -774,28 +774,28 @@ async function runTests() {
 
     assert(clineInstaller?.target_dir === '.cline/skills', 'Cline target_dir uses native skills path');
 
-    const tempProjectDir18 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-cline-test-'));
-    const installedBmadDir18 = await createTestBmadFixture();
+    const tempProjectDir18 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-cline-test-'));
+    const installedWizzDir18 = await createTestWizzFixture();
 
     const ideManager18 = new IdeManager();
     await ideManager18.ensureInitialized();
-    const result18 = await ideManager18.setup('cline', tempProjectDir18, installedBmadDir18, {
+    const result18 = await ideManager18.setup('cline', tempProjectDir18, installedWizzDir18, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result18.success === true, 'Cline setup succeeds against temp project');
 
-    const skillFile18 = path.join(tempProjectDir18, '.cline', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile18 = path.join(tempProjectDir18, '.cline', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile18), 'Cline install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent18 = await fs.readFile(skillFile18, 'utf8');
     const nameMatch18 = skillContent18.match(/^name:\s*(.+)$/m);
-    assert(nameMatch18 && nameMatch18[1].trim() === 'bmad-master', 'Cline skill name frontmatter matches directory name exactly');
+    assert(nameMatch18 && nameMatch18[1].trim() === 'wizz-master', 'Cline skill name frontmatter matches directory name exactly');
 
     // Reinstall/upgrade: run setup again over existing skills output
-    const result18b = await ideManager18.setup('cline', tempProjectDir18, installedBmadDir18, {
+    const result18b = await ideManager18.setup('cline', tempProjectDir18, installedWizzDir18, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -804,7 +804,7 @@ async function runTests() {
     assert(await fs.pathExists(skillFile18), 'Cline reinstall preserves SKILL.md output');
 
     await fs.remove(tempProjectDir18);
-    await fs.remove(path.dirname(installedBmadDir18));
+    await fs.remove(path.dirname(installedWizzDir18));
   } catch (error) {
     assert(false, 'Cline native skills migration test succeeds', error.message);
   }
@@ -823,26 +823,26 @@ async function runTests() {
 
     assert(codebuddyInstaller?.target_dir === '.codebuddy/skills', 'CodeBuddy target_dir uses native skills path');
 
-    const tempProjectDir19 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-codebuddy-test-'));
-    const installedBmadDir19 = await createTestBmadFixture();
+    const tempProjectDir19 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-codebuddy-test-'));
+    const installedWizzDir19 = await createTestWizzFixture();
 
     const ideManager19 = new IdeManager();
     await ideManager19.ensureInitialized();
-    const result19 = await ideManager19.setup('codebuddy', tempProjectDir19, installedBmadDir19, {
+    const result19 = await ideManager19.setup('codebuddy', tempProjectDir19, installedWizzDir19, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result19.success === true, 'CodeBuddy setup succeeds against temp project');
 
-    const skillFile19 = path.join(tempProjectDir19, '.codebuddy', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile19 = path.join(tempProjectDir19, '.codebuddy', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile19), 'CodeBuddy install writes SKILL.md directory output');
 
     const skillContent19 = await fs.readFile(skillFile19, 'utf8');
     const nameMatch19 = skillContent19.match(/^name:\s*(.+)$/m);
-    assert(nameMatch19 && nameMatch19[1].trim() === 'bmad-master', 'CodeBuddy skill name frontmatter matches directory name exactly');
+    assert(nameMatch19 && nameMatch19[1].trim() === 'wizz-master', 'CodeBuddy skill name frontmatter matches directory name exactly');
 
-    const result19b = await ideManager19.setup('codebuddy', tempProjectDir19, installedBmadDir19, {
+    const result19b = await ideManager19.setup('codebuddy', tempProjectDir19, installedWizzDir19, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -851,7 +851,7 @@ async function runTests() {
     assert(await fs.pathExists(skillFile19), 'CodeBuddy reinstall preserves SKILL.md output');
 
     await fs.remove(tempProjectDir19);
-    await fs.remove(path.dirname(installedBmadDir19));
+    await fs.remove(path.dirname(installedWizzDir19));
   } catch (error) {
     assert(false, 'CodeBuddy native skills migration test succeeds', error.message);
   }
@@ -870,26 +870,26 @@ async function runTests() {
 
     assert(crushInstaller?.target_dir === '.agents/skills', 'Crush target_dir uses native skills path');
 
-    const tempProjectDir20 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-crush-test-'));
-    const installedBmadDir20 = await createTestBmadFixture();
+    const tempProjectDir20 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-crush-test-'));
+    const installedWizzDir20 = await createTestWizzFixture();
 
     const ideManager20 = new IdeManager();
     await ideManager20.ensureInitialized();
-    const result20 = await ideManager20.setup('crush', tempProjectDir20, installedBmadDir20, {
+    const result20 = await ideManager20.setup('crush', tempProjectDir20, installedWizzDir20, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result20.success === true, 'Crush setup succeeds against temp project');
 
-    const skillFile20 = path.join(tempProjectDir20, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile20 = path.join(tempProjectDir20, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile20), 'Crush install writes SKILL.md directory output');
 
     const skillContent20 = await fs.readFile(skillFile20, 'utf8');
     const nameMatch20 = skillContent20.match(/^name:\s*(.+)$/m);
-    assert(nameMatch20 && nameMatch20[1].trim() === 'bmad-master', 'Crush skill name frontmatter matches directory name exactly');
+    assert(nameMatch20 && nameMatch20[1].trim() === 'wizz-master', 'Crush skill name frontmatter matches directory name exactly');
 
-    const result20b = await ideManager20.setup('crush', tempProjectDir20, installedBmadDir20, {
+    const result20b = await ideManager20.setup('crush', tempProjectDir20, installedWizzDir20, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -898,7 +898,7 @@ async function runTests() {
     assert(await fs.pathExists(skillFile20), 'Crush reinstall preserves SKILL.md output');
 
     await fs.remove(tempProjectDir20);
-    await fs.remove(path.dirname(installedBmadDir20));
+    await fs.remove(path.dirname(installedWizzDir20));
   } catch (error) {
     assert(false, 'Crush native skills migration test succeeds', error.message);
   }
@@ -917,26 +917,26 @@ async function runTests() {
 
     assert(traeInstaller?.target_dir === '.trae/skills', 'Trae target_dir uses native skills path');
 
-    const tempProjectDir21 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-trae-test-'));
-    const installedBmadDir21 = await createTestBmadFixture();
+    const tempProjectDir21 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-trae-test-'));
+    const installedWizzDir21 = await createTestWizzFixture();
 
     const ideManager21 = new IdeManager();
     await ideManager21.ensureInitialized();
-    const result21 = await ideManager21.setup('trae', tempProjectDir21, installedBmadDir21, {
+    const result21 = await ideManager21.setup('trae', tempProjectDir21, installedWizzDir21, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result21.success === true, 'Trae setup succeeds against temp project');
 
-    const skillFile21 = path.join(tempProjectDir21, '.trae', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile21 = path.join(tempProjectDir21, '.trae', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile21), 'Trae install writes SKILL.md directory output');
 
     const skillContent21 = await fs.readFile(skillFile21, 'utf8');
     const nameMatch21 = skillContent21.match(/^name:\s*(.+)$/m);
-    assert(nameMatch21 && nameMatch21[1].trim() === 'bmad-master', 'Trae skill name frontmatter matches directory name exactly');
+    assert(nameMatch21 && nameMatch21[1].trim() === 'wizz-master', 'Trae skill name frontmatter matches directory name exactly');
 
-    const result21b = await ideManager21.setup('trae', tempProjectDir21, installedBmadDir21, {
+    const result21b = await ideManager21.setup('trae', tempProjectDir21, installedWizzDir21, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -945,7 +945,7 @@ async function runTests() {
     assert(await fs.pathExists(skillFile21), 'Trae reinstall preserves SKILL.md output');
 
     await fs.remove(tempProjectDir21);
-    await fs.remove(path.dirname(installedBmadDir21));
+    await fs.remove(path.dirname(installedWizzDir21));
   } catch (error) {
     assert(false, 'Trae native skills migration test succeeds', error.message);
   }
@@ -976,24 +976,24 @@ async function runTests() {
       'KiloCoder appears in IDE selection',
     );
 
-    const tempProjectDir22 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-kilo-test-'));
-    const installedBmadDir22 = await createTestBmadFixture();
+    const tempProjectDir22 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-kilo-test-'));
+    const installedWizzDir22 = await createTestWizzFixture();
 
-    const result22 = await ideManager22.setup('kilo', tempProjectDir22, installedBmadDir22, {
+    const result22 = await ideManager22.setup('kilo', tempProjectDir22, installedWizzDir22, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result22.success === true, 'KiloCoder setup succeeds against temp project');
 
-    const skillFile22 = path.join(tempProjectDir22, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile22 = path.join(tempProjectDir22, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile22), 'KiloCoder install writes SKILL.md directory output');
 
     const skillContent22 = await fs.readFile(skillFile22, 'utf8');
     const nameMatch22 = skillContent22.match(/^name:\s*(.+)$/m);
-    assert(nameMatch22 && nameMatch22[1].trim() === 'bmad-master', 'KiloCoder skill name frontmatter matches directory name exactly');
+    assert(nameMatch22 && nameMatch22[1].trim() === 'wizz-master', 'KiloCoder skill name frontmatter matches directory name exactly');
 
-    const result22b = await ideManager22.setup('kilo', tempProjectDir22, installedBmadDir22, {
+    const result22b = await ideManager22.setup('kilo', tempProjectDir22, installedWizzDir22, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -1002,7 +1002,7 @@ async function runTests() {
     assert(await fs.pathExists(skillFile22), 'KiloCoder reinstall preserves SKILL.md output');
 
     await fs.remove(tempProjectDir22);
-    await fs.remove(path.dirname(installedBmadDir22));
+    await fs.remove(path.dirname(installedWizzDir22));
   } catch (error) {
     assert(false, 'KiloCoder native skills test succeeds', error.message);
   }
@@ -1021,26 +1021,26 @@ async function runTests() {
 
     assert(geminiInstaller?.target_dir === '.agents/skills', 'Gemini target_dir uses native skills path');
 
-    const tempProjectDir23 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-gemini-test-'));
-    const installedBmadDir23 = await createTestBmadFixture();
+    const tempProjectDir23 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-gemini-test-'));
+    const installedWizzDir23 = await createTestWizzFixture();
 
     const ideManager23 = new IdeManager();
     await ideManager23.ensureInitialized();
-    const result23 = await ideManager23.setup('gemini', tempProjectDir23, installedBmadDir23, {
+    const result23 = await ideManager23.setup('gemini', tempProjectDir23, installedWizzDir23, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result23.success === true, 'Gemini setup succeeds against temp project');
 
-    const skillFile23 = path.join(tempProjectDir23, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile23 = path.join(tempProjectDir23, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile23), 'Gemini install writes SKILL.md directory output');
 
     const skillContent23 = await fs.readFile(skillFile23, 'utf8');
     const nameMatch23 = skillContent23.match(/^name:\s*(.+)$/m);
-    assert(nameMatch23 && nameMatch23[1].trim() === 'bmad-master', 'Gemini skill name frontmatter matches directory name exactly');
+    assert(nameMatch23 && nameMatch23[1].trim() === 'wizz-master', 'Gemini skill name frontmatter matches directory name exactly');
 
-    const result23b = await ideManager23.setup('gemini', tempProjectDir23, installedBmadDir23, {
+    const result23b = await ideManager23.setup('gemini', tempProjectDir23, installedWizzDir23, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -1049,7 +1049,7 @@ async function runTests() {
     assert(await fs.pathExists(skillFile23), 'Gemini reinstall preserves SKILL.md output');
 
     await fs.remove(tempProjectDir23);
-    await fs.remove(path.dirname(installedBmadDir23));
+    await fs.remove(path.dirname(installedWizzDir23));
   } catch (error) {
     assert(false, 'Gemini native skills migration test succeeds', error.message);
   }
@@ -1068,28 +1068,28 @@ async function runTests() {
 
     assert(iflowInstaller?.target_dir === '.iflow/skills', 'iFlow target_dir uses native skills path');
 
-    const tempProjectDir24 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-iflow-test-'));
-    const installedBmadDir24 = await createTestBmadFixture();
+    const tempProjectDir24 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-iflow-test-'));
+    const installedWizzDir24 = await createTestWizzFixture();
 
     const ideManager24 = new IdeManager();
     await ideManager24.ensureInitialized();
-    const result24 = await ideManager24.setup('iflow', tempProjectDir24, installedBmadDir24, {
+    const result24 = await ideManager24.setup('iflow', tempProjectDir24, installedWizzDir24, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result24.success === true, 'iFlow setup succeeds against temp project');
 
-    const skillFile24 = path.join(tempProjectDir24, '.iflow', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile24 = path.join(tempProjectDir24, '.iflow', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile24), 'iFlow install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent24 = await fs.readFile(skillFile24, 'utf8');
     const nameMatch24 = skillContent24.match(/^name:\s*(.+)$/m);
-    assert(nameMatch24 && nameMatch24[1].trim() === 'bmad-master', 'iFlow skill name frontmatter matches directory name exactly');
+    assert(nameMatch24 && nameMatch24[1].trim() === 'wizz-master', 'iFlow skill name frontmatter matches directory name exactly');
 
     await fs.remove(tempProjectDir24);
-    await fs.remove(path.dirname(installedBmadDir24));
+    await fs.remove(path.dirname(installedWizzDir24));
   } catch (error) {
     assert(false, 'iFlow native skills migration test succeeds', error.message);
   }
@@ -1108,28 +1108,28 @@ async function runTests() {
 
     assert(qwenInstaller?.target_dir === '.qwen/skills', 'QwenCoder target_dir uses native skills path');
 
-    const tempProjectDir25 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-qwen-test-'));
-    const installedBmadDir25 = await createTestBmadFixture();
+    const tempProjectDir25 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-qwen-test-'));
+    const installedWizzDir25 = await createTestWizzFixture();
 
     const ideManager25 = new IdeManager();
     await ideManager25.ensureInitialized();
-    const result25 = await ideManager25.setup('qwen', tempProjectDir25, installedBmadDir25, {
+    const result25 = await ideManager25.setup('qwen', tempProjectDir25, installedWizzDir25, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result25.success === true, 'QwenCoder setup succeeds against temp project');
 
-    const skillFile25 = path.join(tempProjectDir25, '.qwen', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile25 = path.join(tempProjectDir25, '.qwen', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile25), 'QwenCoder install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent25 = await fs.readFile(skillFile25, 'utf8');
     const nameMatch25 = skillContent25.match(/^name:\s*(.+)$/m);
-    assert(nameMatch25 && nameMatch25[1].trim() === 'bmad-master', 'QwenCoder skill name frontmatter matches directory name exactly');
+    assert(nameMatch25 && nameMatch25[1].trim() === 'wizz-master', 'QwenCoder skill name frontmatter matches directory name exactly');
 
     await fs.remove(tempProjectDir25);
-    await fs.remove(path.dirname(installedBmadDir25));
+    await fs.remove(path.dirname(installedWizzDir25));
   } catch (error) {
     assert(false, 'QwenCoder native skills migration test succeeds', error.message);
   }
@@ -1148,15 +1148,15 @@ async function runTests() {
 
     assert(rovoInstaller?.target_dir === '.agents/skills', 'Rovo Dev target_dir uses native skills path');
 
-    const tempProjectDir26 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-rovodev-test-'));
-    const installedBmadDir26 = await createTestBmadFixture();
+    const tempProjectDir26 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-rovodev-test-'));
+    const installedWizzDir26 = await createTestWizzFixture();
 
-    // Create a prompts.yml with BMAD entries and a user entry
+    // Create a prompts.yml with WIZZ entries and a user entry
     const yaml26 = require('yaml');
     const promptsPath26 = path.join(tempProjectDir26, '.rovodev', 'prompts.yml');
     const promptsContent26 = yaml26.stringify({
       prompts: [
-        { name: 'bmad-bmm-create-prd', description: 'BMAD workflow', content_file: 'workflows/bmad-bmm-create-prd.md' },
+        { name: 'wizz-bmm-create-prd', description: 'WIZZ workflow', content_file: 'workflows/wizz-bmm-create-prd.md' },
         { name: 'my-custom-prompt', description: 'User prompt', content_file: 'custom.md' },
       ],
     });
@@ -1165,31 +1165,31 @@ async function runTests() {
 
     const ideManager26 = new IdeManager();
     await ideManager26.ensureInitialized();
-    const result26 = await ideManager26.setup('rovo-dev', tempProjectDir26, installedBmadDir26, {
+    const result26 = await ideManager26.setup('rovo-dev', tempProjectDir26, installedWizzDir26, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
     assert(result26.success === true, 'Rovo Dev setup succeeds against temp project');
 
-    const skillFile26 = path.join(tempProjectDir26, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile26 = path.join(tempProjectDir26, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile26), 'Rovo Dev install writes SKILL.md directory output');
 
     // Verify name frontmatter matches directory name
     const skillContent26 = await fs.readFile(skillFile26, 'utf8');
     const nameMatch26 = skillContent26.match(/^name:\s*(.+)$/m);
-    assert(nameMatch26 && nameMatch26[1].trim() === 'bmad-master', 'Rovo Dev skill name frontmatter matches directory name exactly');
+    assert(nameMatch26 && nameMatch26[1].trim() === 'wizz-master', 'Rovo Dev skill name frontmatter matches directory name exactly');
 
-    // Verify prompts.yml cleanup: BMAD entries removed, user entry preserved
+    // Verify prompts.yml cleanup: WIZZ entries removed, user entry preserved
     const cleanedPrompts26 = yaml26.parse(await fs.readFile(promptsPath26, 'utf8'));
     assert(
       Array.isArray(cleanedPrompts26.prompts) && cleanedPrompts26.prompts.length === 1,
-      'Rovo Dev cleanup removes BMAD entries from prompts.yml',
+      'Rovo Dev cleanup removes WIZZ entries from prompts.yml',
     );
-    assert(cleanedPrompts26.prompts[0].name === 'my-custom-prompt', 'Rovo Dev cleanup preserves non-BMAD entries in prompts.yml');
+    assert(cleanedPrompts26.prompts[0].name === 'my-custom-prompt', 'Rovo Dev cleanup preserves non-WIZZ entries in prompts.yml');
 
     await fs.remove(tempProjectDir26);
-    await fs.remove(path.dirname(installedBmadDir26));
+    await fs.remove(path.dirname(installedWizzDir26));
   } catch (error) {
     assert(false, 'Rovo Dev native skills migration test succeeds', error.message);
   }
@@ -1197,74 +1197,74 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Suite 27: Cleanup preserves bmad-os-* skills
+  // Suite 27: Cleanup preserves wizz-os-* skills
   // ============================================================
-  console.log(`${colors.yellow}Test Suite 27: Cleanup preserves bmad-os-* skills${colors.reset}\n`);
+  console.log(`${colors.yellow}Test Suite 27: Cleanup preserves wizz-os-* skills${colors.reset}\n`);
 
   try {
-    const tempProjectDir27 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-os-preserve-test-'));
-    const installedBmadDir27 = await createTestBmadFixture();
+    const tempProjectDir27 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-os-preserve-test-'));
+    const installedWizzDir27 = await createTestWizzFixture();
 
-    // Pre-populate .claude/skills with bmad-os-* skills (version-controlled repo skills)
-    const osSkillDir27 = path.join(tempProjectDir27, '.claude', 'skills', 'bmad-os-review-pr');
+    // Pre-populate .claude/skills with wizz-os-* skills (version-controlled repo skills)
+    const osSkillDir27 = path.join(tempProjectDir27, '.claude', 'skills', 'wizz-os-review-pr');
     await fs.ensureDir(osSkillDir27);
     await fs.writeFile(
       path.join(osSkillDir27, 'SKILL.md'),
-      '---\nname: bmad-os-review-pr\ndescription: Review PRs\n---\nOS skill content\n',
+      '---\nname: wizz-os-review-pr\ndescription: Review PRs\n---\nOS skill content\n',
     );
 
-    const osSkillDir27b = path.join(tempProjectDir27, '.claude', 'skills', 'bmad-os-release-module');
+    const osSkillDir27b = path.join(tempProjectDir27, '.claude', 'skills', 'wizz-os-release-module');
     await fs.ensureDir(osSkillDir27b);
     await fs.writeFile(
       path.join(osSkillDir27b, 'SKILL.md'),
-      '---\nname: bmad-os-release-module\ndescription: Release module\n---\nOS skill content\n',
+      '---\nname: wizz-os-release-module\ndescription: Release module\n---\nOS skill content\n',
     );
 
-    // Also add a regular bmad skill that SHOULD be cleaned up
-    const regularSkillDir27 = path.join(tempProjectDir27, '.claude', 'skills', 'bmad-architect');
+    // Also add a regular wizz skill that SHOULD be cleaned up
+    const regularSkillDir27 = path.join(tempProjectDir27, '.claude', 'skills', 'wizz-architect');
     await fs.ensureDir(regularSkillDir27);
     await fs.writeFile(
       path.join(regularSkillDir27, 'SKILL.md'),
-      '---\nname: bmad-architect\ndescription: Architect\n---\nOld skill content\n',
+      '---\nname: wizz-architect\ndescription: Architect\n---\nOld skill content\n',
     );
 
-    // Add bmad-architect to the existing skill-manifest.csv so cleanup knows it was previously installed
-    const configDir27 = path.join(installedBmadDir27, '_config');
+    // Add wizz-architect to the existing skill-manifest.csv so cleanup knows it was previously installed
+    const configDir27 = path.join(installedWizzDir27, '_config');
     const existingCsv27 = await fs.readFile(path.join(configDir27, 'skill-manifest.csv'), 'utf8');
     await fs.writeFile(
       path.join(configDir27, 'skill-manifest.csv'),
-      existingCsv27.trimEnd() + '\n"bmad-architect","bmad-architect","Architect","bmm","_wizz/bmm/agents/bmad-architect/SKILL.md"\n',
+      existingCsv27.trimEnd() + '\n"wizz-architect","wizz-architect","Architect","bmm","_wizz/bmm/agents/wizz-architect/SKILL.md"\n',
     );
 
     // Run Claude Code setup (which triggers cleanup then install)
     const ideManager27 = new IdeManager();
     await ideManager27.ensureInitialized();
-    const result27 = await ideManager27.setup('claude-code', tempProjectDir27, installedBmadDir27, {
+    const result27 = await ideManager27.setup('claude-code', tempProjectDir27, installedWizzDir27, {
       silent: true,
       selectedModules: ['bmm'],
     });
 
-    assert(result27.success === true, 'Claude Code setup succeeds with bmad-os-* skills present');
+    assert(result27.success === true, 'Claude Code setup succeeds with wizz-os-* skills present');
 
-    // bmad-os-* skills must survive
-    assert(await fs.pathExists(osSkillDir27), 'Cleanup preserves bmad-os-review-pr skill');
-    assert(await fs.pathExists(osSkillDir27b), 'Cleanup preserves bmad-os-release-module skill');
+    // wizz-os-* skills must survive
+    assert(await fs.pathExists(osSkillDir27), 'Cleanup preserves wizz-os-review-pr skill');
+    assert(await fs.pathExists(osSkillDir27b), 'Cleanup preserves wizz-os-release-module skill');
 
-    // bmad-os skill content must be untouched
+    // wizz-os skill content must be untouched
     const osContent27 = await fs.readFile(path.join(osSkillDir27, 'SKILL.md'), 'utf8');
-    assert(osContent27.includes('OS skill content'), 'bmad-os-review-pr skill content is unchanged');
+    assert(osContent27.includes('OS skill content'), 'wizz-os-review-pr skill content is unchanged');
 
-    // Regular bmad skill should have been replaced by fresh install
-    const newSkillFile27 = path.join(tempProjectDir27, '.claude', 'skills', 'bmad-master', 'SKILL.md');
-    assert(await fs.pathExists(newSkillFile27), 'Fresh bmad skills are installed alongside preserved bmad-os-* skills');
+    // Regular wizz skill should have been replaced by fresh install
+    const newSkillFile27 = path.join(tempProjectDir27, '.claude', 'skills', 'wizz-master', 'SKILL.md');
+    assert(await fs.pathExists(newSkillFile27), 'Fresh wizz skills are installed alongside preserved wizz-os-* skills');
 
-    // Stale non-bmad-os skill must have been removed by cleanup
-    assert(!(await fs.pathExists(regularSkillDir27)), 'Cleanup removes stale non-bmad-os skills');
+    // Stale non-wizz-os skill must have been removed by cleanup
+    assert(!(await fs.pathExists(regularSkillDir27)), 'Cleanup removes stale non-wizz-os skills');
 
     await fs.remove(tempProjectDir27);
-    await fs.remove(path.dirname(installedBmadDir27));
+    await fs.remove(path.dirname(installedWizzDir27));
   } catch (error) {
-    assert(false, 'bmad-os-* skill preservation test succeeds', error.message);
+    assert(false, 'wizz-os-* skill preservation test succeeds', error.message);
   }
 
   console.log('');
@@ -1275,7 +1275,7 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 28: Pi Native Skills${colors.reset}\n`);
 
   let tempProjectDir28;
-  let installedBmadDir28;
+  let installedWizzDir28;
   try {
     clearCache();
     const platformCodes28 = await loadPlatformCodes();
@@ -1283,8 +1283,8 @@ async function runTests() {
 
     assert(piInstaller?.target_dir === '.agents/skills', 'Pi target_dir uses native skills path');
 
-    tempProjectDir28 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-pi-test-'));
-    installedBmadDir28 = await createTestBmadFixture();
+    tempProjectDir28 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-pi-test-'));
+    installedWizzDir28 = await createTestWizzFixture();
 
     const ideManager28 = new IdeManager();
     await ideManager28.ensureInitialized();
@@ -1300,7 +1300,7 @@ async function runTests() {
     const detectedBefore28 = await ideManager28.detectInstalledIdes(tempProjectDir28);
     assert(!detectedBefore28.includes('pi'), 'Pi is not detected before install');
 
-    const result28 = await ideManager28.setup('pi', tempProjectDir28, installedBmadDir28, {
+    const result28 = await ideManager28.setup('pi', tempProjectDir28, installedWizzDir28, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -1311,7 +1311,7 @@ async function runTests() {
     const detectedAfter28 = await ideManager28.detectInstalledIdes(tempProjectDir28);
     assert(detectedAfter28.includes('pi'), 'Pi is detected after install');
 
-    const skillFile28 = path.join(tempProjectDir28, '.agents', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile28 = path.join(tempProjectDir28, '.agents', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile28), 'Pi install writes SKILL.md directory output');
 
     // Parse YAML frontmatter between --- markers
@@ -1324,7 +1324,7 @@ async function runTests() {
 
     // Verify name in frontmatter matches directory name
     const fmName28 = frontmatter28.match(/^name:\s*(.+)$/m);
-    assert(fmName28 && fmName28[1].trim() === 'bmad-master', 'Pi skill name frontmatter matches directory name exactly');
+    assert(fmName28 && fmName28[1].trim() === 'wizz-master', 'Pi skill name frontmatter matches directory name exactly');
 
     // Verify description exists and is non-empty
     const fmDesc28 = frontmatter28.match(/^description:\s*(.+)$/m);
@@ -1342,7 +1342,7 @@ async function runTests() {
     assert(body28.includes('agent-activation'), 'Pi skill body contains expected agent activation instructions');
 
     // Reinstall/upgrade: run setup again over existing output
-    const result28b = await ideManager28.setup('pi', tempProjectDir28, installedBmadDir28, {
+    const result28b = await ideManager28.setup('pi', tempProjectDir28, installedWizzDir28, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -1352,7 +1352,7 @@ async function runTests() {
     assert(false, 'Pi native skills test succeeds', error.message);
   } finally {
     if (tempProjectDir28) await fs.remove(tempProjectDir28).catch(() => {});
-    if (installedBmadDir28) await fs.remove(path.dirname(installedBmadDir28)).catch(() => {});
+    if (installedWizzDir28) await fs.remove(path.dirname(installedWizzDir28)).catch(() => {});
   }
 
   console.log('');
@@ -1364,7 +1364,7 @@ async function runTests() {
 
   let tempFixture29;
   try {
-    tempFixture29 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-skill-scanner-'));
+    tempFixture29 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-skill-scanner-'));
 
     // Create _config dir (required by manifest generator)
     await fs.ensureDir(path.join(tempFixture29, '_config'));
@@ -1381,7 +1381,7 @@ async function runTests() {
     // --- Regular workflow dir: core/workflows/regular-wf/ (type: workflow) ---
     const wfDir29 = path.join(tempFixture29, 'core', 'workflows', 'regular-wf');
     await fs.ensureDir(wfDir29);
-    await fs.writeFile(path.join(wfDir29, 'bmad-skill-manifest.yaml'), 'type: workflow\ncanonicalId: regular-wf\n');
+    await fs.writeFile(path.join(wfDir29, 'wizz-skill-manifest.yaml'), 'type: workflow\ncanonicalId: regular-wf\n');
     await fs.writeFile(
       path.join(wfDir29, 'workflow.md'),
       '---\nname: Regular Workflow\ndescription: A regular workflow not a skill\n---\n\nWorkflow body\n',
@@ -1405,13 +1405,13 @@ async function runTests() {
     );
     await fs.writeFile(path.join(taskSkillDir29, 'workflow.md'), '# Task Skill\n\nSkill in tasks\n');
 
-    // --- Native agent entrypoint inside agents/: core/agents/bmad-tea/ ---
-    const nativeAgentDir29 = path.join(tempFixture29, 'core', 'agents', 'bmad-tea');
+    // --- Native agent entrypoint inside agents/: core/agents/wizz-tea/ ---
+    const nativeAgentDir29 = path.join(tempFixture29, 'core', 'agents', 'wizz-tea');
     await fs.ensureDir(nativeAgentDir29);
-    await fs.writeFile(path.join(nativeAgentDir29, 'bmad-skill-manifest.yaml'), 'type: agent\ncanonicalId: bmad-tea\n');
+    await fs.writeFile(path.join(nativeAgentDir29, 'wizz-skill-manifest.yaml'), 'type: agent\ncanonicalId: wizz-tea\n');
     await fs.writeFile(
       path.join(nativeAgentDir29, 'SKILL.md'),
-      '---\nname: bmad-tea\ndescription: Native agent entrypoint\n---\n\nPresent a capability menu.\n',
+      '---\nname: wizz-tea\ndescription: Native agent entrypoint\n---\n\nPresent a capability menu.\n',
     );
 
     // Minimal agent so core module is detected
@@ -1437,12 +1437,12 @@ async function runTests() {
 
     // Native agent entrypoint should be installed as a verbatim skill.
     // (Agent roster is now sourced from module.yaml's `agents:` block, not
-    // from per-skill bmad-skill-manifest.yaml sidecars, so this test no longer
+    // from per-skill wizz-skill-manifest.yaml sidecars, so this test no longer
     // verifies agents[] membership — see collectAgentsFromModuleYaml tests.)
-    const nativeAgentEntry29 = generator29.skills.find((s) => s.canonicalId === 'bmad-tea');
+    const nativeAgentEntry29 = generator29.skills.find((s) => s.canonicalId === 'wizz-tea');
     assert(nativeAgentEntry29 !== undefined, 'Native type:agent SKILL.md dir appears in skills[]');
     assert(
-      nativeAgentEntry29 && nativeAgentEntry29.path.includes('agents/bmad-tea/SKILL.md'),
+      nativeAgentEntry29 && nativeAgentEntry29.path.includes('agents/wizz-tea/SKILL.md'),
       'Native type:agent SKILL.md path points to the agent directory entrypoint',
     );
 
@@ -1468,11 +1468,11 @@ async function runTests() {
 
     // Test scanInstalledModules recognizes native-agent-only modules too
     const agentOnlyModDir29 = path.join(tempFixture29, 'agent-only-mod');
-    await fs.ensureDir(path.join(agentOnlyModDir29, 'deep', 'nested', 'bmad-tea'));
-    await fs.writeFile(path.join(agentOnlyModDir29, 'deep', 'nested', 'bmad-tea', 'bmad-skill-manifest.yaml'), 'type: agent\n');
+    await fs.ensureDir(path.join(agentOnlyModDir29, 'deep', 'nested', 'wizz-tea'));
+    await fs.writeFile(path.join(agentOnlyModDir29, 'deep', 'nested', 'wizz-tea', 'wizz-skill-manifest.yaml'), 'type: agent\n');
     await fs.writeFile(
-      path.join(agentOnlyModDir29, 'deep', 'nested', 'bmad-tea', 'SKILL.md'),
-      '---\nname: bmad-tea\ndescription: desc\n---\n\nAgent menu.\n',
+      path.join(agentOnlyModDir29, 'deep', 'nested', 'wizz-tea', 'SKILL.md'),
+      '---\nname: wizz-tea\ndescription: desc\n---\n\nAgent menu.\n',
     );
 
     const rescannedModules29 = await generator29.scanInstalledModules(tempFixture29);
@@ -1480,14 +1480,14 @@ async function runTests() {
 
     // Test scanInstalledModules recognizes multi-entry manifests keyed under SKILL.md
     const multiEntryModDir29 = path.join(tempFixture29, 'multi-entry-mod');
-    await fs.ensureDir(path.join(multiEntryModDir29, 'deep', 'nested', 'bmad-tea'));
+    await fs.ensureDir(path.join(multiEntryModDir29, 'deep', 'nested', 'wizz-tea'));
     await fs.writeFile(
-      path.join(multiEntryModDir29, 'deep', 'nested', 'bmad-tea', 'bmad-skill-manifest.yaml'),
-      'SKILL.md:\n  type: agent\n  canonicalId: bmad-tea\n',
+      path.join(multiEntryModDir29, 'deep', 'nested', 'wizz-tea', 'wizz-skill-manifest.yaml'),
+      'SKILL.md:\n  type: agent\n  canonicalId: wizz-tea\n',
     );
     await fs.writeFile(
-      path.join(multiEntryModDir29, 'deep', 'nested', 'bmad-tea', 'SKILL.md'),
-      '---\nname: bmad-tea\ndescription: desc\n---\n\nAgent menu.\n',
+      path.join(multiEntryModDir29, 'deep', 'nested', 'wizz-tea', 'SKILL.md'),
+      '---\nname: wizz-tea\ndescription: desc\n---\n\nAgent menu.\n',
     );
 
     const rescannedModules29b = await generator29.scanInstalledModules(tempFixture29);
@@ -1495,7 +1495,7 @@ async function runTests() {
 
     // skill-manifest.csv should include the native agent entrypoint
     const skillManifestCsv29 = await fs.readFile(path.join(tempFixture29, '_config', 'skill-manifest.csv'), 'utf8');
-    assert(skillManifestCsv29.includes('bmad-tea'), 'skill-manifest.csv includes native type:agent SKILL.md entrypoint');
+    assert(skillManifestCsv29.includes('wizz-tea'), 'skill-manifest.csv includes native type:agent SKILL.md entrypoint');
   } catch (error) {
     assert(false, 'Unified skill scanner test succeeds', error.message);
   } finally {
@@ -1511,10 +1511,10 @@ async function runTests() {
 
   let tempFixture30;
   try {
-    tempFixture30 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-test-30-'));
+    tempFixture30 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-test-30-'));
 
     const generator30 = new ManifestGenerator();
-    generator30.bmadFolderName = '_wizz';
+    generator30.wizzFolderName = '_wizz';
 
     // Case 1: Missing SKILL.md entirely
     const noSkillDir = path.join(tempFixture30, 'no-skill-md');
@@ -1583,11 +1583,11 @@ async function runTests() {
     clearCache();
     const collisionFixture = await createSkillCollisionFixture();
     collisionFixtureRoot = collisionFixture.root;
-    collisionProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-antigravity-test-'));
+    collisionProjectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-antigravity-test-'));
 
     const ideManager = new IdeManager();
     await ideManager.ensureInitialized();
-    const result = await ideManager.setup('antigravity', collisionProjectDir, collisionFixture.bmadDir, {
+    const result = await ideManager.setup('antigravity', collisionProjectDir, collisionFixture.wizzDir, {
       silent: true,
       selectedModules: ['core'],
     });
@@ -1615,7 +1615,7 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 32: Ona Native Skills${colors.reset}\n`);
 
   let tempProjectDir32;
-  let installedBmadDir32;
+  let installedWizzDir32;
   try {
     clearCache();
     const platformCodes32 = await loadPlatformCodes();
@@ -1623,8 +1623,8 @@ async function runTests() {
 
     assert(onaInstaller?.target_dir === '.ona/skills', 'Ona target_dir uses native skills path');
 
-    tempProjectDir32 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ona-test-'));
-    installedBmadDir32 = await createTestBmadFixture();
+    tempProjectDir32 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-ona-test-'));
+    installedWizzDir32 = await createTestWizzFixture();
 
     const ideManager32 = new IdeManager();
     await ideManager32.ensureInitialized();
@@ -1640,7 +1640,7 @@ async function runTests() {
     const detectedBefore32 = await ideManager32.detectInstalledIdes(tempProjectDir32);
     assert(!detectedBefore32.includes('ona'), 'Ona is not detected before install');
 
-    const result32 = await ideManager32.setup('ona', tempProjectDir32, installedBmadDir32, {
+    const result32 = await ideManager32.setup('ona', tempProjectDir32, installedWizzDir32, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -1651,10 +1651,10 @@ async function runTests() {
     const detectedAfter32 = await ideManager32.detectInstalledIdes(tempProjectDir32);
     assert(detectedAfter32.includes('ona'), 'Ona is detected after install');
 
-    const skillFile32 = path.join(tempProjectDir32, '.ona', 'skills', 'bmad-master', 'SKILL.md');
+    const skillFile32 = path.join(tempProjectDir32, '.ona', 'skills', 'wizz-master', 'SKILL.md');
     assert(await fs.pathExists(skillFile32), 'Ona install writes SKILL.md directory output');
 
-    const workflowFile32 = path.join(tempProjectDir32, '.ona', 'skills', 'bmad-master', 'workflow.md');
+    const workflowFile32 = path.join(tempProjectDir32, '.ona', 'skills', 'wizz-master', 'workflow.md');
     assert(await fs.pathExists(workflowFile32), 'Ona install copies non-SKILL.md files (workflow.md) verbatim');
 
     // Parse YAML frontmatter between --- markers
@@ -1667,7 +1667,7 @@ async function runTests() {
 
     // Verify name in frontmatter matches directory name
     const fmName32 = frontmatter32.match(/^name:\s*(.+)$/m);
-    assert(fmName32 && fmName32[1].trim() === 'bmad-master', 'Ona skill name frontmatter matches directory name exactly');
+    assert(fmName32 && fmName32[1].trim() === 'wizz-master', 'Ona skill name frontmatter matches directory name exactly');
 
     // Verify description exists and is non-empty
     const fmDesc32 = frontmatter32.match(/^description:\s*(.+)$/m);
@@ -1685,7 +1685,7 @@ async function runTests() {
     assert(body32.includes('agent-activation'), 'Ona skill body contains expected agent activation instructions');
 
     // Reinstall/upgrade: run setup again over existing output
-    const result32b = await ideManager32.setup('ona', tempProjectDir32, installedBmadDir32, {
+    const result32b = await ideManager32.setup('ona', tempProjectDir32, installedWizzDir32, {
       silent: true,
       selectedModules: ['bmm'],
     });
@@ -1695,7 +1695,7 @@ async function runTests() {
     assert(false, 'Ona native skills test succeeds', error.message);
   } finally {
     if (tempProjectDir32) await fs.remove(tempProjectDir32).catch(() => {});
-    if (installedBmadDir32) await fs.remove(path.dirname(installedBmadDir32)).catch(() => {});
+    if (installedWizzDir32) await fs.remove(path.dirname(installedWizzDir32)).catch(() => {});
   }
 
   console.log('');
@@ -1734,9 +1734,9 @@ async function runTests() {
 
   {
     // Use the real src/ tree (core-skills + bmm-skills module.yaml are read via
-    // getModulePath). Only the destination bmadDir is a temp dir, which the
+    // getModulePath). Only the destination wizzDir is a temp dir, which the
     // installer writes config.toml / config.user.toml / custom/ into.
-    const tempBmadDir35 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-central-config-'));
+    const tempWizzDir35 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-central-config-'));
 
     try {
       const moduleConfigs = {
@@ -1775,8 +1775,8 @@ async function runTests() {
       };
 
       const generator35 = new ManifestGenerator();
-      generator35.bmadDir = tempBmadDir35;
-      generator35.bmadFolderName = path.basename(tempBmadDir35);
+      generator35.wizzDir = tempWizzDir35;
+      generator35.wizzFolderName = path.basename(tempWizzDir35);
       generator35.updatedModules = ['core', 'bmm', 'external-mod'];
 
       // collectAgentsFromModuleYaml reads from src/bmm-skills/module.yaml
@@ -1793,9 +1793,9 @@ async function runTests() {
       assert(maryEntry && maryEntry.team === 'software-development', 'Agent entry carries explicit team from module.yaml');
 
       // writeCentralConfig produces the two root files
-      const [teamPath, userPath] = await generator35.writeCentralConfig(tempBmadDir35, moduleConfigs);
-      assert(teamPath === path.join(tempBmadDir35, 'config.toml'), 'writeCentralConfig returns team config path');
-      assert(userPath === path.join(tempBmadDir35, 'config.user.toml'), 'writeCentralConfig returns user config path');
+      const [teamPath, userPath] = await generator35.writeCentralConfig(tempWizzDir35, moduleConfigs);
+      assert(teamPath === path.join(tempWizzDir35, 'config.toml'), 'writeCentralConfig returns team config path');
+      assert(userPath === path.join(tempWizzDir35, 'config.user.toml'), 'writeCentralConfig returns user config path');
       assert(await fs.pathExists(teamPath), 'config.toml is written to disk');
       assert(await fs.pathExists(userPath), 'config.user.toml is written to disk');
 
@@ -1858,7 +1858,7 @@ async function runTests() {
       assert(teamContent.includes('Installer-managed. Regenerated on every install'), 'config.toml has installer-managed header');
       assert(userContent.includes('Holds install answers scoped to YOU personally.'), 'config.user.toml header clarifies user scope');
     } finally {
-      await fs.remove(tempBmadDir35).catch(() => {});
+      await fs.remove(tempWizzDir35).catch(() => {});
     }
   }
 
@@ -1870,16 +1870,16 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 36: Custom Config Stubs${colors.reset}\n`);
 
   {
-    const tempBmadDir36 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-custom-stubs-'));
+    const tempWizzDir36 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-custom-stubs-'));
 
     try {
       const generator36 = new ManifestGenerator();
 
       // First install: both stubs are created
-      await generator36.ensureCustomConfigStubs(tempBmadDir36);
+      await generator36.ensureCustomConfigStubs(tempWizzDir36);
 
-      const teamStub = path.join(tempBmadDir36, 'custom', 'config.toml');
-      const userStub = path.join(tempBmadDir36, 'custom', 'config.user.toml');
+      const teamStub = path.join(tempWizzDir36, 'custom', 'config.toml');
+      const userStub = path.join(tempWizzDir36, 'custom', 'config.user.toml');
 
       assert(await fs.pathExists(teamStub), 'ensureCustomConfigStubs creates custom/config.toml');
       assert(await fs.pathExists(userStub), 'ensureCustomConfigStubs creates custom/config.user.toml');
@@ -1889,12 +1889,12 @@ async function runTests() {
       await fs.writeFile(userStub, userEdit);
 
       // Second install: stubs are NOT overwritten
-      await generator36.ensureCustomConfigStubs(tempBmadDir36);
+      await generator36.ensureCustomConfigStubs(tempWizzDir36);
 
       const preservedContent = await fs.readFile(userStub, 'utf8');
       assert(preservedContent === userEdit, 'ensureCustomConfigStubs does not overwrite user-edited custom/config.user.toml');
     } finally {
-      await fs.remove(tempBmadDir36).catch(() => {});
+      await fs.remove(tempWizzDir36).catch(() => {});
     }
   }
 
@@ -1910,7 +1910,7 @@ async function runTests() {
     // (e.g. external/marketplace). Its module.yaml isn't read, so its agents
     // aren't in this.agents. writeCentralConfig must read the prior config.toml
     // and keep those [agents.*] blocks so the roster doesn't silently shrink.
-    const tempBmadDir37 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-agent-preserve-'));
+    const tempWizzDir37 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-agent-preserve-'));
 
     try {
       // Seed a prior config.toml with an agent from an external module
@@ -1931,11 +1931,11 @@ async function runTests() {
         'description = "Ships with the marketplace module."',
         '',
       ].join('\n');
-      await fs.writeFile(path.join(tempBmadDir37, 'config.toml'), priorToml);
+      await fs.writeFile(path.join(tempWizzDir37, 'config.toml'), priorToml);
 
       const generator37 = new ManifestGenerator();
-      generator37.bmadDir = tempBmadDir37;
-      generator37.bmadFolderName = path.basename(tempBmadDir37);
+      generator37.wizzDir = tempWizzDir37;
+      generator37.wizzFolderName = path.basename(tempWizzDir37);
       generator37.updatedModules = ['core', 'bmm', 'external-mod'];
 
       // bmm source is available; external-mod is not — it's a preserved module
@@ -1944,9 +1944,9 @@ async function runTests() {
       assert(freshModules.has('bmm'), 'bmm contributes fresh agents from src module.yaml');
       assert(!freshModules.has('external-mod'), 'external-mod source is unavailable (preserved-module scenario)');
 
-      await generator37.writeCentralConfig(tempBmadDir37, { core: {}, bmm: {}, 'external-mod': {} });
+      await generator37.writeCentralConfig(tempWizzDir37, { core: {}, bmm: {}, 'external-mod': {} });
 
-      const teamContent = await fs.readFile(path.join(tempBmadDir37, 'config.toml'), 'utf8');
+      const teamContent = await fs.readFile(path.join(tempWizzDir37, 'config.toml'), 'utf8');
 
       assert(
         teamContent.includes('[agents.external-hero]'),
@@ -1960,7 +1960,7 @@ async function runTests() {
       assert(maryMatches.length === 1, 'wizz-agent-analyst emitted exactly once (fresh wins; stale not duplicated)');
       assert(!teamContent.includes('Stale Mary'), 'Stale name from prior config.toml is discarded when fresh module.yaml is read');
     } finally {
-      await fs.remove(tempBmadDir37).catch(() => {});
+      await fs.remove(tempWizzDir37).catch(() => {});
     }
   }
 
@@ -1973,13 +1973,13 @@ async function runTests() {
 
   {
     // Scenario: external official modules (bmb, cis, gds, ...) are cloned into
-    // ~/.bmad/cache/external-modules/<name>/ — NOT copied into src/modules/.
+    // ~/.wizz/cache/external-modules/<name>/ — NOT copied into src/modules/.
     // collectAgentsFromModuleYaml must resolve them from the cache or their
     // agent roster silently vanishes from config.toml.
-    const tempCacheDir38 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ext-cache-'));
-    const tempBmadDir38 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-ext-install-'));
-    const priorCacheEnv = process.env.BMAD_EXTERNAL_MODULES_CACHE;
-    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir38;
+    const tempCacheDir38 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-ext-cache-'));
+    const tempWizzDir38 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-ext-install-'));
+    const priorCacheEnv = process.env.WIZZ_EXTERNAL_MODULES_CACHE;
+    process.env.WIZZ_EXTERNAL_MODULES_CACHE = tempCacheDir38;
 
     try {
       // Seed a fake external module with agents at cache/<mod>/src/module.yaml —
@@ -1992,13 +1992,13 @@ async function runTests() {
           'code: fake-ext',
           'name: "Fake External Module"',
           'agents:',
-          '  - code: bmad-fake-ext-agent-one',
+          '  - code: wizz-fake-ext-agent-one',
           '    name: Ext-One',
           '    title: External Agent One',
           '    icon: "🧪"',
           '    team: fake',
           '    description: "First fake external agent."',
-          '  - code: bmad-fake-ext-agent-two',
+          '  - code: wizz-fake-ext-agent-two',
           '    name: Ext-Two',
           '    title: External Agent Two',
           '    icon: "🧬"',
@@ -2017,7 +2017,7 @@ async function runTests() {
           'code: fake-skills',
           'name: "Fake Skills-Layout Module"',
           'agents:',
-          '  - code: bmad-fake-skills-agent',
+          '  - code: wizz-fake-skills-agent',
           '    name: SkillsHero',
           '    title: Skills Layout Agent',
           '    icon: "🛠️"',
@@ -2028,38 +2028,38 @@ async function runTests() {
       );
 
       const generator38 = new ManifestGenerator();
-      generator38.bmadDir = tempBmadDir38;
-      generator38.bmadFolderName = path.basename(tempBmadDir38);
+      generator38.wizzDir = tempWizzDir38;
+      generator38.wizzFolderName = path.basename(tempWizzDir38);
       generator38.updatedModules = ['core', 'bmm', 'fake-ext', 'fake-skills'];
 
       await generator38.collectAgentsFromModuleYaml();
 
       const byCode = new Map(generator38.agents.map((a) => [a.code, a]));
-      assert(byCode.has('bmad-fake-ext-agent-one'), 'external module at cache/<name>/src resolves and contributes agent one');
-      assert(byCode.has('bmad-fake-ext-agent-two'), 'external module at cache/<name>/src resolves and contributes agent two');
-      assert(byCode.has('bmad-fake-skills-agent'), 'external module at cache/<name>/skills layout also resolves');
-      assert(byCode.get('bmad-fake-ext-agent-one').module === 'fake-ext', 'agent.module matches the owning external module name');
-      assert(byCode.get('bmad-fake-ext-agent-one').team === 'fake', 'explicit team from module.yaml is preserved');
+      assert(byCode.has('wizz-fake-ext-agent-one'), 'external module at cache/<name>/src resolves and contributes agent one');
+      assert(byCode.has('wizz-fake-ext-agent-two'), 'external module at cache/<name>/src resolves and contributes agent two');
+      assert(byCode.has('wizz-fake-skills-agent'), 'external module at cache/<name>/skills layout also resolves');
+      assert(byCode.get('wizz-fake-ext-agent-one').module === 'fake-ext', 'agent.module matches the owning external module name');
+      assert(byCode.get('wizz-fake-ext-agent-one').team === 'fake', 'explicit team from module.yaml is preserved');
 
-      await generator38.writeCentralConfig(tempBmadDir38, {
+      await generator38.writeCentralConfig(tempWizzDir38, {
         core: {},
         bmm: {},
         'fake-ext': {},
         'fake-skills': {},
       });
 
-      const teamContent = await fs.readFile(path.join(tempBmadDir38, 'config.toml'), 'utf8');
-      assert(teamContent.includes('[agents.bmad-fake-ext-agent-one]'), 'external-module agents land in config.toml [agents.*] section');
-      assert(teamContent.includes('[agents.bmad-fake-skills-agent]'), 'skills-layout external module agents also land in config.toml');
+      const teamContent = await fs.readFile(path.join(tempWizzDir38, 'config.toml'), 'utf8');
+      assert(teamContent.includes('[agents.wizz-fake-ext-agent-one]'), 'external-module agents land in config.toml [agents.*] section');
+      assert(teamContent.includes('[agents.wizz-fake-skills-agent]'), 'skills-layout external module agents also land in config.toml');
       assert(teamContent.includes('First fake external agent.'), 'agent description from external module.yaml is written');
     } finally {
       if (priorCacheEnv === undefined) {
-        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+        delete process.env.WIZZ_EXTERNAL_MODULES_CACHE;
       } else {
-        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv;
+        process.env.WIZZ_EXTERNAL_MODULES_CACHE = priorCacheEnv;
       }
       await fs.remove(tempCacheDir38).catch(() => {});
-      await fs.remove(tempBmadDir38).catch(() => {});
+      await fs.remove(tempWizzDir38).catch(() => {});
     }
   }
 
@@ -2073,9 +2073,9 @@ async function runTests() {
   // --- package.json beats module.yaml and marketplace.json for cached external modules ---
   {
     const { resolveModuleVersion } = require('../tools/installer/modules/version-resolver');
-    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-cache-'));
-    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
-    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-version-cache-'));
+    const priorCacheEnv39 = process.env.WIZZ_EXTERNAL_MODULES_CACHE;
+    process.env.WIZZ_EXTERNAL_MODULES_CACHE = tempCacheDir39;
 
     try {
       const moduleRoot = path.join(tempCacheDir39, 'tea');
@@ -2101,9 +2101,9 @@ async function runTests() {
       assert(versionInfo.source === 'package.json', 'resolver reports package.json as the winning metadata source');
     } finally {
       if (priorCacheEnv39 === undefined) {
-        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+        delete process.env.WIZZ_EXTERNAL_MODULES_CACHE;
       } else {
-        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+        process.env.WIZZ_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
       await fs.remove(tempCacheDir39).catch(() => {});
     }
@@ -2112,10 +2112,10 @@ async function runTests() {
   // --- module.yaml is used when package.json is absent ---
   {
     const { resolveModuleVersion } = require('../tools/installer/modules/version-resolver');
-    const tempRepo39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-module-yaml-'));
-    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-module-yaml-cache-'));
-    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
-    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+    const tempRepo39 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-version-module-yaml-'));
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-version-module-yaml-cache-'));
+    const priorCacheEnv39 = process.env.WIZZ_EXTERNAL_MODULES_CACHE;
+    process.env.WIZZ_EXTERNAL_MODULES_CACHE = tempCacheDir39;
 
     try {
       const moduleDir = path.join(tempRepo39, 'src');
@@ -2133,9 +2133,9 @@ async function runTests() {
       assert(versionInfo.source === 'module.yaml', 'resolver reports module.yaml when it provides the selected version');
     } finally {
       if (priorCacheEnv39 === undefined) {
-        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+        delete process.env.WIZZ_EXTERNAL_MODULES_CACHE;
       } else {
-        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+        process.env.WIZZ_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
       await fs.remove(tempRepo39).catch(() => {});
       await fs.remove(tempCacheDir39).catch(() => {});
@@ -2145,10 +2145,10 @@ async function runTests() {
   // --- marketplace fallback uses semver-aware comparison ---
   {
     const { resolveModuleVersion } = require('../tools/installer/modules/version-resolver');
-    const tempRepo39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-marketplace-'));
-    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-marketplace-cache-'));
-    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
-    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+    const tempRepo39 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-version-marketplace-'));
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-version-marketplace-cache-'));
+    const priorCacheEnv39 = process.env.WIZZ_EXTERNAL_MODULES_CACHE;
+    process.env.WIZZ_EXTERNAL_MODULES_CACHE = tempCacheDir39;
 
     try {
       const moduleDir = path.join(tempRepo39, 'src');
@@ -2177,9 +2177,9 @@ async function runTests() {
       assert(versionInfo.source === 'marketplace.json', 'resolver reports marketplace.json when it is the only usable metadata source');
     } finally {
       if (priorCacheEnv39 === undefined) {
-        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+        delete process.env.WIZZ_EXTERNAL_MODULES_CACHE;
       } else {
-        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+        process.env.WIZZ_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
       await fs.remove(tempRepo39).catch(() => {});
       await fs.remove(tempCacheDir39).catch(() => {});
@@ -2189,10 +2189,10 @@ async function runTests() {
   // --- package.json lookup must not escape the module repo boundary ---
   {
     const { resolveModuleVersion } = require('../tools/installer/modules/version-resolver');
-    const tempHost39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-boundary-host-'));
-    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-version-boundary-cache-'));
-    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
-    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+    const tempHost39 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-version-boundary-host-'));
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-version-boundary-cache-'));
+    const priorCacheEnv39 = process.env.WIZZ_EXTERNAL_MODULES_CACHE;
+    process.env.WIZZ_EXTERNAL_MODULES_CACHE = tempCacheDir39;
 
     try {
       const moduleRoot = path.join(tempHost39, 'nested-module');
@@ -2212,9 +2212,9 @@ async function runTests() {
       assert(versionInfo.source === 'module.yaml', 'resolver stops at the module repo boundary before climbing into host project metadata');
     } finally {
       if (priorCacheEnv39 === undefined) {
-        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+        delete process.env.WIZZ_EXTERNAL_MODULES_CACHE;
       } else {
-        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+        process.env.WIZZ_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
       await fs.remove(tempHost39).catch(() => {});
       await fs.remove(tempCacheDir39).catch(() => {});
@@ -2225,11 +2225,11 @@ async function runTests() {
   {
     const { Manifest } = require('../tools/installer/core/manifest');
     const { ExternalModuleManager } = require('../tools/installer/modules/external-manager');
-    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-manifest-version-cache-'));
-    const tempBmadDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-manifest-version-install-'));
-    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-manifest-version-cache-'));
+    const tempWizzDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-manifest-version-install-'));
+    const priorCacheEnv39 = process.env.WIZZ_EXTERNAL_MODULES_CACHE;
     const originalLoadConfig39 = ExternalModuleManager.prototype.loadExternalModulesConfig;
-    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+    process.env.WIZZ_EXTERNAL_MODULES_CACHE = tempCacheDir39;
 
     ExternalModuleManager.prototype.loadExternalModulesConfig = async function () {
       return {
@@ -2262,7 +2262,7 @@ async function runTests() {
       );
 
       const manifest39 = new Manifest();
-      const versionInfo = await manifest39.getModuleVersionInfo('tea', tempBmadDir39, moduleSrc);
+      const versionInfo = await manifest39.getModuleVersionInfo('tea', tempWizzDir39, moduleSrc);
 
       assert(versionInfo.version === '1.12.3', 'manifest version info prefers external package.json over stale marketplace metadata');
       assert(versionInfo.source === 'external', 'manifest preserves external source classification while using the shared resolver');
@@ -2273,12 +2273,12 @@ async function runTests() {
     } finally {
       ExternalModuleManager.prototype.loadExternalModulesConfig = originalLoadConfig39;
       if (priorCacheEnv39 === undefined) {
-        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+        delete process.env.WIZZ_EXTERNAL_MODULES_CACHE;
       } else {
-        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+        process.env.WIZZ_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
       await fs.remove(tempCacheDir39).catch(() => {});
-      await fs.remove(tempBmadDir39).catch(() => {});
+      await fs.remove(tempWizzDir39).catch(() => {});
     }
   }
 
@@ -2370,7 +2370,7 @@ async function runTests() {
       return [
         {
           code: 'bmb',
-          name: 'BMad Builder',
+          name: 'Wizz Builder',
           description: 'Builder module',
           defaultSelected: false,
           builtIn: false,
@@ -2433,7 +2433,7 @@ async function runTests() {
       );
 
       assert(
-        seenLabels39.includes('BMad Builder (v1.1.0 → v1.7.0)'),
+        seenLabels39.includes('Wizz Builder (v1.1.0 → v1.7.0)'),
         'official module picker shows installed-to-latest arrow from git tags',
       );
       assert(seenLabels39.includes('Test Architect (v1.15.0)'), 'official module picker shows latest git-tag version for fresh installs');
@@ -2462,8 +2462,8 @@ async function runTests() {
     const { ExternalModuleManager } = require('../tools/installer/modules/external-manager');
 
     const ui = new UI();
-    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-picker-cache-'));
-    const priorCacheEnv39 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
+    const tempCacheDir39 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-picker-cache-'));
+    const priorCacheEnv39 = process.env.WIZZ_EXTERNAL_MODULES_CACHE;
     const originalOfficialListAvailable39 = OfficialModules.prototype.listAvailable;
     const originalExternalListAvailable39 = ExternalModuleManager.prototype.listAvailable;
     const originalAutocomplete39 = prompts.autocompleteMultiselect;
@@ -2475,7 +2475,7 @@ async function runTests() {
     const seenLabels39 = [];
     const warnings39 = [];
 
-    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir39;
+    process.env.WIZZ_EXTERNAL_MODULES_CACHE = tempCacheDir39;
     await fs.ensureDir(path.join(tempCacheDir39, 'bmb'));
     await fs.writeFile(
       path.join(tempCacheDir39, 'bmb', 'package.json'),
@@ -2499,7 +2499,7 @@ async function runTests() {
       return [
         {
           code: 'bmb',
-          name: 'BMad Builder',
+          name: 'Wizz Builder',
           description: 'Builder module',
           defaultSelected: false,
           builtIn: false,
@@ -2531,7 +2531,7 @@ async function runTests() {
       await ui._selectOfficialModules(new Set(), new Map(), { global: null, nextSet: new Set(), pins: new Map(), warnings: [] });
 
       assert(
-        seenLabels39.includes('BMad Builder (v1.7.0)'),
+        seenLabels39.includes('Wizz Builder (v1.7.0)'),
         'official module picker falls back to cached/local versions when tag lookup fails',
       );
       assert(
@@ -2547,9 +2547,9 @@ async function runTests() {
       prompts.log.message = originalMessage39;
       channelResolver.resolveChannel = originalResolveChannel39;
       if (priorCacheEnv39 === undefined) {
-        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+        delete process.env.WIZZ_EXTERNAL_MODULES_CACHE;
       } else {
-        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
+        process.env.WIZZ_EXTERNAL_MODULES_CACHE = priorCacheEnv39;
       }
       await fs.remove(tempCacheDir39).catch(() => {});
     }
@@ -2570,14 +2570,14 @@ async function runTests() {
     const geminiTarget = platformCodes40.platforms.gemini?.installer?.target_dir;
     assert(cursorTarget === '.agents/skills' && geminiTarget === '.agents/skills', 'Cursor and Gemini share .agents/skills target_dir');
 
-    const tempProjectDir40 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-shared-target-'));
-    const installedBmadDir40 = await createTestBmadFixture();
+    const tempProjectDir40 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-shared-target-'));
+    const installedWizzDir40 = await createTestWizzFixture();
 
     const ideManager40 = new IdeManager();
     await ideManager40.ensureInitialized();
 
     // Run setupBatch with both platforms — second should skip skill write.
-    const batchResults = await ideManager40.setupBatch(['cursor', 'gemini'], tempProjectDir40, installedBmadDir40, {
+    const batchResults = await ideManager40.setupBatch(['cursor', 'gemini'], tempProjectDir40, installedWizzDir40, {
       silent: true,
       selectedModules: ['core'],
     });
@@ -2593,7 +2593,7 @@ async function runTests() {
     // Skill should be present in the shared dir after batch.
     const sharedDir = path.join(tempProjectDir40, '.agents', 'skills');
     const sharedDirEntries = await fs.readdir(sharedDir);
-    assert(sharedDirEntries.includes('bmad-master'), 'Shared .agents/skills/ contains bmad-master after batched install');
+    assert(sharedDirEntries.includes('wizz-master'), 'Shared .agents/skills/ contains wizz-master after batched install');
 
     // Now uninstall just cursor while gemini remains. Skills must survive.
     const cleanupResults = await ideManager40.cleanupByList(tempProjectDir40, ['cursor'], {
@@ -2602,15 +2602,15 @@ async function runTests() {
     });
     assert(cleanupResults[0].skippedTarget === true, 'Cursor cleanup skips target_dir wipe when Gemini remains');
     const stillThere = await fs.readdir(sharedDir);
-    assert(stillThere.includes('bmad-master'), 'bmad-master still present after partial uninstall (gemini still installed)');
+    assert(stillThere.includes('wizz-master'), 'wizz-master still present after partial uninstall (gemini still installed)');
 
-    // (Cleanup of the last sharing platform requires bmadDir to be inside
+    // (Cleanup of the last sharing platform requires wizzDir to be inside
     //  projectDir to compute removalSet; that's the production layout. The
-    //  fixture above keeps bmad in a separate temp dir, so test 41 below
+    //  fixture above keeps wizz in a separate temp dir, so test 41 below
     //  exercises the in-project layout instead.)
 
     await fs.remove(tempProjectDir40).catch(() => {});
-    await fs.remove(path.dirname(installedBmadDir40)).catch(() => {});
+    await fs.remove(path.dirname(installedWizzDir40)).catch(() => {});
   } catch (error) {
     console.log(`${colors.red}Test Suite 40 setup failed: ${error.message}${colors.reset}`);
     failed++;
@@ -2624,8 +2624,8 @@ async function runTests() {
   console.log(`${colors.yellow}Test Suite 40b: setupBatch resilience to first-writer failure${colors.reset}\n`);
 
   try {
-    const tempProjectDir40b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-batch-fail-'));
-    const installedBmadDir40b = await createTestBmadFixture();
+    const tempProjectDir40b = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-batch-fail-'));
+    const installedWizzDir40b = await createTestWizzFixture();
 
     const ideManager40b = new IdeManager();
     await ideManager40b.ensureInitialized();
@@ -2638,7 +2638,7 @@ async function runTests() {
       throw new Error('Simulated cursor failure');
     };
 
-    const batchResults40b = await ideManager40b.setupBatch(['cursor', 'gemini'], tempProjectDir40b, installedBmadDir40b, {
+    const batchResults40b = await ideManager40b.setupBatch(['cursor', 'gemini'], tempProjectDir40b, installedWizzDir40b, {
       silent: true,
       selectedModules: ['core'],
     });
@@ -2655,10 +2655,10 @@ async function runTests() {
 
     const sharedDir40b = path.join(tempProjectDir40b, '.agents', 'skills');
     const entries40b = await fs.readdir(sharedDir40b);
-    assert(entries40b.includes('bmad-master'), 'Shared dir is populated by gemini after cursor failure');
+    assert(entries40b.includes('wizz-master'), 'Shared dir is populated by gemini after cursor failure');
 
     await fs.remove(tempProjectDir40b).catch(() => {});
-    await fs.remove(path.dirname(installedBmadDir40b)).catch(() => {});
+    await fs.remove(path.dirname(installedWizzDir40b)).catch(() => {});
   } catch (error) {
     console.log(`${colors.red}Test Suite 40b setup failed: ${error.message}${colors.reset}`);
     failed++;
@@ -2687,15 +2687,15 @@ async function runTests() {
     );
 
     // Order A: opencode first → opencode is the writer.
-    const projA = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-batch-a-'));
-    const bmadA = await createTestBmadFixture();
+    const projA = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-opencode-batch-a-'));
+    const wizzA = await createTestWizzFixture();
     const mgrA = new IdeManager();
     await mgrA.ensureInitialized();
-    const resultsA = await mgrA.setupBatch(['opencode', 'openhands'], projA, bmadA, {
+    const resultsA = await mgrA.setupBatch(['opencode', 'openhands'], projA, wizzA, {
       silent: true,
       selectedModules: ['core'],
     });
-    const cmdA = path.join(projA, '.opencode', 'commands', 'bmad-master.md');
+    const cmdA = path.join(projA, '.opencode', 'commands', 'wizz-master.md');
     assert(
       resultsA.every((r) => r.success === true),
       'opencode-first batch: all platforms succeed',
@@ -2704,15 +2704,15 @@ async function runTests() {
 
     // Order B: openhands first → opencode is the peer (skipTarget=true).
     // Without the fix, the early-return would bypass installCommandPointers.
-    const projB = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-batch-b-'));
-    const bmadB = await createTestBmadFixture();
+    const projB = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-opencode-batch-b-'));
+    const wizzB = await createTestWizzFixture();
     const mgrB = new IdeManager();
     await mgrB.ensureInitialized();
-    const resultsB = await mgrB.setupBatch(['openhands', 'opencode'], projB, bmadB, {
+    const resultsB = await mgrB.setupBatch(['openhands', 'opencode'], projB, wizzB, {
       silent: true,
       selectedModules: ['core'],
     });
-    const cmdB = path.join(projB, '.opencode', 'commands', 'bmad-master.md');
+    const cmdB = path.join(projB, '.opencode', 'commands', 'wizz-master.md');
     const opencodeResultB = resultsB.find((r) => r.ide === 'opencode');
     assert(
       resultsB.every((r) => r.success === true),
@@ -2725,31 +2725,31 @@ async function runTests() {
     assert(await fs.pathExists(cmdB), 'openhands-first batch: command pointer is generated even when skill write is deduped');
 
     // Cleanup symmetry: uninstall opencode while openhands remains.
-    // Uses an in-project bmadDir so the cleanup path can compute removalSet
+    // Uses an in-project wizzDir so the cleanup path can compute removalSet
     // from the manifest (the production layout). The cross-temp-dir fixture
     // above can't exercise this — same constraint Test Suite 40 documents.
-    const projC = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-opencode-batch-c-'));
-    const bmadC = path.join(projC, '_wizz');
-    await fs.ensureDir(path.join(bmadC, '_config'));
+    const projC = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-opencode-batch-c-'));
+    const wizzC = path.join(projC, '_wizz');
+    await fs.ensureDir(path.join(wizzC, '_config'));
     await fs.writeFile(
-      path.join(bmadC, '_config', 'skill-manifest.csv'),
+      path.join(wizzC, '_config', 'skill-manifest.csv'),
       'canonicalId,name,description,module,path\n' +
-        '"bmad-master","bmad-master","Minimal test agent fixture","core","_wizz/core/bmad-master/SKILL.md"\n',
+        '"wizz-master","wizz-master","Minimal test agent fixture","core","_wizz/core/wizz-master/SKILL.md"\n',
     );
-    const skillC = path.join(bmadC, 'core', 'bmad-master');
+    const skillC = path.join(wizzC, 'core', 'wizz-master');
     await fs.ensureDir(skillC);
     await fs.writeFile(
       path.join(skillC, 'SKILL.md'),
-      ['---', 'name: bmad-master', 'description: Minimal test agent fixture', '---', '', 'You are a test agent.'].join('\n'),
+      ['---', 'name: wizz-master', 'description: Minimal test agent fixture', '---', '', 'You are a test agent.'].join('\n'),
     );
 
     const mgrC = new IdeManager();
     await mgrC.ensureInitialized();
-    await mgrC.setupBatch(['openhands', 'opencode'], projC, bmadC, {
+    await mgrC.setupBatch(['openhands', 'opencode'], projC, wizzC, {
       silent: true,
       selectedModules: ['core'],
     });
-    const cmdC = path.join(projC, '.opencode', 'commands', 'bmad-master.md');
+    const cmdC = path.join(projC, '.opencode', 'commands', 'wizz-master.md');
     assert(await fs.pathExists(cmdC), 'in-project fixture: pointer is generated for opencode peer');
 
     const cleanupResultsC = await mgrC.cleanupByList(projC, ['opencode'], {
@@ -2757,14 +2757,14 @@ async function runTests() {
       remainingIdes: ['openhands'],
     });
     assert(cleanupResultsC[0].success !== false, 'opencode partial-uninstall reports success');
-    const sharedSurvivesC = await fs.pathExists(path.join(projC, '.agents', 'skills', 'bmad-master', 'SKILL.md'));
+    const sharedSurvivesC = await fs.pathExists(path.join(projC, '.agents', 'skills', 'wizz-master', 'SKILL.md'));
     assert(sharedSurvivesC, 'shared .agents/skills/ survives partial uninstall (peer still uses it)');
     assert(!(await fs.pathExists(cmdC)), 'opencode command pointer is removed on partial uninstall even when peer remains');
 
     await fs.remove(projA).catch(() => {});
-    await fs.remove(path.dirname(bmadA)).catch(() => {});
+    await fs.remove(path.dirname(wizzA)).catch(() => {});
     await fs.remove(projB).catch(() => {});
-    await fs.remove(path.dirname(bmadB)).catch(() => {});
+    await fs.remove(path.dirname(wizzB)).catch(() => {});
     await fs.remove(projC).catch(() => {});
   } catch (error) {
     console.log(`${colors.red}Test Suite 40c setup failed: ${error.message}${colors.reset}`);
@@ -2774,25 +2774,25 @@ async function runTests() {
   console.log('');
 
   // ============================================================
-  // Test Suite 41: Custom-module skill ownership (non-bmad prefix)
+  // Test Suite 41: Custom-module skill ownership (non-wizz prefix)
   // ============================================================
   console.log(`${colors.yellow}Test Suite 41: Custom-module skill ownership${colors.reset}\n`);
 
   try {
     // A custom module can ship a skill with any canonicalId (e.g. "fred-cool-skill").
-    // detect() must recognize it as BMAD-owned via the manifest, not the bmad- prefix.
-    const fixtureRoot41 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-custom-prefix-'));
-    const bmadDir41 = path.join(fixtureRoot41, '_wizz');
-    await fs.ensureDir(path.join(bmadDir41, '_config'));
+    // detect() must recognize it as WIZZ-owned via the manifest, not the wizz- prefix.
+    const fixtureRoot41 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-custom-prefix-'));
+    const wizzDir41 = path.join(fixtureRoot41, '_wizz');
+    await fs.ensureDir(path.join(wizzDir41, '_config'));
     await fs.writeFile(
-      path.join(bmadDir41, '_config', 'skill-manifest.csv'),
+      path.join(wizzDir41, '_config', 'skill-manifest.csv'),
       [
         'canonicalId,name,description,module,path',
         '"fred-cool-skill","fred-cool-skill","Custom module skill","fred","_wizz/fred/skills/fred-cool-skill/SKILL.md"',
         '',
       ].join('\n'),
     );
-    const fredSkill = path.join(bmadDir41, 'fred', 'skills', 'fred-cool-skill');
+    const fredSkill = path.join(wizzDir41, 'fred', 'skills', 'fred-cool-skill');
     await fs.ensureDir(fredSkill);
     await fs.writeFile(
       path.join(fredSkill, 'SKILL.md'),
@@ -2801,11 +2801,11 @@ async function runTests() {
 
     const ideManager41 = new IdeManager();
     await ideManager41.ensureInitialized();
-    await ideManager41.setup('cursor', fixtureRoot41, bmadDir41, { silent: true, selectedModules: ['fred'] });
+    await ideManager41.setup('cursor', fixtureRoot41, wizzDir41, { silent: true, selectedModules: ['fred'] });
 
     const cursorHandler = ideManager41.handlers.get('cursor');
     const detected = await cursorHandler.detect(fixtureRoot41);
-    assert(detected === true, 'detect() recognizes non-bmad-prefixed skill as BMAD-owned via skill-manifest.csv');
+    assert(detected === true, 'detect() recognizes non-wizz-prefixed skill as WIZZ-owned via skill-manifest.csv');
 
     await fs.remove(fixtureRoot41).catch(() => {});
   } catch (error) {
@@ -2926,15 +2926,15 @@ async function runTests() {
     // Set up a mock existing install: bmm directory has project_name (legacy),
     // core has user_name but not project_name. After hoist, project_name should
     // move to core, leaving bmm with only its own keys.
-    const fixtureRoot43 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43-'));
-    const bmadDir43 = path.join(fixtureRoot43, '_wizz');
-    await fs.ensureDir(path.join(bmadDir43, '_config'));
-    await fs.writeFile(path.join(bmadDir43, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
-    await fs.ensureDir(path.join(bmadDir43, 'core'));
-    await fs.ensureDir(path.join(bmadDir43, 'bmm'));
-    await fs.writeFile(path.join(bmadDir43, 'core', 'config.yaml'), 'user_name: alice\n', 'utf8');
+    const fixtureRoot43 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-fixture-43-'));
+    const wizzDir43 = path.join(fixtureRoot43, '_wizz');
+    await fs.ensureDir(path.join(wizzDir43, '_config'));
+    await fs.writeFile(path.join(wizzDir43, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+    await fs.ensureDir(path.join(wizzDir43, 'core'));
+    await fs.ensureDir(path.join(wizzDir43, 'bmm'));
+    await fs.writeFile(path.join(wizzDir43, 'core', 'config.yaml'), 'user_name: alice\n', 'utf8');
     await fs.writeFile(
-      path.join(bmadDir43, 'bmm', 'config.yaml'),
+      path.join(wizzDir43, 'bmm', 'config.yaml'),
       'project_name: legacy-from-bmm\nuser_skill_level: intermediate\n',
       'utf8',
     );
@@ -2960,14 +2960,14 @@ async function runTests() {
     assert(officialModules43.existingConfig.core?.user_name === 'alice', 'loadExistingConfig preserves pre-existing core values');
 
     // Precedence: if core already has the key, hoist must NOT overwrite it.
-    const fixtureRoot43b = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43b-'));
-    const bmadDir43b = path.join(fixtureRoot43b, '_wizz');
-    await fs.ensureDir(path.join(bmadDir43b, '_config'));
-    await fs.writeFile(path.join(bmadDir43b, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
-    await fs.ensureDir(path.join(bmadDir43b, 'core'));
-    await fs.ensureDir(path.join(bmadDir43b, 'bmm'));
-    await fs.writeFile(path.join(bmadDir43b, 'core', 'config.yaml'), 'project_name: from-core\n', 'utf8');
-    await fs.writeFile(path.join(bmadDir43b, 'bmm', 'config.yaml'), 'project_name: stale-from-bmm\n', 'utf8');
+    const fixtureRoot43b = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-fixture-43b-'));
+    const wizzDir43b = path.join(fixtureRoot43b, '_wizz');
+    await fs.ensureDir(path.join(wizzDir43b, '_config'));
+    await fs.writeFile(path.join(wizzDir43b, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+    await fs.ensureDir(path.join(wizzDir43b, 'core'));
+    await fs.ensureDir(path.join(wizzDir43b, 'bmm'));
+    await fs.writeFile(path.join(wizzDir43b, 'core', 'config.yaml'), 'project_name: from-core\n', 'utf8');
+    await fs.writeFile(path.join(wizzDir43b, 'bmm', 'config.yaml'), 'project_name: stale-from-bmm\n', 'utf8');
 
     const officialModules43b = new OfficialModules();
     await officialModules43b.loadExistingConfig(fixtureRoot43b);
@@ -2982,17 +2982,17 @@ async function runTests() {
     // Malformed config.yaml (parses to a scalar) must not crash loadExistingConfig
     // or the hoist pass — they should treat it as "no config for that module"
     // and continue. Regression for augment review on PR #2348.
-    const fixtureRoot43c = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-fixture-43c-'));
-    const bmadDir43c = path.join(fixtureRoot43c, '_wizz');
-    await fs.ensureDir(path.join(bmadDir43c, '_config'));
-    await fs.writeFile(path.join(bmadDir43c, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
-    await fs.ensureDir(path.join(bmadDir43c, 'core'));
-    await fs.ensureDir(path.join(bmadDir43c, 'bmm'));
+    const fixtureRoot43c = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-fixture-43c-'));
+    const wizzDir43c = path.join(fixtureRoot43c, '_wizz');
+    await fs.ensureDir(path.join(wizzDir43c, '_config'));
+    await fs.writeFile(path.join(wizzDir43c, '_config', 'manifest.yaml'), 'modules: []\n', 'utf8');
+    await fs.ensureDir(path.join(wizzDir43c, 'core'));
+    await fs.ensureDir(path.join(wizzDir43c, 'bmm'));
     // Scalar YAML — yaml.parse returns the literal 42 (truthy non-object).
     // Pre-fix this crashed _hoistCoreKeysFromLegacyModuleConfigs with
     // "Cannot use 'in' operator to search for 'project_name' in 42".
-    await fs.writeFile(path.join(bmadDir43c, 'core', 'config.yaml'), '42\n', 'utf8');
-    await fs.writeFile(path.join(bmadDir43c, 'bmm', 'config.yaml'), 'project_name: rescued\n', 'utf8');
+    await fs.writeFile(path.join(wizzDir43c, 'core', 'config.yaml'), '42\n', 'utf8');
+    await fs.writeFile(path.join(wizzDir43c, 'bmm', 'config.yaml'), 'project_name: rescued\n', 'utf8');
 
     const officialModules43c = new OfficialModules();
     let crashErr;
@@ -3124,30 +3124,30 @@ async function runTests() {
 
     // ---- applySetOverrides happy path ------------------------------------
     {
-      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-'));
-      const bmadDir = path.join(tmp, '_wizz');
-      await fs.ensureDir(bmadDir);
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-applyset-'));
+      const wizzDir = path.join(tmp, '_wizz');
+      await fs.ensureDir(wizzDir);
       // Seed a realistic post-install state: team config has bmm.project_knowledge,
       // user config has core.user_name. The applySetOverrides router should
       // route bmm.user_skill_level → user.toml (already there), core.user_name
       // update → user.toml (already there), and a brand-new key → team.toml.
       await fs.writeFile(
-        path.join(bmadDir, 'config.toml'),
+        path.join(wizzDir, 'config.toml'),
         '[core]\nproject_name = "demo"\n\n[modules.bmm]\nproject_knowledge = "{project-root}/docs"\n',
         'utf8',
       );
       await fs.writeFile(
-        path.join(bmadDir, 'config.user.toml'),
+        path.join(wizzDir, 'config.user.toml'),
         '[core]\nuser_name = "OldName"\n\n[modules.bmm]\nuser_skill_level = "intermediate"\n',
         'utf8',
       );
       // Per-module config.yaml stubs are the "is this module installed?"
       // signal applySetOverrides uses to skip uninstalled-module overrides.
-      await fs.ensureDir(path.join(bmadDir, 'core'));
-      await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'project_name: demo\n', 'utf8');
-      await fs.ensureDir(path.join(bmadDir, 'bmm'));
+      await fs.ensureDir(path.join(wizzDir, 'core'));
+      await fs.writeFile(path.join(wizzDir, 'core', 'config.yaml'), 'project_name: demo\n', 'utf8');
+      await fs.ensureDir(path.join(wizzDir, 'bmm'));
       await fs.writeFile(
-        path.join(bmadDir, 'bmm', 'config.yaml'),
+        path.join(wizzDir, 'bmm', 'config.yaml'),
         'project_knowledge: "{project-root}/docs"\nuser_skill_level: intermediate\n',
         'utf8',
       );
@@ -3156,10 +3156,10 @@ async function runTests() {
         core: { user_name: 'Brian' },
         bmm: { user_skill_level: 'expert', future_thing: 'persists' },
       };
-      const applied = await applySetOverrides(overrides, bmadDir);
+      const applied = await applySetOverrides(overrides, wizzDir);
 
-      const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
-      const user = await fs.readFile(path.join(bmadDir, 'config.user.toml'), 'utf8');
+      const team = await fs.readFile(path.join(wizzDir, 'config.toml'), 'utf8');
+      const user = await fs.readFile(path.join(wizzDir, 'config.user.toml'), 'utf8');
 
       assert(user.includes('user_name = "Brian"'), 'applySetOverrides updates user-scope key in config.user.toml');
       assert(user.includes('user_skill_level = "expert"'), 'applySetOverrides updates pre-existing user-scope key in config.user.toml');
@@ -3181,19 +3181,19 @@ async function runTests() {
 
     // ---- applySetOverrides creates config.user.toml if missing -----------
     {
-      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-nouser-'));
-      const bmadDir = path.join(tmp, '_wizz');
-      await fs.ensureDir(bmadDir);
-      await fs.writeFile(path.join(bmadDir, 'config.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
-      await fs.ensureDir(path.join(bmadDir, 'core'));
-      await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'user_name: Brian\n', 'utf8');
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-applyset-nouser-'));
+      const wizzDir = path.join(tmp, '_wizz');
+      await fs.ensureDir(wizzDir);
+      await fs.writeFile(path.join(wizzDir, 'config.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
+      await fs.ensureDir(path.join(wizzDir, 'core'));
+      await fs.writeFile(path.join(wizzDir, 'core', 'config.yaml'), 'user_name: Brian\n', 'utf8');
       // Override targets a key only in team config; routes to team. user.toml
       // never gets created in this case (correct — no user-scope writes).
-      await applySetOverrides({ core: { user_name: 'Updated' } }, bmadDir);
-      const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
+      await applySetOverrides({ core: { user_name: 'Updated' } }, wizzDir);
+      const team = await fs.readFile(path.join(wizzDir, 'config.toml'), 'utf8');
       assert(team.includes('user_name = "Updated"'), 'applySetOverrides updates team key when user.toml is absent');
       assert(
-        !(await fs.pathExists(path.join(bmadDir, 'config.user.toml'))),
+        !(await fs.pathExists(path.join(wizzDir, 'config.user.toml'))),
         'applySetOverrides does not create config.user.toml unnecessarily',
       );
       await fs.remove(tmp).catch(() => {});
@@ -3201,16 +3201,16 @@ async function runTests() {
 
     // ---- applySetOverrides skips modules without per-module config.yaml --
     {
-      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-skip-'));
-      const bmadDir = path.join(tmp, '_wizz');
-      await fs.ensureDir(bmadDir);
-      await fs.writeFile(path.join(bmadDir, 'config.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
-      await fs.ensureDir(path.join(bmadDir, 'core'));
-      await fs.writeFile(path.join(bmadDir, 'core', 'config.yaml'), 'user_name: Brian\n', 'utf8');
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-applyset-skip-'));
+      const wizzDir = path.join(tmp, '_wizz');
+      await fs.ensureDir(wizzDir);
+      await fs.writeFile(path.join(wizzDir, 'config.toml'), '[core]\nuser_name = "Brian"\n', 'utf8');
+      await fs.ensureDir(path.join(wizzDir, 'core'));
+      await fs.writeFile(path.join(wizzDir, 'core', 'config.yaml'), 'user_name: Brian\n', 'utf8');
       // bmm is not installed (no `_wizz/bmm/config.yaml`). The override for
       // bmm should be silently skipped, no `[modules.bmm]` section created.
-      const applied = await applySetOverrides({ bmm: { foo: 'bar' }, core: { user_name: 'Updated' } }, bmadDir);
-      const team = await fs.readFile(path.join(bmadDir, 'config.toml'), 'utf8');
+      const applied = await applySetOverrides({ bmm: { foo: 'bar' }, core: { user_name: 'Updated' } }, wizzDir);
+      const team = await fs.readFile(path.join(wizzDir, 'config.toml'), 'utf8');
       assert(!team.includes('[modules.bmm]'), 'applySetOverrides does NOT create section for uninstalled module');
       assert(team.includes('user_name = "Updated"'), 'applySetOverrides still applies overrides for installed modules');
       assert(applied.length === 1 && applied[0].module === 'core', 'applySetOverrides reports only the installed-module entries');
@@ -3219,12 +3219,12 @@ async function runTests() {
 
     // ---- applySetOverrides: empty/missing input is a no-op ---------------
     {
-      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-applyset-empty-'));
-      const bmadDir = path.join(tmp, '_wizz');
-      await fs.ensureDir(bmadDir);
-      const empty1 = await applySetOverrides({}, bmadDir);
-      const empty2 = await applySetOverrides(null, bmadDir);
-      const empty3 = await applySetOverrides(undefined, bmadDir);
+      const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-applyset-empty-'));
+      const wizzDir = path.join(tmp, '_wizz');
+      await fs.ensureDir(wizzDir);
+      const empty1 = await applySetOverrides({}, wizzDir);
+      const empty2 = await applySetOverrides(null, wizzDir);
+      const empty3 = await applySetOverrides(undefined, wizzDir);
       assert(
         empty1.length === 0 && empty2.length === 0 && empty3.length === 0,
         'applySetOverrides is a no-op for empty/null/undefined input',
@@ -3236,9 +3236,9 @@ async function runTests() {
     // These read the on-disk external-module cache. Point that env at a temp
     // dir so test results don't depend on whatever the developer / CI runner
     // has cached.
-    const priorCacheEnv44 = process.env.BMAD_EXTERNAL_MODULES_CACHE;
-    const tempCacheDir44 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-list-options-cache-'));
-    process.env.BMAD_EXTERNAL_MODULES_CACHE = tempCacheDir44;
+    const priorCacheEnv44 = process.env.WIZZ_EXTERNAL_MODULES_CACHE;
+    const tempCacheDir44 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-list-options-cache-'));
+    process.env.WIZZ_EXTERNAL_MODULES_CACHE = tempCacheDir44;
     try {
       const discovered = await discoverOfficialModuleYamls();
       const codes = new Set(discovered.map((d) => d.code));
@@ -3259,9 +3259,9 @@ async function runTests() {
       assert(unknown.text.includes('No locally-known module.yaml'), '--list-options unknown explains the miss');
     } finally {
       if (priorCacheEnv44 === undefined) {
-        delete process.env.BMAD_EXTERNAL_MODULES_CACHE;
+        delete process.env.WIZZ_EXTERNAL_MODULES_CACHE;
       } else {
-        process.env.BMAD_EXTERNAL_MODULES_CACHE = priorCacheEnv44;
+        process.env.WIZZ_EXTERNAL_MODULES_CACHE = priorCacheEnv44;
       }
       await fs.remove(tempCacheDir44).catch(() => {});
     }
@@ -3280,34 +3280,34 @@ async function runTests() {
 
   let root45;
   try {
-    root45 = await fs.mkdtemp(path.join(os.tmpdir(), 'bmad-cleanup-test-'));
-    const bmadDir45 = path.join(root45, '_wizz');
-    await fs.ensureDir(path.join(bmadDir45, '_config'));
+    root45 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-cleanup-test-'));
+    const wizzDir45 = path.join(root45, '_wizz');
+    await fs.ensureDir(path.join(wizzDir45, '_config'));
 
     // Two skills nested under the same grouping dir (1-analysis), plus a
     // module-level file that must survive the cleanup.
     await fs.writeFile(
-      path.join(bmadDir45, '_config', 'skill-manifest.csv'),
+      path.join(wizzDir45, '_config', 'skill-manifest.csv'),
       [
         'canonicalId,name,description,module,path',
         '"wizz-agent-analyst","wizz-agent-analyst","fixture","bmm","_wizz/bmm/1-analysis/wizz-agent-analyst/SKILL.md"',
-        '"bmad-research","bmad-research","fixture","bmm","_wizz/bmm/1-analysis/research/bmad-research/SKILL.md"',
+        '"wizz-research","wizz-research","fixture","bmm","_wizz/bmm/1-analysis/research/wizz-research/SKILL.md"',
         '',
       ].join('\n'),
     );
-    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'wizz-agent-analyst'));
-    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'wizz-agent-analyst', 'SKILL.md'), 'x');
-    await fs.ensureDir(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research'));
-    await fs.writeFile(path.join(bmadDir45, 'bmm', '1-analysis', 'research', 'bmad-research', 'SKILL.md'), 'x');
-    await fs.writeFile(path.join(bmadDir45, 'bmm', 'config.yaml'), 'module: bmm\n');
+    await fs.ensureDir(path.join(wizzDir45, 'bmm', '1-analysis', 'wizz-agent-analyst'));
+    await fs.writeFile(path.join(wizzDir45, 'bmm', '1-analysis', 'wizz-agent-analyst', 'SKILL.md'), 'x');
+    await fs.ensureDir(path.join(wizzDir45, 'bmm', '1-analysis', 'research', 'wizz-research'));
+    await fs.writeFile(path.join(wizzDir45, 'bmm', '1-analysis', 'research', 'wizz-research', 'SKILL.md'), 'x');
+    await fs.writeFile(path.join(wizzDir45, 'bmm', 'config.yaml'), 'module: bmm\n');
 
     const installer45 = new Installer();
-    await installer45._cleanupSkillDirs(bmadDir45);
+    await installer45._cleanupSkillDirs(wizzDir45);
 
-    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', '1-analysis'))), 'empty skill-group dir is pruned after cleanup');
-    assert(!(await fs.pathExists(path.join(bmadDir45, 'bmm', '1-analysis', 'research'))), 'empty nested skill-group dir is pruned');
-    assert(await fs.pathExists(path.join(bmadDir45, 'bmm', 'config.yaml')), 'module-level files are preserved');
-    assert(await fs.pathExists(bmadDir45), 'bmad root is never removed');
+    assert(!(await fs.pathExists(path.join(wizzDir45, 'bmm', '1-analysis'))), 'empty skill-group dir is pruned after cleanup');
+    assert(!(await fs.pathExists(path.join(wizzDir45, 'bmm', '1-analysis', 'research'))), 'empty nested skill-group dir is pruned');
+    assert(await fs.pathExists(path.join(wizzDir45, 'bmm', 'config.yaml')), 'module-level files are preserved');
+    assert(await fs.pathExists(wizzDir45), 'wizz root is never removed');
   } catch (error) {
     console.log(`${colors.red}Test Suite 45 setup failed: ${error.message}${colors.reset}`);
     console.log(error.stack);

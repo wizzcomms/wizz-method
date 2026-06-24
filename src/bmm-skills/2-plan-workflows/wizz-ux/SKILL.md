@@ -2,7 +2,7 @@
 name: wizz-ux
 description: Plan UX patterns and design specifications. Use when the user says "lets create UX design" or "create UX specifications" or "help me plan the UX"
 ---
-# BMad UX
+# Wizz UX
 
 ## Overview
 
@@ -33,7 +33,7 @@ UX may lead, follow, or stand alone. Inherit `sources:` by reference; the spines
 1. Resolve customization: `python3 {project-root}/_wizz/scripts/resolve_customization.py --skill {skill-root} --key workflow`. On failure, read `{skill-root}/customize.toml` directly and use defaults.
 2. Run `{workflow.activation_steps_prepend}`. Treat `{workflow.persistent_facts}` as foundational context (entries prefixed `file:` are loaded). `{workflow.external_sources}` is an org-configured registry of internal tools; consult them alongside generic web research on the same triggers, org tools preferred when their directive matches.
 3. Load `{project-root}/_wizz/bmm/config.yaml` (+ `config.user.yaml` if present). Resolve `{user_name}`, `{communication_language}`, `{document_output_language}`, `{planning_artifacts}`, `{project_name}`, `{date}`. Missing keys → neutral defaults; never block.
-4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn. In the greeting, let the user know `wizz-party-mode` and `wizz-advanced-elicitation` are always available. Then scan for misroute on the first message: PRD → `wizz-prd`; architecture → `wizz-architecture`; game UX → BMad GDS; agent/skill → `bmad-workflow-builder`; brief → `wizz-product-brief`.
+4. If headless, follow `references/headless.md` for the whole run. Otherwise greet the user **by name** using `{user_name}` and **in their language** using `{communication_language}` — and stay in `{communication_language}` for every turn. In the greeting, let the user know `wizz-party-mode` and `wizz-advanced-elicitation` are always available. Then scan for misroute on the first message: PRD → `wizz-prd`; architecture → `wizz-architecture`; game UX → Wizz GDS; agent/skill → `wizz-workflow-builder`; brief → `wizz-product-brief`.
 5. Detect intent: **Create**, **Update**, **Validate**. For Create, before binding a fresh workspace, scan `{workflow.ux_output_path}` for prior in-progress runs (folders matching `{workflow.run_folder_pattern}` whose `DESIGN.md` frontmatter `status` is not `final`) and offer to resume rather than starting over.
 
 Run `{workflow.activation_steps_append}`.

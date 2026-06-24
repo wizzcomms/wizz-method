@@ -32,7 +32,7 @@ AI-powered tools for structured creativity, ideation, and innovation during earl
 
 - **Code:** `cis`
 - **npm:** [`bmad-creative-intelligence-suite`](https://www.npmjs.com/package/bmad-creative-intelligence-suite)
-- **GitHub:** [bmad-code-org/bmad-module-creative-intelligence-suite](https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite)
+- **GitHub:** [bmad-code-org/wizz-module-creative-intelligence-suite](https://github.com/bmad-code-org/wizz-module-creative-intelligence-suite)
 
 **Provides:**
 
@@ -47,7 +47,7 @@ Structured game development workflows adapted for Unity, Unreal, Godot, and cust
 
 - **Code:** `gds`
 - **npm:** [`bmad-game-dev-studio`](https://www.npmjs.com/package/bmad-game-dev-studio)
-- **GitHub:** [bmad-code-org/bmad-module-game-dev-studio](https://github.com/bmad-code-org/bmad-module-game-dev-studio)
+- **GitHub:** [bmad-code-org/wizz-module-game-dev-studio](https://github.com/bmad-code-org/wizz-module-game-dev-studio)
 
 **Provides:**
 

@@ -8,7 +8,7 @@
 
 [workflow]
 
-# --- Configurable below. Overrides merge per BMad structural rules: ---
+# --- Configurable below. Overrides merge per Wizz structural rules: ---
 #   scalars: override wins • plain arrays: append
 #   arrays of tables keyed by `code`/`id`: matching key replaces, new keys append
 
@@ -28,7 +28,7 @@ persistent_facts = [
 ]
 
 # Which party loads when the user just says "party mode" with no override.
-# Empty = the installed BMAD agents — exactly the default behavior of a plain
+# Empty = the installed WIZZ agents — exactly the default behavior of a plain
 # install. Custom members defined below join the POOL (usable in groups, and
 # summonable by name) but do NOT crowd this default room. Set this to a
 # `party_groups` id to pin a curated room as the default instead. A runtime

@@ -4,18 +4,18 @@ const csv = require('csv-parse/sync');
 
 /**
  * Read the global skill-manifest.csv and return the set of canonicalIds.
- * These define which directory entries in a target_dir are BMAD-owned, regardless
- * of whether they happen to start with "bmad-" (custom modules can ship skills
+ * These define which directory entries in a target_dir are WIZZ-owned, regardless
+ * of whether they happen to start with "wizz-" (custom modules can ship skills
  * with any prefix, e.g. "fred-cool-skill").
  *
- * @param {string} bmadDir - Path to the _wizz install directory
+ * @param {string} wizzDir - Path to the _wizz install directory
  * @returns {Promise<Set<string>>} Set of canonicalIds, or empty set if manifest missing
  */
-async function getInstalledCanonicalIds(bmadDir) {
+async function getInstalledCanonicalIds(wizzDir) {
   const ids = new Set();
-  if (!bmadDir) return ids;
+  if (!wizzDir) return ids;
 
-  const csvPath = path.join(bmadDir, '_config', 'skill-manifest.csv');
+  const csvPath = path.join(wizzDir, '_config', 'skill-manifest.csv');
   if (!(await fs.pathExists(csvPath))) return ids;
 
   try {
@@ -32,19 +32,19 @@ async function getInstalledCanonicalIds(bmadDir) {
 }
 
 /**
- * Test whether a directory entry is BMAD-owned.
- * Prefers the manifest's canonicalIds; falls back to the legacy "bmad" prefix
- * when no manifest is available (early install, ancestor lookup with no bmad dir).
+ * Test whether a directory entry is WIZZ-owned.
+ * Prefers the manifest's canonicalIds; falls back to the legacy "wizz" prefix
+ * when no manifest is available (early install, ancestor lookup with no wizz dir).
  *
  * @param {string} entry - Directory entry name
  * @param {Set<string>|null} canonicalIds - From getInstalledCanonicalIds, or null
  * @returns {boolean}
  */
-function isBmadOwnedEntry(entry, canonicalIds) {
+function isWizzOwnedEntry(entry, canonicalIds) {
   if (!entry || typeof entry !== 'string') return false;
-  if (entry.toLowerCase().startsWith('bmad-os-')) return false;
+  if (entry.toLowerCase().startsWith('wizz-os-')) return false;
   if (canonicalIds && canonicalIds.size > 0) return canonicalIds.has(entry);
-  return entry.toLowerCase().startsWith('bmad');
+  return entry.toLowerCase().startsWith('wizz');
 }
 
-module.exports = { getInstalledCanonicalIds, isBmadOwnedEntry };
+module.exports = { getInstalledCanonicalIds, isWizzOwnedEntry };

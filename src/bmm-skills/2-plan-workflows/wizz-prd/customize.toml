@@ -8,7 +8,7 @@
 
 [workflow]
 
-# --- Configurable below. Overrides merge per BMad structural rules: ---
+# --- Configurable below. Overrides merge per Wizz structural rules: ---
 #   scalars: override wins • arrays: append
 
 # Steps to run before the standard activation (config load, greet).
@@ -140,7 +140,7 @@ external_handoffs = []
 #                  subagent applying that prompt to prd.md
 #   plain text     use the text directly as the subagent's review prompt
 #
-# Override TOML may append additional reviewers. Arrays append per BMad rules.
+# Override TOML may append additional reviewers. Arrays append per Wizz rules.
 #
 # Resolved on-demand by the authoring skill (not pulled at activation): only
 # when entering the Validate intent or assembling the gate at Finalize step 3.

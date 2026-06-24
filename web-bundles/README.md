@@ -1,6 +1,6 @@
-# BMad Web Bundles
+# Wizz Web Bundles
 
-V4 shipped web bundles. V6 brings them back, new and improved. Each bundle packages a BMad skill as a self-contained install for **Google Gemini Gems** and **ChatGPT Custom GPTs**, so you can run the planning work in your web LLM subscription before opening your IDE.
+V4 shipped web bundles. V6 brings them back, new and improved. Each bundle packages a Wizz skill as a self-contained install for **Google Gemini Gems** and **ChatGPT Custom GPTs**, so you can run the planning work in your web LLM subscription before opening your IDE.
 
 ## Install
 
@@ -35,7 +35,7 @@ Requires Gemini Advanced (for Gems) or ChatGPT Plus / Pro / Business / Enterpris
 
 ## Build your own
 
-Web bundles are generated from BMad skills using the [`bmad-os-skill-to-bundle`](https://github.com/bmad-code-org/bmad-utility-skills) utility skill. Point it at any BMad skill folder and it produces a `SKILL.md`, an `INSTRUCTIONS.md`, and any required data files, with persona inheritance from the owning agent.
+Web bundles are generated from Wizz skills using the [`bmad-os-skill-to-bundle`](https://github.com/bmad-code-org/wizz-utility-skills) utility skill. Point it at any Wizz skill folder and it produces a `SKILL.md`, an `INSTRUCTIONS.md`, and any required data files, with persona inheritance from the owning agent.
 
 ## What's in this folder
 
@@ -43,4 +43,4 @@ This folder is the **source** for the shelf, packaged into ZIPs and attached to 
 
 ## Concept docs
 
-[What web bundles are and when to use them](https://docs.bmad-method.org/explanation/web-bundles/).
+[What web bundles are and when to use them](https://docs.wizz-method.org/explanation/web-bundles/).

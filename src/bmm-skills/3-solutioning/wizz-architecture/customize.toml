@@ -8,7 +8,7 @@
 
 [workflow]
 
-# --- Configurable below. Overrides merge per BMad structural rules: ---
+# --- Configurable below. Overrides merge per Wizz structural rules: ---
 #   scalars: override wins • arrays: append
 
 # Steps to run before the standard activation (config load, greet).

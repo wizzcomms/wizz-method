@@ -1,6 +1,6 @@
 ---
 name: wizz-create-prd
-description: 'DEPRECATED — consolidated into wizz-prd create intent - this skill will be removed in v7 in favor of `wizz-prd`.'
+description: 'DEPRECATED — consolidated into wizz-prd create intent - this skill will be removed in v7 in favor of `wizz-prd`. Use when needed for backwards compatibility.'
 ---
 
 # DEPRECATED — forwards to wizz-prd (create intent)

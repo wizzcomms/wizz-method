@@ -1,6 +1,6 @@
 ---
 name: wizz-qa
-description: QA do Wizz Method. Use depois que o código está pronto, para verificar de fora: rodar testes, gerar testes E2E, revisão adversarial caçando bugs e conferir se atende o que foi pedido. Roteia para e2e-runner, adversarial-reviewer, wizz-qa-generate-e2e-tests e code-reviewer.
+description: Wizz Method QA. Use when the code is ready, to verify it from the outside (run tests, generate E2E tests, adversarial review hunting bugs, and check if it meets what was requested). Routes to e2e-runner, adversarial-reviewer, wizz-qa-generate-e2e-tests, and code-reviewer.
 ---
 
 # QA — Garantia de Qualidade

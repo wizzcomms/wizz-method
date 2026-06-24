@@ -54,9 +54,9 @@ module.exports = {
         process.exit(1);
       }
 
-      const { bmadDir } = await installer.findBmadDir(projectDir);
+      const { wizzDir } = await installer.findWizzDir(projectDir);
 
-      if (!(await fs.pathExists(bmadDir))) {
+      if (!(await fs.pathExists(wizzDir))) {
         await prompts.log.warn('No Wizz installation found.');
         process.exit(0);
       }
@@ -82,7 +82,7 @@ module.exports = {
           options: [
             {
               value: 'modules',
-              label: `Wizz Modules & data (${installer.bmadFolderName}/)`,
+              label: `Wizz Modules & data (${installer.wizzFolderName}/)`,
               hint: 'Core installation, agents, workflows, config',
             },
             { value: 'ide', label: 'IDE integrations', hint: ides || 'No IDEs configured' },
@@ -133,10 +133,10 @@ module.exports = {
         s.stop('User artifacts removed');
       }
 
-      // Phase 3: BMAD modules & data (last — other phases may need _wizz/)
+      // Phase 3: WIZZ modules & data (last — other phases may need _wizz/)
       if (removeModules) {
         const s = await prompts.spinner();
-        s.start(`Removing Wizz modules & data (${installer.bmadFolderName}/)...`);
+        s.start(`Removing Wizz modules & data (${installer.wizzFolderName}/)...`);
         await installer.uninstallModules(projectDir);
         s.stop('Modules & data removed');
       }

@@ -1,4 +1,4 @@
-# BMAD Platform Codes Configuration
+# WIZZ Platform Codes Configuration
 #
 # Each platform entry has:
 #   name: Display name shown to users
@@ -7,7 +7,7 @@
 #   installer:
 #     target_dir: Directory where skill directories are installed (project/workspace)
 #     global_target_dir: (optional) User-home directory for global install
-#     ancestor_conflict_check: (optional) Refuse install when ancestor dir has BMAD files
+#     ancestor_conflict_check: (optional) Refuse install when ancestor dir has WIZZ files
 #
 # Multiple platforms may share the same target_dir or global_target_dir — many tools
 # read from the shared `.agents/skills/` and `~/.agents/skills/` cross-tool standard.
@@ -145,12 +145,12 @@ platforms:
       # The Custom Agents picker should only show persona agents (not
       # workflows/tools). Detected by reading each skill's source
       # `customize.toml` and checking for an `[agent]` section — that's
-      # the actual configuration source of truth: every BMAD persona is
+      # the actual configuration source of truth: every WIZZ persona is
       # configured under `[agent]`, every workflow under `[workflow]`,
       # every standalone skill has no customize.toml. This signal is
-      # naming-independent, so personas like `bmad-tea` (which doesn't
+      # naming-independent, so personas like `wizz-tea` (which doesn't
       # follow the `-agent-` convention) are still included, and
-      # meta-skills like `bmad-agent-builder` (which contains `-agent-`
+      # meta-skills like `wizz-agent-builder` (which contains `-agent-`
       # but is a skill-builder workflow, not a persona) are correctly
       # excluded.
       commands_filter: agents-only

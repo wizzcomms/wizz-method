@@ -110,7 +110,7 @@ async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = 
  * UI utilities for the installer
  */
 class UI {
-  async _retainUnavailableInstalledModules(selectedModules, installedModuleIds, bmadDir, options = {}) {
+  async _retainUnavailableInstalledModules(selectedModules, installedModuleIds, wizzDir, options = {}) {
     const { OfficialModules } = require('./modules/official-modules');
     const officialCodes = new Set(['core']);
 
@@ -135,7 +135,7 @@ class UI {
       if (!selectedSet.has(moduleId) && !options.preserveUnselected) continue;
       if (officialCodes.has(moduleId)) continue;
 
-      const customSource = await customMgr.findModuleSourceByCode(moduleId, { bmadDir });
+      const customSource = await customMgr.findModuleSourceByCode(moduleId, { wizzDir });
       if (!customSource) {
         preserveModules.push(moduleId);
       }
@@ -161,7 +161,7 @@ class UI {
     const messageLoader = new MessageLoader();
     await messageLoader.displayStartMessage();
 
-    // Probe the local Python before any other prompts: several BMAD features
+    // Probe the local Python before any other prompts: several WIZZ features
     // (memlog session memory, TOML config resolution) need Python 3.11+ at
     // runtime. Warn-don't-block, but require an explicit ack so the warning
     // can't scroll past unseen. The installer runs in the destination
@@ -213,10 +213,10 @@ class UI {
 
     const { Installer } = require('./core/installer');
     const installer = new Installer();
-    const { bmadDir } = await installer.findBmadDir(confirmedDirectory);
+    const { wizzDir } = await installer.findWizzDir(confirmedDirectory);
 
-    // Check if there's an existing BMAD installation
-    const hasExistingInstall = await fs.pathExists(bmadDir);
+    // Check if there's an existing WIZZ installation
+    const hasExistingInstall = await fs.pathExists(wizzDir);
 
     // Track action type (only set if there's an existing installation)
     let actionType;
@@ -224,7 +224,7 @@ class UI {
     // Only show action menu if there's an existing installation
     if (hasExistingInstall) {
       // Get version information
-      const { existingInstall, bmadDir } = await this.getExistingInstallation(confirmedDirectory);
+      const { existingInstall, wizzDir } = await this.getExistingInstallation(confirmedDirectory);
 
       // Build menu choices dynamically
       const choices = [];
@@ -321,7 +321,7 @@ class UI {
           selectedModules.unshift('core');
         }
 
-        const retainedModuleResult = await this._retainUnavailableInstalledModules(selectedModules, installedModuleIds, bmadDir, {
+        const retainedModuleResult = await this._retainUnavailableInstalledModules(selectedModules, installedModuleIds, wizzDir, {
           preserveUnselected: options.yes && !options.modules,
         });
         selectedModules = retainedModuleResult.selectedModules;
@@ -339,7 +339,7 @@ class UI {
         // default Y, major default N). Legacy entries with no channel are
         // migrated here too. Mutates channelOptions.pins to lock rejections.
         await this._resolveUpdateChannels({
-          bmadDir,
+          wizzDir,
           selectedModules,
           channelOptions,
           yes: options.yes || false,
@@ -503,8 +503,8 @@ class UI {
     const { ExistingInstall } = require('./core/existing-install');
     const { Installer } = require('./core/installer');
     const installer = new Installer();
-    const { bmadDir } = await installer.findBmadDir(projectDir || process.cwd());
-    const existingInstall = await ExistingInstall.detect(bmadDir);
+    const { wizzDir } = await installer.findWizzDir(projectDir || process.cwd());
+    const existingInstall = await ExistingInstall.detect(wizzDir);
     const configuredIdes = existingInstall.ides;
 
     // Get IDE manager to fetch available IDEs dynamically
@@ -732,17 +732,17 @@ class UI {
   /**
    * Get existing installation info and installed modules
    * @param {string} directory - Installation directory
-   * @returns {Object} Object with existingInstall, installedModuleIds, installedModuleVersions, and bmadDir
+   * @returns {Object} Object with existingInstall, installedModuleIds, installedModuleVersions, and wizzDir
    */
   async getExistingInstallation(directory) {
     const { ExistingInstall } = require('./core/existing-install');
     const { Installer } = require('./core/installer');
     const installer = new Installer();
-    const { bmadDir } = await installer.findBmadDir(directory);
-    const existingInstall = await ExistingInstall.detect(bmadDir);
+    const { wizzDir } = await installer.findWizzDir(directory);
+    const existingInstall = await ExistingInstall.detect(wizzDir);
     const installedModuleIds = new Set(existingInstall.moduleIds);
     const installedModuleVersions = new Map();
-    const manifestModules = await manifest.getAllModuleVersions(bmadDir);
+    const manifestModules = await manifest.getAllModuleVersions(wizzDir);
 
     for (const module of manifestModules) {
       if (module?.name && module.version) {
@@ -760,7 +760,7 @@ class UI {
       installedModuleVersions.set('core', existingInstall.version);
     }
 
-    return { existingInstall, installedModuleIds, installedModuleVersions, bmadDir };
+    return { existingInstall, installedModuleIds, installedModuleVersions, wizzDir };
   }
 
   /**
@@ -1355,15 +1355,15 @@ class UI {
       if (stats.isDirectory()) {
         const files = await fs.readdir(directory);
         if (files.length > 0) {
-          // Check for any bmad installation (any folder with _config/manifest.yaml)
+          // Check for any wizz installation (any folder with _config/manifest.yaml)
           const { Installer } = require('./core/installer');
           const installer = new Installer();
-          const bmadResult = await installer.findBmadDir(directory);
-          const hasBmadInstall =
-            (await fs.pathExists(bmadResult.bmadDir)) && (await fs.pathExists(path.join(bmadResult.bmadDir, '_config', 'manifest.yaml')));
+          const wizzResult = await installer.findWizzDir(directory);
+          const hasWizzInstall =
+            (await fs.pathExists(wizzResult.wizzDir)) && (await fs.pathExists(path.join(wizzResult.wizzDir, '_config', 'manifest.yaml')));
 
-          const bmadNote = hasBmadInstall ? ` including existing Wizz installation (${path.basename(bmadResult.bmadDir)})` : '';
-          await prompts.log.message(`Directory exists and contains ${files.length} item(s)${bmadNote}`);
+          const wizzNote = hasWizzInstall ? ` including existing Wizz installation (${path.basename(wizzResult.wizzDir)})` : '';
+          await prompts.log.message(`Directory exists and contains ${files.length} item(s)${wizzNote}`);
         } else {
           await prompts.log.message('Directory exists and is empty');
         }
@@ -1601,8 +1601,8 @@ class UI {
     const { ExistingInstall } = require('./core/existing-install');
     const { Installer } = require('./core/installer');
     const installer = new Installer();
-    const { bmadDir } = await installer.findBmadDir(directory);
-    const existingInstall = await ExistingInstall.detect(bmadDir);
+    const { wizzDir } = await installer.findWizzDir(directory);
+    const existingInstall = await ExistingInstall.detect(wizzDir);
     return existingInstall.ides;
   }
 
@@ -1695,12 +1695,12 @@ class UI {
    * @param {Object} statusData - Status data with modules, installation info, and available updates
    */
   async displayStatus(statusData) {
-    const { installation, modules, availableUpdates, bmadDir } = statusData;
+    const { installation, modules, availableUpdates, wizzDir } = statusData;
 
     // Installation info
     const infoLines = [
       `Version:       ${installation.version || 'unknown'}`,
-      `Location:      ${bmadDir}`,
+      `Location:      ${wizzDir}`,
       `Installed:     ${new Date(installation.installDate).toLocaleDateString()}`,
       `Last Updated:  ${installation.lastUpdated ? new Date(installation.lastUpdated).toLocaleDateString() : 'unknown'}`,
     ];
@@ -1855,10 +1855,10 @@ class UI {
    * Decisions that freeze the current version are applied by adding a pin to
    * `channelOptions.pins` so downstream clone logic honors them.
    */
-  async _resolveUpdateChannels({ bmadDir, selectedModules, channelOptions, yes }) {
+  async _resolveUpdateChannels({ wizzDir, selectedModules, channelOptions, yes }) {
     const { Manifest } = require('./core/manifest');
     const manifestObj = new Manifest();
-    const manifest = await manifestObj.read(bmadDir);
+    const manifest = await manifestObj.read(wizzDir);
     const existingByName = new Map();
     for (const m of manifest?.modulesDetailed || []) {
       if (m?.name) existingByName.set(m.name, m);
@@ -1899,7 +1899,7 @@ class UI {
       if (!info) continue;
       // Bundled modules (core/bmm) ship with the installer binary itself —
       // their version is stapled to the CLI version, not a git tag. Skip
-      // tag-API lookups for them; the "upgrade" mechanism is `npx bmad@X install`.
+      // tag-API lookups for them; the "upgrade" mechanism is `npx wizz@X install`.
       if (info.builtIn) continue;
 
       const repoUrl = info.url;

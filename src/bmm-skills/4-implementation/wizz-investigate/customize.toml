@@ -5,7 +5,7 @@
 
 [workflow]
 
-# --- Configurable below. Overrides merge per BMad structural rules: ---
+# --- Configurable below. Overrides merge per Wizz structural rules: ---
 #   scalars: override wins • arrays (persistent_facts, activation_steps_*): append
 #   arrays-of-tables with `code`/`id`: replace matching items, append new ones.
 

@@ -1,4 +1,4 @@
-# Override Wizz (escopo time) para o agente BMAD Mary (Business Analyst).
+# Override Wizz (escopo time) para o agente WIZZ Mary (Business Analyst).
 # Mescla por cima da base: principles e activation_steps fazem APPEND.
 # Instalado em {project-root}/_wizz/custom/wizz-agent-analyst.toml
 # Seu .user.toml pessoal ainda vence por cima deste.

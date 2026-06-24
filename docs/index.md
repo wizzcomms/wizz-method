@@ -7,8 +7,8 @@ The **Wizz Method** is an AI-driven agency development and production method. It
 
 If you're comfortable working with AI assistants like Claude, Cursor, or GitHub Copilot, you're ready to get started.
 
-:::note[Independent fork of the BMad Method]
-The Wizz Method is an independent fork of the [BMad Method](https://github.com/bmad-code-org/BMAD-METHOD), maintained by Wizz! comms. The engine is still BMAD (credited in the repository's `TRADEMARK.md`); the Wizz layer adds agency routing through `wizz-maestro`, a standardized closeout (✅ what I did, ➡️ next step, 🎯 command), and Portuguese-friendly defaults for the agency's skills.
+:::note[Independent fork of the Wizz Method]
+The Wizz Method is an independent fork of the [Wizz Method](https://github.com/bmad-code-org/WIZZ-METHOD), maintained by Wizz! comms. The engine is still BMAD (credited in the repository's `TRADEMARK.md`); the Wizz layer adds agency routing through `wizz-maestro`, a standardized closeout (✅ what I did, ➡️ next step, 🎯 command), and Portuguese-friendly defaults for the agency's skills.
 :::
 
 ## Getting Started

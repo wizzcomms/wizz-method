@@ -252,16 +252,16 @@ function runTests() {
   section('channel-resolver :: parseGitHubRepo');
 
   {
-    const r = parseGitHubRepo('https://github.com/bmad-code-org/BMAD-METHOD');
-    assert(r && r.owner === 'bmad-code-org' && r.repo === 'BMAD-METHOD', 'https URL basic');
+    const r = parseGitHubRepo('https://github.com/bmad-code-org/WIZZ-METHOD');
+    assert(r && r.owner === 'bmad-code-org' && r.repo === 'WIZZ-METHOD', 'https URL basic');
   }
   {
-    const r = parseGitHubRepo('https://github.com/bmad-code-org/BMAD-METHOD.git');
-    assert(r && r.repo === 'BMAD-METHOD', '.git suffix stripped');
+    const r = parseGitHubRepo('https://github.com/bmad-code-org/WIZZ-METHOD.git');
+    assert(r && r.repo === 'WIZZ-METHOD', '.git suffix stripped');
   }
   {
-    const r = parseGitHubRepo('https://github.com/bmad-code-org/BMAD-METHOD/');
-    assert(r && r.repo === 'BMAD-METHOD', 'trailing slash stripped');
+    const r = parseGitHubRepo('https://github.com/bmad-code-org/WIZZ-METHOD/');
+    assert(r && r.repo === 'WIZZ-METHOD', 'trailing slash stripped');
   }
   {
     const r = parseGitHubRepo('https://github.com/org/repo/tree/main/subdir');
@@ -312,8 +312,8 @@ function runTests() {
   section('channel-resolver :: releaseNotesUrl');
 
   assertEqual(
-    releaseNotesUrl('https://github.com/bmad-code-org/BMAD-METHOD', 'v1.2.3'),
-    'https://github.com/bmad-code-org/BMAD-METHOD/releases/tag/v1.2.3',
+    releaseNotesUrl('https://github.com/bmad-code-org/WIZZ-METHOD', 'v1.2.3'),
+    'https://github.com/bmad-code-org/WIZZ-METHOD/releases/tag/v1.2.3',
     'builds standard release URL',
   );
   assertEqual(releaseNotesUrl('https://gitlab.com/foo/bar', 'v1.0.0'), null, 'non-github repo → null');

@@ -21,7 +21,7 @@ Gemini Gems pair naturally with **Google Stitch** (`stitch.withgoogle.com`), Goo
 
 ## Customize
 
-Edit the `[persona]` block below to swap voices. Default: **Sally, UX Designer** (the BMad Method UX designer). `[preferences]` sets a default user name.
+Edit the `[persona]` block below to swap voices. Default: **Sally, UX Designer** (the Wizz Method UX designer). `[preferences]` sets a default user name.
 
 ## Persona Swap Example (reference, do not paste)
 
