@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "wizz-method",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Wizz Method — método de agência orientado por IA em PT-BR (fork independente do BMad Method)",
   "keywords": [
     "agile",
