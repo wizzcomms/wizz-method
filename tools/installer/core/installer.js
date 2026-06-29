@@ -2,6 +2,7 @@ const path = require('node:path');
 const fs = require('../fs-native');
 const { Manifest } = require('./manifest');
 const { OfficialModules } = require('../modules/official-modules');
+const { installSkillsLib } = require('../modules/skills-lib');
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../file-ops');
 const { Config } = require('./config');
@@ -296,6 +297,29 @@ class Installer {
         this.installedFiles.add(paths.manifestFile());
         this.installedFiles.add(paths.centralConfig());
         this.installedFiles.add(paths.centralUserConfig());
+
+        // Install the global skills library (area-filtered) BEFORE manifests, so
+        // collectSkills discovers `_wizz/skills-lib/<id>` and the verbatim pipeline
+        // carries them into each IDE. Gated on the `wizz` module; additive, so a
+        // failure here warns and never aborts the install.
+        if (!config.isQuickUpdate() && (config.modules || []).includes('wizz')) {
+          message('Installing global skills...');
+          try {
+            const result = await installSkillsLib({
+              wizzDir: paths.wizzDir,
+              selectedAreas: config.selectedAreas || [],
+              trackFile: (p) => this.installedFiles.add(p),
+            });
+            if (result.registry) {
+              addResult('Global skills', 'ok', `${result.copied} installed`);
+            }
+            if (result.skipped.length > 0) {
+              await prompts.log.warn(`Skills no registry sem pasta em skills-lib (ignoradas): ${result.skipped.join(', ')}`);
+            }
+          } catch (error) {
+            await prompts.log.warn(`Falha ao instalar skills globais: ${error.message}`);
+          }
+        }
 
         message('Generating manifests...');
         const manifestGen = new ManifestGenerator();

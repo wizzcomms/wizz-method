@@ -7,6 +7,7 @@ class Config {
     directory,
     modules,
     ides,
+    selectedAreas,
     skipPrompts,
     verbose,
     actionType,
@@ -19,6 +20,9 @@ class Config {
     this.directory = directory;
     this.modules = Object.freeze([...modules]);
     this.ides = Object.freeze([...ides]);
+    // Global-skills areas the user chose to install (from skills-registry.yaml).
+    // Empty means "all areas" when skills-lib is installed; see installSkillsLib.
+    this.selectedAreas = Object.freeze([...(selectedAreas || [])]);
     this.skipPrompts = skipPrompts;
     this.verbose = verbose;
     this.actionType = actionType;
@@ -50,6 +54,7 @@ class Config {
       directory: userInput.directory,
       modules,
       ides: userInput.skipIde ? [] : [...(userInput.ides || [])],
+      selectedAreas: userInput.selectedAreas || [],
       skipPrompts: userInput.skipPrompts || false,
       verbose: userInput.verbose || false,
       actionType: userInput.actionType,

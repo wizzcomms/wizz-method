@@ -112,7 +112,15 @@ class ManifestGenerator {
     this.skillClaimedDirs = new Set();
     const debug = process.env.WIZZ_DEBUG_MANIFEST === 'true';
 
-    for (const moduleName of this.updatedModules) {
+    // Walk every module, plus the global skills pool (`skills-lib`) when present.
+    // skills-lib is intentionally excluded from this.modules (no versioning), so
+    // we append it here as a scan target only.
+    const scanTargets = [...this.updatedModules];
+    if (await fs.pathExists(path.join(this.wizzDir, 'skills-lib'))) {
+      scanTargets.push('skills-lib');
+    }
+
+    for (const moduleName of scanTargets) {
       const modulePath = path.join(this.wizzDir, moduleName);
       if (!(await fs.pathExists(modulePath))) continue;
 
@@ -752,8 +760,11 @@ class ManifestGenerator {
       const entries = await fs.readdir(wizzDir, { withFileTypes: true });
 
       for (const entry of entries) {
-        // Skip if not a directory or is a special directory
-        if (!entry.isDirectory() || entry.name.startsWith('.') || entry.name === '_config') {
+        // Skip if not a directory or is a special directory.
+        // `skills-lib` is the global skills pool (no module.yaml, not versioned);
+        // it is walked explicitly by collectSkills, but must NOT be treated as a
+        // module here or writeMainManifest/writeCentralConfig would try to version it.
+        if (!entry.isDirectory() || entry.name.startsWith('.') || entry.name === '_config' || entry.name === 'skills-lib') {
           continue;
         }
 

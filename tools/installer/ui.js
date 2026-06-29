@@ -1,7 +1,9 @@
 const path = require('node:path');
 const os = require('node:os');
 const semver = require('semver');
+const yaml = require('yaml');
 const fs = require('./fs-native');
+const { getProjectRoot } = require('./project-root');
 const installerPackageJson = require('../../package.json');
 const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
@@ -427,6 +429,7 @@ class UI {
     await this._interactiveChannelGate({ options, channelOptions, selectedModules });
 
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
+    const selectedAreas = await this.selectSkillAreas(selectedModules, options);
     const { moduleConfigs, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
       ...options,
       channelOptions,
@@ -451,12 +454,79 @@ class UI {
       modules: selectedModules,
       ides: toolSelection.ides,
       skipIde: toolSelection.skipIde,
+      selectedAreas,
       coreConfig: moduleConfigs.core || {},
       moduleConfigs: moduleConfigs,
       setOverrides,
       skipPrompts: options.yes || false,
       channelOptions,
     };
+  }
+
+  /**
+   * Load and parse skills-registry.yaml from the package root.
+   * @returns {Object|null} Parsed registry, or null when absent/unreadable
+   */
+  _loadSkillsRegistry() {
+    try {
+      const registryPath = path.join(getProjectRoot(), 'skills-registry.yaml');
+      if (!fs.existsSync(registryPath)) return null;
+      return yaml.parse(fs.readFileSync(registryPath, 'utf8'));
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Prompt for which global-skill AREAS to install (designer, copy, seo, ...).
+   * Only relevant when the `wizz` (agency/method) module is selected. Areas come
+   * straight from skills-registry.yaml so this never diverges from the routing.
+   * Returns an empty array to mean "all areas" (the installSkillsLib sentinel).
+   * @param {string[]} selectedModules - Modules chosen for install
+   * @param {Object} options - Command-line options
+   * @returns {Promise<string[]>} Chosen area keys, or [] for all
+   */
+  async selectSkillAreas(selectedModules, options = {}) {
+    if (!selectedModules.includes('wizz')) return [];
+
+    const registry = this._loadSkillsRegistry();
+    if (!registry || !registry.areas) return [];
+    const areaKeys = Object.keys(registry.areas);
+    if (areaKeys.length === 0) return [];
+
+    // CLI: --areas a,b,c (or 'all')
+    if (options.areas !== undefined) {
+      const raw = String(options.areas)
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (raw.includes('all')) return [];
+      const unknown = raw.filter((a) => !areaKeys.includes(a));
+      if (unknown.length > 0) {
+        await prompts.log.warn(`Áreas desconhecidas ignoradas: ${unknown.join(', ')}`);
+      }
+      return raw.filter((a) => areaKeys.includes(a));
+    }
+
+    // Non-interactive (--yes): install every area.
+    if (options.yes) return [];
+
+    const areaOptions = areaKeys.map((key) => {
+      const summary = registry.areas[key].summary || '';
+      return { label: summary ? `${key} (${summary})` : key, value: key };
+    });
+
+    const selected = await prompts.autocompleteMultiselect({
+      message: 'Quais áreas de skills globais instalar? (vazio = todas)',
+      options: areaOptions,
+      initialValues: areaKeys,
+      required: false,
+      maxItems: 12,
+    });
+
+    // Empty or full selection both collapse to the "all areas" sentinel.
+    if (!selected || selected.length === 0 || selected.length === areaKeys.length) return [];
+    return selected;
   }
 
   /**
