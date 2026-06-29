@@ -1,0 +1,318 @@
+# Wizz Method — Skills Registry (fonte única)
+#
+# Mapeia cada skill global a uma ÁREA (dona = agente wizz), cada SQUAD a um
+# domínio consultivo, e dá um campo "when" curto pra desambiguar skills
+# parecidas. Dois consumidores leem este arquivo:
+#   1. O INSTALLER — decide quais skills copiar pra .claude/skills por área escolhida.
+#   2. O MAESTRO/ROUTER — decide pra qual agente/skill/squad rotear.
+# Mantê-los lendo o MESMO arquivo garante que roteamento e instalação nunca divirjam.
+#
+# Skills vivem em src/skills-lib/<id>/. Squads em src/squads/<id>/ (via wizz-party-mode).
+#
+# MCPs (Model Context Protocol servers) também são declarados aqui, por área, no
+# campo `mcps:` (e `mcp_utility:` para os cross-cutting). Cada entrada tem:
+#   id      — nome do server no config da IDE (chave em mcpServers)
+#   when    — quando esse MCP ajuda (desambigua, igual ao `when` das skills)
+#   server  — { command, args, env } gravado no .mcp.json pelo installer
+# Secrets em `env` são SEMPRE placeholders `${VAR}` — o installer nunca escreve
+# token real. O installer instala/recomenda os MCPs das áreas escolhidas; o
+# maestro/router oferece o MCP certo em runtime. Mesma fonte única das skills.
+
+version: 1
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ÁREAS — cada uma tem um agente dono (executor) e as skills que ele puxa.
+# ─────────────────────────────────────────────────────────────────────────────
+areas:
+  designer:
+    agent: wizz-designer
+    summary: "Design de produto e UI: interfaces, landing pages, design systems, motion, 3D."
+    skills:
+      - id: ui-ux-pro-max
+        when: "Design system, paleta, tipografia, componente; pedido de UI amplo. Principal de busca de padrões/estilos."
+      - id: impeccable
+        when: "Gate de polish/qualidade de frontend: hardening de UI, acessibilidade, anti-padrões. Refina o que já existe."
+      - id: huashu-design
+        when: "Direção visual + protótipo HTML hi-fi, exploração de variantes, review 5-dim, export MP4/GIF."
+      - id: premium-landing-ui-researcher
+        when: "Projeto NOVO (greenfield): cria landing premium do zero, hero, 3D high-end. Estratégia source-first."
+      - id: ui-component-curator
+        when: "Projeto EXISTENTE: qual componente/efeito adicionar que combina com o estilo atual."
+      - id: motion-3d-director
+        when: "Direção de motion/animação, 3D, WebGL, scroll cinematográfico, image-to-video."
+      - id: remotion-best-practices
+        when: "Vídeo programático em React (Remotion) especificamente."
+      - id: taste-skill
+        when: "Anti-slop em briefs NOVOS: lê o brief, define a direção e audita contra defaults de AI."
+      - id: taste-redesign
+        when: "Anti-slop em projeto EXISTENTE: audita o código atual, lista problemas, prioriza fixes."
+      - id: react-components
+        when: "Converter design (Stitch MCP) em componentes React/Vite."
+      - id: decision-maker
+        when: "Brief visual inicial: força 6 decisões de estética + 3 lógicas. Entra no kickoff, antes de construir."
+    mcps:
+      - id: magic
+        when: "Gerar/refinar componentes prontos via 21st.dev (UI builder, inspiration, refiner)."
+        server:
+          command: npx
+          args: ["-y", "@21st-dev/magic"]
+          env:
+            API_KEY: "${MAGIC_API_KEY}"
+    references:
+      - "references/premium-agency-rules.md (regras $150k-tier, importadas por impeccable/huashu no modo high-end)"
+
+  copy:
+    agent: wizz-copy
+    summary: "Copywriting: texto de venda, headlines, páginas, e-mails, sequências."
+    skills:
+      - id: copywriting
+        when: "Escrever copy de venda/página/headline do zero ou reescrever."
+      - id: copy-editing
+        when: "Editar/melhorar copy existente (framework Seven Sweeps). Review editorial geral."
+      - id: humanizer
+        when: "Texto soa AI: remover padrões de escrita de máquina, dar naturalidade."
+      - id: email-sequence
+        when: "Sequências de e-mail (onboarding, nurture, lançamento)."
+      - id: cold-email
+        when: "Cold email / outbound B2B / prospecção."
+      - id: sales-enablement
+        when: "Material de vendas: deck, one-pager, objeções, demo script, playbook."
+
+  seo:
+    agent: wizz-seo
+    summary: "SEO: auditoria, busca, AI search, schema, SEO programático."
+    skills:
+      - id: seo-audit
+        when: "Ponto de partida: auditar/diagnosticar SEO, queda de tráfego, ranking, core web vitals."
+      - id: ai-seo
+        when: "Otimizar pra ser citado por LLMs/AI search (AEO/GEO/LLMO, AI Overviews)."
+      - id: schema-markup
+        when: "Implementar dados estruturados / structured data."
+      - id: programmatic-seo
+        when: "Gerar páginas em escala pra atacar muitas keywords."
+      - id: site-architecture
+        when: "Arquitetura de site / topic clusters / estrutura de URLs."
+
+  growth:
+    agent: wizz-growth
+    summary: "Growth e conversão: marketing, CRO, lançamento, preço, retenção."
+    skills:
+      - id: marketing-ideas
+        when: "Travou / quer inspiração ampla de marketing. Ponto de partida quando não sabe o canal."
+      - id: marketing-psychology
+        when: "Aplicar gatilhos/vieses/modelos mentais à persuasão."
+      - id: product-marketing-context
+        when: "Posicionamento de produto e contexto de marketing do produto."
+      - id: launch-strategy
+        when: "Lançar produto/feature: Product Hunt, GTM, waitlist, beta."
+      - id: pricing-strategy
+        when: "Preço, planos, freemium, packaging, willingness to pay."
+      - id: paywall-upgrade-cro
+        when: "Tela de upgrade in-app / paywall."
+      - id: churn-prevention
+        when: "Churn, retenção, cancelamento, NPS."
+      - id: revops
+        when: "Operações de receita: pipeline, métricas, processo de revenue."
+      - id: page-cro
+        when: "Otimizar conversão de página (home, landing, pricing, feature)."
+      - id: form-cro
+        when: "Otimizar formulários (fora de signup)."
+      - id: popup-cro
+        when: "Otimizar popups/modais."
+      - id: onboarding-cro
+        when: "Ativação pós-signup / onboarding de usuário."
+      - id: signup-flow-cro
+        when: "Fluxo de signup/registro."
+      - id: content-strategy
+        when: "Decidir O QUE produzir de conteúdo (topic clusters, calendário, pilares)."
+      - id: social-content
+        when: "Criar/agendar conteúdo de social (LinkedIn, X, TikTok, IG...)."
+      - id: competitor-alternatives
+        when: "Página de comparação vs concorrente / alternatives / battle card."
+      - id: referral-program
+        when: "Programa de indicação/afiliados."
+      - id: free-tool-strategy
+        when: "Ferramenta grátis pra captação de leads."
+      - id: ab-test-setup
+        when: "Montar A/B test / experimento de conversão."
+      - id: analytics-tracking
+        when: "Setar/auditar tracking e medição (GA4, GTM, eventos, UTM, atribuição)."
+
+  ads:
+    agent: wizz-ads
+    summary: "Mídia paga: campanhas Google/Meta/TikTok/LinkedIn, criativos, tracking."
+    skills:
+      - id: paid-ads
+        when: "Estratégia de campanha, targeting, bidding, ROAS/CPA. Decidir/rodar ads."
+      - id: ad-creative
+        when: "Gerar/iterar criativos e headlines de anúncio em escala (RSA, variações)."
+      - id: analytics-tracking
+        when: "Tracking de conversão pros anúncios (compartilhada com growth)."
+    mcps:
+      - id: meta-ads
+        when: "Gestão real de campanha Meta/Facebook/Instagram via API (criar/editar/medir ads)."
+        server:
+          command: npx
+          args: ["-y", "mcp-meta-ads"]
+          env:
+            META_ACCESS_TOKEN: "${META_ACCESS_TOKEN}"
+
+  architect:
+    agent: wizz-agent-architect
+    summary: "Arquitetura, banco, segurança, infra, decisões técnicas."
+    skills:
+      - id: web-security
+        when: "Auditar segurança web, OWASP, XSS/CSRF/injeção, headers, rate limit, antes de deploy/PR."
+      - id: auth-and-secrets
+        when: "Auth (JWT/OAuth/SSO/Clerk), gestão de secrets, rotação de credenciais."
+      - id: desktop-security
+        when: "Segurança desktop/Electron (contextIsolation, code signing)."
+      - id: database-scaling
+        when: "Banco lento, queries, índices, N+1, sharding, connection pool."
+      - id: caching-and-queues
+        when: "Cache (Redis), filas (BullMQ/SQS/Kafka), jobs assíncronos."
+      - id: infrastructure
+        when: "Escala de infra: Kubernetes, auto-scaling, CDN, SLOs, load test."
+      - id: cloud-and-infra
+        when: "Custo de cloud: right-sizing, spot/reserved, S3 lifecycle, billing AWS/GCP."
+      - id: database-and-deps
+        when: "Dependências/packages, vulnerabilidades, npm audit."
+      - id: supabase-postgres-best-practices
+        when: "Performance e boas práticas de Postgres/Supabase (queries, schema, RLS)."
+    mcps:
+      - id: supabase
+        when: "Operar Supabase de verdade: rodar SQL, migrations, inspecionar schema/RLS, logs."
+        server:
+          command: npx
+          args: ["-y", "@supabase/mcp-server-supabase@latest"]
+          env:
+            SUPABASE_ACCESS_TOKEN: "${SUPABASE_ACCESS_TOKEN}"
+
+  qa:
+    agent: wizz-qa
+    summary: "QA: verificar o código de fora (testes, E2E, review adversarial)."
+    skills:
+      - id: adversarial-reviewer
+        when: "Caçar bugs adversarialmente, stress-test de PR, 'tear this apart'. (Global; o engine usa wizz-review-adversarial-general por dentro.)"
+      - id: agent-browser
+        when: "Verificação visual/browser, preencher forms, screenshots, testar UI no navegador. CLI já instalado (não é MCP); browser SEMPRE via agent-browser, nunca Playwright."
+    # qa NÃO declara mcps: verificação de browser é via agent-browser (CLI/skill),
+    # não via MCP. Não usar o MCP do Playwright.
+    clis:
+      - id: agent-browser
+        when: "Dirigir um browser real pra E2E/verificação: navegar, clicar, preencher form, screenshot, console. É CLI, não MCP."
+        check: "agent-browser --version"
+        install: "npm install -g agent-browser"
+
+  analyst:
+    agent: wizz-agent-analyst
+    summary: "Análise, pesquisa, brief, kickoff de projeto."
+    skills:
+      - id: inicio-de-projeto
+        when: "Kickoff LEVE de engenharia: stack, personas, glossário, princípios, estrutura de pastas, checklist. Atalho sem cerimônia de PRD."
+      - id: implementation-planner
+        when: "Plano técnico de implementação de site/app premium pós-direção aprovada."
+    mcps:
+      - id: exa
+        when: "Pesquisa web/prior-art durante planejamento (web search, descoberta de fontes)."
+        server:
+          command: npx
+          args: ["-y", "exa-mcp-server"]
+          env:
+            EXA_API_KEY: "${EXA_API_KEY}"
+
+  memoria:
+    agent: wizz-memoria
+    summary: "Memória do projeto: o que foi decidido, salvar, ver estado."
+    skills:
+      - id: cerebro
+        when: "Recuperar/salvar decisões, contexto, aprendizados; ver estado do projeto (/ver, /salvar, /decisao, /dump)."
+
+# ─────────────────────────────────────────────────────────────────────────────
+# UTILITÁRIOS — cross-cutting, não pertencem a uma área só.
+# ─────────────────────────────────────────────────────────────────────────────
+utility:
+  - id: graphify
+    when: "Transformar código/docs em knowledge graph; navegar estrutura antes de ler arquivos crus."
+  - id: find-skills
+    when: "Nenhuma skill cobre o pedido: buscar/instalar no marketplace (npx skills find)."
+  - id: enhance-prompt
+    when: "Empacotar um briefing mais completo/estruturado pra mandar a outro agente ou skill."
+  - id: wizz-router
+    when: "Roteador global/flat: descobre skills quando não se sabe a área; escala pro maestro se multi-área."
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MCP_UTILITY — MCPs cross-cutting, oferecidos independente da área escolhida.
+# ─────────────────────────────────────────────────────────────────────────────
+mcp_utility:
+  - id: context7
+    when: "Docs atualizadas de qualquer lib/framework/SDK (React, Next, Prisma, Tailwind...). Útil em todo dev."
+    server:
+      command: npx
+      args: ["-y", "@upstash/context7-mcp"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CLIs — ferramentas de linha de comando que os agentes chamam direto (não são
+# MCP nem skill). O installer DETECTA se já estão instaladas (check) e, por
+# padrão, só RECOMENDA o comando de install; instala de verdade apenas se o
+# usuário marcar. `clis:` por área; `cli_utility:` para as cross-cutting.
+# ─────────────────────────────────────────────────────────────────────────────
+cli_utility:
+  - id: rtk
+    when: "Token economy: proxy que corta 60-90% de tokens em comandos de dev. O wizz-router assume RTK ativo (Passo 0). Útil em todo o ecossistema."
+    check: "rtk --version"
+    install: "curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SQUADS — painéis consultivos de personas (rodam via wizz-party-mode).
+# Aconselham; depois o agente wizz da área executa. Domínio → quem chamar.
+# ─────────────────────────────────────────────────────────────────────────────
+squads:
+  brand-squad:
+    domain: "Branding, posicionamento, arquitetura de marca, naming, arquétipos."
+    advises: [copy, designer]
+    when: "Validar/definir posicionamento, identidade e estratégia de marca. Painel: Al Ries, Byron Sharp, Marty Neumeier, Kapferer, Keller..."
+  copy-squad:
+    domain: "Copywriting, mensagem, oferta, persuasão."
+    advises: [copy]
+    when: "Pressionar/afiar copy e mensagem antes do wizz-copy escrever."
+  design-squad:
+    domain: "Design visual e UX."
+    advises: [designer]
+    when: "Painel de design pra direção visual/UX antes do wizz-designer executar."
+  c-level-squad:
+    domain: "Estratégia de negócio, decisões executivas."
+    advises: [analyst, pm, growth]
+    when: "Decisão estratégica de alto nível, visão de negócio, board simulado."
+  advisory-board:
+    domain: "Consultoria geral multidisciplinar."
+    advises: [analyst, growth]
+    when: "Conselho amplo quando o problema cruza várias áreas."
+  data-squad:
+    domain: "Dados, analytics, métricas."
+    advises: [analyst, growth]
+    when: "Análise de dados, definição de métricas, leitura de resultados."
+  traffic-masters:
+    domain: "Tráfego pago, aquisição."
+    advises: [ads, growth]
+    when: "Estratégia de tráfego pago e aquisição antes do wizz-ads rodar campanha."
+  hormozi-squad:
+    domain: "Ofertas, monetização, growth agressivo."
+    advises: [growth, copy]
+    when: "Desenhar oferta irresistível, pricing/value stack, growth estilo Hormozi."
+  storytelling:
+    domain: "Narrativa, storytelling de marca/conteúdo."
+    advises: [copy, growth]
+    when: "Construir narrativa, história de marca, arco de conteúdo."
+  movement:
+    domain: "Comunidade, construção de movimento."
+    advises: [growth]
+    when: "Construir comunidade/movimento em torno do produto."
+  cybersecurity:
+    domain: "Segurança ofensiva/defensiva."
+    advises: [architect, qa]
+    when: "Painel de segurança pra threat modeling e hardening."
+  claude-code-mastery:
+    domain: "Claude Code, tooling de agentes, automação de dev."
+    advises: [dev, architect]
+    when: "Dominar Claude Code, hooks, skills, workflows de agente."

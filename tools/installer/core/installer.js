@@ -2,6 +2,9 @@ const path = require('node:path');
 const fs = require('../fs-native');
 const { Manifest } = require('./manifest');
 const { OfficialModules } = require('../modules/official-modules');
+const { installSkillsLib } = require('../modules/skills-lib');
+const { writeMcpConfig, renderAddCommand } = require('../modules/mcp-config');
+const { installClis, renderInstallCommand } = require('../modules/cli-config');
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../file-ops');
 const { Config } = require('./config');
@@ -296,6 +299,103 @@ class Installer {
         this.installedFiles.add(paths.manifestFile());
         this.installedFiles.add(paths.centralConfig());
         this.installedFiles.add(paths.centralUserConfig());
+
+        // Install the global skills library (area-filtered) BEFORE manifests, so
+        // collectSkills discovers `_wizz/skills-lib/<id>` and the verbatim pipeline
+        // carries them into each IDE. Gated on the `wizz` module; additive, so a
+        // failure here warns and never aborts the install.
+        if (!config.isQuickUpdate() && (config.modules || []).includes('wizz')) {
+          message('Installing global skills...');
+          try {
+            const result = await installSkillsLib({
+              wizzDir: paths.wizzDir,
+              selectedAreas: config.selectedAreas || [],
+              trackFile: (p) => this.installedFiles.add(p),
+            });
+            if (result.registry) {
+              addResult('Global skills', 'ok', `${result.copied} installed`);
+            }
+            if (result.skipped.length > 0) {
+              await prompts.log.warn(`Skills no registry sem pasta em skills-lib (ignoradas): ${result.skipped.join(', ')}`);
+            }
+          } catch (error) {
+            await prompts.log.warn(`Falha ao instalar skills globais: ${error.message}`);
+          }
+
+          // Configure recommended MCP servers for the chosen areas. The user's
+          // multiselect already split them into write vs recommend; we merge the
+          // chosen ones into .mcp.json (additive) and print `claude mcp add` for
+          // the rest. Additive + placeholder-secret, so it never clobbers config
+          // or leaks tokens; a failure warns and never aborts the install.
+          const mcpPlan = config.mcpPlan || { toWrite: [], toRecommend: [] };
+          try {
+            const toWrite = mcpPlan.toWrite || [];
+            if (toWrite.length > 0) {
+              message('Configuring MCP servers...');
+              // Intentionally NOT tracked in installedFiles: .mcp.json is a
+              // shared, user-owned config we merge into (it may hold the user's
+              // own servers). Tracking it would expose it to uninstall removal
+              // and manifest hash-management, which must never touch it.
+              const mcpResult = await writeMcpConfig({
+                projectDir: paths.projectRoot,
+                mcps: toWrite,
+              });
+              if (mcpResult.added.length > 0) {
+                addResult('MCP servers', 'ok', `${mcpResult.added.join(', ')} → .mcp.json`);
+              }
+              if (mcpResult.skipped.length > 0) {
+                await prompts.log.info(`MCPs já presentes no .mcp.json (mantidos): ${mcpResult.skipped.join(', ')}`);
+              }
+            }
+            const toRecommend = mcpPlan.toRecommend || [];
+            if (toRecommend.length > 0) {
+              const lines = toRecommend.map((m) => `  ${renderAddCommand(m)}`).join('\n');
+              await prompts.log.info(`MCPs recomendados (rode quando quiser):\n${lines}`);
+            }
+            // Remind only when a written server expects secrets the user must fill.
+            const needsSecrets = toWrite.filter((m) => m.server && m.server.env && Object.keys(m.server.env).length > 0);
+            if (needsSecrets.length > 0) {
+              const vars = [...new Set(needsSecrets.flatMap((m) => Object.values(m.server.env)))];
+              await prompts.log.warn(`Defina as variáveis de ambiente dos MCPs antes de usar: ${vars.join(', ')}`);
+            }
+          } catch (error) {
+            await prompts.log.warn(`Falha ao configurar MCPs: ${error.message}`);
+          }
+
+          // Install/recommend the CLIs the agents shell out to (agent-browser,
+          // rtk). The ui already detected what's present and split the rest into
+          // install-now vs recommend; here we run the chosen install commands and
+          // print the rest. Install runs system commands (npm install -g, curl |
+          // sh) — a failure warns and never aborts the install. CLIs are not
+          // tracked in installedFiles (they live outside the project tree).
+          const cliPlan = config.cliPlan || { toInstall: [], toRecommend: [], alreadyInstalled: [] };
+          try {
+            const alreadyInstalled = cliPlan.alreadyInstalled || [];
+            if (alreadyInstalled.length > 0) {
+              await prompts.log.info(`CLIs já instalados (mantidos): ${alreadyInstalled.map((c) => c.id).join(', ')}`);
+            }
+            const toInstall = cliPlan.toInstall || [];
+            if (toInstall.length > 0) {
+              message('Installing CLIs...');
+              const cliResult = await installClis({ clis: toInstall });
+              if (cliResult.installed.length > 0) {
+                addResult('CLIs', 'ok', `instalados: ${cliResult.installed.join(', ')}`);
+              }
+              for (const f of cliResult.failed) {
+                await prompts.log.warn(
+                  `Falha ao instalar CLI ${f.id}: ${f.error}. Rode manualmente: ${renderInstallCommand(toInstall.find((c) => c.id === f.id) || {})}`,
+                );
+              }
+            }
+            const toRecommend = cliPlan.toRecommend || [];
+            if (toRecommend.length > 0) {
+              const lines = toRecommend.map((c) => `  ${renderInstallCommand(c)}`).join('\n');
+              await prompts.log.info(`CLIs recomendados (rode quando quiser):\n${lines}`);
+            }
+          } catch (error) {
+            await prompts.log.warn(`Falha ao configurar CLIs: ${error.message}`);
+          }
+        }
 
         message('Generating manifests...');
         const manifestGen = new ManifestGenerator();

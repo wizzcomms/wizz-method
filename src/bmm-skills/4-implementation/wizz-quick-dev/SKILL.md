@@ -33,6 +33,13 @@ A specification should target a **single user-facing goal** within **900–1600 
 - **900–1600 tokens**: Optimal range for LLM consumption. Below 900 risks ambiguity; above 1600 risks context-rot in implementation agents.
 - **Neither limit is a gate.** Both are proposals with user override.
 
+## Handoff — escalate up when scope balloons
+
+You are the leaf: the maestro demotes here for pointed work (bug, tweak, single-goal feature). Re-check scope against the shared complexity signal (areas, steps, needs-planning?, artifact+memory?):
+
+- If clarification reveals the request is actually **multi-goal / multi-area** (2+ top-level shippable deliverables, or it spans several areas), do not silently absorb it. Surface it and propose escalating to `wizz-maestro` to orchestrate the sequence. Proceed solo only if the user confirms a narrowed single goal.
+- Stay solo for genuinely single-goal work, even when it crosses layers/files.
+
 ## Conventions
 
 - Bare paths (e.g. `step-01-clarify-and-route.md`) resolve from the skill root.

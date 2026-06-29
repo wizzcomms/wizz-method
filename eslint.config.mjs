@@ -14,6 +14,10 @@ export default [
       'test/template-test-generator/**',
       'test/fixtures/**',
       '_wizz*/**',
+      // Vendored skill library — third-party scripts, not method source
+      'src/skills-lib/**',
+      // Archived squad persona sources — distilled into party-mode customize.toml
+      'src/squads/**',
       // Build output
       'build/**',
       // Website uses ESM/Astro - separate linting ecosystem

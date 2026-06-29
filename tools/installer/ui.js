@@ -1,7 +1,9 @@
 const path = require('node:path');
 const os = require('node:os');
 const semver = require('semver');
+const yaml = require('yaml');
 const fs = require('./fs-native');
+const { getProjectRoot } = require('./project-root');
 const installerPackageJson = require('../../package.json');
 const { CLIUtils } = require('./cli-utils');
 const { ExternalModuleManager } = require('./modules/external-manager');
@@ -15,6 +17,8 @@ const {
   bundledTargetWarnings,
 } = require('./modules/channel-plan');
 const channelResolver = require('./modules/channel-resolver');
+const { resolveMcps } = require('./modules/mcp-config');
+const { resolveClis, detectClis } = require('./modules/cli-config');
 const prompts = require('./prompts');
 const { parseSetEntries } = require('./set-overrides');
 
@@ -427,6 +431,9 @@ class UI {
     await this._interactiveChannelGate({ options, channelOptions, selectedModules });
 
     let toolSelection = await this.promptToolSelection(confirmedDirectory, options);
+    const selectedAreas = await this.selectSkillAreas(selectedModules, options);
+    const mcpPlan = await this.selectMcps(selectedModules, selectedAreas, options);
+    const cliPlan = await this.selectClis(selectedModules, selectedAreas, options);
     const { moduleConfigs, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
       ...options,
       channelOptions,
@@ -451,12 +458,215 @@ class UI {
       modules: selectedModules,
       ides: toolSelection.ides,
       skipIde: toolSelection.skipIde,
+      selectedAreas,
+      mcpPlan,
+      cliPlan,
       coreConfig: moduleConfigs.core || {},
       moduleConfigs: moduleConfigs,
       setOverrides,
       skipPrompts: options.yes || false,
       channelOptions,
     };
+  }
+
+  /**
+   * Load and parse skills-registry.yaml from the package root.
+   * @returns {Object|null} Parsed registry, or null when absent/unreadable
+   */
+  _loadSkillsRegistry() {
+    try {
+      const registryPath = path.join(getProjectRoot(), 'skills-registry.yaml');
+      if (!fs.existsSync(registryPath)) return null;
+      return yaml.parse(fs.readFileSync(registryPath, 'utf8'));
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Prompt for which global-skill AREAS to install (designer, copy, seo, ...).
+   * Only relevant when the `wizz` (agency/method) module is selected. Areas come
+   * straight from skills-registry.yaml so this never diverges from the routing.
+   * Returns an empty array to mean "all areas" (the installSkillsLib sentinel).
+   * @param {string[]} selectedModules - Modules chosen for install
+   * @param {Object} options - Command-line options
+   * @returns {Promise<string[]>} Chosen area keys, or [] for all
+   */
+  async selectSkillAreas(selectedModules, options = {}) {
+    if (!selectedModules.includes('wizz')) return [];
+
+    const registry = this._loadSkillsRegistry();
+    if (!registry || !registry.areas) return [];
+    const areaKeys = Object.keys(registry.areas);
+    if (areaKeys.length === 0) return [];
+
+    // CLI: --areas a,b,c (or 'all')
+    if (options.areas !== undefined) {
+      const raw = String(options.areas)
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (raw.includes('all')) return [];
+      const unknown = raw.filter((a) => !areaKeys.includes(a));
+      if (unknown.length > 0) {
+        await prompts.log.warn(`Áreas desconhecidas ignoradas: ${unknown.join(', ')}`);
+      }
+      return raw.filter((a) => areaKeys.includes(a));
+    }
+
+    // Non-interactive (--yes): install every area.
+    if (options.yes) return [];
+
+    const areaOptions = areaKeys.map((key) => {
+      const summary = registry.areas[key].summary || '';
+      return { label: summary ? `${key} (${summary})` : key, value: key };
+    });
+
+    const selected = await prompts.autocompleteMultiselect({
+      message: 'Quais áreas de skills globais instalar? (vazio = todas)',
+      options: areaOptions,
+      initialValues: areaKeys,
+      required: false,
+      maxItems: 12,
+    });
+
+    // Empty or full selection both collapse to the "all areas" sentinel.
+    if (!selected || selected.length === 0 || selected.length === areaKeys.length) return [];
+    return selected;
+  }
+
+  /**
+   * Prompt for which recommended MCP servers to configure for the chosen areas.
+   * Reads the same skills-registry.yaml the installer/maestro use, so the offered
+   * servers never diverge from routing. Returns a split plan:
+   *   - toWrite: entries to MERGE into the project `.mcp.json` (placeholder secrets)
+   *   - toRecommend: entries to merely print as `claude mcp add ...` (nothing lost)
+   * Non-interactive (--yes/CI) writes nothing and recommends everything, so the
+   * install never touches MCP config without an explicit choice.
+   * @param {string[]} selectedModules - Modules chosen for install
+   * @param {string[]} selectedAreas - Areas resolved by selectSkillAreas ([]=all)
+   * @param {Object} options - Command-line options
+   * @returns {Promise<{toWrite: Object[], toRecommend: Object[]}>}
+   */
+  async selectMcps(selectedModules, selectedAreas, options = {}) {
+    if (!selectedModules.includes('wizz')) return { toWrite: [], toRecommend: [] };
+
+    const registry = this._loadSkillsRegistry();
+    const resolved = resolveMcps(registry, selectedAreas);
+    if (resolved.length === 0) return { toWrite: [], toRecommend: [] };
+
+    const byId = new Map(resolved.map((m) => [m.id, m]));
+    const split = (writeIds) => {
+      const writeSet = new Set(writeIds);
+      return {
+        toWrite: resolved.filter((m) => writeSet.has(m.id)),
+        toRecommend: resolved.filter((m) => !writeSet.has(m.id)),
+      };
+    };
+
+    // CLI: --mcps a,b,c | 'all' | 'none'
+    if (options.mcps !== undefined) {
+      const raw = String(options.mcps)
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (raw.includes('none')) return split([]);
+      if (raw.includes('all')) return split(resolved.map((m) => m.id));
+      const unknown = raw.filter((id) => !byId.has(id));
+      if (unknown.length > 0) {
+        await prompts.log.warn(`MCPs desconhecidos ignorados: ${unknown.join(', ')}`);
+      }
+      return split(raw.filter((id) => byId.has(id)));
+    }
+
+    // Non-interactive: don't touch config, just recommend everything.
+    if (options.yes) return { toWrite: [], toRecommend: resolved };
+
+    const selected = await prompts.multiselect({
+      message: 'Quais MCPs configurar no .mcp.json? (não marcados viram comando pra rodar depois)',
+      options: resolved.map((m) => ({
+        label: m.id,
+        value: m.id,
+        hint: m.when,
+      })),
+      initialValues: resolved.map((m) => m.id),
+      required: false,
+    });
+
+    return split(selected || []);
+  }
+
+  /**
+   * Prompt for which recommended CLIs to install for the chosen areas.
+   * Reads the same skills-registry.yaml as the installer/maestro. CLIs are the
+   * tools agents shell out to (agent-browser, rtk), not MCP servers. We DETECT
+   * what's already installed first (never reinstall), then offer the missing
+   * ones. Install runs a system command (npm install -g, curl | sh), so the
+   * default is RECOMMEND-only: nothing is installed without an explicit choice.
+   * Returns a split plan:
+   *   - toInstall: entries whose `install` command we run now
+   *   - toRecommend: entries we merely print as a command to run later
+   * Already-installed CLIs go to neither (reported as present, no action).
+   * @param {string[]} selectedModules - Modules chosen for install
+   * @param {string[]} selectedAreas - Areas resolved by selectSkillAreas ([]=all)
+   * @param {Object} options - Command-line options
+   * @returns {Promise<{toInstall: Object[], toRecommend: Object[], alreadyInstalled: Object[]}>}
+   */
+  async selectClis(selectedModules, selectedAreas, options = {}) {
+    const empty = { toInstall: [], toRecommend: [], alreadyInstalled: [] };
+    if (!selectedModules.includes('wizz')) return empty;
+
+    const registry = this._loadSkillsRegistry();
+    const resolved = resolveClis(registry, selectedAreas);
+    if (resolved.length === 0) return empty;
+
+    // Detect what's already on PATH so we never offer to reinstall it.
+    const detected = await detectClis(resolved);
+    const alreadyInstalled = detected.filter((c) => c.installed);
+    const missing = detected.filter((c) => !c.installed);
+    if (missing.length === 0) return { toInstall: [], toRecommend: [], alreadyInstalled };
+
+    const byId = new Map(missing.map((c) => [c.id, c]));
+    const split = (installIds) => {
+      const installSet = new Set(installIds);
+      return {
+        toInstall: missing.filter((c) => installSet.has(c.id)),
+        toRecommend: missing.filter((c) => !installSet.has(c.id)),
+        alreadyInstalled,
+      };
+    };
+
+    // CLI: --clis a,b,c | 'all' | 'none'
+    if (options.clis !== undefined) {
+      const raw = String(options.clis)
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (raw.includes('none')) return split([]);
+      if (raw.includes('all')) return split(missing.map((c) => c.id));
+      const unknown = raw.filter((id) => !byId.has(id));
+      if (unknown.length > 0) {
+        await prompts.log.warn(`CLIs desconhecidos/já instalados ignorados: ${unknown.join(', ')}`);
+      }
+      return split(raw.filter((id) => byId.has(id)));
+    }
+
+    // Non-interactive: don't run system commands, just recommend everything.
+    if (options.yes) return { toInstall: [], toRecommend: missing, alreadyInstalled };
+
+    // Default UNCHECKED: install runs a system command, so opt-in only.
+    const selected = await prompts.multiselect({
+      message: 'Quais CLIs instalar agora? (não marcados viram comando pra rodar depois)',
+      options: missing.map((c) => ({
+        label: c.id,
+        value: c.id,
+        hint: c.when,
+      })),
+      initialValues: [],
+      required: false,
+    });
+
+    return split(selected || []);
   }
 
   /**

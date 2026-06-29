@@ -7,6 +7,9 @@ class Config {
     directory,
     modules,
     ides,
+    selectedAreas,
+    mcpPlan,
+    cliPlan,
     skipPrompts,
     verbose,
     actionType,
@@ -19,6 +22,20 @@ class Config {
     this.directory = directory;
     this.modules = Object.freeze([...modules]);
     this.ides = Object.freeze([...ides]);
+    // Global-skills areas the user chose to install (from skills-registry.yaml).
+    // Empty means "all areas" when skills-lib is installed; see installSkillsLib.
+    this.selectedAreas = Object.freeze([...(selectedAreas || [])]);
+    // MCP plan resolved from the registry for the chosen areas:
+    //   toWrite     — merged into the project .mcp.json (placeholder secrets)
+    //   toRecommend — printed as `claude mcp add ...` for the user to run later
+    // Empty/absent on quick-update or non-wizz installs. See modules/mcp-config.js.
+    this.mcpPlan = mcpPlan || { toWrite: [], toRecommend: [] };
+    // CLI plan resolved from the registry for the chosen areas:
+    //   toInstall        — `install` command run during the install (opt-in)
+    //   toRecommend      — printed for the user to run later
+    //   alreadyInstalled — detected on PATH, reported and skipped
+    // Empty/absent on quick-update or non-wizz installs. See modules/cli-config.js.
+    this.cliPlan = cliPlan || { toInstall: [], toRecommend: [], alreadyInstalled: [] };
     this.skipPrompts = skipPrompts;
     this.verbose = verbose;
     this.actionType = actionType;
@@ -50,6 +67,9 @@ class Config {
       directory: userInput.directory,
       modules,
       ides: userInput.skipIde ? [] : [...(userInput.ides || [])],
+      selectedAreas: userInput.selectedAreas || [],
+      mcpPlan: userInput.mcpPlan || { toWrite: [], toRecommend: [] },
+      cliPlan: userInput.cliPlan || { toInstall: [], toRecommend: [], alreadyInstalled: [] },
       skipPrompts: userInput.skipPrompts || false,
       verbose: userInput.verbose || false,
       actionType: userInput.actionType,

@@ -3,6 +3,8 @@
 
 ignores:
   - "**/node_modules/**"
+  - src/skills-lib/**
+  - src/squads/**
   - test/fixtures/**
   - CODE_OF_CONDUCT.md
   - _wizz/**
