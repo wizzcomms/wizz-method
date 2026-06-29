@@ -11,6 +11,9 @@ _wizz*/
 # IDE integration folders (user-specific, not in repo)
 .junie/
 
+# Vendored skill library — third-party SKILL.md/json content, not method source
+src/skills-lib/**
+
 # Quality scan artifacts produced by wizz-workflow-builder
 # (per-skill .analysis/ folders contain JSON/HTML reports that should
 # not block commits with formatting checks)

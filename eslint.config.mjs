@@ -14,6 +14,8 @@ export default [
       'test/template-test-generator/**',
       'test/fixtures/**',
       '_wizz*/**',
+      // Vendored skill library — third-party scripts, not method source
+      'src/skills-lib/**',
       // Build output
       'build/**',
       // Website uses ESM/Astro - separate linting ecosystem
