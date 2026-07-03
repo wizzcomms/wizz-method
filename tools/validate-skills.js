@@ -314,7 +314,12 @@ function validateSkill(skillDir) {
   const description = skillFm && skillFm.description;
 
   // --- SKILL-04: name format ---
-  if (name && !NAME_REGEX.test(name)) {
+  // Skills vendored under `src/skills-lib/` are third-party/global skills that
+  // keep their upstream names (no `wizz-` prefix) BY DESIGN — same policy as the
+  // credited BMAD engine internals. Exempt them from the wizz-owned naming rule.
+  // SKILL-05 (name must match the directory basename) still applies to them.
+  const isVendoredGlobal = skillDir.split(path.sep).includes('skills-lib');
+  if (name && !isVendoredGlobal && !NAME_REGEX.test(name)) {
     findings.push({
       rule: 'SKILL-04',
       title: 'name Format',
