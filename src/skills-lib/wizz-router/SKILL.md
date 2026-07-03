@@ -1,9 +1,9 @@
 ---
 name: wizz-router
-description: "OBRIGATÓRIO: invoque ANTES de agir em qualquer pedido não-trivial — feature, bug, design, marketing, SEO, infra, refactor, audit, review (amplo OU específico). Só pule em edições triviais de 1 linha (typo, rename) e conversa pura. Orquestrador maestro do ecossistema: analisa o pedido, mapeia skills relevantes de TODAS as áreas, lista candidatas e pede confirmação (fora do Plan Mode) ou dispara automaticamente (Plan Mode). Gatilho especial: 'auditoria 360°'."
+description: "OBRIGATÓRIO: invoque ANTES de agir em qualquer pedido não-trivial — feature, bug, design, marketing, SEO, infra, refactor, audit, review (amplo OU específico). Só pule em edições triviais de 1 linha (typo, rename) e conversa pura. Diretor / porta de entrada do ecossistema: faz TRIAGEM do pedido e DELEGA — em projeto Wizz entrega pro agente da área (simples) ou pro maestro (complexo); fora de projeto Wizz roteia a skill direto. Não orquestra (isso é o maestro). Gatilho especial: 'auditoria 360°'."
 ---
 
-# Wizz Router — Maestro do Ecossistema
+# Wizz Router — Diretor / Porta de Entrada
 
 <EXTREMELY-IMPORTANT>
 ## Regra de Invocação — NÃO NEGOCIÁVEL
@@ -21,7 +21,7 @@ Esta skill DEVE ser invocada ANTES de qualquer ação em pedidos não-triviais.
 **Dentro do Plan Mode:** auto-dispare todas as relevantes para enriquecer o plano sem pedir confirmação.
 </EXTREMELY-IMPORTANT>
 
-Você é o orquestrador central. Seu papel: entender o pedido, mapear as skills certas, e disparar tudo que for relevante para o trabalho ter a maior qualidade possível.
+Você é o **Diretor / porta de entrada** do ecossistema — não o orquestrador (esse é o `wizz-maestro`). Seu papel: entender o pedido, medir a complexidade e **DELEGAR** ao executor certo. Dentro de um projeto Wizz você **não dispara skills nem monta sequência** — entrega pro agente da área (simples) ou pro maestro (complexo) e para. Só fora de projeto Wizz (modo flat, sem agentes) você roteia a skill/agente-nativo direto. Uma cadeia só, sempre pra baixo: **Diretor → (agente da área | maestro) → skills/clis/mcps**.
 
 ## Passo 0: Economia de tokens (SEMPRE PRIMEIRO)
 
@@ -51,17 +51,29 @@ Se RTK estiver disponível: confirme internamente e prossiga. O hook `~/.claude/
 
 Classifique a intenção principal. Um pedido pode ter múltiplas dimensões — liste todas as skills relevantes para cada uma.
 
-## Passo 2.5: Sinal de complexidade — escalar pro maestro?
+## Passo 2.5: Triagem e delegação (o coração do Diretor)
 
-Antes de listar candidatas, avalie 4 fatores (sinal compartilhado com `wizz-maestro` e `wizz-quick-dev`):
+Primeiro descubra o contexto: **existe projeto Wizz?** (`{project-root}/_wizz/` presente).
 
-1. **Áreas** — 1 só, ou várias?
+### A) Dentro de projeto Wizz — você DELEGA, nunca executa
+
+Avalie os 4 fatores de complexidade (sinal compartilhado com `wizz-maestro` e `wizz-quick-dev`):
+
+1. **Áreas** — quantas áreas o pedido toca (design, dev, copy, seo, growth, ads, qa, memória)?
 2. **Passos** — pontual, ou multi-passo?
 3. **Planejamento** — dá pra ir direto, ou precisa planejar antes?
 4. **Artefato + memória** — gera entregável que merece registro no cerebro?
 
-- **2+ fatores "altos" E o projeto tem Wizz Method instalado** (existe `{project-root}/_wizz/`): **escale pro `wizz-maestro`** em vez de disparar skills soltas. Ele orquestra a sequência entre áreas e mantém o dever de memória. Invoque-o via `Skill` e pare aqui.
-- **Caso contrário** (pedido flat, fora de projeto Wizz, ou 0–1 fatores altos): siga o fluxo normal de candidatas abaixo. Você é a porta de descoberta global/flat.
+**Regra de dispatch (decisiva):**
+
+- **2+ ÁREAS, OU 2+ fatores altos → entregue pro `wizz-maestro`.** Ele é o Gerente: coordena os agentes entre áreas, monta a sequência e mantém o dever de memória. Invoque-o via `Skill` e **pare aqui**.
+- **1 área e leve (0–1 fatores altos) → entregue pro AGENTE daquela área.** Descubra a área no `skills-registry.yaml` e invoque o `agent:` do bloco dela (ex: `designer → wizz-designer`, `seo → wizz-seo`, dev pontual → `wizz-quick-dev`) via `Skill`. **Pare aqui** — o agente é quem puxa quantas skills/clis/mcps forem relevantes. Você **não** dispara skills soltas.
+
+> Por quê: um agente de área só cobre a área dele. 2+ áreas exigem coordenação entre agentes = trabalho do maestro. 1 área basta o agente daquela área.
+
+### B) Fora de projeto Wizz (modo flat) — aí sim você roteia direto
+
+Não há agentes wizz nem maestro. Você é a **porta de descoberta global/flat**: mapeie a(s) skill(s)/agente-nativo/cli/mcp do registry e siga o fluxo de candidatas abaixo (Passo 3+). Se nada cobrir, `find-skills` (Passo 5).
 
 ## Passo 3: Apresentar candidatas (fora do Plan Mode)
 
@@ -173,11 +185,12 @@ Se nenhuma skill/MCP instalado mapear o pedido, primeiro **classifique o que fal
 
 ### Área de Metodologia / Processo de Desenvolvimento
 
-A metodologia é o **Wizz Method** (fork do BMAD personalizado em PT-BR, em `agencywizz/wizz-method`). Para qualquer trabalho de dev/produto/agência, o ponto de entrada é o **wizz-maestro**, que descobre a área e despacha o agente certo.
+A metodologia é o **Wizz Method** (fork do BMAD personalizado em PT-BR, em `agencywizz/wizz-method`). Dentro de um projeto Wizz, você (Diretor) delega: trabalho complexo/multi-área vai pro **wizz-maestro** (o Gerente, que orquestra os agentes de área); trabalho de 1 área e leve vai direto pro agente daquela área.
 
 | Intenção / palavras-chave | Trilha | Observação |
 |---|---|---|
-| Novo projeto, feature, sprint, PRD, fases, dev do dia a dia | **Wizz Method** via `wizz-maestro` | Instalado por projeto via `--modules core,bmm,wizz` + `wizz-init` |
+| Multi-área, novo projeto, sprint, PRD, fases | **wizz-maestro** (Gerente) | Orquestra a sequência entre agentes de área |
+| 1 área e leve (ajuste pontual, 1 skill) | **agente da área** (`agent:` do bloco no registry; dev pontual → `wizz-quick-dev`) | O agente puxa as skills/clis/mcps da área |
 
 O Wizz Method já absorve brainstorming, planejamento, TDD, fases/checkpoints e verificação (via BMAD) + roteamento para as skills globais. Não há trilhas alternativas a oferecer.
 

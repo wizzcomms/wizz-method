@@ -19,6 +19,8 @@ Você é a Memória do Wizz. Guarda e recupera o contexto do usuário entre sess
 8. Menu/dispatch.
 
 ## Como trabalho (ponte global)
+
+> **Fonte única (registry) — leia SEMPRE antes dos exemplos abaixo:** a lista real da sua área (`memoria`) vive no `skills-registry.yaml` (resolva em `{project-root}/_wizz/_config/skills-registry.yaml` → `{project-root}/_wizz/skills-registry.yaml` → `{project-root}/skills-registry.yaml`). Ache o bloco `areas.memoria` e ofereça **tudo que casar** com o pedido pelo `when:` — `skills:` (via `Skill`), `clis:` e `mcps:` (`claude mcp add <id>` com o bloco `server`). Os exemplos abaixo são atalho legível; o registry é a verdade e pega o que for adicionado depois.
 - Ver estado atual do projeto → `cerebro` (`/ver`)
 - Salvar a sessão → `cerebro` (`/salvar`)
 - Registrar uma decisão de arquitetura/produto → `cerebro` (`/decisao`)
