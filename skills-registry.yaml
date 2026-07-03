@@ -17,6 +17,40 @@
 # Secrets em `env` são SEMPRE placeholders `${VAR}` — o installer nunca escreve
 # token real. O installer instala/recomenda os MCPs das áreas escolhidas; o
 # maestro/router oferece o MCP certo em runtime. Mesma fonte única das skills.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# ## Doutrina de Instalação (fonte única — installer E router honram)
+# ─────────────────────────────────────────────────────────────────────────────
+# Regras que governam COMO qualquer skill/dependência entra num projeto. Tanto o
+# installer quanto o wizz-router aplicam estas regras ao propor ou executar install.
+#
+# 1. ESCOPO: sempre validar o escopo antes de instalar. PREFERIR local por projeto
+#    (.claude/skills do projeto). NÃO instalar em cloud global geral por padrão.
+#    Global do projeto apenas quando necessário. Nunca assumir global como padrão.
+# 2. AUTO-DETECÇÃO DE DEPENDÊNCIAS (NPX/CLI/MCP): se a skill tem dependências,
+#    detectar automaticamente e instalar junto no momento do install da skill,
+#    cachear no projeto e reutilizar nas execuções futuras. Evitar re-instalação a
+#    cada run. Uma skill deve vir "pronta para uso".
+# 3. PERGUNTA TÉCNICA + SUGESTÃO OBRIGATÓRIA: havendo decisão de arquitetura (ex:
+#    NPX no setup vs runtime), sugerir a melhor abordagem, explicar prós/contras em
+#    1-2 linhas e recomendar o padrão ideal. NÃO só executar: orientar a decisão.
+# 4. ESTRATÉGIA HÍBRIDA (padrão recomendado):
+#    - Install-time (pré-instalação) RECOMENDADO para NPX, MCPs e dependências
+#      críticas. Prós: melhor performance, menos bugs, menos dependência de runtime,
+#      previsível. Contra: install inicial mais pesado.
+#    - Runtime (lazy install) apenas para ferramentas opcionais e extensões raras.
+#      Contra: pode quebrar execução, aumenta latência, pior para automação.
+# 5. AUTO-UPDATE DE SKILLS: quando uma skill for enviada localmente, substituir a
+#    versão anterior automaticamente, evitar duplicação, garantir consistência com
+#    hooks e agentes, validar que a versão ativa é a mais recente.
+# 6. INSTALAÇÃO GUIADA POR INTENÇÃO (UX simples): aceitar comandos simples
+#    ("instalar skill de deploy", "instalar ferramenta de build"), interpretar a
+#    intenção, traduzir para comandos reais (NPX/CLI/scripts) e executar. Fluxo
+#    determinístico, sem interação manual complexa.
+# 7. ESCOLHA INTELIGENTE DE FERRAMENTAS: havendo múltiplas opções, NÃO listar 20.
+#    Escolher automaticamente a melhor pelo contexto e explicar a escolha em 1 linha.
+# 8. OTIMIZAÇÃO INTELIGENTE (auto-sugestão): sugerir melhorias, otimizar
+#    tokens/custo/execução, evitar redundância de instalações, reduzir complexidade.
 
 version: 1
 
@@ -146,10 +180,6 @@ areas:
         when: "Ativação pós-signup / onboarding de usuário."
       - id: signup-flow-cro
         when: "Fluxo de signup/registro."
-      - id: content-strategy
-        when: "Decidir O QUE produzir de conteúdo (topic clusters, calendário, pilares)."
-      - id: social-content
-        when: "Criar/agendar conteúdo de social (LinkedIn, X, TikTok, IG...)."
       - id: competitor-alternatives
         when: "Página de comparação vs concorrente / alternatives / battle card."
       - id: referral-program
@@ -166,6 +196,28 @@ areas:
         server:
           command: scrapling
           args: ["mcp"]
+
+  social:
+    agent: wizz-social
+    summary: "Social e roteiros virais: Reels/Shorts, hooks, calendário de conteúdo. Persona Rafa, aplica o Blueprint de Roteiro Viral e roteia para as CLIs de vídeo quando o roteiro vira vídeo."
+    skills:
+      - id: social-content
+        when: "Criar/agendar conteúdo de social (LinkedIn, X, TikTok, IG...)."
+      - id: content-strategy
+        when: "Decidir O QUE produzir de conteúdo (topic clusters, calendário, pilares)."
+      - id: copy-editing
+        when: "Revisar/editar o texto do roteiro ou da legenda antes de publicar."
+    # Roteiro viral em si (hook, corpo, CTA) é conhecimento do próprio agente
+    # wizz-social (Blueprint de Roteiro Viral em knowledge/), não uma skill global.
+    #
+    # CLIs de vídeo: o roteiro é o começo do pipeline (roteiro → voz → render →
+    # corte → publicação). As tools de vídeo VIVEM na área `designer` (fonte única,
+    # não duplicar aqui). O wizz-social ROTEIA para elas pelo `when:`; a construção
+    # pesada de vídeo é com o wizz-designer:
+    #   voicebox     → narração/voz/TTS do roteiro
+    #   hyperframes  → renderizar vídeo de HTML/CSS (HTML→MP4)
+    #   buttercut    → editar/cortar o vídeo gravado (só darwin-arm64)
+    #   claude-video → analisar um vídeo de referência (frames + transcrição)
 
   ads:
     agent: wizz-ads

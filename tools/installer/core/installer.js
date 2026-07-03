@@ -5,6 +5,7 @@ const { OfficialModules } = require('../modules/official-modules');
 const { installSkillsLib } = require('../modules/skills-lib');
 const { writeMcpConfig, renderAddCommand } = require('../modules/mcp-config');
 const { installClis, renderInstallCommand } = require('../modules/cli-config');
+const { writeDepsCache } = require('../modules/deps-cache');
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../file-ops');
 const { Config } = require('./config');
@@ -395,6 +396,27 @@ class Installer {
             }
           } catch (error) {
             await prompts.log.warn(`Falha ao configurar CLIs: ${error.message}`);
+          }
+
+          // Persist a project-local cache of the skill dependencies (CLIs +
+          // MCPs) resolved for the chosen areas, so future runs and the maestro
+          // know which deps belong to this project's skills — and in what state
+          // they were left (installed / recommended / already-present / written)
+          // — without re-resolving the registry or re-probing PATH. Passive
+          // manifest, additive, no secrets; a failure warns and never aborts.
+          try {
+            const depsResult = await writeDepsCache({
+              wizzDir: paths.wizzDir,
+              selectedAreas: config.selectedAreas || [],
+              cliPlan: config.cliPlan || {},
+              mcpPlan: config.mcpPlan || {},
+              trackFile: (p) => this.installedFiles.add(p),
+            });
+            if (depsResult.wrote) {
+              addResult('Skill deps cache', 'ok', 'skill-deps-cache.json');
+            }
+          } catch (error) {
+            await prompts.log.warn(`Falha ao gravar cache de dependências: ${error.message}`);
           }
         }
 

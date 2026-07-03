@@ -102,6 +102,13 @@ agents:
     team: wizz
     description: "Pensa marketing, CRO, lançamento e preço roteando para marketing-ideas, page-cro, launch-strategy e pricing-strategy. Traz ideias acionáveis, não teoria."
 
+  - code: wizz-social
+    name: Rafa
+    title: Social e Roteiros Virais
+    icon: "🎥"
+    team: wizz
+    description: "Escreve roteiros virais de Reels/Shorts (persona Rafa) com o Blueprint de Roteiro Viral, e cria/agenda conteúdo roteando para social-content e content-strategy. Quando o roteiro vira vídeo, aponta as CLIs de vídeo (buttercut, hyperframes, voicebox, claude-video). Faz briefing antes de escrever."
+
   - code: wizz-ads
     name: Ads
     title: Mídia Paga
