@@ -15,7 +15,16 @@ const os = require('node:os');
 const fs = require('node:fs');
 const fsp = require('node:fs/promises');
 
-const { resolveMcps, toServerConfig, renderAddCommand, writeMcpConfig } = require('../tools/installer/modules/mcp-config');
+const {
+  resolveMcps,
+  toServerConfig,
+  renderAddCommand,
+  writeMcpConfig,
+  prepareMcp,
+  prepareMcps,
+  shellQuote,
+  substituteBin,
+} = require('../tools/installer/modules/mcp-config');
 
 const colors = {
   reset: '\u001B[0m',
@@ -213,6 +222,208 @@ async function runTests() {
     }
   } finally {
     await fsp.rm(tmp, { recursive: true, force: true });
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('resolveMcps carries setup');
+
+  {
+    const reg = {
+      areas: {
+        research: {
+          mcps: [
+            { id: 'scrapling', when: 'scrape', server: { command: 'scrapling', args: ['mcp'] }, setup: { bin: 'scrapling', install: 'x' } },
+          ],
+        },
+      },
+    };
+    const r = resolveMcps(reg, ['research']);
+    assert(r[0].setup && r[0].setup.bin === 'scrapling', 'setup block carried through resolveMcps');
+  }
+  {
+    const r = resolveMcps(REGISTRY, ['designer']); // magic + context7, neither has setup
+    assert(
+      r.every((m) => 'setup' in m),
+      'every resolved entry exposes a setup field',
+    );
+    assert(r.find((m) => m.id === 'magic').setup === null, 'entry without setup => null (not undefined)');
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('shellQuote / substituteBin');
+
+  assertEqual(shellQuote('/usr/local/bin/x'), "'/usr/local/bin/x'", 'wraps plain path in single quotes');
+  assertEqual(shellQuote('/a b/x'), "'/a b/x'", 'quotes path containing a space');
+  assertEqual(shellQuote("/a'b/x"), String.raw`'/a'\''b/x'`, 'escapes an embedded single quote');
+  assertEqual(substituteBin('{bin} --version', '/a/x'), "'/a/x' --version", 'substitutes {bin} once');
+  assertEqual(substituteBin('{bin} install; {bin} run', '/a/x'), "'/a/x' install; '/a/x' run", 'substitutes every {bin}');
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('prepareMcp (injected exec)');
+
+  // resolveBinPath falls back to $HOME/.local/bin when `command -v` misses.
+  // Point HOME at an empty temp dir so that fallback can't accidentally resolve
+  // a real binary present on the dev machine — the injected exec is then the
+  // sole authority over what "installed" means, keeping these tests hermetic.
+  const originalHome = process.env.HOME;
+  const emptyHome = await fsp.mkdtemp(path.join(os.tmpdir(), 'wizz-home-'));
+  process.env.HOME = emptyHome;
+
+  const scraplingEntry = () => ({
+    id: 'scrapling',
+    when: 'scrape',
+    server: { command: 'scrapling', args: ['mcp'] },
+    setup: { bin: 'scrapling', install: 'uv tool install "scrapling[ai]"', post_install: '{bin} install', verify: '{bin} --version' },
+  });
+
+  {
+    // Detect-first: binary already present => no install, patch to absolute path.
+    const calls = [];
+    const exec = async (cmd) => {
+      calls.push(cmd);
+      if (cmd.startsWith('command -v')) return { ok: true, stdout: '/usr/local/bin/scrapling\n', stderr: '' };
+      if (cmd.includes('--version')) return { ok: true, stdout: 'scrapling 0.3', stderr: '' };
+      return { ok: false, stdout: '', stderr: 'unexpected: ' + cmd };
+    };
+    const res = await prepareMcp({ mcp: scraplingEntry(), exec });
+    assert(res.ok && res.ran === false, 'already installed => ok, no fresh install');
+    assertEqual(res.mcp.server.command, '/usr/local/bin/scrapling', 'command patched to absolute path');
+    assert(!calls.some((c) => c.includes('uv tool install')), 'detect-first: install command never runs when binary present');
+  }
+
+  {
+    // Fresh install: first resolve misses, install runs, second resolve hits,
+    // browsers + verify pass, command patched to the ~/.local/bin path.
+    const calls = [];
+    let whichCalls = 0;
+    const exec = async (cmd) => {
+      calls.push(cmd);
+      if (cmd.startsWith('command -v')) {
+        whichCalls++;
+        return whichCalls === 1
+          ? { ok: false, stdout: '', stderr: '' }
+          : { ok: true, stdout: '/home/u/.local/bin/scrapling\n', stderr: '' };
+      }
+      if (cmd.includes('uv tool install')) return { ok: true, stdout: '', stderr: '' };
+      if (cmd.includes('--version')) return { ok: true, stdout: 'scrapling 0.3', stderr: '' };
+      if (cmd.endsWith(' install')) return { ok: true, stdout: '', stderr: '' }; // {bin} install (browsers)
+      return { ok: false, stdout: '', stderr: 'unexpected: ' + cmd };
+    };
+    const res = await prepareMcp({ mcp: scraplingEntry(), exec });
+    assert(res.ok && res.ran === true, 'missing binary => install runs, ok');
+    assertEqual(res.mcp.server.command, '/home/u/.local/bin/scrapling', 'command patched to resolved absolute path');
+    assert(
+      calls.some((c) => c.includes('uv tool install')),
+      'install command ran',
+    );
+    assert(
+      calls.some((c) => c.includes("'/home/u/.local/bin/scrapling' install")),
+      'browser post_install ran against the absolute path',
+    );
+  }
+
+  {
+    // Verify fails => entry reported failed, config NOT considered writable.
+    const exec = async (cmd) => {
+      if (cmd.startsWith('command -v')) return { ok: true, stdout: '/usr/local/bin/scrapling\n', stderr: '' };
+      if (cmd.includes('--version')) return { ok: false, stdout: '', stderr: 'ModuleNotFoundError: mcp' };
+      return { ok: true, stdout: '', stderr: '' };
+    };
+    const res = await prepareMcp({ mcp: scraplingEntry(), exec });
+    assert(!res.ok, 'verify failure => not ok');
+    assert(/verifica/.test(res.error || ''), 'verify failure => clear error message');
+  }
+
+  {
+    // Install fails => not ok, clear error, no verify attempted.
+    const exec = async (cmd) => {
+      if (cmd.startsWith('command -v')) return { ok: false, stdout: '', stderr: '' };
+      if (cmd.includes('uv tool install')) return { ok: false, stdout: '', stderr: 'network unreachable' };
+      return { ok: false, stdout: '', stderr: 'unexpected: ' + cmd };
+    };
+    const res = await prepareMcp({ mcp: scraplingEntry(), exec });
+    assert(!res.ok, 'install failure => not ok');
+    assert(/instala/.test(res.error || ''), 'install failure => clear error message');
+  }
+
+  {
+    // Installed but never resolvable afterwards => explicit not-found error.
+    let whichCalls = 0;
+    const exec = async (cmd) => {
+      if (cmd.startsWith('command -v')) {
+        whichCalls++;
+        return { ok: false, stdout: '', stderr: '' };
+      }
+      if (cmd.includes('uv tool install')) return { ok: true, stdout: '', stderr: '' };
+      return { ok: true, stdout: '', stderr: '' };
+    };
+    const res = await prepareMcp({ mcp: scraplingEntry(), exec });
+    assert(!res.ok && /não encontrado/.test(res.error || ''), 'install ok but unresolved => not-found error');
+    assert(whichCalls >= 2, 're-resolves after install');
+  }
+
+  {
+    // No setup block => untouched pass-through, exec never called.
+    const noSetup = { id: 'context7', server: { command: 'npx', args: ['-y', 'x'] } };
+    const exec = async () => {
+      throw new Error('exec should not run for a setup-less entry');
+    };
+    const res = await prepareMcp({ mcp: noSetup, exec });
+    assert(res.ok && res.ran === false && res.mcp === noSetup, 'setup-less entry passes through untouched');
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('prepareMcps (split ready/failed)');
+
+  {
+    const good = { id: 'context7', server: { command: 'npx', args: ['-y', 'x'] } }; // no setup => always ready
+    const exec = async (cmd) => {
+      if (cmd.startsWith('command -v')) return { ok: true, stdout: '/x/scrapling\n', stderr: '' };
+      if (cmd.includes('--version')) return { ok: false, stdout: '', stderr: 'boom' }; // scrapling verify fails
+      return { ok: true, stdout: '', stderr: '' };
+    };
+    const { ready, failed } = await prepareMcps({ mcps: [good, scraplingEntry()], exec });
+    assertEqual(
+      ready.map((m) => m.id),
+      ['context7'],
+      'ready keeps the healthy server, drops the broken one',
+    );
+    assert(failed.length === 1 && failed[0].id === 'scrapling', 'failed carries the broken id + error');
+    assert(!!failed[0].error, 'failed entry has an error string');
+  }
+
+  {
+    const res = await prepareMcps({ mcps: [], exec: async () => ({ ok: true }) });
+    assertEqual(res, { ready: [], failed: [] }, 'empty input => empty split (safe)');
+  }
+
+  // Restore HOME now that the resolve-sensitive sections are done.
+  process.env.HOME = originalHome;
+  await fsp.rm(emptyHome, { recursive: true, force: true });
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('setup never leaks into .mcp.json');
+
+  {
+    const tmp4 = await fsp.mkdtemp(path.join(os.tmpdir(), 'wizz-mcp-'));
+    try {
+      // A prepared entry: setup sits beside server; only server is written.
+      const prepared = {
+        id: 'scrapling',
+        server: { command: '/usr/local/bin/scrapling', args: ['mcp'] },
+        setup: { bin: 'scrapling', install: 'x' },
+      };
+      await writeMcpConfig({ projectDir: tmp4, mcps: [prepared] });
+      const written = JSON.parse(fs.readFileSync(path.join(tmp4, '.mcp.json'), 'utf8'));
+      assertEqual(
+        written.mcpServers.scrapling,
+        { command: '/usr/local/bin/scrapling', args: ['mcp'] },
+        'writes absolute command + args only',
+      );
+      assert(!('setup' in written.mcpServers.scrapling), 'setup block is never written to .mcp.json');
+    } finally {
+      await fsp.rm(tmp4, { recursive: true, force: true });
+    }
   }
 
   // ───────────────────────────────────────────────────────────────────────

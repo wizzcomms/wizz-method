@@ -196,6 +196,17 @@ areas:
         server:
           command: scrapling
           args: ["mcp"]
+        # The MCP server lives in the `[ai]` extra, and fetching needs browsers.
+        # Without this the installer would write a config for a binary that
+        # isn't installed → the client fails with ENOENT. `setup` makes the
+        # installer install the package, download browsers, resolve `scrapling`
+        # to an absolute path (server.command is rewritten), and verify it boots
+        # before writing; if verify fails the server is skipped, not written.
+        setup:
+          bin: scrapling
+          install: 'uv tool install "scrapling[ai]" || pipx install "scrapling[ai]" || pip install --user "scrapling[ai]"'
+          post_install: "{bin} install"
+          verify: "{bin} --version"
 
   social:
     agent: wizz-social

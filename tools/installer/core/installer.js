@@ -3,7 +3,7 @@ const fs = require('../fs-native');
 const { Manifest } = require('./manifest');
 const { OfficialModules } = require('../modules/official-modules');
 const { installSkillsLib } = require('../modules/skills-lib');
-const { writeMcpConfig, renderAddCommand } = require('../modules/mcp-config');
+const { writeMcpConfig, renderAddCommand, prepareMcps } = require('../modules/mcp-config');
 const { installClis, renderInstallCommand } = require('../modules/cli-config');
 const { writeDepsCache } = require('../modules/deps-cache');
 const { IdeManager } = require('../ide/manager');
@@ -334,13 +334,26 @@ class Installer {
             const toWrite = mcpPlan.toWrite || [];
             if (toWrite.length > 0) {
               message('Configuring MCP servers...');
+              // Some servers (e.g. scrapling) shell out to a binary that must be
+              // installed and resolved to an absolute path first — otherwise we
+              // would write a config the client can't launch (ENOENT). prepareMcps
+              // installs + verifies those, patching server.command to the absolute
+              // path; a server whose setup fails is dropped here (never written)
+              // and reported so the user can fix it, instead of leaving a broken
+              // config behind. Servers without a `setup` block pass through as-is.
+              const { ready: mcpsReady, failed: mcpsFailed } = await prepareMcps({ mcps: toWrite });
+              for (const f of mcpsFailed) {
+                await prompts.log.warn(
+                  `MCP ${f.id} não pôde ser preparado (${f.error}). Config NÃO escrita para evitar ENOENT — instale manualmente e adicione depois com \`claude mcp add\`.`,
+                );
+              }
               // Intentionally NOT tracked in installedFiles: .mcp.json is a
               // shared, user-owned config we merge into (it may hold the user's
               // own servers). Tracking it would expose it to uninstall removal
               // and manifest hash-management, which must never touch it.
               const mcpResult = await writeMcpConfig({
                 projectDir: paths.projectRoot,
-                mcps: toWrite,
+                mcps: mcpsReady,
               });
               if (mcpResult.added.length > 0) {
                 addResult('MCP servers', 'ok', `${mcpResult.added.join(', ')} → .mcp.json`);

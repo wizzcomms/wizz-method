@@ -20,6 +20,7 @@
 
 const path = require('node:path');
 const fs = require('../fs-native');
+const { defaultExec } = require('./cli-config');
 
 /**
  * Resolve the recommended MCP entries for the chosen areas, deduped by id.
@@ -48,6 +49,12 @@ function resolveMcps(registry, selectedAreas) {
       id: mcp.id,
       when: mcp.when || '',
       server: mcp.server,
+      // `setup` (optional) declares how to make a `command:`-relative server
+      // actually usable before it is written: install the backing package,
+      // download runtime assets, resolve the binary to an absolute path, and
+      // verify it boots. Carried here so prepareMcps() can act on it; dropped
+      // from what toServerConfig() writes (it never belongs in .mcp.json).
+      setup: mcp.setup || null,
       areas: areaKey ? [areaKey] : [],
     });
   };
@@ -72,6 +79,157 @@ function toServerConfig(server) {
   if (Array.isArray(server.args) && server.args.length > 0) out.args = [...server.args];
   if (server.env && Object.keys(server.env).length > 0) out.env = { ...server.env };
   return out;
+}
+
+/**
+ * POSIX-quote a path so it survives interpolation into a shell command even
+ * when it contains spaces or shell metacharacters. Single-quote wrapped, with
+ * embedded single quotes escaped the classic `'\''` way.
+ * @param {string} value
+ * @returns {string}
+ */
+function shellQuote(value) {
+  return `'${String(value).replaceAll("'", `'\\''`)}'`;
+}
+
+/**
+ * Substitute the `{bin}` placeholder in a setup command with the shell-quoted
+ * absolute path of the resolved binary. Lets the registry write portable setup
+ * commands (`{bin} install`, `{bin} --version`) that bind to the real path at
+ * run time instead of relying on PATH.
+ * @param {string} command - Command template possibly containing `{bin}`
+ * @param {string} binPath - Absolute path to substitute
+ * @returns {string}
+ */
+function substituteBin(command, binPath) {
+  return String(command).replaceAll('{bin}', shellQuote(binPath));
+}
+
+/**
+ * Resolve the absolute path of a binary an MCP server shells out to. A bare
+ * `command: "scrapling"` is fragile: the MCP subprocess spawned by the client
+ * does not always inherit the user's ~/.local/bin on PATH, so a relative name
+ * fails with ENOENT even when the tool is installed. We resolve and write the
+ * absolute path instead. Tries `command -v` first (honors the current PATH),
+ * then the conventional user-local bin dir where `uv tool` / `pipx` / `pip
+ * --user` land executables. Returns null when the binary is nowhere to be found.
+ *
+ * @param {string} bin - Binary name to locate
+ * @param {Function} [exec] - Injected runner (command, opts) => {ok, stdout,...}
+ * @returns {Promise<string|null>} Absolute path, or null if not found.
+ */
+async function resolveBinPath(bin, exec = defaultExec) {
+  if (!bin) return null;
+  const viaWhich = await exec(`command -v ${bin}`, { timeoutMs: 5000 });
+  if (viaWhich.ok) {
+    const found = (viaWhich.stdout || '').trim().split('\n')[0].trim();
+    if (found) return found;
+  }
+  const home = process.env.HOME || process.env.USERPROFILE || '';
+  if (home) {
+    const candidate = path.join(home, '.local', 'bin', bin);
+    if (await fs.pathExists(candidate)) return candidate;
+  }
+  return null;
+}
+
+/**
+ * Run an MCP entry's `setup` block so the server is genuinely usable BEFORE it
+ * lands in .mcp.json. This closes the ENOENT gap where the installer wrote a
+ * server config but never installed the backing tool. Contract (detect-first,
+ * mirroring cli-config's install philosophy):
+ *
+ *   1. DETECT  — resolve the binary; if already present we skip installation.
+ *   2. INSTALL — on a miss, run `setup.install` (package + its MCP extra), then
+ *      re-resolve. `setup.post_install` (e.g. downloading browsers) runs after,
+ *      only on a fresh install, with `{bin}` bound to the resolved path.
+ *   3. RESOLVE — rewrite `server.command` to the ABSOLUTE path so the client's
+ *      MCP subprocess never depends on PATH inheriting ~/.local/bin.
+ *   4. VERIFY  — run `setup.verify` ({bin} bound). A failure means writing the
+ *      config would point at a broken/missing binary, so we DO NOT write it —
+ *      the entry is reported failed and the caller drops it with a clear message.
+ *
+ * Immutable: returns a new entry with a patched `server.command`; the input is
+ * never mutated. Entries without a `setup` block pass through untouched.
+ *
+ * @param {Object} args
+ * @param {Object} args.mcp - Resolved MCP entry (id, server, setup?)
+ * @param {Function} [args.exec] - Injected runner (command, opts) => {ok,...}
+ * @returns {Promise<{mcp: Object, ok: boolean, ran: boolean, error: string|null}>}
+ */
+async function prepareMcp({ mcp, exec = defaultExec }) {
+  const setup = mcp && mcp.setup;
+  if (!setup) return { mcp, ok: true, ran: false, error: null };
+
+  const bin = setup.bin || (mcp.server && mcp.server.command);
+  if (!bin) {
+    return { mcp, ok: false, ran: false, error: 'setup declarado sem `bin` nem `server.command` para resolver' };
+  }
+
+  // 1. DETECT — install only when the binary is not already resolvable.
+  let binPath = await resolveBinPath(bin, exec);
+  const freshInstall = !binPath;
+
+  if (freshInstall) {
+    if (!setup.install) {
+      return { mcp, ok: false, ran: false, error: `binário '${bin}' ausente e setup não tem comando \`install\`` };
+    }
+    const installed = await exec(setup.install, { timeoutMs: 900_000 });
+    if (!installed.ok) {
+      return { mcp, ok: false, ran: true, error: `instalação falhou: ${(installed.stderr || 'erro desconhecido').trim()}` };
+    }
+    binPath = await resolveBinPath(bin, exec);
+    if (!binPath) {
+      return {
+        mcp,
+        ok: false,
+        ran: true,
+        error: `'${bin}' não encontrado no PATH nem em ~/.local/bin após a instalação`,
+      };
+    }
+    // 2. POST-INSTALL (e.g. browser download) — fresh installs only, idempotent.
+    if (setup.post_install) {
+      const post = await exec(substituteBin(setup.post_install, binPath), { timeoutMs: 900_000 });
+      if (!post.ok) {
+        return { mcp, ok: false, ran: true, error: `pós-instalação falhou: ${(post.stderr || 'erro desconhecido').trim()}` };
+      }
+    }
+  }
+
+  // 4. VERIFY — never write a config pointing at a binary that cannot boot.
+  if (setup.verify) {
+    const verified = await exec(substituteBin(setup.verify, binPath), { timeoutMs: 60_000 });
+    if (!verified.ok) {
+      return { mcp, ok: false, ran: freshInstall, error: `verificação falhou: ${(verified.stderr || 'erro desconhecido').trim()}` };
+    }
+  }
+
+  // 3. RESOLVE — patch the absolute path; leave args/env/everything else intact.
+  const patched = { ...mcp, server: { ...mcp.server, command: binPath } };
+  return { mcp: patched, ok: true, ran: freshInstall, error: null };
+}
+
+/**
+ * Prepare every MCP entry (see prepareMcp), splitting the set into `ready`
+ * (safe to write, with any `server.command` patched to an absolute path) and
+ * `failed` (setup did not complete — the caller must NOT write these and should
+ * surface the error so the user can fix it manually). Never throws: each entry
+ * is isolated so one broken tool never blocks the others or the wider install.
+ *
+ * @param {Object} args
+ * @param {Array<Object>} args.mcps - Resolved MCP entries to prepare
+ * @param {Function} [args.exec] - Injected runner (command, opts) => {ok,...}
+ * @returns {Promise<{ready: Array<Object>, failed: Array<{id: string, error: string}>}>}
+ */
+async function prepareMcps({ mcps, exec = defaultExec }) {
+  const ready = [];
+  const failed = [];
+  for (const mcp of mcps || []) {
+    const res = await prepareMcp({ mcp, exec });
+    if (res.ok) ready.push(res.mcp);
+    else failed.push({ id: mcp.id, error: res.error || 'falha desconhecida' });
+  }
+  return { ready, failed };
 }
 
 /**
@@ -134,4 +292,14 @@ async function writeMcpConfig({ projectDir, mcps, trackFile = () => {} }) {
   return { added, skipped, file };
 }
 
-module.exports = { resolveMcps, toServerConfig, renderAddCommand, writeMcpConfig };
+module.exports = {
+  resolveMcps,
+  toServerConfig,
+  renderAddCommand,
+  writeMcpConfig,
+  prepareMcp,
+  prepareMcps,
+  resolveBinPath,
+  shellQuote,
+  substituteBin,
+};
