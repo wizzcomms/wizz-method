@@ -9,6 +9,15 @@
 #     global_target_dir: (optional) User-home directory for global install
 #     ancestor_conflict_check: (optional) Refuse install when ancestor dir has WIZZ files
 #
+# INSTALL SCOPE — LOCAL PER PROJECT IS THE ENFORCED DEFAULT.
+# The installer only ever writes skills to the project-relative `target_dir`
+# (path.join(projectDir, target_dir) in ide/_config-driven.js). `global_target_dir`
+# is documented here for reference only — no code path reads it, so a user-home /
+# global install is NEVER the silent default. This is deliberate and matches the
+# "Doutrina de Instalação" in skills-registry.yaml (rule 1: prefer local per project,
+# never assume global as default). If a global-install option is ever added, it must
+# be explicit opt-in, never the recommended/default choice.
+#
 # Multiple platforms may share the same target_dir or global_target_dir — many tools
 # read from the shared `.agents/skills/` and `~/.agents/skills/` cross-tool standard.
 # Paths verified against each tool's primary docs as of 2026-04-25.

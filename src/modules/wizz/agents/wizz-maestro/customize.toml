@@ -68,6 +68,11 @@ description = "Marketing, CRO, conversão, lançamento, preço, churn"
 prompt = "Roteie para wizz-growth (skill: wizz-growth)."
 
 [[agent.menu]]
+code = "SOCIAL"
+description = "Roteiro viral de Reel/Short, social, calendário de conteúdo"
+prompt = "Roteie para wizz-social (skill: wizz-social)."
+
+[[agent.menu]]
 code = "ADS"
 description = "Anúncios, mídia paga, Meta/Google Ads, criativo"
 prompt = "Roteie para wizz-ads (skill: wizz-ads)."
