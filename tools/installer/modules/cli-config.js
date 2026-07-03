@@ -47,16 +47,44 @@ async function defaultExec(command, { timeoutMs = 300_000 } = {}) {
 }
 
 /**
+ * Current "<platform>-<arch>" tag (e.g. "darwin-arm64"). Injectable for tests.
+ * @returns {string}
+ */
+function currentPlatformTag() {
+  return `${process.platform}-${process.arch}`;
+}
+
+/**
+ * A CLI entry may declare `platform:` to gate it to specific OS/arch combos —
+ * e.g. a tool that only builds on Apple Silicon. Accepts a string or array of
+ * tokens matched against the current tag: a full "darwin-arm64", a bare OS
+ * ("darwin"), or a bare arch ("arm64"). No `platform` field => runs everywhere.
+ * @param {{platform?: string|string[]}} cli
+ * @param {string} tag - Current "<platform>-<arch>" tag
+ * @returns {boolean}
+ */
+function matchesPlatform(cli, tag) {
+  const p = cli && cli.platform;
+  if (!p) return true;
+  const wanted = Array.isArray(p) ? p : [p];
+  const [os, arch] = tag.split('-');
+  return wanted.some((w) => w === tag || w === os || w === arch);
+}
+
+/**
  * Resolve the recommended CLI entries for the chosen areas, deduped by id.
  * Empty / undefined / containing 'all' means every area. The cross-cutting
  * `cli_utility:` tools are always included. Entries missing `id` or `install`
- * are dropped — a CLI we cannot install is not actionable.
+ * are dropped — a CLI we cannot install is not actionable. Entries whose
+ * `platform:` gate does not match the current OS/arch are dropped too, so a
+ * Mac-only tool is never even suggested on Linux/Windows.
  *
  * @param {Object} registry - Parsed skills-registry.yaml
  * @param {string[]} [selectedAreas] - Area keys to resolve
- * @returns {Array<{id: string, when: string, check: string, install: string, areas: string[]}>}
+ * @param {string} [platformTag] - Current "<platform>-<arch>" (injectable for tests)
+ * @returns {Array<{id: string, when: string, check: string, install: string, platform: (string|string[]|undefined), areas: string[]}>}
  */
-function resolveClis(registry, selectedAreas) {
+function resolveClis(registry, selectedAreas, platformTag = currentPlatformTag()) {
   const byId = new Map();
   const areas = (registry && registry.areas) || {};
   const wantAll = !selectedAreas || selectedAreas.length === 0 || selectedAreas.includes('all');
@@ -64,6 +92,7 @@ function resolveClis(registry, selectedAreas) {
 
   const add = (cli, areaKey) => {
     if (!cli || !cli.id || !cli.install) return; // not actionable without an install command
+    if (!matchesPlatform(cli, platformTag)) return; // gated to another OS/arch
     const existing = byId.get(cli.id);
     if (existing) {
       if (areaKey && !existing.areas.includes(areaKey)) existing.areas.push(areaKey);
@@ -74,6 +103,7 @@ function resolveClis(registry, selectedAreas) {
       when: cli.when || '',
       check: cli.check || '',
       install: cli.install,
+      platform: cli.platform,
       areas: areaKey ? [areaKey] : [],
     });
   };
@@ -142,4 +172,4 @@ async function installClis({ clis, exec = defaultExec }) {
   return { installed, failed };
 }
 
-module.exports = { resolveClis, renderInstallCommand, detectClis, installClis, defaultExec };
+module.exports = { resolveClis, renderInstallCommand, detectClis, installClis, defaultExec, matchesPlatform, currentPlatformTag };

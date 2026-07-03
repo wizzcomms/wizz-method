@@ -58,6 +58,24 @@ areas:
           args: ["-y", "@21st-dev/magic"]
           env:
             API_KEY: "${MAGIC_API_KEY}"
+    clis:
+      - id: hyperframes
+        when: "Renderizar vídeo a partir de HTML/CSS/animação (HTML→MP4, agent-native, 20+ skills). Alternativa HTML-nativa ao Remotion (que é React). Precisa ffmpeg + Node 22 + Chrome headless."
+        check: "npx --yes hyperframes --version"
+        install: "npx skills add heygen-com/hyperframes"
+      - id: claude-video
+        when: "Analisar/entender vídeo EXISTENTE: baixa, extrai frames e transcreve para resumir, achar momentos ou diagnosticar footage. NÃO cria vídeo. Precisa ffmpeg + yt-dlp (+ Groq/OpenAI p/ transcrição sem legenda)."
+        check: "test -d $HOME/.claude/skills/watch"
+        install: "npx skills add bradautomates/claude-video"
+      - id: buttercut
+        when: "EDITAR vídeo por IA: cortes, selects, cenas, roughcut via XML/FFmpeg. Sugerir quando o pedido for editar/cortar vídeo. Clone-and-run no PROJETO (não é skill add), pesado: Ruby + Python + FFmpeg + WhisperX. AVISOS: ~GB de modelos (WhisperX), build demorado, só Apple Silicon."
+        platform: darwin-arm64
+        check: "test -d ./buttercut"
+        install: "git clone https://github.com/barefootford/buttercut.git"
+      - id: voicebox
+        when: "Voz/TTS/clonagem de voz local para narração/VO de vídeo (7 engines TTS + Whisper STT). App desktop que expõe endpoint MCP local em runtime. Clone-and-run no projeto."
+        check: "test -d ./voicebox"
+        install: "git clone https://github.com/jamiepine/voicebox.git"
     references:
       - "references/premium-agency-rules.md (regras $150k-tier, importadas por impeccable/huashu no modo high-end)"
 
@@ -92,6 +110,11 @@ areas:
         when: "Gerar páginas em escala pra atacar muitas keywords."
       - id: site-architecture
         when: "Arquitetura de site / topic clusters / estrutura de URLs."
+    clis:
+      - id: distribb
+        when: "EXECUTAR distribuição de SEO: publicar artigos + construir backlinks pela rede da Distribb, conectar Google Search Console, autopublicar notícias. Complementa (não duplica) as skills de SEO que só geram/auditam. Requer Distribb API + GSC (+ DataForSEO/Ahrefs no plano free)."
+        check: "ls $HOME/.claude/skills 2>/dev/null | grep -qi distribb"
+        install: "npx skills add Bomx/distribb-skill"
 
   growth:
     agent: wizz-growth
@@ -137,6 +160,12 @@ areas:
         when: "Montar A/B test / experimento de conversão."
       - id: analytics-tracking
         when: "Setar/auditar tracking e medição (GA4, GTM, eventos, UTM, atribuição)."
+    mcps:
+      - id: scrapling
+        when: "Scraping/crawl web para pesquisa de mercado, prospecção de leads e inteligência competitiva. Bypass anti-bot (Cloudflare), parsing adaptativo, spider concorrente. Requer: pip install 'scrapling[ai]' && scrapling install."
+        server:
+          command: scrapling
+          args: ["mcp"]
 
   ads:
     agent: wizz-ads
@@ -156,6 +185,11 @@ areas:
           args: ["-y", "mcp-meta-ads"]
           env:
             META_ACCESS_TOKEN: "${META_ACCESS_TOKEN}"
+    clis:
+      - id: arcads
+        when: "GERAR vídeo-ad e imagem por IA (Seedance/Sora/Veo/Kling/OmniHuman + Nano Banana) e publicar como Meta ad. Clone-and-run no projeto: git clone + ./scripts/setup.sh; precisa Python 3.10+ e ARCADS API key em .env (META_ACCESS_TOKEN opcional p/ publicar)."
+        check: "test -d ./arcads-claude-code"
+        install: "git clone https://github.com/krusemediallc/arcads-claude-code.git"
 
   architect:
     agent: wizz-agent-architect

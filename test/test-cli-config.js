@@ -14,7 +14,7 @@
  * Usage: node test/test-cli-config.js
  */
 
-const { resolveClis, renderInstallCommand, detectClis, installClis } = require('../tools/installer/modules/cli-config');
+const { resolveClis, renderInstallCommand, detectClis, installClis, matchesPlatform } = require('../tools/installer/modules/cli-config');
 
 const colors = {
   reset: '[0m',
@@ -120,6 +120,44 @@ async function runTests() {
   {
     const r = resolveClis(null, ['qa']);
     assertEqual(r, [], 'null registry => empty (safe)');
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('resolveClis — platform gate');
+
+  // A registry with a Mac-Apple-Silicon-only CLI (mirrors buttercut) plus an
+  // ungated one. The gated entry must appear only on a matching OS/arch tag.
+  const GATED = {
+    areas: {
+      designer: {
+        clis: [
+          { id: 'always', when: 'x', check: '', install: 'echo a' },
+          { id: 'mac-only', when: 'edit video', platform: 'darwin-arm64', check: '', install: 'git clone x' },
+        ],
+      },
+    },
+  };
+  {
+    const ids = resolveClis(GATED, ['designer'], 'darwin-arm64')
+      .map((c) => c.id)
+      .sort();
+    assertEqual(ids, ['always', 'mac-only'], 'darwin-arm64 => gated tool included');
+  }
+  {
+    const ids = resolveClis(GATED, ['designer'], 'linux-x64').map((c) => c.id);
+    assertEqual(ids, ['always'], 'linux-x64 => gated tool dropped');
+  }
+  {
+    const ids = resolveClis(GATED, ['designer'], 'darwin-x64').map((c) => c.id);
+    assertEqual(ids, ['always'], 'darwin-x64 (Intel Mac) => gated tool dropped');
+  }
+  {
+    // Bare OS / arch tokens and array form both match.
+    assert(matchesPlatform({ platform: 'darwin' }, 'darwin-arm64'), 'bare OS token matches');
+    assert(matchesPlatform({ platform: 'arm64' }, 'darwin-arm64'), 'bare arch token matches');
+    assert(matchesPlatform({ platform: ['linux-x64', 'darwin-arm64'] }, 'darwin-arm64'), 'array form matches');
+    assert(!matchesPlatform({ platform: 'darwin-arm64' }, 'win32-x64'), 'non-match is rejected');
+    assert(matchesPlatform({}, 'win32-x64'), 'no platform field => runs everywhere');
   }
   {
     // utility id should never duplicate even across multiple areas

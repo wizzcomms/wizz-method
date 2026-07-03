@@ -140,7 +140,12 @@ Se nenhuma skill/MCP instalado mapear o pedido, primeiro **classifique o que fal
 | Qualidade de design, anti-slop, gosto visual, estética, olhar crítico | `taste-skill` (se instalada) | 1 |
 | Regras de frontend, código UI determinístico, 44 regras, audit de frontend | `impeccable` (se instalada) | 2 |
 | Design system HTML-native, filosofia visual, review 5-dim, export MP4 | `huashu-design` (se instalada) | 2 |
-| Animação, motion, vídeo, Remotion, Three.js, 3D, WebGL | `motion-3d-director` + `remotion-best-practices` | 1 |
+| Animação, motion, vídeo programático em código, Remotion, Three.js, 3D, WebGL | `motion-3d-director` + `remotion-best-practices` | 1 |
+| Renderizar vídeo de HTML/CSS (HTML→MP4, agent-native) | CLI `hyperframes` (registry designer; `npx skills add heygen-com/hyperframes`) | 2 |
+| **Editar/cortar vídeo** (cortes, selects, roughcut) | CLI `buttercut` (registry designer; **só Apple Silicon**, clone-and-run no projeto, deps pesadas) | 1 |
+| Gerar vídeo-ad/imagem por IA (Sora/Veo/Kling) + publicar Meta | CLI `arcads` (registry `ads`; git clone + Arcads API key) | 1 |
+| Analisar/entender vídeo existente (frames + transcrição) | CLI `claude-video` (registry designer; `npx skills add bradautomates/claude-video`) | 2 |
+| Narração / voz / TTS / clonagem de voz para vídeo | CLI `voicebox` (registry designer; app local com endpoint MCP) | 2 |
 | Componentes prontos via Magic (21st.dev) | Use diretamente: `mcp__magic__21st_magic_component_inspiration` / `mcp__magic__21st_magic_component_builder` | 1 |
 
 ### Área de Marketing / Growth
