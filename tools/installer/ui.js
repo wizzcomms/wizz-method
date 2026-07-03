@@ -485,7 +485,7 @@ class UI {
 
   /**
    * Prompt for which global-skill AREAS to install (designer, copy, seo, ...).
-   * Only relevant when the `wizz` (agency/method) module is selected. Areas come
+   * Only relevant when the `bmm` (Wizz Method) module is selected. Areas come
    * straight from skills-registry.yaml so this never diverges from the routing.
    * Returns an empty array to mean "all areas" (the installSkillsLib sentinel).
    * @param {string[]} selectedModules - Modules chosen for install
@@ -493,7 +493,7 @@ class UI {
    * @returns {Promise<string[]>} Chosen area keys, or [] for all
    */
   async selectSkillAreas(selectedModules, options = {}) {
-    if (!selectedModules.includes('wizz')) return [];
+    if (!selectedModules.includes('bmm')) return [];
 
     const registry = this._loadSkillsRegistry();
     if (!registry || !registry.areas) return [];
@@ -549,7 +549,7 @@ class UI {
    * @returns {Promise<{toWrite: Object[], toRecommend: Object[]}>}
    */
   async selectMcps(selectedModules, selectedAreas, options = {}) {
-    if (!selectedModules.includes('wizz')) return { toWrite: [], toRecommend: [] };
+    if (!selectedModules.includes('bmm')) return { toWrite: [], toRecommend: [] };
 
     const registry = this._loadSkillsRegistry();
     const resolved = resolveMcps(registry, selectedAreas);
@@ -614,7 +614,7 @@ class UI {
    */
   async selectClis(selectedModules, selectedAreas, options = {}) {
     const empty = { toInstall: [], toRecommend: [], alreadyInstalled: [] };
-    if (!selectedModules.includes('wizz')) return empty;
+    if (!selectedModules.includes('bmm')) return empty;
 
     const registry = this._loadSkillsRegistry();
     const resolved = resolveClis(registry, selectedAreas);

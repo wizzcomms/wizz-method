@@ -302,9 +302,10 @@ class Installer {
 
         // Install the global skills library (area-filtered) BEFORE manifests, so
         // collectSkills discovers `_wizz/skills-lib/<id>` and the verbatim pipeline
-        // carries them into each IDE. Gated on the `wizz` module; additive, so a
-        // failure here warns and never aborts the install.
-        if (!config.isQuickUpdate() && (config.modules || []).includes('wizz')) {
+        // carries them into each IDE. Gated on the `bmm` (Wizz Method) module,
+        // which now owns the area agents + router; additive, so a failure here
+        // warns and never aborts the install.
+        if (!config.isQuickUpdate() && (config.modules || []).includes('bmm')) {
           message('Installing global skills...');
           try {
             const result = await installSkillsLib({

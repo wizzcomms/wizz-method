@@ -4,6 +4,12 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.2.2]
+
+### Corrigido
+
+- `wizz-router` e toda a `skills-lib` (copy, SEO, growth, ads) mais MCP/CLI por área não instalavam em installs via `npx`. Os gates dependiam do módulo `wizz`, que não é oferecido no seletor de módulos. Migrados para o módulo `bmm` (Wizz Method), que todo install marca. Agora o install traz o router e as 62 skills da biblioteca.
+
 ## [1.0.0]
 
 Primeira versão do Wizz Method como projeto independente.
