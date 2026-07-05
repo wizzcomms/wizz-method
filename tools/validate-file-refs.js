@@ -156,6 +156,12 @@ function mapInstalledToSource(refPath) {
   // Skip install-only paths (generated at install time, not in source)
   if (isInstallOnly(cleaned)) return null;
 
+  // skills-registry.yaml lives at the repo root in source (installs to
+  // _wizz/skills-registry.yaml), so it does NOT map under src/ like other _wizz/ files.
+  if (cleaned === 'skills-registry.yaml') {
+    return path.join(PROJECT_ROOT, 'skills-registry.yaml');
+  }
+
   // Map installed module names to their source directory names
   // _wizz/core/ → src/core-skills/, _wizz/bmm/ → src/bmm-skills/
   if (cleaned.startsWith('core/')) {
@@ -302,6 +308,11 @@ function extractMarkdownRefs(filePath, content) {
 
 function extractCsvRefs(filePath, content) {
   const refs = [];
+
+  // Vendored global skills under skills-lib/ ship data CSVs (icons, tech stacks) that
+  // contain embedded code with quotes — not WIZZ workflow references. Skip them so their
+  // legitimate parse quirks don't surface as noise.
+  if (filePath.includes(`${path.sep}skills-lib${path.sep}`)) return refs;
 
   let records;
   try {

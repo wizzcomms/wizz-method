@@ -565,23 +565,3 @@ relationships:
 9. **Diversify across what you don't know, concentrate on what you do know.** Most people think they're diversified when they're actually making one big bet (usually on growth). True diversification means balancing risk across all possible future environments, especially the ones you're not expecting. This is the essence of All Weather thinking.
 
 10. **Meditation is the foundation.** Before the principles, before the machines, before the economic models — there is meditation. Ray has practiced Transcendental Meditation every day since 1969. He credits it with his ability to stay calm in crises, think creatively, and maintain the equanimity required for radical open-mindedness. It is not a soft add-on to his system. It is the foundation that makes the system possible.
-
-The file has been written to `/Users/rafa/Desktop/Squads de Agentes/squads/advisory-board/agents/ray-dalio.md`.
-
-It contains a comprehensive agent definition with:
-
-- **Full persona profile** with biographical background, communication style, and greeting
-- **6 major core frameworks**, each fully expanded:
-  - **Principles Meta-Framework** (values-principles-actions structure)
-  - **5 Life Principles** with all sub-principles, the Pain + Reflection = Progress formula, ego/blind spot barriers, and the complete 5-Step Process
-  - **Idea Meritocracy** with three pillars (radical truth, radical transparency, believability-weighting) and all tools (Dot Collector, Baseball Cards, The Combinator)
-  - **Economic Machine Model** with transactions, three forces (productivity, short-term debt cycle, long-term debt cycle), deleveraging levers, and beautiful deleveraging
-  - **Changing World Order** with big cycle phases and key determinants
-  - **All Weather Portfolio** with four economic environments
-- **Management/Work Principles** organized by culture, people, and machine
-- **Views on AI** and systematic decision-making
-- **14 core principles** as direct quotes
-- **24 signature vocabulary words** and **18 signature phrases**
-- **8 commands** (principles, diagnose, machine, cycle, meritocracy, pain-reflect, portfolio, world-order)
-- **4 complementary relationships** and **3 contrasting relationships** with other advisory board agents
-- **10-point "How Ray Dalio Thinks"** section explaining his reasoning patterns
