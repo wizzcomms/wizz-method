@@ -76,6 +76,14 @@ areas:
         when: "Direção de motion/animação, 3D, WebGL, scroll cinematográfico, image-to-video."
       - id: remotion-best-practices
         when: "Vídeo programático em React (Remotion) especificamente."
+      - id: animate
+        when: "Craft de animação/micro-interação: regras do Emil Kowalski (saída > entrada, só transform/opacity, respeitar reduced-motion). Complementa o motion-3d-director com a execução fina. Traz references + exemplos .tsx."
+      - id: design-motion-principles
+        when: "Auditor de movimento: revisa animação existente e aponta scale(0) no início, easing cru, reduced-motion faltando; pesa contenção/polimento/diversão pelo contexto."
+      - id: canvas-design
+        when: "Gerar PNG/PDF editável por código (carrossel, quote card, infográfico) com fonte/cor/logo sempre certos. Traz canvas-fonts."
+      - id: algorithmic-art
+        when: "Visual generativo por código (flow fields, ruído, partículas) para fundo/textura de hero, único a cada render, sem cara de banco de imagem."
       - id: taste-skill
         when: "Anti-slop em briefs NOVOS: lê o brief, define a direção e audita contra defaults de AI."
       - id: taste-redesign
@@ -259,9 +267,9 @@ areas:
     summary: "Arquitetura, banco, segurança, infra, decisões técnicas."
     skills:
       - id: web-security
-        when: "Auditar segurança web, OWASP, XSS/CSRF/injeção, headers, rate limit, antes de deploy/PR."
+        when: "Auditar segurança web, OWASP, XSS/CSRF/injeção/SQLi, IDOR, headers, rate limit (IP+conta), CORS, clickjacking, vazamento de PII na resposta, antes de deploy/PR."
       - id: auth-and-secrets
-        when: "Auth (JWT/OAuth/SSO/Clerk), gestão de secrets, rotação de credenciais."
+        when: "Auth (JWT/OAuth/SSO/Clerk), token no header vs URL, revogar no logout, enumeração de usuário, gestão de secrets, rotação de credenciais."
       - id: desktop-security
         when: "Segurança desktop/Electron (contextIsolation, code signing)."
       - id: database-scaling
@@ -276,6 +284,8 @@ areas:
         when: "Dependências/packages, vulnerabilidades, npm audit."
       - id: supabase-postgres-best-practices
         when: "Performance e boas práticas de Postgres/Supabase (queries, schema, RLS)."
+      - id: ai-product-design
+        when: "Construir/melhorar um agente ou produto de IA: escrever/revisar system prompt, definir persona/tom, guardrails e recusas, few-shot, chain-of-thought, orquestração multi-agente, handoff, detecção de frustração, generative UI, avaliar qualidade de saída. Base para desenhar os próprios agentes do método. 44 padrões (Owl-Listener, MIT)."
     mcps:
       - id: supabase
         when: "Operar Supabase de verdade: rodar SQL, migrations, inspecionar schema/RLS, logs."

@@ -125,7 +125,7 @@ Se nenhuma skill/MCP instalado mapear o pedido, primeiro **classifique o que fal
 | Cloud spend, custo de infra, right-sizing, AWS/GCP billing | `cloud-and-infra` | 1 |
 | Auth, secrets, tokens, OAuth, JWT, Clerk, permissões | `auth-and-secrets` + `security-reviewer` | 1 |
 | Dependências, packages, vulnerabilidades, npm audit | `database-and-deps` | 2 |
-| Segurança, XSS, CSRF, injeção, OWASP, rate limit, headers | `web-security` + `security-reviewer` + `auth-and-secrets` | 1 |
+| Segurança, XSS, CSRF, SQLi, IDOR, OWASP, rate limit, CORS, clickjacking, PII na resposta, enumeração de usuário, headers | `web-security` + `security-reviewer` + `auth-and-secrets` | 1 |
 | Desktop, Electron, contextIsolation, code signing | `desktop-security` | 2 |
 
 ### Área Técnica — Código e Qualidade
@@ -142,6 +142,7 @@ Se nenhuma skill/MCP instalado mapear o pedido, primeiro **classifique o que fal
 | Segunda opinião, revisão crítica adversarial | `adversarial-reviewer` | 2 |
 | Plano técnico, breakdown de tasks, handoff de dev | `implementation-planner` | 2 |
 | Novo projeto, iniciar app, ponto de partida, onboarding dev | `inicio-de-projeto` | 1 |
+| Construir/melhorar agente ou produto de IA, escrever/revisar system prompt, persona/tom, guardrails, few-shot, chain-of-thought, orquestração multi-agente, avaliar saída de IA | `ai-product-design` | 1 |
 
 ### Área de Design e UI
 
@@ -153,6 +154,8 @@ Se nenhuma skill/MCP instalado mapear o pedido, primeiro **classifique o que fal
 | Regras de frontend, código UI determinístico, 44 regras, audit de frontend | `impeccable` (se instalada) | 2 |
 | Design system HTML-native, filosofia visual, review 5-dim, export MP4 | `huashu-design` (se instalada) | 2 |
 | Animação, motion, vídeo programático em código, Remotion, Three.js, 3D, WebGL | `motion-3d-director` + `remotion-best-practices` | 1 |
+| Craft de animação/micro-interação, easing, timing, reduced-motion, "essa animação travou/tá ruim" | `animate` + `design-motion-principles` | 2 |
+| Gerar imagem por código: carrossel, quote card, infográfico (PNG/PDF editável), fundo/textura generativa de hero | `canvas-design` + `algorithmic-art` | 2 |
 | Renderizar vídeo de HTML/CSS (HTML→MP4, agent-native) | CLI `hyperframes` (registry designer; `npx skills add heygen-com/hyperframes`) | 2 |
 | **Editar/cortar vídeo** (cortes, selects, roughcut) | CLI `buttercut` (registry designer; **só Apple Silicon**, clone-and-run no projeto, deps pesadas) | 1 |
 | Gerar vídeo-ad/imagem por IA (Sora/Veo/Kling) + publicar Meta | CLI `arcads` (registry `ads`; git clone + Arcads API key) | 1 |

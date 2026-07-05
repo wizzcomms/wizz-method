@@ -2,6 +2,7 @@
 name: auth-and-secrets
 description: >
   Segurança de autenticação e gestão de secrets. Usar quando: implementar auth, lidar com JWT/OAuth/SSO,
+  token no header vs URL, revogação de token no logout, enumeração de usuário/mensagem genérica,
   guardar API keys ou credenciais, configurar Clerk/Supabase auth, revisar onde secrets estão armazenados,
   rotação de credenciais, checar se .env está seguro.
 ---
@@ -22,6 +23,15 @@ description: >
 - Refresh token com rotação: ao usar, invalide o anterior e emita novo
 - Nunca coloque dados sensíveis no payload (é base64, não criptografia)
 - Blacklist de tokens invalidados: Redis com TTL igual ao exp do token
+- **Token no header `Authorization: Bearer`, NUNCA na URL/query string** (a URL vaza em logs de servidor, histórico do browser, header `Referer` e analytics)
+- **Logout de verdade revoga o token**: coloque na blacklist (Redis, TTL = exp) e invalide o refresh token. Sem isso o access token continua válido depois do logout até expirar sozinho
+
+### Enumeração de usuário
+Evita que um atacante descubra quais e-mails existem na base (login, signup, reset de senha).
+- Resposta idêntica para e-mail existente e inexistente: "Se o e-mail existir, enviamos um link"
+- No login use mensagem genérica ("credenciais inválidas"), nunca "e-mail não cadastrado" vs "senha incorreta"
+- Responda em **tempo constante**: rode o hash da senha mesmo quando o usuário não existe (senão o tempo de resposta denuncia quem existe)
+- Reforce com rate limit por IP **e** por conta (ver web-security) para barrar varredura de e-mails
 
 ### OAuth / SSO
 - Use biblioteca estabelecida, não implemente o flow manualmente

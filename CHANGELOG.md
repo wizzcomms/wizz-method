@@ -4,6 +4,13 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.4.0]
+
+### Adicionado
+
+- Cobertura de segurança das falhas recorrentes de pentest em `web-security` e `auth-and-secrets`: triagem rankeada por severidade, CORS refletindo Origin (allowlist), vazamento de PII/hash na resposta, enumeração de usuário (mensagem genérica + tempo constante), JWT no header vs URL + revogação no logout, clickjacking (`frame-ancestors`), rate limit por IP **e** conta. Triggers atualizados no registry e no `wizz-router`.
+- 5 skills novas na `skills-lib` (área designer + architect): `animate` (craft de motion, Emil Kowalski), `design-motion-principles` (auditor de movimento), `canvas-design` (PNG/PDF editável), `algorithmic-art` (visual generativo), e `ai-product-design` (bundle de 44 padrões de design de agente/IA + arquitetura de prompt + trust/safety, base Owl-Listener/ai-design-skills MIT).
+
 ## [1.2.2]
 
 ### Corrigido
