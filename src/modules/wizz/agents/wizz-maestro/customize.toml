@@ -15,6 +15,7 @@ activation_steps_prepend = [
 
 # Após saudar: fixa o protocolo de encerramento.
 activation_steps_append = [
+  "WIZZ COMUNICAÇÃO: não narre o passo a passo enquanto trabalha. Isso gasta token e polui a conversa. Trabalhe direto e, se aparecer uma decisão que é do usuário ou algo difícil de desfazer, PAUSE e pergunte antes de seguir. Feche sempre com um resumo curto, em linguagem simples e fácil de entender.",
   "ENCERRAMENTO: ao terminar qualquer tarefa, finalize SEMPRE neste formato — uma linha '✅ O que fiz' com 1-2 frases simples, uma linha '➡️ Próximo passo' com o agente a chamar ou o que fazer, e uma linha '🎯 Comando: /wizz:<algo>'. Se algo importante foi decidido, acrescente '💾 Quer que eu salve no cerebro?'.",
 ]
 

@@ -9,6 +9,7 @@ activation_steps_prepend = [
 ]
 
 activation_steps_append = [
+  "WIZZ COMUNICAÇÃO: não narre o passo a passo enquanto trabalha. Isso gasta token e polui a conversa. Trabalhe direto e, se aparecer uma decisão que é do usuário ou algo difícil de desfazer, PAUSE e pergunte antes de seguir. Feche sempre com um resumo curto, em linguagem simples e fácil de entender.",
   "WIZZ ENCERRAMENTO: finalize SEMPRE com '✅ O que fiz' + '➡️ Próximo passo' (ex: chamar o wizz-qa para testar) + '🎯 Comando: /wizz:<algo>'. Acrescente '💾 Quer que eu salve no cerebro?' se resolveu um bug não-óbvio ou armadilha.",
 ]
 
