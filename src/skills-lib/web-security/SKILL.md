@@ -30,6 +30,27 @@ As que mais aparecem numa auditoria, com a correção direta. Use como triagem r
 - Verifique permissões no servidor, nunca apenas no frontend
 - IDOR (Insecure Direct Object Reference): valide se o usuário tem acesso ao recurso pelo ID
 - Princípio do menor privilégio em todas as rotas
+- Next.js: middleware não é a única barreira. Re-verifique auth dentro do route handler, Server Action ou página (bypass de middleware já teve CVE)
+
+Exemplo anti-IDOR (Next.js + Clerk + Supabase):
+```ts
+// app/api/projects/[id]/route.ts
+import { auth } from "@clerk/nextjs/server"
+
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { userId } = await auth()
+  if (!userId) return new Response("Unauthorized", { status: 401 })
+  const { id } = await params
+  const { data } = await supabase
+    .from("projects")
+    .select("id, name")
+    .eq("id", id)
+    .eq("user_id", userId) // posse verificada na query, além do RLS
+    .single()
+  if (!data) return new Response("Not found", { status: 404 }) // 404, não 403 (não confirma que o recurso existe)
+  return Response.json(data)
+}
+```
 
 ## 2. Cryptographic Failures
 - HTTPS em tudo, sem exceção
@@ -43,6 +64,8 @@ As que mais aparecem numa auditoria, com a correção direta. Use como triagem r
 
 ## 4. Cross-Site Scripting (XSS)
 - Escape HTML em todo output de dado do usuário
+- React/Next.js escapa JSX por padrão. O risco real está em `dangerouslySetInnerHTML`: sanitize antes com DOMPurify (ou não use)
+- URLs vindas do usuário em `href`/`src`: bloqueie esquemas `javascript:` e `data:` (valide que começa com `https://` ou caminho relativo)
 - Content-Security-Policy: bloqueie inline scripts
 - HttpOnly e Secure flags nos cookies de sessão
 
@@ -100,7 +123,9 @@ async headers() {
 - APIs públicas: limite por IP e por token
 - Endpoints de reset de senha: especialmente restritivos
 - Endpoints de cobrança (checkout, portal): sempre com rate limit
-- Comparações de token/secret: use `crypto.timingSafeEqual` (nunca `!==`)
+- Next.js: `@upstash/ratelimit` no route handler, ou WAF da Vercel para regras por rota
+- Fail closed: se o backend do rate limit cair (ex: Redis fora), rotas de escrita devem negar a request, não deixar passar
+- Comparações de token/secret: `crypto.timingSafeEqual`, nunca `!==` (detalhe em auth-and-secrets)
 - Sem rate limit = brute force de graça. Somar lockout/CAPTCHA após N falhas no login
 
 ## CORS
@@ -153,7 +178,7 @@ Usar como auditoria rápida antes de deploy ou revisão de segurança.
 - [ ] Endpoints de cobrança (checkout, portal Stripe) têm rate limit?
 - [ ] Endpoints que disparam operações caras/externas têm rate limit?
 - [ ] Endpoints de admin têm rate limit + comparação timing-safe?
-- [ ] Rotas de escrita de estado usam `failOpen: false`?
+- [ ] Rotas de escrita de estado falham fechado se o rate limiter cair? (ex: `failOpen: false` na lib)
 
 ### 5. Content Security Policy
 - [ ] Header `Content-Security-Policy` configurado? (`next.config.ts` `headers()` ou middleware)

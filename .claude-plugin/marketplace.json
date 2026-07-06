@@ -1,12 +1,12 @@
 {
   "name": "wizz-method",
   "owner": {
-    "name": "Brian (Wizz) Madison"
+    "name": "Wizz! comms."
   },
-  "description": "Breakthrough Method of Agile AI-driven Development — a full-lifecycle framework with agents and workflows for analysis, planning, architecture, and implementation.",
+  "description": "Wizz Method — a full-lifecycle AI development framework with agents and workflows for analysis, planning, architecture, and implementation. Independent fork of BMAD Method.",
   "license": "MIT",
-  "homepage": "https://github.com/bmad-code-org/WIZZ-METHOD",
-  "repository": "https://github.com/bmad-code-org/WIZZ-METHOD",
+  "homepage": "https://method.wizzcomms.com",
+  "repository": "https://github.com/wizzcomms/wizz-method",
   "keywords": ["wizz", "agile", "ai", "orchestrator", "development", "methodology", "agents"],
   "plugins": [
     {

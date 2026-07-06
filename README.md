@@ -59,7 +59,7 @@ Sem TTY, o idioma padrão é "Português (BR)". Use `--lang` ou a variável `WIZ
 
 ## Origem
 
-O Wizz Method é um fork independente do [Wizz Method](https://github.com/bmad-code-org/WIZZ-METHOD), mantido pela Wizz! comms. O motor continua o WIZZ: workflows, agentes de dev e produto e a arquitetura de skills. A camada Wizz adiciona marca, idioma, roteamento e os 7 agentes de agência por cima desse motor. Crédito e agradecimento ao projeto original.
+O Wizz Method é um fork independente do [BMAD Method](https://github.com/bmad-code-org/BMAD-METHOD), mantido pela Wizz! comms. O motor continua o BMAD: workflows, agentes de dev e produto e a arquitetura de skills. A camada Wizz adiciona marca, idioma, roteamento e os 7 agentes de agência por cima desse motor. Crédito e agradecimento ao projeto original.
 
 ## Documentação
 

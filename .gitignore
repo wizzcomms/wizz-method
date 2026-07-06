@@ -87,3 +87,7 @@ build/
 
 # Web bundle release artifacts
 dist/web-bundles/
+
+# Graphify caches (path-leaking, never version)
+graphify-out/
+*.pyc

@@ -13,18 +13,18 @@ description: >
 
 ### Senhas
 - Hash com bcrypt (custo >= 12), Argon2id ou scrypt. Nunca MD5/SHA1 para senhas
-- Minimum 8 caracteres, sem restrição de caracteres especiais
+- Mínimo de 8 caracteres, sem restrição de caracteres especiais
 - Implemente bloqueio após N tentativas (lockout ou CAPTCHA)
-- Oferece 2FA: TOTP (Google Authenticator) é o padrão mínimo
+- Ofereça 2FA: TOTP (Google Authenticator) é o padrão mínimo
 
 ### JWT
-- Assine sempre com RS256 (assimétrico) em produção, nunca HS256 com secret fraco
+- Na verificação, aceite só o algoritmo esperado: rejeite `alg: none` e não deixe o token escolher o algoritmo (ataque de confusão de algoritmo)
+- Prefira RS256 (assimétrico) quando mais de um serviço verifica o token. HS256 só com secret forte: 32+ bytes aleatórios, nunca uma palavra
 - exp curto para access token (15 min a 1h)
 - Refresh token com rotação: ao usar, invalide o anterior e emita novo
 - Nunca coloque dados sensíveis no payload (é base64, não criptografia)
-- Blacklist de tokens invalidados: Redis com TTL igual ao exp do token
 - **Token no header `Authorization: Bearer`, NUNCA na URL/query string** (a URL vaza em logs de servidor, histórico do browser, header `Referer` e analytics)
-- **Logout de verdade revoga o token**: coloque na blacklist (Redis, TTL = exp) e invalide o refresh token. Sem isso o access token continua válido depois do logout até expirar sozinho
+- **Logout de verdade revoga o token**: coloque na blacklist (Redis, TTL = exp do token) e invalide o refresh token. Sem isso o access token continua válido depois do logout até expirar sozinho
 
 ### Enumeração de usuário
 Evita que um atacante descubra quais e-mails existem na base (login, signup, reset de senha).
@@ -40,9 +40,10 @@ Evita que um atacante descubra quais e-mails existem na base (login, signup, res
 
 ### Stack Supabase + Clerk
 - Auth gerenciada pelo Clerk: nunca reimplementar flows de auth manualmente
-- Clerk webhook (`svix`) verificado por assinatura antes de processar — não confiar no body sem verificar
+- Toda rota protegida, Server Action e route handler chama `auth()` do Clerk no servidor. Nunca confiar em estado de sessão vindo do cliente
+- Clerk webhook (`svix`) verificado por assinatura antes de processar: não confiar no body sem verificar
 - Supabase RLS: toda tabela de domínio deve ter RLS ativo; queries devem filtrar por `workspace_id`/`user_id`
-- `SUPABASE_SERVICE_ROLE_KEY` só usada em server-side (API routes, never client), nunca exposta no frontend
+- `SUPABASE_SERVICE_ROLE_KEY` bypassa RLS: só em server-side (API routes, jobs), nunca exposta no frontend
 - `NEXT_PUBLIC_*` = seguro expor no cliente; tudo sem `NEXT_PUBLIC_` = server-only
 
 ## Secrets e credenciais
@@ -56,19 +57,36 @@ Evita que um atacante descubra quais e-mails existem na base (login, signup, res
 ### Onde guardar secrets
 - Produção: variáveis de ambiente da plataforma (Vercel: `vercel env add`)
 - CI/CD: variáveis de ambiente criptografadas da plataforma (GitHub Actions Secrets, etc.)
-- Dev local: arquivo `.env.local` nunca commitado — verificar com `git check-ignore -v .env.local`
+- Dev local: arquivo `.env.local` nunca commitado. Verificar com `git check-ignore -v .env.local`
+
+### API keys emitidas pelo próprio app
+Se o app gera API keys para os usuários:
+- Guarde só o hash (SHA-256) da key no banco, nunca a key em texto plano
+- Mostre a key completa uma única vez, na criação
+- Use prefixo identificável (ex: `wz_live_`) para facilitar detecção em scan de repositório
+- Permita revogar e listar keys por usuário
 
 ### Cripto de credenciais de usuário (AES-256-GCM)
 Se o app armazena credenciais de terceiros do usuário (ex: SMTP, WhatsApp API):
 ```ts
-// src/lib/crypto.ts — ler chave do env, nunca hardcodar
-const key = process.env.CREDENTIAL_ENCRYPTION_KEY
+// src/lib/crypto.ts: chave vem do env, nunca hardcodada
+import { createCipheriv, randomBytes } from "crypto"
+
+const key = process.env.CREDENTIAL_ENCRYPTION_KEY // base64, 32 bytes
 if (!key) throw new Error("CREDENTIAL_ENCRYPTION_KEY não configurada")
-// AES-256-GCM: chave base64 de 32 bytes
+
+export function encrypt(plain: string) {
+  const iv = randomBytes(12) // IV aleatório por registro, nunca reutilizar
+  const cipher = createCipheriv("aes-256-gcm", Buffer.from(key, "base64"), iv)
+  const enc = Buffer.concat([cipher.update(plain, "utf8"), cipher.final()])
+  return { iv: iv.toString("base64"), data: enc.toString("base64"), tag: cipher.getAuthTag().toString("base64") }
+}
+// no decrypt: setAuthTag antes de final(), senão a integridade não é verificada
 ```
 
 ### Rotação de credenciais
 - Rotacione secrets de terceiros a cada 90 dias ou após qualquer saída de membro do time
+- Secret commitado por acidente: considere comprometido e rotacione na hora. Reescrever o histórico do git não basta
 - API keys de produção: uma por serviço/ambiente, nunca compartilhadas
 - Database passwords: use IAM auth quando disponível no cloud provider
 

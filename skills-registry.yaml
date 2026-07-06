@@ -97,7 +97,8 @@ areas:
         when: "Gerar/refinar componentes prontos via 21st.dev (UI builder, inspiration, refiner)."
         server:
           command: npx
-          args: ["-y", "@21st-dev/magic"]
+          # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
+          args: ["-y", "@21st-dev/magic@0.1.0"]
           env:
             API_KEY: "${MAGIC_API_KEY}"
     clis:
@@ -113,11 +114,13 @@ areas:
         when: "EDITAR vídeo por IA: cortes, selects, cenas, roughcut via XML/FFmpeg. Sugerir quando o pedido for editar/cortar vídeo. Clone-and-run no PROJETO (não é skill add), pesado: Ruby + Python + FFmpeg + WhisperX. AVISOS: ~GB de modelos (WhisperX), build demorado, só Apple Silicon."
         platform: darwin-arm64
         check: "test -d ./buttercut"
-        install: "git clone https://github.com/barefootford/buttercut.git"
+        # Pin de supply chain (2026-07-06): checkout de SHA fixo; atualizar conscientemente.
+        install: "git clone https://github.com/barefootford/buttercut.git buttercut && git -C buttercut checkout 1383f964ebc8b43c4af17f70b3ec6f611b18b3ce"
       - id: voicebox
         when: "Voz/TTS/clonagem de voz local para narração/VO de vídeo (7 engines TTS + Whisper STT). App desktop que expõe endpoint MCP local em runtime. Clone-and-run no projeto."
         check: "test -d ./voicebox"
-        install: "git clone https://github.com/jamiepine/voicebox.git"
+        # Pin de supply chain (2026-07-06): checkout de SHA fixo; atualizar conscientemente.
+        install: "git clone https://github.com/jamiepine/voicebox.git voicebox && git -C voicebox checkout f2cf2a729d733acd7c759d85c6ace2d602f50d6e"
     references:
       - "references/premium-agency-rules.md (regras $150k-tier, importadas por impeccable/huashu no modo high-end)"
 
@@ -212,7 +215,8 @@ areas:
         # before writing; if verify fails the server is skipped, not written.
         setup:
           bin: scrapling
-          install: 'uv tool install "scrapling[ai]" || pipx install "scrapling[ai]" || pip install --user "scrapling[ai]"'
+          # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
+          install: 'uv tool install "scrapling[ai]==0.4.10" || pipx install "scrapling[ai]==0.4.10" || pip install --user "scrapling[ai]==0.4.10"'
           post_install: "{bin} install"
           verify: "{bin} --version"
 
@@ -253,14 +257,16 @@ areas:
         when: "Gestão real de campanha Meta/Facebook/Instagram via API (criar/editar/medir ads)."
         server:
           command: npx
-          args: ["-y", "mcp-meta-ads"]
+          # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
+          args: ["-y", "mcp-meta-ads@1.0.0"]
           env:
             META_ACCESS_TOKEN: "${META_ACCESS_TOKEN}"
     clis:
       - id: arcads
         when: "GERAR vídeo-ad e imagem por IA (Seedance/Sora/Veo/Kling/OmniHuman + Nano Banana) e publicar como Meta ad. Clone-and-run no projeto: git clone + ./scripts/setup.sh; precisa Python 3.10+ e ARCADS API key em .env (META_ACCESS_TOKEN opcional p/ publicar)."
         check: "test -d ./arcads-claude-code"
-        install: "git clone https://github.com/krusemediallc/arcads-claude-code.git"
+        # Pin de supply chain (2026-07-06): checkout de SHA fixo; atualizar conscientemente.
+        install: "git clone https://github.com/krusemediallc/arcads-claude-code.git arcads-claude-code && git -C arcads-claude-code checkout 0b0d3610bbdcfcc2607c77a748d6abb341adda46"
 
   architect:
     agent: wizz-agent-architect
@@ -291,7 +297,8 @@ areas:
         when: "Operar Supabase de verdade: rodar SQL, migrations, inspecionar schema/RLS, logs."
         server:
           command: npx
-          args: ["-y", "@supabase/mcp-server-supabase@latest"]
+          # Pin de supply chain (2026-07-06): versão fixa (era @latest); atualizar conscientemente.
+          args: ["-y", "@supabase/mcp-server-supabase@0.8.2"]
           env:
             SUPABASE_ACCESS_TOKEN: "${SUPABASE_ACCESS_TOKEN}"
 
@@ -309,7 +316,8 @@ areas:
       - id: agent-browser
         when: "Dirigir um browser real pra E2E/verificação: navegar, clicar, preencher form, screenshot, console. É CLI, não MCP."
         check: "agent-browser --version"
-        install: "npm install -g agent-browser"
+        # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
+        install: "npm install -g agent-browser@0.27.0"
 
   analyst:
     agent: wizz-agent-analyst
@@ -324,7 +332,8 @@ areas:
         when: "Pesquisa web/prior-art durante planejamento (web search, descoberta de fontes)."
         server:
           command: npx
-          args: ["-y", "exa-mcp-server"]
+          # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
+          args: ["-y", "exa-mcp-server@3.2.1"]
           env:
             EXA_API_KEY: "${EXA_API_KEY}"
 
@@ -356,7 +365,8 @@ mcp_utility:
     when: "Docs atualizadas de qualquer lib/framework/SDK (React, Next, Prisma, Tailwind...). Útil em todo dev."
     server:
       command: npx
-      args: ["-y", "@upstash/context7-mcp"]
+      # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
+      args: ["-y", "@upstash/context7-mcp@3.2.2"]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CLIs — ferramentas de linha de comando que os agentes chamam direto (não são

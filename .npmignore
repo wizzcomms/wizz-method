@@ -37,3 +37,11 @@ TRADEMARK.md
 CHANGELOG.md
 CNAME
 CODE_OF_CONDUCT.md
+
+# Graphify caches / python bytecode
+graphify-out/
+__pycache__/
+*.pyc
+
+# Configuração pessoal local do Claude Code (nunca publicar)
+.claude/settings.local.json

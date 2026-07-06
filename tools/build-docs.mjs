@@ -23,7 +23,7 @@ import { translatedLocales } from '../website/src/lib/locales.mjs';
 const PROJECT_ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const BUILD_DIR = path.join(PROJECT_ROOT, 'build');
 
-const REPO_URL = 'https://github.com/bmad-code-org/WIZZ-METHOD';
+const REPO_URL = 'https://github.com/wizzcomms/wizz-method';
 
 // DO NOT CHANGE THESE VALUES!
 // llms-full.txt is consumed by AI agents as context. Most LLMs have ~200k token limits.

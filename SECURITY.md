@@ -76,6 +76,17 @@ When using Wizz Method:
 4. **Validate Dependencies**: Review any dependencies added by generated code
 5. **Environment Isolation**: Consider running AI-assisted development in isolated environments
 
+## Third-Party Tooling Trust Model
+
+The installer can optionally install third-party CLIs and MCP servers declared in `skills-registry.yaml` (git clones, `npx` packages, `npx skills add` bundles, and the `curl | sh` installer for rtk). Installing any of them means trusting their maintainers: the code runs on your machine with your user's permissions.
+
+To reduce supply-chain risk:
+
+- **Pinned versions**: registry entries pin git clones to a specific commit SHA and `npx` MCP packages to an exact version. Pins are reviewed and updated consciously (never auto-bumped), with the pin date recorded in the registry comments.
+- **Opt-in installs**: nothing is installed without an explicit user choice; by default the installer only detects and recommends.
+- **rtk (`curl | sh`)**: this install method is opt-in and inherently trusts the remote script. Review the script at the pinned URL before running it.
+- **`npx skills add` bundles**: these resolve to the maintainer's latest published skill and cannot currently be pinned; treat them with the same trust decision as installing any third-party package.
+
 ## Acknowledgments
 
 We appreciate the security research community's efforts in helping keep Wizz Method secure. Contributors who report valid security issues will be acknowledged in our security advisories.
