@@ -145,4 +145,14 @@ export default [
       'unicorn/filename-case': 'off',
     },
   },
+
+  // Dependabot only recognizes `.github/dependabot.yml` (GitHub-mandated
+  // filename, not configurable) — exempt it from the project's .yaml
+  // extension convention instead of breaking Dependabot's file discovery.
+  {
+    files: ['.github/dependabot.yml'],
+    rules: {
+      'yml/file-extension': 'off',
+    },
+  },
 ];

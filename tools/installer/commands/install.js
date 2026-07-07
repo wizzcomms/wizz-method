@@ -127,6 +127,20 @@ module.exports = {
         const result = await installer.quickUpdate(config);
         await prompts.log.success('Quick update complete!');
         await prompts.log.info(`Updated ${result.moduleCount} modules with preserved settings (${result.modules.join(', ')})`);
+        // Quick Update never provisions global skills/MCPs/CLIs (see the
+        // isQuickUpdate() gate in core/installer.js). Say so in the final
+        // summary too, not just as a menu hint and an in-run log line, so
+        // the "no new skills" outcome is never a silent surprise.
+        await prompts.log.info(
+          'Skills/MCPs/CLIs não foram alterados (Quick Update). Para provisioná-los, rode install e escolha "Modify Wizz Installation".',
+        );
+        if (result.warnings > 0) {
+          await prompts.log.warn(`Concluído com ${result.warnings} aviso(s). Veja o resumo acima para detalhes.`);
+        }
+        if (result.errors > 0) {
+          await prompts.log.error(`Concluído com ${result.errors} falha(s) real(is). Veja o resumo acima para detalhes.`);
+          process.exit(1);
+        }
         process.exit(0);
       }
 
@@ -138,9 +152,24 @@ module.exports = {
         process.exit(0);
       }
 
-      // Check if installation succeeded
-      if (result && result.success) {
-        process.exit(0);
+      // Check if installation succeeded. Best-effort steps (IDE setup, global
+      // skills/MCP/CLI provisioning) never throw, so a real per-step failure
+      // used to leave `result.success` unset and the process to exit 0 by
+      // falling off the end of this handler with nothing left pending. Make
+      // the signal explicit and structured instead (see M24 in the
+      // installer audit): warn count is informational; a nonzero error
+      // count means a real failure happened and the exit code must reflect it.
+      if (result) {
+        if (result.warnings > 0) {
+          await prompts.log.warn(`Concluído com ${result.warnings} aviso(s). Veja o resumo acima para detalhes.`);
+        }
+        if (result.errors > 0) {
+          await prompts.log.error(`Concluído com ${result.errors} falha(s) real(is). Veja o resumo acima para detalhes.`);
+          process.exit(1);
+        }
+        if (result.success) {
+          process.exit(0);
+        }
       }
     } catch (error) {
       try {

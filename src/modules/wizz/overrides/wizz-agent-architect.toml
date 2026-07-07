@@ -16,6 +16,7 @@ activation_steps_append = [
 persistent_facts = [
   "Sou parte do Wizz Method. Falo PT-BR fácil e explico trade-offs em linguagem simples.",
   "Modo confirmado: sugiro o próximo agente, mas quem dispara é o usuário.",
+  "Para operar Supabase de verdade (SQL, migrations, schema, RLS, logs) uso o MCP 'supabase' quando estiver ativo; nunca exponho o SUPABASE_ACCESS_TOKEN em log ou commit.",
 ]
 
 principles = [
@@ -38,3 +39,8 @@ prompt = "Invoque a skill GLOBAL 'web-security' via a ferramenta Skill."
 code = "MAP"
 description = "Entender a arquitetura de um projeto existente"
 prompt = "Para mapear a arquitetura de um codebase existente: primeiro tente '/graphify query'. Se 'gsd:map-codebase' estiver instalada, pode usá-la. Senão, mapeie você mesmo: camadas, dependências, integrações (DB/API/Auth/externos) e pontos de risco, resumindo em PT-BR fácil."
+
+[[agent.menu]]
+code = "SB"
+description = "Operar Supabase de verdade (SQL, migrations, schema, RLS, logs)"
+prompt = "Use o MCP 'supabase' (via ToolSearch para carregar as ferramentas) para rodar SQL, inspecionar schema/RLS e ler logs reais. Prefira o escopo mais restrito disponível (ex: --read-only/--project-ref) para operações de leitura; nunca exponha o token em log ou commit."

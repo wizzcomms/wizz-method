@@ -69,4 +69,4 @@ O Wizz Method é um fork independente do [BMAD Method](https://github.com/bmad-c
 
 Licença MIT, veja [LICENSE](LICENSE) para detalhes.
 
-**Wizz** e **WIZZ-METHOD** são marcas da BMad Code, LLC. **Wizz Method** é marca própria da Wizz! comms. A licença MIT cobre apenas o código. Veja [TRADEMARK.md](TRADEMARK.md).
+**BMad** e **BMAD-METHOD** são marcas da BMad Code, LLC. **Wizz Method** é marca própria da Wizz! comms. A licença MIT cobre apenas o código. Veja [TRADEMARK.md](TRADEMARK.md).

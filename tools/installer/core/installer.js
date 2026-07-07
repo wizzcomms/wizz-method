@@ -3,7 +3,7 @@ const fs = require('../fs-native');
 const { Manifest } = require('./manifest');
 const { OfficialModules } = require('../modules/official-modules');
 const { installSkillsLib } = require('../modules/skills-lib');
-const { writeMcpConfig, renderAddCommand, prepareMcps } = require('../modules/mcp-config');
+const { writeMcpConfig, renderAddCommand, prepareMcps, partitionAlreadyConfigured } = require('../modules/mcp-config');
 const { installClis, renderInstallCommand } = require('../modules/cli-config');
 const { writeDepsCache } = require('../modules/deps-cache');
 const { IdeManager } = require('../ide/manager');
@@ -116,12 +116,27 @@ class Installer {
         preInstallVersions,
       });
 
+      // Some steps (IDE setup, global skills/MCP/CLI provisioning) are
+      // best-effort and record their outcome in `results` instead of
+      // throwing, so one broken IDE or MCP never aborts the rest of the
+      // install. That used to mean a real per-step failure was invisible to
+      // the caller: `success` was always true and the CLI always exited 0.
+      // Surface it structurally instead: 'error' rows (hard failures, e.g.
+      // a suspended/broken IDE setup) flip success to false; 'warn' rows
+      // (recoverable, e.g. a single MCP whose setup script failed) keep
+      // success true but are still counted so CI/automation can detect
+      // "succeeded with warnings" without parsing log text (see M24).
+      const errorCount = results.filter((r) => r.status === 'error').length;
+      const warningCount = results.filter((r) => r.status === 'warn').length;
+
       return {
-        success: true,
+        success: errorCount === 0,
         path: paths.wizzDir,
         modules: config.modules,
         ides: config.ides,
         projectDir: paths.projectRoot,
+        errors: errorCount,
+        warnings: warningCount,
       };
     } catch (error) {
       await prompts.log.error('Installation failed');
@@ -322,6 +337,7 @@ class Installer {
             }
           } catch (error) {
             await prompts.log.warn(`Falha ao instalar skills globais: ${error.message}`);
+            addResult('Global skills', 'warn', error.message);
           }
 
           // Configure recommended MCP servers for the chosen areas. The user's
@@ -334,6 +350,15 @@ class Installer {
             const toWrite = mcpPlan.toWrite || [];
             if (toWrite.length > 0) {
               message('Configuring MCP servers...');
+              // Skip DETECT/INSTALL/VERIFY (prepareMcps) for ids the additive
+              // merge below will discard anyway because they already exist in
+              // .mcp.json; no point paying for a subprocess-heavy setup
+              // (npm install -g, browser download) on every re-install just
+              // to throw the result away.
+              const { toPrepare, alreadyConfigured } = await partitionAlreadyConfigured({
+                projectDir: paths.projectRoot,
+                mcps: toWrite,
+              });
               // Some servers (e.g. scrapling) shell out to a binary that must be
               // installed and resolved to an absolute path first — otherwise we
               // would write a config the client can't launch (ENOENT). prepareMcps
@@ -341,11 +366,14 @@ class Installer {
               // path; a server whose setup fails is dropped here (never written)
               // and reported so the user can fix it, instead of leaving a broken
               // config behind. Servers without a `setup` block pass through as-is.
-              const { ready: mcpsReady, failed: mcpsFailed } = await prepareMcps({ mcps: toWrite });
+              const { ready: mcpsReady, failed: mcpsFailed } = await prepareMcps({ mcps: toPrepare });
               for (const f of mcpsFailed) {
                 await prompts.log.warn(
                   `MCP ${f.id} não pôde ser preparado (${f.error}). Config NÃO escrita para evitar ENOENT — instale manualmente e adicione depois com \`claude mcp add\`.`,
                 );
+              }
+              if (mcpsFailed.length > 0) {
+                addResult('MCP servers', 'warn', `falharam: ${mcpsFailed.map((f) => f.id).join(', ')}`);
               }
               // Intentionally NOT tracked in installedFiles: .mcp.json is a
               // shared, user-owned config we merge into (it may hold the user's
@@ -358,8 +386,9 @@ class Installer {
               if (mcpResult.added.length > 0) {
                 addResult('MCP servers', 'ok', `${mcpResult.added.join(', ')} → .mcp.json`);
               }
-              if (mcpResult.skipped.length > 0) {
-                await prompts.log.info(`MCPs já presentes no .mcp.json (mantidos): ${mcpResult.skipped.join(', ')}`);
+              const allSkipped = [...alreadyConfigured, ...mcpResult.skipped];
+              if (allSkipped.length > 0) {
+                await prompts.log.info(`MCPs já presentes no .mcp.json (mantidos): ${allSkipped.join(', ')}`);
               }
             }
             const toRecommend = mcpPlan.toRecommend || [];
@@ -375,6 +404,7 @@ class Installer {
             }
           } catch (error) {
             await prompts.log.warn(`Falha ao configurar MCPs: ${error.message}`);
+            addResult('MCP servers', 'warn', error.message);
           }
 
           // Install/recommend the CLIs the agents shell out to (agent-browser,
@@ -401,6 +431,9 @@ class Installer {
                   `Falha ao instalar CLI ${f.id}: ${f.error}. Rode manualmente: ${renderInstallCommand(toInstall.find((c) => c.id === f.id) || {})}`,
                 );
               }
+              if (cliResult.failed.length > 0) {
+                addResult('CLIs', 'warn', `falharam: ${cliResult.failed.map((f) => f.id).join(', ')}`);
+              }
             }
             const toRecommend = cliPlan.toRecommend || [];
             if (toRecommend.length > 0) {
@@ -409,6 +442,7 @@ class Installer {
             }
           } catch (error) {
             await prompts.log.warn(`Falha ao configurar CLIs: ${error.message}`);
+            addResult('CLIs', 'warn', error.message);
           }
 
           // Persist a project-local cache of the skill dependencies (CLIs +
@@ -430,7 +464,16 @@ class Installer {
             }
           } catch (error) {
             await prompts.log.warn(`Falha ao gravar cache de dependências: ${error.message}`);
+            addResult('Skill deps cache', 'warn', error.message);
           }
+        } else if (config.isQuickUpdate() && (config.modules || []).includes('bmm')) {
+          // Gate above only runs for fresh installs / Modify. Quick Update
+          // preserves settings and skips provisioning entirely, so say it
+          // explicitly instead of leaving the user to notice by absence
+          // (see project memory: "atualizei e não veio skill").
+          await prompts.log.info(
+            'Quick Update: skills globais, MCPs e CLIs não foram alterados. Rode install e escolha "Modify Wizz Installation" para instalar itens novos.',
+          );
         }
 
         message('Generating manifests...');
@@ -577,7 +620,8 @@ class Installer {
         const entries = await fs.readdir(current);
         if (entries.length > 0) break;
         await fs.rmdir(current);
-      } catch {
+      } catch (error) {
+        await prompts.log.warn(`Warning: could not remove empty directory ${current}: ${error.message}`);
         break;
       }
       current = path.dirname(current);
@@ -1068,8 +1112,11 @@ class Installer {
             }
           }
         }
-      } catch {
-        // Ignore errors scanning directories
+      } catch (error) {
+        // Best-effort: a permission error mid-scan must not silently decide
+        // what gets preserved on the next update (this scan is what
+        // detects custom/modified files), so warn instead of swallowing it.
+        await prompts.log.warn(`Warning: could not scan ${dir} for custom/modified files: ${error.message}`);
       }
     };
 
@@ -1393,6 +1440,16 @@ class Installer {
       throw new Error(`Wizz not installed at ${wizzDir}. Use regular install for first-time setup.`);
     }
 
+    // Announce the scope up front: Quick Update only refreshes already
+    // installed modules with preserved settings. It never provisions global
+    // skills, MCP servers, or CLIs (see the isQuickUpdate() gate below, in
+    // _installAndConfigure); that only happens on a fresh install or
+    // Modify. Surfacing this before any work starts avoids the confusion of
+    // "I updated and skills didn't come" (see project memory).
+    await prompts.log.info(
+      'Quick Update: atualiza os módulos já instalados com as configurações preservadas. Skills globais, MCPs e CLIs novos não são provisionados neste modo; rode install e escolha "Modify Wizz Installation" para isso.',
+    );
+
     // Detect existing installation
     const existingInstall = await ExistingInstall.detect(wizzDir);
     const installedModules = existingInstall.moduleIds;
@@ -1541,15 +1598,21 @@ class Installer {
       channelOptions,
     };
 
-    await this.install(installConfig);
+    const installResult = await this.install(installConfig);
 
     return {
-      success: true,
+      // Quick Update delegates to install() under the hood; propagate its
+      // real success/errors/warnings instead of always reporting success so
+      // a partial failure (e.g. an IDE setup step) isn't hidden behind a
+      // green "Quick update complete!" (see M24 in the installer audit).
+      success: installResult.success,
       moduleCount: modulesToUpdate.length,
       hadNewFields: promptedForNewFields,
       modules: modulesToUpdate,
       skippedModules: skippedModules,
       ides: configuredIdes,
+      errors: installResult.errors || 0,
+      warnings: installResult.warnings || 0,
     };
   }
 
@@ -1703,8 +1766,8 @@ class Installer {
           // Strip {project-root}/ prefix if present
           return config.output_folder.replace(/^\{project-root\}[/\\]/, '');
         }
-      } catch {
-        // Fall through to other modules
+      } catch (error) {
+        await prompts.log.warn(`Warning: could not read ${bmmConfigPath}: ${error.message}`);
       }
     }
 
@@ -1721,13 +1784,13 @@ class Installer {
             if (config && config.output_folder) {
               return config.output_folder.replace(/^\{project-root\}[/\\]/, '');
             }
-          } catch {
-            // Continue scanning
+          } catch (error) {
+            await prompts.log.warn(`Warning: could not read ${configPath}: ${error.message}`);
           }
         }
       }
-    } catch {
-      // Directory scan failed
+    } catch (error) {
+      await prompts.log.warn(`Warning: could not scan ${wizzDir} for module configs: ${error.message}`);
     }
 
     // Default fallback

@@ -2,6 +2,8 @@
 
 Use esta tabela **só fora de projeto Wizz** (sem `_wizz/`), quando o router mapeia skills/CLIs/MCPs direto. Dentro de projeto Wizz a delegação é decidida pela regra de dispatch no SKILL.md (maestro vs agente de área) e esta tabela não é necessária.
 
+**Verificação de existência:** antes de oferecer qualquer skill, confirme que ela existe no ambiente (catálogo de skills da sessão ou `ls ~/.claude/skills`); se não existir, não ofereça: use o protocolo de skill faltante (`find-skills`).
+
 ## Área Técnica — Backend / Dados / Infra
 
 | Intenção / palavras-chave | Skills a oferecer | Prioridade |
@@ -19,17 +21,15 @@ Use esta tabela **só fora de projeto Wizz** (sem `_wizz/`), quando o router map
 
 | Intenção / palavras-chave | Skills a oferecer | Prioridade |
 |---|---|---|
-| Revisar código, code review, qualidade, refatorar | `wizz-code-review` | 1 |
-| Novo feature, bug fix, TDD, testes, cobertura | `wizz-quick-dev` ou `wizz-agent-dev` | 1 |
-| Build quebrado, erros de TypeScript, lint, CI | `wizz-quick-dev` | 1 |
-| Arquitetura, design de sistema, decisão técnica | `wizz-agent-architect` | 1 |
-| Fluxo crítico, E2E, testes de ponta a ponta | `wizz-qa-generate-e2e-tests` + `agent-browser` | 2 |
-| Dead code, limpeza, refactoring, knip | `wizz-code-review` + `wizz-quick-dev` | 2 |
+| Revisar código, code review, qualidade, segunda opinião adversarial | `adversarial-reviewer` | 1 |
+| Novo feature, bug fix, TDD, testes, cobertura | execução direta com TDD (rules globais) e verificação end-to-end ao final | 1 |
+| Build quebrado, erros de TypeScript, lint, CI | execução direta (fix mínimo até build verde) | 2 |
+| Arquitetura, design de sistema, decisão técnica, plano técnico, breakdown, handoff | `implementation-planner` | 1 |
+| Fluxo crítico, E2E, verificação visual no browser | `agent-browser` | 2 |
 | SQL, schema, migrations, Supabase, RLS, performance de queries | `supabase-postgres-best-practices` + `database-scaling` | 1 |
-| Segunda opinião, revisão crítica adversarial | `adversarial-reviewer` | 2 |
-| Plano técnico, breakdown de tasks, handoff de dev | `implementation-planner` | 2 |
+| Dead code, limpeza, refactoring | execução direta + `adversarial-reviewer` na revisão | 2 |
 | Novo projeto, iniciar app, ponto de partida, onboarding dev | `inicio-de-projeto` | 1 |
-| Construir/melhorar agente ou produto de IA, escrever/revisar system prompt, persona/tom, guardrails, few-shot, chain-of-thought, orquestração multi-agente, avaliar saída de IA | `ai-product-design` | 1 |
+| Construir/melhorar agente ou produto de IA, system prompt, tool definitions | `ai-product-design` | 1 |
 
 ## Área de Design e UI
 
@@ -71,7 +71,7 @@ Use esta tabela **só fora de projeto Wizz** (sem `_wizz/`), quando o router map
 | Ferramenta grátis de captação de leads | `free-tool-strategy` | 2 |
 | A/B test, variações, experimentos de conversão | `ab-test-setup` + `analytics-tracking` | 2 |
 | Copywriting, copy, persuasão, texto de venda | `copywriting` + `humanizer` | 1 |
-| Pesquisa de mercado, inteligência competitiva | `wizz-market-research` / `wizz-domain-research` | 2 |
+| Pesquisa de mercado, inteligência competitiva | `deep-research` | 2 |
 
 ## Contexto e Memória
 
@@ -90,6 +90,6 @@ Quando nenhuma skill/MCP instalado cobrir o pedido, **classifique o que falta** 
 
 **Falta um MCP:** informe → `claude mcp list` → consulte `skills-registry.yaml` (`mcps:`/`mcp_utility:`, com `server` pronto) → proponha `claude mcp add <id> [-e VAR=$VAR] -- <command> [args]`. Secrets sempre via env/placeholder, nunca token real.
 
-MCPs comuns: context7 (docs de libs), magic/21st (UI), supabase (Postgres), playwright (browser E2E), meta-ads (Meta), exa (pesquisa).
+MCPs comuns: context7 (docs de libs), magic/21st (UI), supabase (Postgres), meta-ads (Meta), exa (pesquisa). Browser/E2E é sempre via CLI `agent-browser`, nunca via MCP Playwright.
 
 Para paid ads Meta, o MCP `mcp-meta-ads` dá acesso real à API Meta Marketing (campanhas, ad sets, ads, métricas, criativos). Combine com `paid-ads` + `ad-creative` + `analytics-tracking`. O `META_ACCESS_TOKEN` vem de env local: nunca exponha em logs ou código commitado.

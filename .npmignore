@@ -19,11 +19,17 @@ website/
 eslint.config.mjs
 prettier.config.mjs
 
+# Build artifacts and non-runtime sources
+build/
+
 # Build tools (not needed at runtime)
 tools/build-docs.mjs
 tools/fix-doc-links.js
 tools/validate-doc-links.js
 tools/validate-file-refs.js
+
+# Squad sources (internal structure)
+src/squads/
 
 # Images (branding/marketing only)
 banner-wizz-method.png

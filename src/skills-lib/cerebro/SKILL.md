@@ -77,6 +77,7 @@ grep -m1 "^vault:" "/caminho/CEREBRO.md"
   CEREBRO.md              ← índice central (identidade + projetos ativos — manter < 150 linhas úteis)
   _index/
     sessions.md           ← log histórico de sessões (append-only, nunca lido)
+    cerebro-archive.md    ← excedente do CEREBRO.md movido na compactação do /salvar (grep, nunca Read completo)
   _knowledge/
     about-me.md
     goals.md
@@ -142,7 +143,14 @@ Adicionar linha na tabela Sessões (append na última linha da tabela).
 
 **7. Se houve decisão ou aprendizado relevante:** criar arquivo em `_decisions/` ou `_learnings/` (Write direto, sem Read prévio).
 
-**8. Confirmar em 2 linhas** o que foi salvo.
+**8. Higiene do índice (compactação)**
+```bash
+wc -l "$VAULT/CEREBRO.md"
+```
+- Se > 150 linhas: mover o conteúdo mais antigo/menos essencial (projeto ✅ concluído ou ❌ descontinuado com histórico longo, ou entradas de "Decisões recentes" além das ~15 mais novas) para `_index/cerebro-archive.md`, deixando no lugar só 1 linha de referência `[[_index/cerebro-archive]]`. Nunca apagar, só mover.
+- Se ≤ 150 linhas: pular este passo.
+
+**9. Confirmar em 2 linhas** o que foi salvo.
 
 ---
 
@@ -361,7 +369,7 @@ O que falta: [checkboxes]
 ## Regras gerais
 
 - Wiki-links `[[arquivo]]` dentro do vault. Markdown puro no CONTEXT.md.
-- Datas absolutas (ex: "Apr 23 2026") — nunca relativas.
+- Datas absolutas no formato `YYYY-MM-DD`, nunca relativas ("ontem", "semana passada"). Fatos voláteis (versão publicada, estado de release, etc.) levam prefixo `em YYYY-MM-DD:` no texto; na releitura, o agente trata como snapshot daquele momento, não como fato atual.
 - Nunca apagar histórico — só acrescentar.
 - Log histórico de sessões vai em `_index/sessions.md`, não no CEREBRO.md — mantém o CEREBRO.md curto.
 - Resumos: 1 linha por item.

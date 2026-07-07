@@ -111,8 +111,19 @@ function substituteBin(command, binPath) {
  * does not always inherit the user's ~/.local/bin on PATH, so a relative name
  * fails with ENOENT even when the tool is installed. We resolve and write the
  * absolute path instead. Tries `command -v` first (honors the current PATH),
- * then the conventional user-local bin dir where `uv tool` / `pipx` / `pip
- * --user` land executables. Returns null when the binary is nowhere to be found.
+ * then the conventional user-local bin dirs where `uv tool` / `pipx` / `pip
+ * --user` land executables:
+ *   - `~/.local/bin` (uv tool / pipx / pip --user on Linux, and pip --user
+ *     on modern macOS with `--user` in a non-framework Python)
+ *   - `/opt/homebrew/bin` and `/usr/local/bin` (Homebrew on Apple Silicon and
+ *     Intel respectively); a client launched via `npx` from a GUI app often
+ *     inherits a minimal PATH that never saw `brew shellenv`, so a Homebrew
+ *     install looks absent and gets reinstalled via uv/pipx/pip (duplicate
+ *     binary) unless we check here too
+ *   - `~/Library/Python/<version>/bin` (macOS `pip install --user`, which
+ *     lands executables under a Python-version-specific directory, not
+ *     `~/.local/bin`)
+ * Returns null when the binary is nowhere to be found.
  *
  * @param {string} bin - Binary name to locate
  * @param {Function} [exec] - Injected runner (command, opts) => {ok, stdout,...}
@@ -125,11 +136,31 @@ async function resolveBinPath(bin, exec = defaultExec) {
     const found = (viaWhich.stdout || '').trim().split('\n')[0].trim();
     if (found) return found;
   }
+
   const home = process.env.HOME || process.env.USERPROFILE || '';
-  if (home) {
-    const candidate = path.join(home, '.local', 'bin', bin);
+  const candidateDirs = [];
+  if (home) candidateDirs.push(path.join(home, '.local', 'bin'));
+  candidateDirs.push('/opt/homebrew/bin', '/usr/local/bin');
+
+  for (const dir of candidateDirs) {
+    const candidate = path.join(dir, bin);
     if (await fs.pathExists(candidate)) return candidate;
   }
+
+  if (home && process.platform === 'darwin') {
+    const pyUserBase = path.join(home, 'Library', 'Python');
+    try {
+      const versions = await fs.readdir(pyUserBase);
+      for (const version of versions) {
+        const candidate = path.join(pyUserBase, version, 'bin', bin);
+        if (await fs.pathExists(candidate)) return candidate;
+      }
+    } catch {
+      // No ~/Library/Python directory; pip --user was never used here, or
+      // there is nothing to enumerate. Not an error condition.
+    }
+  }
+
   return null;
 }
 
@@ -248,6 +279,48 @@ function renderAddCommand({ id, server }) {
 }
 
 /**
+ * Split resolved MCP entries into those that still need the DETECT/INSTALL/
+ * VERIFY/RESOLVE pipeline (prepareMcps) and those whose id is already present
+ * in `.mcp.json` and will be skipped anyway by the additive merge in
+ * writeMcpConfig. Filtering here avoids paying for a subprocess-heavy setup
+ * (npm install -g, browser download, binary verification) on every
+ * re-install for servers we already know will be discarded downstream.
+ *
+ * Read failures (missing/malformed `.mcp.json`) fall back to "prepare
+ * everything", the safe default, and let writeMcpConfig raise the real
+ * error later if the file truly is invalid JSON.
+ *
+ * @param {Object} args
+ * @param {string} args.projectDir - Project root where `.mcp.json` lives
+ * @param {Array<{id: string}>} args.mcps - Resolved MCP entries to partition
+ * @returns {Promise<{toPrepare: Array<Object>, alreadyConfigured: string[]}>}
+ */
+async function partitionAlreadyConfigured({ projectDir, mcps }) {
+  if (!mcps || mcps.length === 0) return { toPrepare: [], alreadyConfigured: [] };
+
+  const file = path.join(projectDir, '.mcp.json');
+  let existingIds = new Set();
+  if (await fs.pathExists(file)) {
+    try {
+      const config = JSON.parse(await fs.readFile(file, 'utf8'));
+      const servers =
+        config && typeof config === 'object' && config.mcpServers && !Array.isArray(config.mcpServers) ? config.mcpServers : null;
+      if (servers) existingIds = new Set(Object.keys(servers));
+    } catch {
+      return { toPrepare: [...mcps], alreadyConfigured: [] };
+    }
+  }
+
+  const toPrepare = [];
+  const alreadyConfigured = [];
+  for (const mcp of mcps) {
+    if (mcp && mcp.id && existingIds.has(mcp.id)) alreadyConfigured.push(mcp.id);
+    else toPrepare.push(mcp);
+  }
+  return { toPrepare, alreadyConfigured };
+}
+
+/**
  * Merge the chosen MCP entries into `<projectDir>/.mcp.json`, additively.
  * Reads any existing file (preserving unknown keys and existing servers),
  * adds only ids not already present, and writes back pretty-printed JSON.
@@ -299,6 +372,7 @@ module.exports = {
   writeMcpConfig,
   prepareMcp,
   prepareMcps,
+  partitionAlreadyConfigured,
   resolveBinPath,
   shellQuote,
   substituteBin,

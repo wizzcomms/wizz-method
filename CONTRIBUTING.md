@@ -14,7 +14,7 @@ Obrigado por considerar contribuir. Acreditamos em **amplificação humana, não
 
 ## Our Philosophy
 
-BMad strengthens human-AI collaboration through specialized agents and guided workflows. Every contribution should answer: **"Does this make humans and AI better together?"**
+Wizz Method strengthens human-AI collaboration through specialized agents and guided workflows. Every contribution should answer: **"Does this make humans and AI better together?"**
 
 **✅ What we welcome:**
 - Enhanced collaboration patterns and workflows
@@ -46,7 +46,7 @@ After searching, if the bug is unreported, use the [bug report template](https:/
 - Clear description of the problem
 - Steps to reproduce
 - Expected vs actual behavior
-- Your environment (model, IDE, BMad version)
+- Your environment (model, IDE, Wizz Method version)
 - Screenshots or error messages if applicable
 
 ### Feature Requests
@@ -54,10 +54,10 @@ After searching, if the bug is unreported, use the [bug report template](https:/
 After searching, use the [feature request template](https://github.com/wizzcomms/wizz-method/issues/new?template=feature_request.md) and explain:
 
 - What the feature is
-- Why it would benefit the BMad community
+- Why it would benefit the Wizz Method community
 - How it strengthens human-AI collaboration
 
-**For community modules**, review [TRADEMARK.md](TRADEMARK.md) for proper naming conventions (e.g., "My Module (BMad Community Module)").
+**For community modules**, review [TRADEMARK.md](TRADEMARK.md) for proper naming conventions (e.g., "My Module (Wizz Community Module)").
 
 ---
 
@@ -66,7 +66,7 @@ After searching, use the [feature request template](https://github.com/wizzcomms
 | Work Type               | Requirement                                              |
 | ----------------------- | -------------------------------------------------------- |
 | Typo / small bug fix    | Just open the PR                                         |
-| Feature or large change | Confirm with a maintainer on Discord **before** you start |
+| Feature or large change | Confirm with a maintainer via [GitHub Issues](https://github.com/wizzcomms/wizz-method/issues) **before** you start |
 
 ---
 
@@ -152,8 +152,8 @@ Keep messages under 72 characters. Each commit = one logical change.
 - Keep dev agents lean — focus on coding context, not documentation
 - Web/planning agents can be larger with complex tasks
 - Everything is natural language (markdown) — no code in core framework
-- Use BMad modules for domain-specific features
-- Validate file references: `npm run validate:refs`
+- Use Wizz modules or skills-lib for domain-specific features (skills-lib is portable across environments, Wizz modules are project-specific)
+- Validate file references: `npm run validate:method-refs` for Wizz-specific references and `npm run validate:refs` for general references
 
 ### File-Pattern-to-Validator Mapping
 

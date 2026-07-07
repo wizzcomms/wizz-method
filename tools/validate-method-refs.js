@@ -30,6 +30,23 @@ const SCAN_ROOTS = [
   'src/skills-lib/decision-maker/SKILL.md',
 ];
 
+// A9 (auditoria 2026-07-07): o scan acima cobria só 2 skills de skills-lib
+// (decision-maker, wizz-router), deixando fantasmas de MCP/skill em outros
+// SKILL.md (ex.: react-components, find-skills, ui-ux-pro-max) fora do
+// alcance do validador. Varre o SKILL.md de toda skill de skills-lib —
+// references/assets/evals continuam fora (ruído alto, sem ganho).
+function collectSkillLibEntrypoints() {
+  const dir = path.join(SRC_DIR, 'skills-lib');
+  if (!fs.existsSync(dir)) return [];
+  const files = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (!entry.isDirectory() || SKIP_DIRS.has(entry.name)) continue;
+    const skillMd = path.join(dir, entry.name, 'SKILL.md');
+    if (fs.existsSync(skillMd)) files.push(skillMd);
+  }
+  return files;
+}
+
 const IGNORE_TOKENS = new Set(['all', 'any', 'bmm', 'core', 'darwin-arm64', 'gsd:map-codebase', 'superpowers:systematic-debugging']);
 
 const VALID_NON_SKILL_TOKENS = new Set([
@@ -37,6 +54,7 @@ const VALID_NON_SKILL_TOKENS = new Set([
   'buttercut',
   'claude-video',
   'context7',
+  'deep-research',
   'distribb',
   'exa',
   'graphify',
@@ -239,7 +257,7 @@ function main() {
     tools: registryIds.tools,
   };
 
-  const files = SCAN_ROOTS.flatMap(walkFiles);
+  const files = [...new Set([...SCAN_ROOTS.flatMap(walkFiles), ...collectSkillLibEntrypoints()])];
   const findings = [];
   for (const file of files) {
     findings.push(...extractRefs(file, fs.readFileSync(file, 'utf8'), valid));

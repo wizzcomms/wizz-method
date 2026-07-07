@@ -243,6 +243,12 @@ function processFile(filePath) {
     const linkPath = hashIndex === -1 ? href : href.slice(0, hashIndex);
     const anchor = hashIndex === -1 ? null : href.slice(hashIndex + 1);
 
+    // Skip external URLs (the .md alternative of LINK_REGEX also matches
+    // e.g. https://github.com/.../FILE.md — those are not site links)
+    if (/^https?:\/\//i.test(linkPath)) {
+      continue;
+    }
+
     // Skip static asset links (zip, txt, images, etc.)
     const linkLower = linkPath.toLowerCase();
     if (STATIC_ASSET_EXTENSIONS.some((ext) => linkLower.endsWith(ext))) {

@@ -90,7 +90,7 @@ Running `npx wizz-method install` in a directory that already contains `_wizz/` 
 
 | Choice             | What it does                                                                                                                                                |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Quick Update**   | Re-runs the install with your existing settings. Refreshes files, applies patches and minor stable upgrades, refuses major upgrades. Fast, non-interactive. |
+| **Quick Update**   | Re-runs the install with your existing settings. Refreshes files, applies patches and minor stable upgrades, refuses major upgrades. Fast, non-interactive. Quick Update does not install new global skills, MCP servers, or CLIs. Run a Modify install to pick those up. |
 | **Modify Install** | Full interactive flow. Add or remove modules, reconfigure settings, optionally review and switch channels for existing modules.                             |
 
 ### Upgrade prompts

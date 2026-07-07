@@ -238,6 +238,7 @@ class UI {
         choices.push({
           name: 'Quick Update',
           value: 'quick-update',
+          hint: 'Atualiza só os módulos instalados. Não instala skills/MCPs/CLIs novos (use Modify Wizz Installation para isso)',
         });
       }
 
@@ -471,14 +472,19 @@ class UI {
 
   /**
    * Load and parse skills-registry.yaml from the package root.
+   * A corrupted/unparsable registry still degrades to null (areas/MCPs/CLIs
+   * come back empty rather than crashing the install), but that degradation
+   * is never silent: it is logged so the failure is diagnosable instead of
+   * looking like "nothing to choose from" (audit finding M11).
    * @returns {Object|null} Parsed registry, or null when absent/unreadable
    */
   _loadSkillsRegistry() {
+    const registryPath = path.join(getProjectRoot(), 'skills-registry.yaml');
+    if (!fs.existsSync(registryPath)) return null;
     try {
-      const registryPath = path.join(getProjectRoot(), 'skills-registry.yaml');
-      if (!fs.existsSync(registryPath)) return null;
       return yaml.parse(fs.readFileSync(registryPath, 'utf8'));
-    } catch {
+    } catch (error) {
+      console.warn(`⚠ skills-registry.yaml failed to parse (${error.message}). Areas/MCPs/CLIs will be empty until this is fixed.`);
       return null;
     }
   }

@@ -132,11 +132,19 @@ areas:
       - id: hyperframes
         when: "Renderizar vídeo a partir de HTML/CSS/animação (HTML→MP4, agent-native, 20+ skills). Alternativa HTML-nativa ao Remotion (que é React). Precisa ffmpeg + Node 22 + Chrome headless."
         check: "npx --yes hyperframes --version"
-        install: "npx skills add heygen-com/hyperframes"
+        # Pin de supply chain (2026-07-07): SHA fixo via fragmento de URL git
+        # (a CLI `skills add` não suporta um flag --pin/@ref próprio; "Any git
+        # URL" é fonte suportada, então usamos a convenção #<sha> de URL git);
+        # atualizar conscientemente. Antes: `npx skills add heygen-com/hyperframes`
+        # (HEAD sem pin, A8/RT2).
+        install: "npx skills add https://github.com/heygen-com/hyperframes.git#4c8064d4d3d1ffe51a10b1c7eee79a49b2fc468f"
       - id: claude-video
         when: "Analisar/entender vídeo EXISTENTE: baixa, extrai frames e transcreve para resumir, achar momentos ou diagnosticar footage. NÃO cria vídeo. Precisa ffmpeg + yt-dlp (+ Groq/OpenAI p/ transcrição sem legenda)."
         check: "test -d $HOME/.claude/skills/watch"
-        install: "npx skills add bradautomates/claude-video"
+        # Pin de supply chain (2026-07-07): SHA fixo via fragmento de URL git
+        # (mesma convenção do hyperframes acima); atualizar conscientemente.
+        # Antes: `npx skills add bradautomates/claude-video` (HEAD sem pin, A8/RT2).
+        install: "npx skills add https://github.com/bradautomates/claude-video.git#83da59fa78c3eee9e20f515fe75c438bb5166efd"
       - id: buttercut
         when: "EDITAR vídeo por IA: cortes, selects, cenas, roughcut via XML/FFmpeg. Sugerir quando o pedido for editar/cortar vídeo. Clone-and-run no PROJETO (não é skill add), pesado: Ruby + Python + FFmpeg + WhisperX. AVISOS: ~GB de modelos (WhisperX), build demorado, só Apple Silicon."
         platform: darwin-arm64
@@ -186,7 +194,11 @@ areas:
       - id: distribb
         when: "EXECUTAR distribuição de SEO: publicar artigos + construir backlinks pela rede da Distribb, conectar Google Search Console, autopublicar notícias. Complementa (não duplica) as skills de SEO que só geram/auditam. Requer Distribb API + GSC (+ DataForSEO/Ahrefs no plano free)."
         check: "ls $HOME/.claude/skills 2>/dev/null | grep -qi distribb"
-        install: "npx skills add Bomx/distribb-skill"
+        # Pin de supply chain (2026-07-07): SHA fixo via fragmento de URL git
+        # (mesma convenção do hyperframes/claude-video acima); atualizar
+        # conscientemente. Antes: `npx skills add Bomx/distribb-skill` (HEAD
+        # sem pin, A8/RT2).
+        install: "npx skills add https://github.com/Bomx/distribb-skill.git#860700de171f2ff741985ffdc739010f3f0c0e25"
 
   growth:
     agent: wizz-growth
@@ -285,6 +297,13 @@ areas:
         server:
           command: npx
           # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
+          # Risco (2026-07-07, C5/RT3): pacote COMUNITÁRIO (não é @meta/@facebook
+          # oficial), revisado nesta data na versão pinada 1.0.0; acesso a
+          # META_ACCESS_TOKEN = gasto real de ads. O mesmo token é reaproveitado
+          # pela CLI `arcads` (ver clis.arcads nesta mesma área): duas
+          # ferramentas, mesma credencial. Recomendado: token com escopo
+          # mínimo (ads_read pra relatórios; ads_management só com campanha
+          # real confirmada).
           args: ["-y", "mcp-meta-ads@1.0.0"]
           env:
             META_ACCESS_TOKEN: "${META_ACCESS_TOKEN}"
@@ -321,11 +340,18 @@ areas:
         when: "Construir/melhorar um agente ou produto de IA: escrever/revisar system prompt, definir persona/tom, guardrails e recusas, few-shot, chain-of-thought, orquestração multi-agente, handoff, detecção de frustração, generative UI, avaliar qualidade de saída. Base para desenhar os próprios agentes do método. 44 padrões (Owl-Listener, MIT)."
     mcps:
       - id: supabase
-        when: "Operar Supabase de verdade: rodar SQL, migrations, inspecionar schema/RLS, logs."
+        when: "Operar Supabase de verdade: rodar SQL, migrations, inspecionar schema/RLS, logs. Default é READ-ONLY e escopado a um projeto (--read-only --project-id); para ESCREVER (migrations, mutações), o agente precisa remover conscientemente o --read-only desta entrada antes de usar — nunca por padrão silencioso."
         server:
           command: npx
           # Pin de supply chain (2026-07-06): versão fixa (era @latest); atualizar conscientemente.
-          args: ["-y", "@supabase/mcp-server-supabase@0.8.2"]
+          # Read-only + projeto escopado por padrão (2026-07-07, C5/RT3):
+          # SUPABASE_ACCESS_TOKEN sem esses flags permite SQL arbitrário na
+          # conta inteira. --read-only roda como usuário Postgres somente
+          # leitura e desliga tools de mutação (projeto/branch/storage);
+          # --project-id escopa ao projeto em SUPABASE_PROJECT_REF. Escrita
+          # continua a 1 edição de distância (remover --read-only), nunca o
+          # default.
+          args: ["-y", "@supabase/mcp-server-supabase@0.8.2", "--read-only", "--project-id", "${SUPABASE_PROJECT_REF}"]
           env:
             SUPABASE_ACCESS_TOKEN: "${SUPABASE_ACCESS_TOKEN}"
 
@@ -404,8 +430,18 @@ mcp_utility:
 cli_utility:
   - id: rtk
     when: "Token economy: proxy que corta 60-90% de tokens em comandos de dev. O wizz-router assume RTK ativo (Passo 0). Útil em todo o ecossistema."
-    check: "rtk --version"
-    install: "curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh"
+    # check compara a versão INSTALADA com o pin (não só se o binário existe):
+    # auditoria 2026-07-07 (C4/RT1) achou 0.30.1 instalado vs v0.43.0 pinado,
+    # invisível ao check anterior (`rtk --version` só testava que rodava).
+    check: 'MIN=0.43.0; V=$(rtk --version 2>/dev/null | grep -oE "[0-9]+\.[0-9]+\.[0-9]+" | head -1); [ -n "$V" ] && [ "$(printf "%s\n%s" "$MIN" "$V" | sort -V | head -1)" = "$MIN" ]'
+    # Pin de supply chain (2026-07-07): tag v0.43.0 (antes: branch master)
+    # Checksum do install.sh nesta tag (2026-07-07): sha256
+    # d6eb73a772903e13ff34ee1be8a8b24e896ba9a978f20d2279a08b4083ea6f77
+    # (RT1: tag git pode ser movida à força; o checksum trava o conteúdo real
+    # que será executado, não só o nome da tag. Verificado com `shasum -c`
+    # antes do `sh`; se a tag mudar de conteúdo, o install aborta em vez de
+    # rodar script desconhecido.)
+    install: "curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/tags/v0.43.0/install.sh -o /tmp/rtk-install-v0.43.0.sh && echo 'd6eb73a772903e13ff34ee1be8a8b24e896ba9a978f20d2279a08b4083ea6f77  /tmp/rtk-install-v0.43.0.sh' | shasum -a 256 -c - && sh /tmp/rtk-install-v0.43.0.sh"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SQUADS — painéis consultivos de personas (rodam via wizz-party-mode).
