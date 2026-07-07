@@ -140,6 +140,26 @@ class OfficialModules {
       }
     }
 
+    // Add bundled local modules (src/modules/<code>), e.g. wizz. Without this
+    // they never appear in the picker nor in the --yes defaults, even with
+    // default_selected: true — findModuleSource resolves them, but nothing
+    // ever selects them (bug: maestro/agentes de área não instalavam via npx).
+    const bundledDir = getSourcePath('modules');
+    if (await fs.pathExists(bundledDir)) {
+      const entries = await fs.readdir(bundledDir, { withFileTypes: true });
+      const seen = new Set(modules.map((m) => m.id));
+      for (const entry of entries) {
+        if (!entry.isDirectory()) continue;
+        const modulePath = path.join(bundledDir, entry.name);
+        if (!(await fs.pathExists(path.join(modulePath, 'module.yaml')))) continue;
+        const info = await this.getModuleInfo(modulePath, entry.name, `src/modules/${entry.name}`);
+        if (info && !seen.has(info.id)) {
+          modules.push(info);
+          seen.add(info.id);
+        }
+      }
+    }
+
     return { modules };
   }
 

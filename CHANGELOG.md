@@ -4,6 +4,12 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.5.2] - 2026-07-08
+
+### Corrigido
+
+- Módulo `wizz` (wizz-maestro + agentes de área) nunca instalava via `npx wizz-method install`: `OfficialModules.listAvailable()` só listava `core` e `bmm`, então o módulo bundled em `src/modules/wizz` (mesmo com `default_selected: true`) não aparecia no picker de módulos nem entrava nos defaults do `--yes`; `findModuleSource()` sabia resolvê-lo, mas nada o selecionava. Agora `listAvailable()` também descobre os módulos bundled em `src/modules/<code>/module.yaml`. Reparo de instalação existente sem TTY: `npx wizz-method install --yes --action update --directory <pasta> --tools claude-code --modules bmm,wizz` (Quick Update não adiciona módulo novo).
+
 ## [1.5.1] - 2026-07-08
 
 ### Corrigido
