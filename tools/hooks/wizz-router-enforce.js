@@ -150,9 +150,9 @@ function findWizzRoot(startDir) {
 function buildContext(isWizzProject) {
   if (isWizzProject) {
     return (
-      '🎛️ Projeto Wizz: NÃO invoque wizz-router. Pedido complexo (2+ áreas ou ' +
-      '2+ fatores altos) → Skill `wizz-maestro`; 1 área e leve → Skill do agente ' +
-      'da área (ex: wizz-designer, wizz-quick-dev). Trivial/conversa → direto.'
+      '🎛️ Projeto Wizz: NÃO invoque wizz-router. 2+ áreas → sempre Skill `wizz-maestro`. ' +
+      '1 área: 2+ fatores (multi-passo, planejar, artefato memorável) → `wizz-maestro`; ' +
+      'senão → Skill do agente da área (ex: wizz-designer, wizz-quick-dev). Trivial → direto.'
     );
   }
   return (

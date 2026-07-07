@@ -1,0 +1,64 @@
+name: Routing Eval (LLM)
+
+# Modo --llm do eval de roteamento (evals/routing/run-routing-eval.mjs
+# --llm): pega os casos NÃO triviais do dataset (evals/routing/dataset.json)
+# e pergunta ao modelo qual a rota certa (agent:<area> | maestro), comparando
+# com o rótulo esperado. Testa a classificação de roteamento, não o despacho
+# efetivo do maestro. Custa tokens reais (chamada de modelo por caso), por
+# isso este job NÃO roda em todo PR: só sob demanda (workflow_dispatch) ou
+# semanal (cron). Não é gate de merge (continue-on-error: true); serve para
+# acompanhar deriva da qualidade do roteamento ao longo do tempo.
+#
+# Setup do secret (obrigatório para o job rodar de verdade):
+#   1. Gere uma API key em https://console.anthropic.com/settings/keys.
+#      Recomendado: criar uma key dedicada para este job, com limite de
+#      gasto configurado no console da Anthropic (Settings > Limits).
+#   2. No GitHub: Settings do repo > Secrets and variables > Actions >
+#      New repository secret > nome ANTHROPIC_API_KEY > cole a key.
+#   3. Budget esperado: até 34 chamadas de modelo por execução (um caso não
+#      trivial = uma chamada `claude -p`, modelo default haiku, ver
+#      package.json "eval:routing:llm"). Cadência semanal = ~34
+#      chamadas/semana. Ajuste o cron abaixo ou o --model do runner se isso
+#      não couber no budget do time.
+# Sem o secret configurado, o job aparece como "sucesso" no Actions mas pula
+# o eval de verdade e loga um aviso explicando o que falta.
+
+"on":
+  workflow_dispatch:
+  schedule:
+    # Toda segunda-feira, 09:00 UTC.
+    - cron: "0 9 * * 1"
+
+jobs:
+  routing-eval-llm:
+    runs-on: ubuntu-latest
+    # Informativo, não bloqueante: uma regressão de rota aqui não deve
+    # impedir merges em outros PRs (este workflow não roda em pull_request).
+    continue-on-error: true
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Warn and skip if secret is not configured
+        if: ${{ env.ANTHROPIC_API_KEY == '' }}
+        run: |
+          echo "::warning::ANTHROPIC_API_KEY não configurado (repo Settings > Secrets and variables > Actions). Pulando o eval --llm de roteamento. Veja o comentário no topo de .github/workflows/routing-eval-llm.yaml para o setup."
+
+      - name: Install Claude Code CLI
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Routing eval (--llm)
+        if: ${{ env.ANTHROPIC_API_KEY != '' }}
+        run: npm run eval:routing:llm

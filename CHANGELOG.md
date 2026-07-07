@@ -8,6 +8,17 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o 
 
 ### Adicionado
 
+- Fase 2 da auditoria (consolidação, tarefas 2.1-2.9 e 2.12):
+  - `include = [...]` no `resolve_customization.py` + `_shared/communication-rules.md` como fonte única da regra de comunicação (15 cópias colapsadas em 1); protocolo de handoff compartilhado (`src/core-skills/_shared/handoff-protocol.md`: origem anti-loop, cérebro consultado 1x, decisões da cadeia, seção relevante da skill, `model_hint` opcional) referenciado por router, maestro, agentes, party-mode e swarm.
+  - Regra de dispatch reescrita em 2 cláusulas (2+ áreas → maestro, sempre; senão 2+ dos 3 fatores → maestro) nas 4 cópias, com exemplos de borda calibrados e teste de consistência (`test:dispatch-rule`) que falha se as cópias divergirem.
+  - `registry-resolve.js` unifica `resolveMcps`/`resolveClis`/`resolveSkillIds`; `tools/lib/` (walk + frontmatter) compartilhado pelos validadores; allowlist do `validate-method-refs` derivada do registry; CSV de leitura unificado em `csv-parse/sync`.
+  - `min_version:` com comparação semver no detect de CLIs (fecha a causa raiz do drift do rtk) e bloco `verify:` pós-install fail-open; hash de conteúdo por server MCP no `skill-deps-cache.json` destrava update de pin sem sobrescrever customização do usuário.
+  - `eval:routing` (heurístico) no CI + workflow semanal/manual do modo `--llm`; smoke test ponta a ponta do `install --yes` (`test:install-smoke`); checklist de evals no template de PR.
+  - `sync:check` compara hashes repo↔`~/.claude` sem escrever (lembrete no fim do `npm test`); lista de sync única em `tools/lib/sync-targets.mjs`.
+  - Assets lazy: MP3 do `huashu-design` e fontes do `canvas-design` fora do tarball npm (35.7MB → 5.0MB packed), baixados sob demanda via `npx wizz-method fetch-assets` com verificação sha256 (release `assets-v1`).
+  - Retry de 1 tentativa com backoff em erro de rede transitório nos fetches do installer (registry npm, channels, git clone/fetch).
+  - `platform: [darwin, linux]` nas CLIs POSIX-only (`claude-video`, `voicebox`, `distribb`, `arcads`); suporte oficial declarado macOS/Linux/WSL.
+
 - `tools/validate-method-refs.js`, novo validador (`npm run validate:method-refs`) que checa referências cruzadas específicas do method (agentes, módulo `wizz`, skills). Corrigidas as referências quebradas encontradas em `README.md`, `docs/`, `src/modules/wizz/` e `src/skills-lib/decision-maker`.
 - `tools/skills-catalog.md`: catálogo unificado de 116 skills com localização por plataforma (Claude/OpenCode/Obsidian), 60 duplicadas identificadas; referenciado por `routing-table-flat.md` para verificação de existência.
 - Fase 1 do plano de auditoria (`_audit/`): allowlist `files` no `package.json` (pacote npm sem `build/` e squads); CI roda `npm test` completo + `validate:method-refs`; validador de schema do `skills-registry.yaml` (`test:registry-schema`) com falha explícita em YAML inválido; `.github/dependabot.yml` (npm semanal); trace de roteamento opt-in (`WIZZ_TRACE=1`) e warnings de fallback no hook do router; `docs/governance.md`, checklist de PR e rebrand final do `CONTRIBUTING.md`.

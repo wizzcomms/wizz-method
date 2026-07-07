@@ -26,19 +26,26 @@ Descubra o contexto: **existe `{project-root}/_wizz/`?**
 
 ### A) Dentro de projeto Wizz — você DELEGA, nunca executa
 
-Avalie os 4 fatores de complexidade (sinal compartilhado com `wizz-maestro` e `wizz-quick-dev`):
+Avalie a **Área**: quantas áreas o pedido toca (design, dev, copy, seo, growth, ads, qa, memória)? Se for só 1, avalie também os **3 fatores restantes** (sinal compartilhado com `wizz-maestro` e `wizz-quick-dev`):
 
-1. **Áreas** — quantas áreas toca (design, dev, copy, seo, growth, ads, qa, memória)?
-2. **Passos** — pontual ou multi-passo?
-3. **Planejamento** — direto, ou precisa planejar antes?
-4. **Artefato + memória** — gera entregável que merece registro no cerebro?
+1. **Passos**: pontual ou multi-passo?
+2. **Planejamento**: direto, ou precisa planejar antes?
+3. **Artefato + memória**: gera entregável que merece registro no cerebro?
 
-**Regra de dispatch:**
+**Regra de dispatch:** SE 2+ áreas → `wizz-maestro`, sempre. SENÃO conte os 3 fatores restantes (multi-passo, precisa planejar, gera artefato memorável); 2+ fatores → `wizz-maestro`.
 
-- **2+ ÁREAS, OU 2+ fatores altos → `wizz-maestro`.** Ele é o Gerente: coordena agentes entre áreas, monta a sequência, mantém o dever de memória. Invoque via `Skill` e **pare aqui**.
-- **1 área e leve (0–1 fatores altos) → o AGENTE daquela área.** Ache a área no `skills-registry.yaml` e invoque o `agent:` do bloco (ex: `designer → wizz-designer`, `seo → wizz-seo`, dev pontual → `wizz-quick-dev`). **Pare aqui** — o agente puxa as skills/clis/mcps. Você **não** dispara skills soltas.
+- **2+ áreas → `wizz-maestro`, sempre.** Ele é o Gerente: coordena agentes entre áreas, monta a sequência, mantém o dever de memória. Invoque via `Skill` e **pare aqui**.
+- **1 área e 0–1 dos 3 fatores → o AGENTE daquela área.** Ache a área no `skills-registry.yaml` e invoque o `agent:` do bloco (ex: `designer → wizz-designer`, `seo → wizz-seo`, dev pontual → `wizz-quick-dev`). **Pare aqui**: o agente puxa as skills/clis/mcps. Você **não** dispara skills soltas.
+- **1 área e 2+ dos 3 fatores → `wizz-maestro` também.** Multi-passo + precisa planejar + artefato memorável somados indicam que mesmo dentro de 1 área o trabalho exige coordenação.
 
-> Um agente de área só cobre a área dele. 2+ áreas exigem coordenação = trabalho do maestro.
+> Um agente de área só cobre a área dele. 2+ áreas exigem coordenação = trabalho do maestro; a cláusula de área decide sozinha, sem somar com mais nada.
+
+**Exemplos calibrados de borda** (do dataset de evals, `evals/routing/dataset.json`):
+
+- *Trivial → direto (sem router):* `t07` ("trocar 'envie' por 'enviar' na linha 42"): edição de 1 linha.
+- *1 área, 1 fator → agente direto:* `a21` ("corrige o bug de logout no mobile"): 1 área (dev), pontual, sem planejamento, sem artefato de memória → `wizz-quick-dev`.
+- *1 área, mas 2+ fatores → maestro:* `m06` ("refactor de infra: banco de dados, APIs, deploy, monitoria"): 1 área (dev), porém multi-passo + precisa planejar + arquitetura de alto risco → `wizz-maestro` mesmo sem cruzar área.
+- *2+ áreas, cada parte leve → ainda maestro (cláusula 1):* ex. "ajusta a cor do botão secundário E troca uma palavra na CTA": cada mudança isolada é trivial, mas cruza 2 áreas (designer + copy) no mesmo pedido, então cai na cláusula 1 e vai pro maestro mesmo sem multi-passo pesado. O dataset atual não tem um caso equivalente (`m01`-`m12` sempre combinam 2+ áreas com complexidade alta); é a lacuna de calibração apontada pelo finding M1.
 
 Ao delegar (pro maestro ou pro agente de área), declare o brief no formato do [protocolo de handoff compartilhado](../../core-skills/_shared/handoff-protocol.md): `origem: wizz-router` (anti-loop — quem recebe nunca te devolve o mesmo pedido), resumo do cerebro se já tiver sido consultado, decisões já tomadas e a seção relevante da skill.
 

@@ -5,7 +5,10 @@ name: Quality & Validation
 # - ESLint (linting)
 # - markdownlint (markdown quality)
 # - Installation component tests (compilation)
+# - Routing eval, modo heurístico (evals/routing/run-routing-eval.mjs)
 # Keep this workflow aligned with `npm run quality` in `package.json`.
+# O modo --llm do eval de roteamento roda separado, em
+# routing-eval-llm.yaml (manual/semanal, não é gate).
 
 "on":
   push:
@@ -108,3 +111,13 @@ jobs:
 
       - name: Validate method references
         run: npm run validate:method-refs
+
+      - name: Routing eval (heuristic)
+        # Modo heurístico e gratuito: só valida o gate isTrivial() do hook
+        # wizz-router-enforce contra os casos "trivial" do dataset
+        # (evals/routing/dataset.json). Não testa a classificação de rota
+        # (agent:<area> vs maestro) dos 34 casos não-triviais, isso fica a
+        # cargo do modo --llm, que roda separado (workflow
+        # routing-eval-llm.yaml, manual/semanal, custa tokens). Este step
+        # pega regressão do isTrivial de graça a cada PR.
+        run: npm run eval:routing

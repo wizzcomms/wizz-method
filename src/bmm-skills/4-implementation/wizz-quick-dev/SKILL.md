@@ -37,8 +37,11 @@ A specification should target a **single user-facing goal** within **900–1600 
 
 You are the leaf: the maestro demotes here for pointed work (bug, tweak, single-goal feature). Re-check scope against the shared complexity signal (areas, steps, needs-planning?, artifact+memory?):
 
-- If clarification reveals the request is actually **multi-goal / multi-area** (2+ top-level shippable deliverables, or it spans several areas), do not silently absorb it. Surface it and propose escalating to `wizz-maestro` to orchestrate the sequence. Proceed solo only if the user confirms a narrowed single goal.
-- Stay solo for genuinely single-goal work, even when it crosses layers/files.
+**Dispatch rule:** IF 2+ areas → `wizz-maestro`, always. ELSE count the 3 remaining factors (multi-step, needs planning, produces a memorable artifact); 2+ factors → `wizz-maestro`.
+
+- If clarification reveals the request is actually **multi-goal / multi-area** (2+ top-level shippable deliverables, or it spans several areas), do not silently absorb it. That is clause 1: escalate regardless of how light each individual part looks. Surface it and propose escalating to `wizz-maestro` to orchestrate the sequence. Proceed solo only if the user confirms a narrowed single goal.
+- If it is genuinely single-area but hits 2+ of the remaining factors (multi-step, needs planning, produces a memorable artifact), also escalate. Do not silently absorb heavy single-area work either.
+- Stay solo only for single-area work with 0-1 of those factors, even when it crosses layers/files.
 
 ## Conventions
 

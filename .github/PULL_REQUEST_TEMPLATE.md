@@ -25,6 +25,7 @@ Fixes #<!-- (issue number, if applicable) -->
 - [ ] `CHANGELOG.md` is updated with this change (or marked as docs-only if no user impact)
 - [ ] No hardcoded secrets, env vars, or credentials (use placeholders `${VAR}` in MCPs)
 - [ ] If adding a new skill: it has `metadata.version`, `area`, and `when` fields in the registry entry
+- [ ] If adding a new skill: it brings 3-5 eval cases (`evals/evals.json`, or `evals/routing/dataset.json` for routing changes)
 - [ ] If adding a new agent or module: it follows the patterns in existing components
 - [ ] New evaluation cases added for skills/routing changes (if applicable)
 - [ ] Prose is concise and avoids em-dashes (use periods, commas, colons, or parentheses)
