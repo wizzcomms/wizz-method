@@ -145,6 +145,7 @@ class Installer {
         customFiles: restoreResult.customFiles.length > 0 ? restoreResult.customFiles : undefined,
         modifiedFiles: restoreResult.modifiedFiles.length > 0 ? restoreResult.modifiedFiles : undefined,
         preInstallVersions,
+        traceEnabled: config.traceEnabled,
       });
 
       // Some steps (IDE setup, global skills/MCP/CLI provisioning) are
@@ -1104,7 +1105,7 @@ class Installer {
   /**
    * Render a consolidated install summary using prompts.note()
    * @param {Array} results - Array of {step, status: 'ok'|'error'|'warn', detail}
-   * @param {Object} context - {wizzDir, modules, ides, customFiles, modifiedFiles}
+   * @param {Object} context - {wizzDir, modules, ides, customFiles, modifiedFiles, traceEnabled}
    */
   async renderInstallSummary(results, context = {}) {
     const color = await prompts.getColor();
@@ -1174,6 +1175,19 @@ class Installer {
     }
     if (context.modifiedFiles && context.modifiedFiles.length > 0) {
       lines.push(`  ${color.yellow(`Modified files backed up (.bak): ${context.modifiedFiles.length}`)}`);
+    }
+
+    // 3.8-E1: mention the routing-trace opt-in choice. `traceEnabled` is
+    // `null` when the question was never asked (quick-update/update, or a
+    // module set without bmm) — that case is intentionally silent instead of
+    // misreporting an unasked question as "desligado".
+    if (context.traceEnabled === true) {
+      lines.push(
+        `  ${color.cyan('Medidor de roteamento: ligado')} (WIZZ_TRACE=1 em .claude/settings.local.json)`,
+        `    Para desligar: remova "WIZZ_TRACE" de .claude/settings.local.json (ou defina "0")`,
+      );
+    } else if (context.traceEnabled === false) {
+      lines.push(`  Medidor de roteamento: desligado (rode o install de novo para ligar)`);
     }
 
     // Next steps

@@ -18,6 +18,7 @@ class Config {
     quickUpdate,
     channelOptions,
     setOverrides,
+    traceEnabled,
   }) {
     this.directory = directory;
     this.modules = Object.freeze([...modules]);
@@ -49,6 +50,13 @@ class Config {
     // Intentionally NOT integrated with the prompt/template/schema flow; see
     // `tools/installer/set-overrides.js` for the rationale and tradeoffs.
     this.setOverrides = setOverrides || {};
+    // 3.8-E1: whether the user opted into the local routing-trace measurement
+    // (WIZZ_TRACE=1, persisted into .claude/settings.local.json by the UI
+    // layer BEFORE install() runs — see ui.js#promptTraceOptIn). Tri-state on
+    // purpose: `null` means "never asked" (quick-update, update, or a module
+    // set that doesn't include bmm) so renderInstallSummary can omit the line
+    // entirely instead of misreporting an unasked question as "desligado".
+    this.traceEnabled = traceEnabled === undefined ? null : traceEnabled;
     Object.freeze(this);
   }
 
@@ -78,6 +86,7 @@ class Config {
       quickUpdate: userInput._quickUpdate || false,
       channelOptions: userInput.channelOptions || null,
       setOverrides: userInput.setOverrides || {},
+      traceEnabled: userInput.traceEnabled === undefined ? null : userInput.traceEnabled,
     });
   }
 

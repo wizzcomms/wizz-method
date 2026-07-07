@@ -3713,6 +3713,361 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 51: WIZZ_TRACE opt-in (3.8-E1 — local routing-trace measurement)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 51: WIZZ_TRACE opt-in (routing trace)${colors.reset}\n`);
+
+  {
+    const { UI } = require('../tools/installer/ui');
+    const prompts = require('../tools/installer/prompts');
+    const ui51 = new UI();
+
+    // --- non-interactive (--yes / no-TTY): never prompts, never writes ---
+    {
+      const tmp51 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-trace-optin-'));
+      const originalConfirm51 = prompts.confirm;
+      let confirmCalls51 = 0;
+      prompts.confirm = async () => {
+        confirmCalls51++;
+        return true;
+      };
+      try {
+        const result51 = await ui51.promptTraceOptIn(tmp51, { interactive: false });
+        assert(result51 === false, 'promptTraceOptIn returns false when not interactive (--yes/no-TTY)');
+        assert(confirmCalls51 === 0, 'promptTraceOptIn never calls prompts.confirm when not interactive');
+        assert(
+          !(await fs.pathExists(path.join(tmp51, '.claude', 'settings.local.json'))),
+          'non-interactive opt-in never writes settings.local.json',
+        );
+      } finally {
+        prompts.confirm = originalConfirm51;
+        await fs.remove(tmp51).catch(() => {});
+      }
+    }
+
+    // --- interactive, user declines: no write ---
+    {
+      const tmp51 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-trace-optin-'));
+      const originalConfirm51 = prompts.confirm;
+      prompts.confirm = async () => false;
+      try {
+        const result51 = await ui51.promptTraceOptIn(tmp51, { interactive: true });
+        assert(result51 === false, 'promptTraceOptIn returns false when the user declines');
+        assert(!(await fs.pathExists(path.join(tmp51, '.claude', 'settings.local.json'))), 'declining never writes settings.local.json');
+      } finally {
+        prompts.confirm = originalConfirm51;
+        await fs.remove(tmp51).catch(() => {});
+      }
+    }
+
+    // --- interactive, user accepts: writes env.WIZZ_TRACE="1" exactly, preserves existing keys ---
+    {
+      const tmp51 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-trace-optin-'));
+      const settingsPath51 = path.join(tmp51, '.claude', 'settings.local.json');
+      await fs.ensureDir(path.join(tmp51, '.claude'));
+      await fs.writeJson(settingsPath51, { permissions: { allow: ['Bash(npm test)'] }, env: { EXISTING_VAR: 'keep-me' } }, { spaces: 2 });
+
+      const originalConfirm51 = prompts.confirm;
+      let confirmMessage51 = null;
+      prompts.confirm = async (opts) => {
+        confirmMessage51 = opts.message;
+        return true;
+      };
+      try {
+        const result51 = await ui51.promptTraceOptIn(tmp51, { interactive: true });
+        assert(result51 === true, 'promptTraceOptIn returns true when the user accepts');
+        assert(/medidor de roteamento/i.test(confirmMessage51 || ''), 'prompts with the routing-trace measurement question');
+
+        const written51 = JSON.parse(await fs.readFile(settingsPath51, 'utf8'));
+        assert(written51.env.WIZZ_TRACE === '1', 'writes env.WIZZ_TRACE = "1" exactly');
+        assert(written51.env.EXISTING_VAR === 'keep-me', 'preserves a pre-existing env key untouched');
+        assert(
+          written51.permissions && Array.isArray(written51.permissions.allow) && written51.permissions.allow.includes('Bash(npm test)'),
+          'preserves pre-existing top-level keys (permissions) untouched',
+        );
+      } finally {
+        prompts.confirm = originalConfirm51;
+        await fs.remove(tmp51).catch(() => {});
+      }
+    }
+
+    // --- full promptInstall({ yes: true, ... }) flow: opt-in truly never fires ---
+    {
+      const tmp51 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-trace-optin-full-'));
+      try {
+        const config51 = await ui51.promptInstall({ yes: true, directory: tmp51, tools: 'claude-code' });
+        assert(config51.traceEnabled === false, 'install --yes resolves traceEnabled=false (asked-and-skipped, not silently on)');
+        assert(
+          !(await fs.pathExists(path.join(tmp51, '.claude', 'settings.local.json'))),
+          'install --yes never creates settings.local.json via the trace opt-in',
+        );
+      } finally {
+        await fs.remove(tmp51).catch(() => {});
+      }
+    }
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 52: selectMcps + --mcps flag parsing (3.5c-parte2-3)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 52: selectMcps + --mcps flag parsing${colors.reset}\n`);
+
+  {
+    const { UI } = require('../tools/installer/ui');
+    const prompts = require('../tools/installer/prompts');
+
+    const registry52 = {
+      areas: {
+        growth: {
+          mcps: [
+            { id: 'alpha', when: 'usado para X', server: { command: 'alpha-cmd' } },
+            { id: 'beta', when: 'usado para Y', server: { command: 'beta-cmd' } },
+          ],
+        },
+      },
+      mcp_utility: [],
+    };
+
+    const originalLoadRegistry52 = UI.prototype._loadSkillsRegistry;
+    UI.prototype._loadSkillsRegistry = function () {
+      return registry52;
+    };
+
+    // --- default selection: interactive multiselect, all pre-checked ---
+    {
+      const ui52 = new UI();
+      const originalMultiselect52 = prompts.multiselect;
+      let seenOptions52 = null;
+      let seenInitial52 = null;
+      prompts.multiselect = async (opts) => {
+        seenOptions52 = opts.options.map((o) => o.value);
+        seenInitial52 = opts.initialValues;
+        return ['alpha']; // user unchecks 'beta'
+      };
+      try {
+        const plan52 = await ui52.selectMcps(['bmm'], [], {});
+        assert(
+          JSON.stringify(seenOptions52) === JSON.stringify(['alpha', 'beta']),
+          'default selection offers every resolved MCP for the chosen areas',
+        );
+        assert(
+          JSON.stringify(seenInitial52) === JSON.stringify(['alpha', 'beta']),
+          'default selection pre-checks every MCP (opt-out, not opt-in)',
+        );
+        assert(
+          plan52.toWrite.map((m) => m.id).join(',') === 'alpha',
+          'default selection: unchecked MCP goes to toRecommend, checked to toWrite',
+        );
+        assert(plan52.toRecommend.map((m) => m.id).join(',') === 'beta', 'default selection: toRecommend carries the unchecked MCP');
+      } finally {
+        prompts.multiselect = originalMultiselect52;
+      }
+    }
+
+    // --- explicit valid flag: --mcps alpha ---
+    {
+      const ui52 = new UI();
+      const originalMultiselect52 = prompts.multiselect;
+      let multiselectCalled52 = false;
+      prompts.multiselect = async () => {
+        multiselectCalled52 = true;
+        return [];
+      };
+      try {
+        const plan52 = await ui52.selectMcps(['bmm'], [], { mcps: 'alpha' });
+        assert(!multiselectCalled52, '--mcps flag bypasses the interactive multiselect entirely');
+        assert(plan52.toWrite.map((m) => m.id).join(',') === 'alpha', '--mcps alpha writes only alpha');
+        assert(plan52.toRecommend.map((m) => m.id).join(',') === 'beta', '--mcps alpha recommends the rest (beta)');
+      } finally {
+        prompts.multiselect = originalMultiselect52;
+      }
+    }
+
+    // --- flag with unknown id: warns and ignores it ---
+    {
+      const ui52 = new UI();
+      const originalWarn52 = prompts.log.warn;
+      const warnings52 = [];
+      prompts.log.warn = async (msg) => warnings52.push(msg);
+      try {
+        const plan52 = await ui52.selectMcps(['bmm'], [], { mcps: 'nope-does-not-exist' });
+        assert(
+          warnings52.some((w) => /desconhecidos/i.test(w) && w.includes('nope-does-not-exist')),
+          'unknown --mcps id is warned about',
+        );
+        assert(plan52.toWrite.length === 0, 'unknown --mcps id writes nothing');
+        assert(
+          plan52.toRecommend
+            .map((m) => m.id)
+            .sort()
+            .join(',') === 'alpha,beta',
+          'unknown --mcps id: everything falls back to toRecommend',
+        );
+      } finally {
+        prompts.log.warn = originalWarn52;
+      }
+    }
+
+    // --- empty flag: --mcps '' ---
+    {
+      const ui52 = new UI();
+      const originalWarn52 = prompts.log.warn;
+      let warnCalled52 = false;
+      prompts.log.warn = async () => {
+        warnCalled52 = true;
+      };
+      try {
+        const plan52 = await ui52.selectMcps(['bmm'], [], { mcps: '' });
+        assert(!warnCalled52, 'empty --mcps does not warn (no ids to be unknown about)');
+        assert(plan52.toWrite.length === 0, 'empty --mcps writes nothing');
+        assert(
+          plan52.toRecommend
+            .map((m) => m.id)
+            .sort()
+            .join(',') === 'alpha,beta',
+          'empty --mcps: everything falls back to toRecommend',
+        );
+      } finally {
+        prompts.log.warn = originalWarn52;
+      }
+    }
+
+    UI.prototype._loadSkillsRegistry = originalLoadRegistry52;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 53: selectClis + --clis flag parsing (3.5c-parte2-3)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 53: selectClis + --clis flag parsing${colors.reset}\n`);
+
+  {
+    const { UI } = require('../tools/installer/ui');
+    const prompts = require('../tools/installer/prompts');
+
+    // No `check:` on either entry — cli-config.js#detectClis treats an entry
+    // with no check command as not installed, so both always land in the
+    // "missing" set without needing a real binary on PATH (deterministic, no
+    // system dependency).
+    const registry53 = {
+      areas: {
+        growth: {
+          clis: [
+            { id: 'tool-a', when: 'usado para X', install: 'npm install -g tool-a' },
+            { id: 'tool-b', when: 'usado para Y', install: 'npm install -g tool-b' },
+          ],
+        },
+      },
+      cli_utility: [],
+    };
+
+    const originalLoadRegistry53 = UI.prototype._loadSkillsRegistry;
+    UI.prototype._loadSkillsRegistry = function () {
+      return registry53;
+    };
+
+    // --- default selection: interactive multiselect, unchecked by default (opt-in) ---
+    {
+      const ui53 = new UI();
+      const originalMultiselect53 = prompts.multiselect;
+      let seenOptions53 = null;
+      let seenInitial53 = null;
+      prompts.multiselect = async (opts) => {
+        seenOptions53 = opts.options.map((o) => o.value);
+        seenInitial53 = opts.initialValues;
+        return ['tool-a'];
+      };
+      try {
+        const plan53 = await ui53.selectClis(['bmm'], [], {});
+        assert(
+          JSON.stringify(seenOptions53) === JSON.stringify(['tool-a', 'tool-b']),
+          'default selection offers every missing CLI for the chosen areas',
+        );
+        assert(JSON.stringify(seenInitial53) === JSON.stringify([]), 'default selection starts with nothing checked (install is opt-in)');
+        assert(plan53.toInstall.map((c) => c.id).join(',') === 'tool-a', 'default selection: checked CLI goes to toInstall');
+        assert(plan53.toRecommend.map((c) => c.id).join(',') === 'tool-b', 'default selection: unchecked CLI goes to toRecommend');
+      } finally {
+        prompts.multiselect = originalMultiselect53;
+      }
+    }
+
+    // --- explicit valid flag: --clis tool-a ---
+    {
+      const ui53 = new UI();
+      const originalMultiselect53 = prompts.multiselect;
+      let multiselectCalled53 = false;
+      prompts.multiselect = async () => {
+        multiselectCalled53 = true;
+        return [];
+      };
+      try {
+        const plan53 = await ui53.selectClis(['bmm'], [], { clis: 'tool-a' });
+        assert(!multiselectCalled53, '--clis flag bypasses the interactive multiselect entirely');
+        assert(plan53.toInstall.map((c) => c.id).join(',') === 'tool-a', '--clis tool-a installs only tool-a');
+        assert(plan53.toRecommend.map((c) => c.id).join(',') === 'tool-b', '--clis tool-a recommends the rest (tool-b)');
+      } finally {
+        prompts.multiselect = originalMultiselect53;
+      }
+    }
+
+    // --- flag with unknown id: warns and ignores it ---
+    {
+      const ui53 = new UI();
+      const originalWarn53 = prompts.log.warn;
+      const warnings53 = [];
+      prompts.log.warn = async (msg) => warnings53.push(msg);
+      try {
+        const plan53 = await ui53.selectClis(['bmm'], [], { clis: 'nope-does-not-exist' });
+        assert(
+          warnings53.some((w) => /desconhecidos/i.test(w) && w.includes('nope-does-not-exist')),
+          'unknown --clis id is warned about',
+        );
+        assert(plan53.toInstall.length === 0, 'unknown --clis id installs nothing');
+        assert(
+          plan53.toRecommend
+            .map((c) => c.id)
+            .sort()
+            .join(',') === 'tool-a,tool-b',
+          'unknown --clis id: everything falls back to toRecommend',
+        );
+      } finally {
+        prompts.log.warn = originalWarn53;
+      }
+    }
+
+    // --- empty flag: --clis '' ---
+    {
+      const ui53 = new UI();
+      const originalWarn53 = prompts.log.warn;
+      let warnCalled53 = false;
+      prompts.log.warn = async () => {
+        warnCalled53 = true;
+      };
+      try {
+        const plan53 = await ui53.selectClis(['bmm'], [], { clis: '' });
+        assert(!warnCalled53, 'empty --clis does not warn (no ids to be unknown about)');
+        assert(plan53.toInstall.length === 0, 'empty --clis installs nothing');
+        assert(
+          plan53.toRecommend
+            .map((c) => c.id)
+            .sort()
+            .join(',') === 'tool-a,tool-b',
+          'empty --clis: everything falls back to toRecommend',
+        );
+      } finally {
+        prompts.log.warn = originalWarn53;
+      }
+    }
+
+    UI.prototype._loadSkillsRegistry = originalLoadRegistry53;
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

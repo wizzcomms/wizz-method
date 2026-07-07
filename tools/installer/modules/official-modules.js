@@ -3,7 +3,7 @@ const fs = require('../fs-native');
 const yaml = require('yaml');
 const prompts = require('../prompts');
 const { getProjectRoot, getSourcePath, getModulePath } = require('../project-root');
-const { CLIUtils } = require('../cli-utils');
+const { CLIUtils } = require('../banner');
 const { ExternalModuleManager } = require('./external-manager');
 
 class OfficialModules {

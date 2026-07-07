@@ -5,7 +5,7 @@ const yaml = require('yaml');
 const fs = require('./fs-native');
 const { getProjectRoot } = require('./project-root');
 const installerPackageJson = require('../../package.json');
-const { CLIUtils } = require('./cli-utils');
+const { CLIUtils } = require('./banner');
 const { ExternalModuleManager } = require('./modules/external-manager');
 const { resolveModuleVersion } = require('./modules/version-resolver');
 const { Manifest } = require('./core/manifest');
@@ -435,6 +435,18 @@ class UI {
     const selectedAreas = await this.selectSkillAreas(selectedModules, options);
     const mcpPlan = await this.selectMcps(selectedModules, selectedAreas, options);
     const cliPlan = await this.selectClis(selectedModules, selectedAreas, options);
+
+    // 3.8-E1: local routing-trace opt-in. Only relevant when wizz-router is
+    // actually part of the install (bmm), and — like the MCP/CLI pickers
+    // above — only offered on a genuinely interactive TTY (never --yes/CI).
+    // `null` (not asked) is distinct from `false` (asked, declined) so the
+    // final summary can tell the two apart.
+    let traceEnabled = null;
+    if (selectedModules.includes('bmm')) {
+      const traceInteractive = !(!!options.yes || !process.stdin.isTTY);
+      traceEnabled = await this.promptTraceOptIn(confirmedDirectory, { interactive: traceInteractive });
+    }
+
     const { moduleConfigs, setOverrides } = await this.collectModuleConfigs(confirmedDirectory, selectedModules, {
       ...options,
       channelOptions,
@@ -467,6 +479,7 @@ class UI {
       setOverrides,
       skipPrompts: options.yes || false,
       channelOptions,
+      traceEnabled,
     };
   }
 
@@ -675,6 +688,51 @@ class UI {
     });
 
     return split(selected || []);
+  }
+
+  /**
+   * 3.8-E1: ask whether to opt into the local routing-trace measurement and,
+   * if yes, persist `WIZZ_TRACE=1` into the project's
+   * `.claude/settings.local.json` (chave `env`) — the exact merge-writer 3.3
+   * built for MCP env vars (`persistProjectEnv`), reused here so there is
+   * only one implementation of "merge a value into settings.local.json's
+   * `env` key without clobbering what's already there" (see
+   * `tools/installer/modules/env-vars.js`).
+   *
+   * The trace is entirely local: `tools/hooks/wizz-router-enforce.js`
+   * (already installed globally) reads `process.env.WIZZ_TRACE` and, when
+   * set, appends one JSON line per routed prompt to
+   * `~/.claude/wizz-trace.jsonl` on this machine — nothing leaves it. Claude
+   * Code merges a project's `.claude/settings.local.json` `env` key into
+   * every subprocess it spawns for that project, so setting the key here is
+   * enough to turn the hook's trace on for sessions in this project, with no
+   * change to the hook itself.
+   *
+   * `interactive` is computed by the caller (not read from `process.stdin`
+   * here) so this stays a plain, TTY-independent function to unit test —
+   * mirrors the seam `promptMissingEnvVars`/`resolveEnvVars` already use in
+   * env-vars.js. Never opts in silently: a `false`/no-TTY caller always
+   * skips without prompting, so telemetry is opt-in by construction, never
+   * default-on.
+   *
+   * @param {string} projectDir - Project root (where `.claude/` lives)
+   * @param {Object} [opts]
+   * @param {boolean} [opts.interactive=false] - Whether to actually prompt
+   * @returns {Promise<boolean>} Whether WIZZ_TRACE was turned on
+   */
+  async promptTraceOptIn(projectDir, opts = {}) {
+    const { interactive = false } = opts;
+    if (!interactive) return false;
+
+    const enable = await prompts.confirm({
+      message: 'Quer ligar o medidor de roteamento? (local, grava só em ~/.claude/wizz-trace.jsonl na sua máquina, nunca sai daqui)',
+      default: false,
+    });
+    if (!enable) return false;
+
+    const { persistProjectEnv } = require('./modules/env-vars');
+    await persistProjectEnv(projectDir, { WIZZ_TRACE: '1' });
+    return true;
   }
 
   /**
