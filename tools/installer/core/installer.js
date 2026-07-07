@@ -3,7 +3,8 @@ const fs = require('../fs-native');
 const { Manifest } = require('./manifest');
 const { OfficialModules } = require('../modules/official-modules');
 const { installSkillsLib } = require('../modules/skills-lib');
-const { writeMcpConfig, renderAddCommand, prepareMcps } = require('../modules/mcp-config');
+const { writeMcpConfig, renderAddCommand, prepareMcps, partitionAlreadyConfigured } = require('../modules/mcp-config');
+const { promptMissingEnvVars } = require('../modules/env-vars');
 const { installClis, renderInstallCommand } = require('../modules/cli-config');
 const { writeDepsCache, readPreviousMcpPins } = require('../modules/deps-cache');
 const { IdeManager } = require('../ide/manager');
@@ -424,6 +425,34 @@ class Installer {
               if (mcpsFailed.length > 0) {
                 addResult('MCP servers', 'warn', `falharam: ${mcpsFailed.map((f) => f.id).join(', ')}`);
               }
+
+              // Env var assistance (3.3, design em _audit parte 3 seção E):
+              // before writing .mcp.json, detect missing `${VAR}`
+              // placeholders in the servers about to be written and — only
+              // when interactive (never --yes/no-TTY, E1/E5) — offer to fill
+              // them, persisting into `.claude/settings.local.json` (the only
+              // place confirmed to reach the MCP subprocess's env; C7). Runs
+              // on `mcpsReady` (never `toRecommend`) and skips any id already
+              // present in `.mcp.json` — its vars are moot, the additive
+              // merge below ignores that server entirely. A dedicated
+              // try/catch so a failure here only warns and never blocks the
+              // `.mcp.json` write that follows (own principle of this
+              // feature: never fail the install over a skipped/failed var).
+              try {
+                const { toPrepare: mcpsForEnvVars } = await partitionAlreadyConfigured({
+                  projectDir: paths.projectRoot,
+                  mcps: mcpsReady,
+                });
+                const envInteractive = !config.skipPrompts && !!process.stdin.isTTY;
+                await promptMissingEnvVars(mcpsForEnvVars, {
+                  projectDir: paths.projectRoot,
+                  interactive: envInteractive,
+                });
+              } catch (error) {
+                await prompts.log.warn(`Falha ao configurar env vars dos MCPs: ${error.message}`);
+                addResult('MCP env vars', 'warn', error.message);
+              }
+
               // A13 ("merge aditivo congela pins para sempre"): read the pin
               // hashes the LAST install recorded so writeMcpConfig can tell an
               // untouched block (safe to auto-update the pin) from a
