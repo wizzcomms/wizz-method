@@ -140,19 +140,24 @@ areas:
     clis:
       - id: hyperframes
         when: "Renderizar vídeo a partir de HTML/CSS/animação (HTML→MP4, agent-native, 20+ skills). Alternativa HTML-nativa ao Remotion (que é React). Precisa ffmpeg + Node 22 + Chrome headless."
-        # Sem `platform:` deliberadamente (M20/2026-07-07): `check`/`install`
-        # são via npx (Node), não POSIX puro (sem `test -d`/`$HOME`/`grep`);
-        # gatear por plataforma esconderia a CLI de quem tem Node no Windows
-        # nativo sem necessidade. O runtime real (ffmpeg + Chrome headless)
-        # ainda pode faltar lá, mas isso é o mesmo tipo de gap que `verify:`
-        # cobre nas clone-and-run abaixo, não falta de suporte de plataforma.
-        check: "npx --yes hyperframes --version"
-        # Pin de supply chain (2026-07-07): SHA fixo via fragmento de URL git
-        # (a CLI `skills add` não suporta um flag --pin/@ref próprio; "Any git
-        # URL" é fonte suportada, então usamos a convenção #<sha> de URL git);
-        # atualizar conscientemente. Antes: `npx skills add heygen-com/hyperframes`
-        # (HEAD sem pin, A8/RT2).
-        install: "npx skills add https://github.com/heygen-com/hyperframes.git#4c8064d4d3d1ffe51a10b1c7eee79a49b2fc468f"
+        # Gate de plataforma (2026-07-08): o `install` virou clone+checkout
+        # POSIX (mktemp/rm), então macOS/Linux/WSL — mesma regra das
+        # clone-and-run abaixo. (Antes ficava sem gate porque check/install
+        # eram só npx.)
+        platform: [darwin, linux]
+        # Check (2026-07-08): antes era `npx --yes hyperframes --version`, que
+        # baixa o pacote do npm e portanto passa SEMPRE — o installer reportava
+        # "já instalado" sem as skills nunca terem sido adicionadas. O que o
+        # `install` traz são as SKILLS, então o check testa a skill instalada.
+        check: "test -d $HOME/.claude/skills/hyperframes"
+        # Pin de supply chain (2026-07-08): a convenção `#<sha>` na URL NÃO
+        # funciona — a CLI `skills add` trata o fragmento como BRANCH
+        # (`git clone --branch <sha>` → "Remote branch not found"), e não há
+        # flag --ref/pin. Pin real = clone temporário + checkout do SHA +
+        # `skills add` do path local. `--copy` é obrigatório (senão symlinka
+        # pro temp dir que é apagado); `-g` casa com o `check` global; `-y`
+        # evita prompt em shell não-interativo. Atualizar conscientemente.
+        install: 'd="$(mktemp -d)" && git clone https://github.com/heygen-com/hyperframes.git "$d" && git -C "$d" checkout 4c8064d4d3d1ffe51a10b1c7eee79a49b2fc468f && npx skills add "$d" -g -y --copy && rm -rf "$d"'
       - id: claude-video
         when: "Analisar/entender vídeo EXISTENTE: baixa, extrai frames e transcreve para resumir, achar momentos ou diagnosticar footage. NÃO cria vídeo. Precisa ffmpeg + yt-dlp (+ Groq/OpenAI p/ transcrição sem legenda)."
         # M20 (2026-07-07): check é POSIX puro (`test -d`, `$HOME`); em
@@ -161,10 +166,11 @@ areas:
         # macOS/Linux/WSL (WSL reporta platform 'linux').
         platform: [darwin, linux]
         check: "test -d $HOME/.claude/skills/watch"
-        # Pin de supply chain (2026-07-07): SHA fixo via fragmento de URL git
-        # (mesma convenção do hyperframes acima); atualizar conscientemente.
-        # Antes: `npx skills add bradautomates/claude-video` (HEAD sem pin, A8/RT2).
-        install: "npx skills add https://github.com/bradautomates/claude-video.git#83da59fa78c3eee9e20f515fe75c438bb5166efd"
+        # Pin de supply chain (2026-07-08): clone temporário + checkout do SHA
+        # + `skills add` local (mesma convenção e racional do hyperframes
+        # acima — `#<sha>` na URL falha porque a CLI trata o fragmento como
+        # branch); atualizar conscientemente.
+        install: 'd="$(mktemp -d)" && git clone https://github.com/bradautomates/claude-video.git "$d" && git -C "$d" checkout 83da59fa78c3eee9e20f515fe75c438bb5166efd && npx skills add "$d" -g -y --copy && rm -rf "$d"'
       - id: buttercut
         when: "EDITAR vídeo por IA: cortes, selects, cenas, roughcut via XML/FFmpeg. Sugerir quando o pedido for editar/cortar vídeo. Clone-and-run no PROJETO (não é skill add), pesado: Ruby + Python + FFmpeg + WhisperX. AVISOS: ~GB de modelos (WhisperX), build demorado, só Apple Silicon."
         platform: darwin-arm64
@@ -229,11 +235,11 @@ areas:
         # macOS/Linux/WSL.
         platform: [darwin, linux]
         check: "ls $HOME/.claude/skills 2>/dev/null | grep -qi distribb"
-        # Pin de supply chain (2026-07-07): SHA fixo via fragmento de URL git
-        # (mesma convenção do hyperframes/claude-video acima); atualizar
-        # conscientemente. Antes: `npx skills add Bomx/distribb-skill` (HEAD
-        # sem pin, A8/RT2).
-        install: "npx skills add https://github.com/Bomx/distribb-skill.git#860700de171f2ff741985ffdc739010f3f0c0e25"
+        # Pin de supply chain (2026-07-08): clone temporário + checkout do SHA
+        # + `skills add` local (mesma convenção e racional do hyperframes
+        # acima — `#<sha>` na URL falha porque a CLI trata o fragmento como
+        # branch); atualizar conscientemente.
+        install: 'd="$(mktemp -d)" && git clone https://github.com/Bomx/distribb-skill.git "$d" && git -C "$d" checkout 860700de171f2ff741985ffdc739010f3f0c0e25 && npx skills add "$d" -g -y --copy && rm -rf "$d"'
 
   growth:
     agent: wizz-growth
