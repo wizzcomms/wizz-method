@@ -30,6 +30,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const yaml = require('yaml');
 const { parse: parseCsv } = require('csv-parse/sync');
+const { walkFiles } = require('./lib/walk');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const SRC_DIR = path.join(PROJECT_ROOT, 'src');
@@ -110,26 +111,7 @@ const UNRESOLVABLE_VARS = [
 // --- File Discovery ---
 
 function getSourceFiles(dir) {
-  const files = [];
-
-  function walk(currentDir) {
-    const entries = fs.readdirSync(currentDir, { withFileTypes: true });
-
-    for (const entry of entries) {
-      if (SKIP_DIRS.has(entry.name)) continue;
-
-      const fullPath = path.join(currentDir, entry.name);
-
-      if (entry.isDirectory()) {
-        walk(fullPath);
-      } else if (entry.isFile() && SCAN_EXTENSIONS.has(path.extname(entry.name))) {
-        files.push(fullPath);
-      }
-    }
-  }
-
-  walk(dir);
-  return files;
+  return walkFiles(dir, { skipDirs: SKIP_DIRS, extensions: SCAN_EXTENSIONS });
 }
 
 // --- Code Block Stripping ---

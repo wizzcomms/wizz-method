@@ -24,31 +24,27 @@ const path = require('node:path');
 const fs = require('../fs-native');
 const yaml = require('yaml');
 const { getProjectRoot, getSourcePath } = require('../project-root');
+const { resolveAreaEntries } = require('./registry-resolve');
 
 /**
  * Resolve which skill ids to install from the registry for the chosen areas.
  * Empty / undefined / containing 'all' means every area. Utility skills
  * (graphify, find-skills, ...) are cross-cutting and always included.
+ *
+ * Wrapper fino sobre `resolveAreaEntries` (A16): a resolução por área vive em
+ * `registry-resolve.js`; aqui só sobra reduzir as entradas resolvidas ao
+ * `id` (esta função nunca precisou de mais nada — nem de `areas`).
+ *
  * @param {Object} registry - Parsed skills-registry.yaml
  * @param {string[]} [selectedAreas] - Area keys to install
  * @returns {string[]} Deduped skill ids
  */
 function resolveSkillIds(registry, selectedAreas) {
-  const ids = new Set();
-  const areas = (registry && registry.areas) || {};
-  const wantAll = !selectedAreas || selectedAreas.length === 0 || selectedAreas.includes('all');
-  const chosen = wantAll ? Object.keys(areas) : selectedAreas;
-
-  for (const area of chosen) {
-    const skills = (areas[area] && areas[area].skills) || [];
-    for (const skill of skills) {
-      if (skill && skill.id) ids.add(skill.id);
-    }
-  }
-  for (const util of (registry && registry.utility) || []) {
-    if (util && util.id) ids.add(util.id);
-  }
-  return [...ids];
+  const entries = resolveAreaEntries(registry, selectedAreas, {
+    listKey: 'skills',
+    utilityKey: 'utility',
+  });
+  return entries.map((entry) => entry.id);
 }
 
 /**

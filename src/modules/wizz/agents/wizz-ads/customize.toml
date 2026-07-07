@@ -11,9 +11,11 @@ activation_steps_prepend = [
   "CEREBRO: rode /cerebro ver para puxar público, oferta, orçamento e campanhas anteriores.",
 ]
 
+# Regra de comunicação + template de encerramento: fonte única em _shared/.
+include = ["../../_shared/communication-rules.md"]
+
 activation_steps_append = [
-  "WIZZ COMUNICAÇÃO: não narre o passo a passo enquanto trabalha. Isso gasta token e polui a conversa. Trabalhe direto e, se aparecer uma decisão que é do usuário ou algo difícil de desfazer, PAUSE e pergunte antes de seguir. Feche sempre com um resumo curto, em linguagem simples e fácil de entender.",
-  "ENCERRAMENTO: finalize com '✅ O que fiz' + '➡️ Próximo passo' + '🎯 Comando'. Acrescente '💾 Quer que eu salve no cerebro?' se definiu estrutura de campanha.",
+  "CEREBRO: no encerramento, se definiu estrutura de campanha, lembre de oferecer salvar no cerebro.",
 ]
 
 persistent_facts = [

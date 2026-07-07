@@ -27,6 +27,8 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { walkFiles, findDirsWithFile } = require('./lib/walk');
+const { parseFrontmatterSimple, parseFrontmatterMultiline } = require('./lib/frontmatter');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const SRC_DIR = path.join(PROJECT_ROOT, 'src');
@@ -58,103 +60,13 @@ function escapeTableCell(str) {
 }
 
 // --- Frontmatter Parsing ---
-
-/**
- * Parse YAML frontmatter from a markdown file.
- * Returns an object with key-value pairs, or null if no frontmatter.
- */
-function parseFrontmatter(content) {
-  const trimmed = content.trimStart();
-  if (!trimmed.startsWith('---')) return null;
-
-  let endIndex = trimmed.indexOf('\n---\n', 3);
-  if (endIndex === -1) {
-    // Handle file ending with \n---
-    if (trimmed.endsWith('\n---')) {
-      endIndex = trimmed.length - 4;
-    } else {
-      return null;
-    }
-  }
-
-  const fmBlock = trimmed.slice(3, endIndex).trim();
-  if (fmBlock === '') return {};
-
-  const result = {};
-  for (const line of fmBlock.split('\n')) {
-    const colonIndex = line.indexOf(':');
-    if (colonIndex === -1) continue;
-    // Skip indented lines (nested YAML values)
-    if (line[0] === ' ' || line[0] === '\t') continue;
-    const key = line.slice(0, colonIndex).trim();
-    let value = line.slice(colonIndex + 1).trim();
-    // Strip surrounding quotes (single or double)
-    if ((value.startsWith("'") && value.endsWith("'")) || (value.startsWith('"') && value.endsWith('"'))) {
-      value = value.slice(1, -1);
-    }
-    result[key] = value;
-  }
-
-  return result;
-}
-
-/**
- * Parse YAML frontmatter, handling multiline values (description often spans lines).
- * Returns an object with key-value pairs, or null if no frontmatter.
- */
-function parseFrontmatterMultiline(content) {
-  const trimmed = content.trimStart();
-  if (!trimmed.startsWith('---')) return null;
-
-  let endIndex = trimmed.indexOf('\n---\n', 3);
-  if (endIndex === -1) {
-    // Handle file ending with \n---
-    if (trimmed.endsWith('\n---')) {
-      endIndex = trimmed.length - 4;
-    } else {
-      return null;
-    }
-  }
-
-  const fmBlock = trimmed.slice(3, endIndex).trim();
-  if (fmBlock === '') return {};
-
-  const result = {};
-  let currentKey = null;
-  let currentValue = '';
-
-  for (const line of fmBlock.split('\n')) {
-    const colonIndex = line.indexOf(':');
-    // New key-value pair: must start at column 0 (no leading whitespace) and have a colon
-    if (colonIndex > 0 && line[0] !== ' ' && line[0] !== '\t') {
-      // Save previous key
-      if (currentKey !== null) {
-        result[currentKey] = stripQuotes(currentValue.trim());
-      }
-      currentKey = line.slice(0, colonIndex).trim();
-      currentValue = line.slice(colonIndex + 1);
-    } else if (currentKey !== null) {
-      // Skip YAML comment lines
-      if (line.trimStart().startsWith('#')) continue;
-      // Continuation of multiline value
-      currentValue += '\n' + line;
-    }
-  }
-
-  // Save last key
-  if (currentKey !== null) {
-    result[currentKey] = stripQuotes(currentValue.trim());
-  }
-
-  return result;
-}
-
-function stripQuotes(value) {
-  if ((value.startsWith("'") && value.endsWith("'")) || (value.startsWith('"') && value.endsWith('"'))) {
-    return value.slice(1, -1);
-  }
-  return value;
-}
+//
+// M15 (auditoria 2026-07-07): os dois parsers manuais abaixo (name/multiline)
+// viviam definidos aqui, duplicando o parser de validate-method-refs.js.
+// Migrados para tools/lib/frontmatter.js (parseFrontmatterSimple /
+// parseFrontmatterMultiline); mantidos sob os nomes locais originais para não
+// mexer no resto do arquivo nem no module.exports.
+const parseFrontmatter = parseFrontmatterSimple;
 
 // --- Safe File Reading ---
 
@@ -187,55 +99,17 @@ function stripCodeBlocks(content) {
 // --- Skill Discovery ---
 
 function discoverSkillDirs(rootDirs) {
-  const skillDirs = [];
-
-  function walk(dir) {
-    if (!fs.existsSync(dir)) return;
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
-      if (entry.name === 'node_modules' || entry.name === '.git') continue;
-
-      const fullPath = path.join(dir, entry.name);
-      const skillMd = path.join(fullPath, 'SKILL.md');
-
-      if (fs.existsSync(skillMd)) {
-        skillDirs.push(fullPath);
-      }
-
-      // Keep walking into subdirectories to find nested skills
-      walk(fullPath);
-    }
-  }
-
-  for (const rootDir of rootDirs) {
-    walk(rootDir);
-  }
-
-  return skillDirs.sort();
+  // findDirsWithFile já pula node_modules/.git por padrão e continua
+  // descendo depois de achar um marcador (skills aninhadas).
+  return findDirsWithFile(rootDirs, 'SKILL.md');
 }
 
 // --- File Collection ---
 
 function collectSkillFiles(skillDir) {
-  const files = [];
-
-  function walk(dir) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      if (entry.name === 'node_modules' || entry.name === '.git') continue;
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        walk(fullPath);
-      } else if (entry.isFile()) {
-        files.push(fullPath);
-      }
-    }
-  }
-
-  walk(skillDir);
-  return files;
+  // Sem filtro de extensão: PATH-02/SEQ-02 precisam olhar todo arquivo da
+  // skill, não só .md/.yaml (o filtro por extensão acontece nos callers).
+  return walkFiles(skillDir, { extensions: null });
 }
 
 // --- Rule Checks ---

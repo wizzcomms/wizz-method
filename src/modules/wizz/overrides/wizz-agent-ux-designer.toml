@@ -10,9 +10,11 @@ activation_steps_prepend = [
   "WIZZ CEREBRO: rode /cerebro ver para puxar público-alvo e decisões de UX já tomadas (de forma leve).",
 ]
 
+# Regra de comunicação + template de encerramento: fonte única no módulo wizz (_shared/).
+include = ["../wizz/_shared/communication-rules.md"]
+
 activation_steps_append = [
-  "WIZZ COMUNICAÇÃO: não narre o passo a passo enquanto trabalha. Isso gasta token e polui a conversa. Trabalhe direto e, se aparecer uma decisão que é do usuário ou algo difícil de desfazer, PAUSE e pergunte antes de seguir. Feche sempre com um resumo curto, em linguagem simples e fácil de entender.",
-  "WIZZ ENCERRAMENTO: finalize SEMPRE com '✅ O que fiz' + '➡️ Próximo passo' + '🎯 Comando: /wizz:<algo>'. Para visual premium/landing/motion, indique o wizz-designer.",
+  "PRÓXIMO PASSO: para visual premium/landing/motion, indique o wizz-designer.",
 ]
 
 persistent_facts = [

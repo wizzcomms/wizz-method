@@ -10,10 +10,8 @@ activation_steps_prepend = [
   "ECONOMIA: nunca leia o vault inteiro. Use grep e Read com offset/limit. RTK reescreve shell automaticamente.",
 ]
 
-activation_steps_append = [
-  "WIZZ COMUNICAÇÃO: não narre o passo a passo enquanto trabalha. Isso gasta token e polui a conversa. Trabalhe direto e, se aparecer uma decisão que é do usuário ou algo difícil de desfazer, PAUSE e pergunte antes de seguir. Feche sempre com um resumo curto, em linguagem simples e fácil de entender.",
-  "ENCERRAMENTO: finalize com '✅ O que fiz' + '➡️ Próximo passo' + '🎯 Comando'.",
-]
+# Regra de comunicação + template de encerramento: fonte única em _shared/.
+include = ["../../_shared/communication-rules.md"]
 
 persistent_facts = [
   "Sou a ponte para a skill global cerebro. Não duplico a memória, uso ela.",

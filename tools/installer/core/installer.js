@@ -1798,41 +1798,37 @@ class Installer {
   }
 
   /**
-   * Parse a CSV line, handling quoted fields
+   * Parse a CSV line, handling quoted fields.
+   *
+   * M15 (auditoria 2026-07-07): este método tinha um parser manual próprio,
+   * convivendo com `csv-parse/sync` já usado em `_cleanupSkillDirs` /
+   * `_readSkillManifestRows`. Único parser de LEITURA de CSV no installer
+   * agora — csv-parse/sync fica por trás dos dois caminhos. Preserva o
+   * contrato "nunca lança" do parser manual antigo: uma linha malformada
+   * (aspas não fechadas, raríssimo num module-help.csv curado à mão) cai no
+   * fallback e devolve a linha inteira como campo único, que o chamador já
+   * descarta (`columns.length < COLUMN_COUNT - 1`).
    * @param {string} line - CSV line to parse
    * @returns {Array} Array of field values
    */
   parseCSVLine(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      const nextChar = line[i + 1];
-
-      if (char === '"') {
-        if (inQuotes && nextChar === '"') {
-          // Escaped quote
-          current += '"';
-          i++; // Skip next quote
-        } else {
-          // Toggle quote mode
-          inQuotes = !inQuotes;
-        }
-      } else if (char === ',' && !inQuotes) {
-        result.push(current);
-        current = '';
-      } else {
-        current += char;
-      }
+    const { parse } = require('csv-parse/sync');
+    try {
+      const rows = parse(line, { relax_column_count: true, relax_quotes: true, skip_empty_lines: false });
+      return rows[0] || [line];
+    } catch {
+      return [line];
     }
-    result.push(current);
-    return result;
   }
 
   /**
-   * Escape a CSV field if it contains special characters
+   * Escape a CSV field if it contains special characters.
+   *
+   * Continua manual de propósito (M15): `csv-stringify/sync`, o par de
+   * ESCRITA de `csv-parse/sync`, não é dependência deste repo (conferido em
+   * package.json). Adicionar uma lib só para este método não compensa;
+   * remover o parser de LEITURA duplicado já fecha a lacuna real do
+   * finding.
    * @param {string} field - Field value to escape
    * @returns {string} Escaped field
    */

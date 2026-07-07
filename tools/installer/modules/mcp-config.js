@@ -21,11 +21,17 @@
 const path = require('node:path');
 const fs = require('../fs-native');
 const { defaultExec } = require('./cli-config');
+const { resolveAreaEntries } = require('./registry-resolve');
 
 /**
  * Resolve the recommended MCP entries for the chosen areas, deduped by id.
  * Empty / undefined / containing 'all' means every area. The cross-cutting
  * `mcp_utility:` servers are always included.
+ *
+ * Wrapper fino sobre `resolveAreaEntries` (A16): a resolução por área em si
+ * (sentinel `wantAll`, dedupe por Map, lista cross-cutting) vive em
+ * `registry-resolve.js`; aqui só ficam a forma da entrada de MCP e o filtro
+ * de elegibilidade (precisa de `server`).
  *
  * @param {Object} registry - Parsed skills-registry.yaml
  * @param {string[]} [selectedAreas] - Area keys to resolve
@@ -33,20 +39,11 @@ const { defaultExec } = require('./cli-config');
  *   One entry per unique MCP id, carrying which area(s) recommended it.
  */
 function resolveMcps(registry, selectedAreas) {
-  const byId = new Map();
-  const areas = (registry && registry.areas) || {};
-  const wantAll = !selectedAreas || selectedAreas.length === 0 || selectedAreas.includes('all');
-  const chosen = wantAll ? Object.keys(areas) : selectedAreas;
-
-  const add = (mcp, areaKey) => {
-    if (!mcp || !mcp.id || !mcp.server) return;
-    const existing = byId.get(mcp.id);
-    if (existing) {
-      if (areaKey && !existing.areas.includes(areaKey)) existing.areas.push(areaKey);
-      return;
-    }
-    byId.set(mcp.id, {
-      id: mcp.id,
+  return resolveAreaEntries(registry, selectedAreas, {
+    listKey: 'mcps',
+    utilityKey: 'mcp_utility',
+    isActionable: (mcp) => !!mcp.server,
+    mapEntry: (mcp) => ({
       when: mcp.when || '',
       server: mcp.server,
       // `setup` (optional) declares how to make a `command:`-relative server
@@ -55,17 +52,8 @@ function resolveMcps(registry, selectedAreas) {
       // verify it boots. Carried here so prepareMcps() can act on it; dropped
       // from what toServerConfig() writes (it never belongs in .mcp.json).
       setup: mcp.setup || null,
-      areas: areaKey ? [areaKey] : [],
-    });
-  };
-
-  for (const area of chosen) {
-    for (const mcp of (areas[area] && areas[area].mcps) || []) add(mcp, area);
-  }
-  // Cross-cutting servers are offered regardless of area selection.
-  for (const mcp of (registry && registry.mcp_utility) || []) add(mcp, null);
-
-  return [...byId.values()];
+    }),
+  });
 }
 
 /**

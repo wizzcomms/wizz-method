@@ -11,6 +11,65 @@ const execFileAsync = promisify(execFile);
 const NPM_LOOKUP_TIMEOUT_MS = 10_000;
 const NPM_PACKAGE_NAME_PATTERN = /^(?:@[a-z0-9][a-z0-9._~-]*\/)?[a-z0-9][a-z0-9._~-]*$/;
 
+// Retry pontual (1 re-tentativa, backoff curto) para o lookup no registry npm.
+// Só re-tenta em erro de rede transitório (timeout, ECONNRESET, ENOTFOUND,
+// EAI_AGAIN, 5xx). Erros lógicos (4xx, JSON inválido) não são re-tentados.
+const NPM_LOOKUP_RETRY_DELAY_MS = 300;
+const TRANSIENT_ERROR_CODES = new Set(['ECONNRESET', 'ENOTFOUND', 'EAI_AGAIN', 'ETIMEDOUT']);
+
+function isTransientNetworkError(error) {
+  if (!error) return false;
+  if (typeof error.statusCode === 'number') return error.statusCode >= 500;
+  if (error.code && TRANSIENT_ERROR_CODES.has(error.code)) return true;
+  return /timed out/i.test(error.message || '');
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Uma única tentativa de GET no registry npm; rejeita em erro de rede,
+// timeout ou status 5xx (para o wrapper com retry decidir).
+function fetchNpmRegistryOnce(packageName, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const url = `https://registry.npmjs.org/${encodeURIComponent(packageName)}`;
+    const request = https.get(url, (res) => {
+      let data = '';
+      res.on('data', (chunk) => (data += chunk));
+      res.on('end', () => {
+        if (res.statusCode >= 500) {
+          const err = new Error(`npm registry returned ${res.statusCode} for ${packageName}`);
+          err.statusCode = res.statusCode;
+          reject(err);
+          return;
+        }
+        resolve(data);
+      });
+    });
+
+    request.setTimeout(timeoutMs, () => {
+      request.destroy();
+      const err = new Error(`npm registry request timed out for ${packageName}`);
+      err.code = 'ETIMEDOUT';
+      reject(err);
+    });
+
+    request.on('error', reject);
+  });
+}
+
+// Wrapper com 1 re-tentativa em erro transitório. Erro não-transitório
+// (ex.: 4xx, resposta malformada) propaga direto, sem retry.
+async function fetchNpmRegistryWithRetry(packageName, timeoutMs) {
+  try {
+    return await fetchNpmRegistryOnce(packageName, timeoutMs);
+  } catch (error) {
+    if (!isTransientNetworkError(error)) throw error;
+    await delay(NPM_LOOKUP_RETRY_DELAY_MS);
+    return fetchNpmRegistryOnce(packageName, timeoutMs);
+  }
+}
+
 function isValidNpmPackageName(packageName) {
   return typeof packageName === 'string' && NPM_PACKAGE_NAME_PATTERN.test(packageName);
 }
@@ -364,28 +423,14 @@ class Manifest {
         });
         return stdout.trim();
       } catch {
-        // Fallback to npm registry API
-        return new Promise((resolve) => {
-          const request = https.get(`https://registry.npmjs.org/${encodeURIComponent(packageName)}`, (res) => {
-            let data = '';
-            res.on('data', (chunk) => (data += chunk));
-            res.on('end', () => {
-              try {
-                const pkg = JSON.parse(data);
-                resolve(pkg['dist-tags']?.latest || pkg.version || null);
-              } catch {
-                resolve(null);
-              }
-            });
-          });
-
-          request.setTimeout(NPM_LOOKUP_TIMEOUT_MS, () => {
-            request.destroy();
-            resolve(null);
-          });
-
-          request.on('error', () => resolve(null));
-        });
+        // Fallback to npm registry API (com 1 retry pontual em falha transitória)
+        try {
+          const data = await fetchNpmRegistryWithRetry(packageName, NPM_LOOKUP_TIMEOUT_MS);
+          const pkg = JSON.parse(data);
+          return pkg['dist-tags']?.latest || pkg.version || null;
+        } catch {
+          return null;
+        }
       }
     } catch {
       return null;

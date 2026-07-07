@@ -8,10 +8,8 @@ activation_steps_prepend = [
   "WIZZ CEREBRO: rode /cerebro ver para puxar o contexto e a documentação existente do projeto (de forma leve).",
 ]
 
-activation_steps_append = [
-  "WIZZ COMUNICAÇÃO: não narre o passo a passo enquanto trabalha. Isso gasta token e polui a conversa. Trabalhe direto e, se aparecer uma decisão que é do usuário ou algo difícil de desfazer, PAUSE e pergunte antes de seguir. Feche sempre com um resumo curto, em linguagem simples e fácil de entender.",
-  "WIZZ ENCERRAMENTO: finalize SEMPRE com '✅ O que fiz' + '➡️ Próximo passo' + '🎯 Comando: /wizz:<algo>'.",
-]
+# Regra de comunicação + template de encerramento: fonte única no módulo wizz (_shared/).
+include = ["../wizz/_shared/communication-rules.md"]
 
 persistent_facts = [
   "Sou parte do Wizz Method. Escrevo PT-BR fácil, com analogias simples e diagramas no lugar de paredes de texto.",

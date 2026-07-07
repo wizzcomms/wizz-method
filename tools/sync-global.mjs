@@ -15,6 +15,7 @@ import path from 'node:path';
 import os from 'node:os';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { hooksSrcDir, skillsSrcDir, listHookFiles, listSkillIds } from './lib/sync-targets.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const claudeDir = path.join(os.homedir(), '.claude');
@@ -45,11 +46,11 @@ function copyDirReplacing(src, dest) {
 }
 
 // 1) Hooks
-const hooksSrc = path.join(repoRoot, 'tools', 'hooks');
+const hooksSrc = hooksSrcDir(repoRoot);
 const hooksDest = path.join(claudeDir, 'hooks');
 let hookCount = 0;
 if (fs.existsSync(hooksSrc) && fs.existsSync(hooksDest)) {
-  for (const file of fs.readdirSync(hooksSrc).filter((f) => f.endsWith('.js') || f.endsWith('.sh'))) {
+  for (const file of listHookFiles(repoRoot)) {
     const from = path.join(hooksSrc, file);
     const to = path.join(hooksDest, file);
     if (!dryRun) {
@@ -87,16 +88,14 @@ if (fs.existsSync(hooksSrc) && fs.existsSync(hooksDest)) {
 }
 
 // 2) Skills já instaladas no global
-const skillsSrc = path.join(repoRoot, 'src', 'skills-lib');
+const skillsSrc = skillsSrcDir(repoRoot);
 const skillsDest = path.join(claudeDir, 'skills');
 let synced = 0;
 const skipped = [];
 if (fs.existsSync(skillsSrc) && fs.existsSync(skillsDest)) {
-  for (const id of fs.readdirSync(skillsSrc)) {
+  for (const id of listSkillIds(repoRoot)) {
     const src = path.join(skillsSrc, id);
     const dest = path.join(skillsDest, id);
-    if (!fs.statSync(src).isDirectory()) continue;
-    if (!fs.existsSync(path.join(src, 'SKILL.md'))) continue; // references/ etc.
     if (!fs.existsSync(dest)) {
       skipped.push(id);
       continue;

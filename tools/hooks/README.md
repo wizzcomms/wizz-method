@@ -16,3 +16,5 @@ Removidos em 2026-07 (arquivados em `~/.claude/hooks-archive/`):
 
 Testes: `npm run test:hooks` (isTrivial + contexto por modo) e `node test/test-rtk-hook.js` (rewrite básico + multi-linha do `rtk-rewrite.sh`, smoke test que exercita o binário `rtk` real quando disponível).
 Evals de roteamento: `node evals/routing/run-routing-eval.mjs [--llm]`.
+
+Drift repo ↔ global: `npm run sync:check` compara hash de cada hook (e skill) entre o repo e `~/.claude`, sem escrever nada — é lembrete (fail-open), não gate; roda no fim do `npm test`. Achou drift? `npm run sync:global` atualiza `~/.claude`.

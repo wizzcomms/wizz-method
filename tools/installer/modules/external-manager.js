@@ -10,6 +10,38 @@ const { getProjectRoot } = require('../project-root');
 
 const VALID_CHANNELS = new Set(['stable', 'next', 'pinned']);
 
+// Retry pontual (1 re-tentativa, backoff curto) para `git clone`/`git fetch`.
+// Para comandos de shell não temos código de erro estruturado como em
+// requisições HTTP; classificamos como transitório por padrões conhecidos na
+// mensagem/stderr do git. Erro lógico (repo/tag inexistente, permissão
+// negada etc.) não bate nesses padrões e propaga direto, sem retry.
+const GIT_RETRY_DELAY_MS = 300;
+const TRANSIENT_GIT_ERROR_PATTERNS = [/could not resolve host/i, /timed out/i, /early eof/i, /connection reset/i];
+
+function isTransientGitError(error) {
+  const message = `${error?.message || ''}\n${error?.stderr?.toString?.() || ''}`;
+  return TRANSIENT_GIT_ERROR_PATTERNS.some((pattern) => pattern.test(message));
+}
+
+// Sleep síncrono curto (execSync é bloqueante; não há await aqui). Usa
+// Atomics.wait sobre um buffer compartilhado, sem depender de `sleep` de shell.
+function blockingDelay(ms) {
+  const sharedBuffer = new Int32Array(new SharedArrayBuffer(4));
+  Atomics.wait(sharedBuffer, 0, 0, ms);
+}
+
+// Wrapper de execSync com 1 re-tentativa em falha transitória de rede
+// (ver isTransientGitError). Erro não-transitório propaga direto.
+function execSyncWithRetry(command, options) {
+  try {
+    return execSync(command, options);
+  } catch (error) {
+    if (!isTransientGitError(error)) throw error;
+    blockingDelay(GIT_RETRY_DELAY_MS);
+    return execSync(command, options);
+  }
+}
+
 function normalizeChannelName(raw) {
   if (typeof raw !== 'string') return null;
   const lower = raw.trim().toLowerCase();
@@ -330,7 +362,7 @@ class ExternalModuleManager {
         const currentSha = execSync('git rev-parse HEAD', { cwd: moduleCacheDir, stdio: 'pipe' }).toString().trim();
 
         if (resolved.channel === 'next') {
-          execSync('git fetch origin --depth 1', {
+          execSyncWithRetry('git fetch origin --depth 1', {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
             env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
@@ -342,7 +374,7 @@ class ExternalModuleManager {
           });
         } else {
           // stable or pinned — fetch the specific tag and check it out.
-          execSync(`git fetch --depth 1 origin tag ${quoteShell(resolved.ref)} --no-tags`, {
+          execSyncWithRetry(`git fetch --depth 1 origin tag ${quoteShell(resolved.ref)} --no-tags`, {
             cwd: moduleCacheDir,
             stdio: ['ignore', 'pipe', 'pipe'],
             env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
@@ -370,12 +402,12 @@ class ExternalModuleManager {
       fetchSpinner.start(`Fetching ${moduleInfo.name}...`);
       try {
         if (resolved.channel === 'next') {
-          execSync(`git clone --depth 1 "${moduleInfo.url}" "${moduleCacheDir}"`, {
+          execSyncWithRetry(`git clone --depth 1 "${moduleInfo.url}" "${moduleCacheDir}"`, {
             stdio: ['ignore', 'pipe', 'pipe'],
             env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
           });
         } else {
-          execSync(`git clone --depth 1 --branch ${quoteShell(resolved.ref)} "${moduleInfo.url}" "${moduleCacheDir}"`, {
+          execSyncWithRetry(`git clone --depth 1 --branch ${quoteShell(resolved.ref)} "${moduleInfo.url}" "${moduleCacheDir}"`, {
             stdio: ['ignore', 'pipe', 'pipe'],
             env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
           });
@@ -524,4 +556,4 @@ class ExternalModuleManager {
   cachedModules = null;
 }
 
-module.exports = { ExternalModuleManager };
+module.exports = { ExternalModuleManager, isTransientGitError, execSyncWithRetry };

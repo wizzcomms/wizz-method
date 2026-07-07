@@ -13,6 +13,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const yaml = require('yaml');
+const { walkFiles: libWalkFiles } = require('./lib/walk');
+const { parseFrontmatterYaml } = require('./lib/frontmatter');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const SRC_DIR = path.join(PROJECT_ROOT, 'src');
@@ -49,47 +51,33 @@ function collectSkillLibEntrypoints() {
 
 const IGNORE_TOKENS = new Set(['all', 'any', 'bmm', 'core', 'darwin-arm64', 'gsd:map-codebase', 'superpowers:systematic-debugging']);
 
-const VALID_NON_SKILL_TOKENS = new Set([
-  'arcads',
-  'buttercut',
-  'claude-video',
-  'context7',
+// M15 (auditoria 2026-07-07): a allowlist de tokens de CLI/MCP era uma lista
+// hardcoded (VALID_NON_SKILL_TOKENS) unida aos ids do registry e nunca
+// podada — uma CLI removida do registry continuava "válida" para sempre.
+// Agora a allowlist deriva do registry em tempo real (collectRegistryIds
+// escaneia clis/mcps de cada área + as seções cross-cutting, ver abaixo);
+// esta lista extra fica mínima, só para tokens genuinamente citados no
+// método que NÃO são um id de CLI/MCP do skills-registry.yaml — cada um
+// comentado com o motivo, para não virar de novo uma lista que ninguém poda.
+const EXTRA_TOOL_TOKENS = new Set([
+  // Skill do harness externo (plugin do usuário) referenciada em prosa; não
+  // faz parte deste repo nem do skills-registry.yaml, não há como derivá-la.
   'deep-research',
-  'distribb',
-  'exa',
-  'graphify',
-  'hyperframes',
-  'magic',
-  'meta-ads',
+  // Nome do pacote npm por trás do MCP `meta-ads` (server.args na entrada
+  // `meta-ads` do registry), citado por esse nome em docs/comentários — não
+  // é o id do registry, é o nome do pacote que ele instala.
   'mcp-meta-ads',
-  'rtk',
-  'scrapling',
-  'supabase',
-  'voicebox',
+  // Passo do fluxo interno do módulo wizz (README do módulo), não é
+  // skill/CLI/MCP do registry.
   'wizz-init',
+  // Nome do pacote npm do próprio framework, citado nos docs de instalação
+  // (`npx wizz-method install`).
   'wizz-method',
 ]);
 
 function walkFiles(root) {
   const fullRoot = path.join(PROJECT_ROOT, root);
-  if (!fs.existsSync(fullRoot)) return [];
-  const stat = fs.statSync(fullRoot);
-  if (stat.isFile()) return [fullRoot];
-
-  const files = [];
-  const walk = (dir) => {
-    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      if (SKIP_DIRS.has(entry.name)) continue;
-      const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        walk(full);
-      } else if (entry.isFile() && SCAN_EXTENSIONS.has(path.extname(entry.name))) {
-        files.push(full);
-      }
-    }
-  };
-  walk(fullRoot);
-  return files;
+  return libWalkFiles(fullRoot, { skipDirs: SKIP_DIRS, extensions: SCAN_EXTENSIONS });
 }
 
 function offsetToLine(content, offset) {
@@ -98,18 +86,6 @@ function offsetToLine(content, offset) {
 
 function rel(file) {
   return path.relative(PROJECT_ROOT, file);
-}
-
-function parseFrontmatter(content) {
-  const trimmed = content.trimStart();
-  if (!trimmed.startsWith('---')) return null;
-  const end = trimmed.indexOf('\n---\n', 3);
-  if (end === -1) return null;
-  try {
-    return yaml.parse(trimmed.slice(3, end));
-  } catch {
-    return null;
-  }
 }
 
 function collectSkillIds() {
@@ -124,7 +100,7 @@ function collectSkillIds() {
       const skillPath = path.join(full, 'SKILL.md');
       if (fs.existsSync(skillPath)) {
         ids.add(entry.name);
-        const fm = parseFrontmatter(fs.readFileSync(skillPath, 'utf8'));
+        const fm = parseFrontmatterYaml(fs.readFileSync(skillPath, 'utf8'));
         if (fm && typeof fm.name === 'string') ids.add(fm.name);
       }
       scan(full);
@@ -134,24 +110,35 @@ function collectSkillIds() {
   return ids;
 }
 
-function collectRegistryIds() {
+/**
+ * Deriva a allowlist de skills/agents/tools a partir do skills-registry.yaml.
+ * Aceita um `registry` já parseado (injeção para teste); por padrão lê e
+ * parseia o skills-registry.yaml do repo, comportamento original.
+ * @param {Object} [registry] - Registry já parseado (opcional, para teste)
+ * @returns {{agents: Set<string>, skills: Set<string>, tools: Set<string>}}
+ */
+function collectRegistryIds(registry) {
   const ids = {
     agents: new Set(),
     skills: new Set(),
-    tools: new Set(VALID_NON_SKILL_TOKENS),
+    tools: new Set(EXTRA_TOOL_TOKENS),
   };
-  const registryPath = path.join(PROJECT_ROOT, 'skills-registry.yaml');
-  if (!fs.existsSync(registryPath)) return ids;
 
-  const registry = yaml.parse(fs.readFileSync(registryPath, 'utf8'));
-  for (const area of Object.values(registry.areas || {})) {
+  let resolvedRegistry = registry;
+  if (!resolvedRegistry) {
+    const registryPath = path.join(PROJECT_ROOT, 'skills-registry.yaml');
+    if (!fs.existsSync(registryPath)) return ids;
+    resolvedRegistry = yaml.parse(fs.readFileSync(registryPath, 'utf8'));
+  }
+
+  for (const area of Object.values(resolvedRegistry.areas || {})) {
     if (area && area.agent) ids.agents.add(area.agent);
     for (const skill of area.skills || []) if (skill.id) ids.skills.add(skill.id);
     for (const cli of area.clis || []) if (cli.id) ids.tools.add(cli.id);
     for (const mcp of area.mcps || []) if (mcp.id) ids.tools.add(mcp.id);
   }
   for (const section of ['utility', 'mcp_utility', 'cli_utility']) {
-    for (const item of registry[section] || []) if (item.id) ids.tools.add(item.id);
+    for (const item of resolvedRegistry[section] || []) if (item.id) ids.tools.add(item.id);
   }
   return ids;
 }
@@ -276,4 +263,8 @@ function main() {
   if (STRICT) process.exit(1);
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = { collectRegistryIds, isValidReference, EXTRA_TOOL_TOKENS };

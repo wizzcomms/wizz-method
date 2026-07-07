@@ -31,10 +31,26 @@ Merge rules (purely structural — no field-name special-casing):
 No removal mechanism — overrides cannot delete base items. To suppress
 a default, fork the skill or override the item by code with a no-op
 description/prompt.
+
+Optional `include` (aditivo, opcional):
+  Any table may carry an `include = ["path/to/file.md", ...]` key. Each
+  path is resolved relative to the directory of the TOML file that
+  declared it (the skill's own directory for the base `customize.toml`
+  layer; `{project-root}/_wizz/custom/` for the team/user layers, since
+  that is where those files physically live once installed). Each
+  referenced file is split into paragraphs (blocks separated by a blank
+  line; blocks made only of `#` comment/heading lines are dropped) and
+  the resulting strings are prepended onto that same table's
+  `activation_steps_append` array, i.e. injected at the exact point
+  where hand-copied instruction text used to live. Missing/unreadable
+  include files warn to stderr and are skipped (fail-open, matching the
+  rest of this resolver); they never abort resolution. A toml with no
+  `include` key resolves exactly as before this feature existed.
 """
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -91,6 +107,80 @@ def load_toml(file_path: Path, required: bool = False) -> dict:
         if required:
             sys.exit(1)
         return {}
+
+
+_INCLUDE_TARGET_FIELD = "activation_steps_append"
+
+
+def _read_include_file(path: Path):
+    """Read an include file's raw text. Returns None (and warns to stderr)
+    when the file is missing or unreadable, so a broken/renamed include
+    never aborts resolution — same fail-open philosophy as the optional
+    team/user layers above."""
+    if not path.is_file():
+        sys.stderr.write(f"warning: include not found, skipping: {path}\n")
+        return None
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError as error:
+        sys.stderr.write(f"warning: failed to read include {path}: {error}\n")
+        return None
+
+
+def _split_include_paragraphs(text: str):
+    """Split an included markdown file into instruction strings.
+
+    Blocks separated by a blank line become one string each (internal
+    newlines collapsed to single spaces). Blocks made up only of `#`
+    lines (markdown headings, or plain comment lines using the same
+    convention) are dropped — they document the shared file for the
+    humans editing it, not instructions meant for the agent."""
+    paragraphs = []
+    for block in re.split(r"\n\s*\n", text.strip()):
+        lines = [line.strip() for line in block.splitlines() if line.strip()]
+        if not lines or all(line.startswith("#") for line in lines):
+            continue
+        paragraphs.append(" ".join(lines))
+    return paragraphs
+
+
+def resolve_includes(data, base_dir: Path):
+    """Expand `include = [...]` keys found in any table of `data`.
+
+    Purely additive: a table without `include` comes back unchanged. When
+    present, each referenced file's paragraphs (see
+    `_split_include_paragraphs`) are prepended onto that table's
+    `activation_steps_append` array (created if absent), so shared content
+    leads and any table-specific entries that remain follow it. Paths in
+    `include` resolve relative to `base_dir`. Recurses into nested tables
+    so `include` works at any depth, not just the top level."""
+    if not isinstance(data, dict):
+        return data
+
+    included_paragraphs = []
+    if isinstance(data.get("include"), list):
+        for rel_path in data["include"]:
+            if not isinstance(rel_path, str):
+                sys.stderr.write(f"warning: include entries must be strings, got: {rel_path!r}\n")
+                continue
+            text = _read_include_file((base_dir / rel_path).resolve())
+            if text is not None:
+                included_paragraphs.extend(_split_include_paragraphs(text))
+    elif "include" in data:
+        sys.stderr.write(f"warning: 'include' must be an array of strings, got: {data['include']!r}\n")
+
+    result = {}
+    for key, value in data.items():
+        if key == "include":
+            continue
+        result[key] = resolve_includes(value, base_dir) if isinstance(value, dict) else value
+
+    if included_paragraphs:
+        existing = result.get(_INCLUDE_TARGET_FIELD, [])
+        existing_list = existing if isinstance(existing, list) else []
+        result[_INCLUDE_TARGET_FIELD] = included_paragraphs + existing_list
+
+    return result
 
 
 def _detect_keyed_merge_field(items):
@@ -204,7 +294,7 @@ def main():
     skill_name = skill_dir.name
     defaults_path = skill_dir / "customize.toml"
 
-    defaults = load_toml(defaults_path, required=True)
+    defaults = resolve_includes(load_toml(defaults_path, required=True), defaults_path.parent)
 
     # Prefer the project that contains this skill. Only fall back to cwd if
     # the skill isn't inside a recognizable project tree (unusual but possible
@@ -216,8 +306,8 @@ def main():
     user = {}
     if project_root:
         custom_dir = project_root / "_wizz" / "custom"
-        team = load_toml(custom_dir / f"{skill_name}.toml")
-        user = load_toml(custom_dir / f"{skill_name}.user.toml")
+        team = resolve_includes(load_toml(custom_dir / f"{skill_name}.toml"), custom_dir)
+        user = resolve_includes(load_toml(custom_dir / f"{skill_name}.user.toml"), custom_dir)
 
     merged = deep_merge(defaults, team)
     merged = deep_merge(merged, user)

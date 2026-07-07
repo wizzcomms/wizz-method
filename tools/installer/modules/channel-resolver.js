@@ -22,6 +22,24 @@ const USER_AGENT = 'wizz-method-installer';
 // Per-process cache: { 'owner/repo' => string[] sorted desc } of pure-semver tags.
 const tagCache = new Map();
 
+// Retry pontual (1 re-tentativa, backoff curto) para chamadas à API do
+// GitHub. Só re-tenta em erro de rede transitório (timeout, ECONNRESET,
+// ENOTFOUND, EAI_AGAIN, 5xx). Erros lógicos (4xx, ex.: 404 de tag inexistente)
+// nunca são re-tentados — propagam direto.
+const FETCH_RETRY_DELAY_MS = 300;
+const TRANSIENT_ERROR_CODES = new Set(['ECONNRESET', 'ENOTFOUND', 'EAI_AGAIN', 'ETIMEDOUT']);
+
+function isTransientError(error) {
+  if (!error) return false;
+  if (typeof error.statusCode === 'number') return error.statusCode >= 500;
+  if (error.code && TRANSIENT_ERROR_CODES.has(error.code)) return true;
+  return /timed out/i.test(error.message || '');
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 /**
  * Parse a GitHub repo URL into { owner, repo }. Returns null if the URL is
  * not a GitHub URL the resolver can handle.
@@ -44,7 +62,7 @@ function parseGitHubRepo(url) {
   return null;
 }
 
-function fetchJson(url, { timeout = DEFAULT_TIMEOUT_MS } = {}) {
+function fetchJsonOnce(url, { timeout = DEFAULT_TIMEOUT_MS } = {}) {
   const headers = {
     'User-Agent': USER_AGENT,
     Accept: 'application/vnd.github+json',
@@ -74,9 +92,23 @@ function fetchJson(url, { timeout = DEFAULT_TIMEOUT_MS } = {}) {
     req.on('error', reject);
     req.on('timeout', () => {
       req.destroy();
-      reject(new Error(`GitHub API request timed out: ${url}`));
+      const err = new Error(`GitHub API request timed out: ${url}`);
+      err.code = 'ETIMEDOUT';
+      reject(err);
     });
   });
+}
+
+// Wrapper com 1 re-tentativa em erro transitório (ver isTransientError acima).
+// Erro não-transitório (404 de tag, JSON malformado etc.) propaga direto.
+async function fetchJson(url, options = {}) {
+  try {
+    return await fetchJsonOnce(url, options);
+  } catch (error) {
+    if (!isTransientError(error)) throw error;
+    await delay(FETCH_RETRY_DELAY_MS);
+    return fetchJsonOnce(url, options);
+  }
 }
 
 /**

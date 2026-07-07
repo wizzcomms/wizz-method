@@ -26,6 +26,7 @@
 
 const { exec } = require('node:child_process');
 const { promisify } = require('node:util');
+const { resolveAreaEntries } = require('./registry-resolve');
 
 const execAsync = promisify(exec);
 
@@ -79,42 +80,27 @@ function matchesPlatform(cli, tag) {
  * `platform:` gate does not match the current OS/arch are dropped too, so a
  * Mac-only tool is never even suggested on Linux/Windows.
  *
+ * Wrapper fino sobre `resolveAreaEntries` (A16): a resolução por área em si
+ * vive em `registry-resolve.js`; aqui só ficam a forma da entrada de CLI e o
+ * filtro de elegibilidade (precisa de `install` + bater o gate de plataforma).
+ *
  * @param {Object} registry - Parsed skills-registry.yaml
  * @param {string[]} [selectedAreas] - Area keys to resolve
  * @param {string} [platformTag] - Current "<platform>-<arch>" (injectable for tests)
  * @returns {Array<{id: string, when: string, check: string, install: string, platform: (string|string[]|undefined), areas: string[]}>}
  */
 function resolveClis(registry, selectedAreas, platformTag = currentPlatformTag()) {
-  const byId = new Map();
-  const areas = (registry && registry.areas) || {};
-  const wantAll = !selectedAreas || selectedAreas.length === 0 || selectedAreas.includes('all');
-  const chosen = wantAll ? Object.keys(areas) : selectedAreas;
-
-  const add = (cli, areaKey) => {
-    if (!cli || !cli.id || !cli.install) return; // not actionable without an install command
-    if (!matchesPlatform(cli, platformTag)) return; // gated to another OS/arch
-    const existing = byId.get(cli.id);
-    if (existing) {
-      if (areaKey && !existing.areas.includes(areaKey)) existing.areas.push(areaKey);
-      return;
-    }
-    byId.set(cli.id, {
-      id: cli.id,
+  return resolveAreaEntries(registry, selectedAreas, {
+    listKey: 'clis',
+    utilityKey: 'cli_utility',
+    isActionable: (cli) => !!cli.install && matchesPlatform(cli, platformTag),
+    mapEntry: (cli) => ({
       when: cli.when || '',
       check: cli.check || '',
       install: cli.install,
       platform: cli.platform,
-      areas: areaKey ? [areaKey] : [],
-    });
-  };
-
-  for (const area of chosen) {
-    for (const cli of (areas[area] && areas[area].clis) || []) add(cli, area);
-  }
-  // Cross-cutting tools are offered regardless of area selection.
-  for (const cli of (registry && registry.cli_utility) || []) add(cli, null);
-
-  return [...byId.values()];
+    }),
+  });
 }
 
 /**
