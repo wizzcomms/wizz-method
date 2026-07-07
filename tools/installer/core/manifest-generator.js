@@ -56,7 +56,14 @@ class ManifestGenerator {
     this.updatedModules = allModules; // Include ALL modules (including custom) for scanning
 
     this.wizzDir = wizzDir;
-    this.wizzFolderName = path.basename(wizzDir); // Get the actual folder name (e.g., '_wizz' or 'wizz')
+    // The folder name embedded into skill-manifest.csv's `path` column must be
+    // the FINAL name, not necessarily wizzDir's current basename: a fresh
+    // install (A14, atomic install) calls generateManifests while wizzDir is
+    // still the `_wizz.tmp-<pid>/` scaffold, ahead of the tmp→real rename.
+    // The installer passes `options.wizzFolderName` (the real, post-swap
+    // name) in that case; everything else (updates, direct callers that
+    // don't pass the option) keeps deriving it from the directory itself.
+    this.wizzFolderName = options.wizzFolderName || path.basename(wizzDir);
     this.allInstalledFiles = installedFiles;
 
     if (!Object.prototype.hasOwnProperty.call(options, 'ides')) {

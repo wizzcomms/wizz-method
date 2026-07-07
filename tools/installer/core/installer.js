@@ -42,12 +42,33 @@ class Installer {
    */
   async install(originalConfig) {
     let updateState = null;
+    // Fresh installs (A14, atomic install): the writing pipeline runs against
+    // a sibling `_wizz.tmp-<pid>/` scaffold and only gets renamed into
+    // `_wizz/` after `generateManifests` succeeds. Tracked here (outside the
+    // try's local scope) so the outer catch can remove an orphaned tmp dir
+    // without ever touching a real `_wizz/` — cleared the moment the swap
+    // actually happens, so a later best-effort failure (e.g. IDE setup) never
+    // deletes a now-valid install.
+    let freshInstallTmpDir = null;
 
     try {
       const config = Config.build(originalConfig);
-      const paths = await InstallPaths.create(config);
+
+      // Detect BEFORE creating any scaffold — a plain, read-only check
+      // against the path _wizz/ would live at, untouched by InstallPaths.
+      // This decides tmp-vs-real for InstallPaths.create below; detecting
+      // after paths creation (as before A14) meant the real `_wizz/` was
+      // already force-created as a side effect even for a first-time
+      // install, which is exactly the corruption window this task closes.
+      const projectRootCandidate = path.resolve(config.directory);
+      const realWizzDirCandidate = path.join(projectRootCandidate, WIZZ_FOLDER_NAME);
+      const existingInstall = await ExistingInstall.detect(realWizzDirCandidate);
+      const isFreshInstall = !existingInstall.installed;
+
+      let paths = await InstallPaths.create(config, { useTmp: isFreshInstall });
+      if (isFreshInstall) freshInstallTmpDir = paths.wizzDir;
+
       const officialModules = await OfficialModules.build(config, paths);
-      const existingInstall = await ExistingInstall.detect(paths.wizzDir);
 
       try {
         await warnPreNativeSkillsLegacy({
@@ -89,7 +110,7 @@ class Installer {
 
       const allModules = config.modules || [];
 
-      await this._installAndConfigure(
+      const configureResult = await this._installAndConfigure(
         config,
         originalConfig,
         paths,
@@ -99,6 +120,13 @@ class Installer {
         officialModules,
         previousSkillManifestRows,
       );
+      // Fresh installs got promoted from the tmp scaffold to the real
+      // `_wizz/` inside _installAndConfigure (right after generateManifests
+      // succeeded) — pick up the rewritten paths so every step below
+      // (IDE setup, cleanup, summary) reads/writes the real location, and
+      // the outer catch stops treating this as an orphaned tmp dir.
+      paths = configureResult.paths;
+      if (configureResult.swapped) freshInstallTmpDir = null;
 
       await this._setupIdes(config, allModules, paths, addResult, previousSkillIds);
 
@@ -150,6 +178,12 @@ class Installer {
         }
         if (updateState?.tempModifiedBackupDir && (await fs.pathExists(updateState.tempModifiedBackupDir))) {
           await fs.remove(updateState.tempModifiedBackupDir);
+        }
+        // A14: a fresh install that never reached the tmp→real swap leaves
+        // only the orphaned `_wizz.tmp-<pid>/` scaffold behind — remove just
+        // that, never the real `_wizz/` (which never existed on this path).
+        if (freshInstallTmpDir && (await fs.pathExists(freshInstallTmpDir))) {
+          await fs.remove(freshInstallTmpDir);
         }
       } catch {
         // Best-effort cleanup — don't mask the original error
@@ -246,6 +280,12 @@ class Installer {
     const moduleConfigs = officialModules.moduleConfigs;
 
     const dirResults = { createdDirs: [], movedDirs: [], createdWdsFolders: [] };
+    // Set true inside configTask the moment the A14 tmp→real swap actually
+    // runs, so the return value below tells `install()` precisely when it's
+    // safe to stop treating the tmp scaffold as something to clean up on
+    // failure — never inferred from path shape (updates and fresh-but-
+    // never-swapped both have `paths.isTmp === false` for different reasons).
+    let swapped = false;
 
     const installTasks = [];
 
@@ -311,6 +351,19 @@ class Installer {
     const configTask = {
       title: 'Generating configurations',
       task: async (message) => {
+        // A14 (atomic fresh install): `.mcp.json` lives outside `_wizz/`, at
+        // the project root. For a fresh install it must not be mutated until
+        // AFTER the tmp→real swap below (right after generateManifests
+        // succeeds) — writing it earlier would leave a mutated `.mcp.json`
+        // even when the install as a whole later fails and the tmp scaffold
+        // gets thrown away. `writeMcpConfig` below runs in `dryRun` mode in
+        // that case (same merge computation, no disk write) so the log
+        // lines/results and the `pinHashes` fed to `writeDepsCache` stay
+        // identical to today; the real write happens once, right after the
+        // swap. Updates (paths.isTmp === false) are out of scope for this
+        // task and keep writing inline, as before.
+        let pendingMcpWrite = null;
+
         await this.generateModuleConfigs(paths.wizzDir, moduleConfigs);
         addResult('Configurations', 'ok', 'generated');
 
@@ -384,7 +437,13 @@ class Installer {
                 projectDir: paths.projectRoot,
                 mcps: mcpsReady,
                 previousPins,
+                dryRun: paths.isTmp,
               });
+              if (paths.isTmp) {
+                // Real write deferred until after the tmp→real swap (see the
+                // comment at the top of this task and step 4/README below).
+                pendingMcpWrite = { mcpsReady, previousPins };
+              }
               mcpPinHashes = mcpResult.pinHashes || {};
               if (mcpResult.added.length > 0) {
                 addResult('MCP servers', 'ok', `${mcpResult.added.join(', ')} → .mcp.json`);
@@ -523,7 +582,44 @@ class Installer {
           ides: config.ides || [],
           preservedModules: modulesForCsvPreserve,
           moduleConfigs,
+          // A14: wizzDir is still the tmp scaffold at this point for a fresh
+          // install (swap happens right below, after this call succeeds) —
+          // skill-manifest.csv must embed the REAL folder name regardless,
+          // or every skill path recorded in it (read later by IDE setup,
+          // post-swap) would point at a `_wizz.tmp-<pid>/` dir that no
+          // longer exists. `paths.realWizzDir` is set by InstallPaths.create
+          // for both tmp and non-tmp installs; guarded here because some
+          // tests hand-roll a minimal `paths` stand-in without it, in which
+          // case falling back to generateManifests' own default (basename of
+          // wizzDir) is exactly the pre-A14 behavior.
+          wizzFolderName: paths.realWizzDir ? path.basename(paths.realWizzDir) : undefined,
         });
+
+        // A14 atomic swap: generateManifests just succeeded, so the tmp
+        // scaffold now has a valid manifest.yaml — promote it to the real
+        // `_wizz/` in one same-filesystem rename. Anything that threw above
+        // this line (module copy, configs, global skills, MCP prepare, CLI
+        // install, deps cache, or generateManifests itself) never reaches
+        // here, so `install()`'s catch finds only the orphaned tmp dir and
+        // the real `_wizz/` never existed. No-op for updates (paths.isTmp
+        // is false; they were never given a tmp scaffold).
+        if (paths.isTmp) {
+          await fs.rename(paths.wizzDir, paths.realWizzDir);
+          paths = paths.toReal();
+          swapped = true;
+        }
+
+        // Perform the .mcp.json write deferred above, now that the swap
+        // succeeded. No-op when nothing was staged (non-wizz install, no
+        // areas selected, or an update that already wrote inline).
+        if (pendingMcpWrite) {
+          await writeMcpConfig({
+            projectDir: paths.projectRoot,
+            mcps: pendingMcpWrite.mcpsReady,
+            previousPins: pendingMcpWrite.previousPins,
+          });
+        }
+
         await this._appendPreservedSkillManifestRows(paths.wizzDir, previousSkillManifestRows, preservedModules);
 
         // Apply post-install --set TOML patches. Runs after writeCentralConfig
@@ -567,6 +663,11 @@ class Installer {
     }
 
     await prompts.tasks([configTask]);
+
+    // `paths` may have been reassigned above (fresh install: tmp → real,
+    // see the A14 swap inside configTask) — return it so `install()` picks
+    // up the real location for every step that runs after this returns.
+    return { paths, swapped };
   }
 
   /**

@@ -351,6 +351,12 @@ async function partitionAlreadyConfigured({ projectDir, mcps }) {
  * @param {Record<string,string>} [args.previousPins] - id => hash recorded at
  *   the installer's last write of that block (from skill-deps-cache.json)
  * @param {(absPath: string) => void} [args.trackFile] - Record the written file
+ * @param {boolean} [args.dryRun] - Compute the merge (added/skipped/pinHashes/
+ *   etc.) WITHOUT touching disk. Used by fresh installs (A14): `.mcp.json`
+ *   lives outside `_wizz/`, so it must not be mutated until the atomic
+ *   install's tmp→real swap has succeeded — but `pinHashes` is still needed
+ *   beforehand to seed `skill-deps-cache.json`. The caller re-invokes without
+ *   `dryRun` after the swap to perform the real write.
  * @returns {Promise<{added: string[], skipped: string[], file: string|null,
  *   pinHashes: Record<string,string>, pinUpdated: Array<{id:string,from:string,to:string}>,
  *   pinCustomized: Array<{id:string}>}>}
@@ -361,7 +367,7 @@ async function partitionAlreadyConfigured({ projectDir, mcps }) {
  *   now on disk for every resolved id, meant to be persisted as the NEXT
  *   `previousPins`.
  */
-async function writeMcpConfig({ projectDir, mcps, previousPins = {}, trackFile = () => {} }) {
+async function writeMcpConfig({ projectDir, mcps, previousPins = {}, trackFile = () => {}, dryRun = false }) {
   const empty = { added: [], skipped: [], file: null, pinHashes: {}, pinUpdated: [], pinCustomized: [] };
   if (!mcps || mcps.length === 0) return empty;
 
@@ -420,7 +426,7 @@ async function writeMcpConfig({ projectDir, mcps, previousPins = {}, trackFile =
     changed = true;
   }
 
-  if (!changed) return { added, skipped, file, pinHashes, pinUpdated, pinCustomized };
+  if (!changed || dryRun) return { added, skipped, file, pinHashes, pinUpdated, pinCustomized };
 
   await fs.writeJson(file, config, { spaces: 2 });
   trackFile(file);

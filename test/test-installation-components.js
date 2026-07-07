@@ -3655,6 +3655,64 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 50: A14 — fresh install is atomic (generateManifests failure
+  // leaves no _wizz/, no orphaned tmp scaffold, and .mcp.json untouched)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 50: atomic fresh install — generateManifests failure leaves no residue${colors.reset}\n`);
+
+  let root50;
+  const originalGenerateManifests50 = ManifestGenerator.prototype.generateManifests;
+  try {
+    root50 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-atomic-install-'));
+
+    ManifestGenerator.prototype.generateManifests = async function () {
+      throw new Error('WIZZ_TEST_50: forced generateManifests failure');
+    };
+
+    const { UI } = require('../tools/installer/ui');
+    const ui50 = new UI();
+    // Mirrors test-install-smoke.js's real `--yes` fresh-install path (no
+    // --modules/--areas override): defaults to core+bmm, claude-code tool.
+    const config50 = await ui50.promptInstall({ yes: true, directory: root50, tools: 'claude-code' });
+
+    const installer50 = new Installer();
+    let threw50 = false;
+    let thrownMessage50 = '';
+    try {
+      await installer50.install(config50);
+    } catch (error) {
+      threw50 = true;
+      thrownMessage50 = error.message;
+    }
+    assert(threw50, 'install() rethrows when generateManifests fails on a fresh install');
+    assert(
+      /WIZZ_TEST_50: forced generateManifests failure/.test(thrownMessage50),
+      'the rethrown error is the forced failure, not swallowed',
+    );
+
+    const wizzDir50 = path.join(root50, '_wizz');
+    assert(!(await fs.pathExists(wizzDir50)), '_wizz/ was never created after a failed fresh install (A14 atomicity)');
+
+    const entries50 = await fs.readdir(root50);
+    const tmpResidue50 = entries50.filter((e) => e.startsWith('_wizz.tmp-'));
+    assert(tmpResidue50.length === 0, `no orphaned _wizz.tmp-<pid> scaffold left behind (found: ${tmpResidue50.join(', ') || 'none'})`);
+
+    assert(
+      !(await fs.pathExists(path.join(root50, '.mcp.json'))),
+      '.mcp.json was never written (merge deferred past the point of failure)',
+    );
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 50 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  } finally {
+    ManifestGenerator.prototype.generateManifests = originalGenerateManifests50;
+    if (root50) await fs.remove(root50).catch(() => {});
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);
