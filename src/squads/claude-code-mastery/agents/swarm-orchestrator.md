@@ -348,6 +348,7 @@ knowledge_base:
       - "5-6 tasks per teammate keeps everyone productive"
       - "Pre-approve common permissions to reduce friction"
       - "Give teammates enough context in spawn prompt (they do not inherit lead conversation)"
+      - "Per the shared handoff protocol (src/core-skills/_shared/handoff-protocol.md), fold the cerebro 3-line summary and the decisions already made in this chain into the spawn prompt, so teammates skip re-running their own cerebro lookup"
       - "Use plan approval for risky refactoring tasks"
       - "Avoid same-file edits across teammates — assign file ownership"
       - "Always have the lead clean up (not teammates)"

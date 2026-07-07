@@ -59,7 +59,11 @@ function shapeMcp(mcp) {
  * @param {Object} args
  * @param {string[]} [args.selectedAreas] - Chosen area keys ([] => all areas)
  * @param {{toInstall?: Object[], toRecommend?: Object[], alreadyInstalled?: Object[]}} [args.cliPlan]
- * @param {{toWrite?: Object[], toRecommend?: Object[]}} [args.mcpPlan]
+ * @param {{toWrite?: Object[], toRecommend?: Object[], pinHashes?: Record<string,string>}} [args.mcpPlan]
+ *   `pinHashes` (A13) is `writeMcpConfig`'s `pinHashes` result: id => content
+ *   hash of the server block as it now stands on disk. Persisted here as
+ *   `mcps.pins` so the NEXT install can tell an untouched block (safe to
+ *   auto-update the pin) from a user-customized one (never overwritten).
  * @returns {Object} The manifest to be written.
  */
 function buildDepsCache({ selectedAreas, cliPlan = {}, mcpPlan = {} }) {
@@ -75,6 +79,7 @@ function buildDepsCache({ selectedAreas, cliPlan = {}, mcpPlan = {} }) {
     mcps: {
       written: (mcpPlan.toWrite || []).map(shapeMcp),
       recommended: (mcpPlan.toRecommend || []).map(shapeMcp),
+      pins: mcpPlan.pinHashes && typeof mcpPlan.pinHashes === 'object' ? { ...mcpPlan.pinHashes } : {},
     },
   };
 }
@@ -130,10 +135,32 @@ async function writeDepsCache({ wizzDir, selectedAreas, cliPlan, mcpPlan, trackF
   return { wrote: true, file, counts };
 }
 
+/**
+ * Read the MCP pin hashes recorded by the LAST install (A13), if any. Used
+ * before the next `writeMcpConfig` call so it can tell an untouched block
+ * (safe to auto-update the pin) from a user-customized one. Never throws: a
+ * missing or corrupt cache (or a pre-A13 cache with no `mcps.pins` key) is
+ * simply "no history", which downstream treats the same as "customized" —
+ * the conservative, never-overwrite default.
+ * @param {string} wizzDir - Installed `_wizz` directory
+ * @returns {Promise<Record<string,string>>} Map of mcp id => sha256 hash
+ */
+async function readPreviousMcpPins(wizzDir) {
+  const file = path.join(wizzDir, '_config', CACHE_BASENAME);
+  if (!(await fs.pathExists(file))) return {};
+  try {
+    const cache = JSON.parse(await fs.readFile(file, 'utf8'));
+    return (cache && cache.mcps && cache.mcps.pins && typeof cache.mcps.pins === 'object' && cache.mcps.pins) || {};
+  } catch {
+    return {};
+  }
+}
+
 module.exports = {
   buildDepsCache,
   isEmptyDepsCache,
   writeDepsCache,
+  readPreviousMcpPins,
   shapeCli,
   shapeMcp,
   CACHE_BASENAME,

@@ -19,6 +19,7 @@
 // a `claude mcp add` command renderer for the recommend path.
 
 const path = require('node:path');
+const crypto = require('node:crypto');
 const fs = require('../fs-native');
 const { defaultExec } = require('./cli-config');
 const { resolveAreaEntries } = require('./registry-resolve');
@@ -67,6 +68,22 @@ function toServerConfig(server) {
   if (Array.isArray(server.args) && server.args.length > 0) out.args = [...server.args];
   if (server.env && Object.keys(server.env).length > 0) out.env = { ...server.env };
   return out;
+}
+
+/**
+ * Content marker for a server block (A13: "Merge aditivo do .mcp.json congela
+ * pins de segurança para sempre"). Hashes the NORMALIZED (`toServerConfig`)
+ * shape, not the raw registry `server`, so the hash matches exactly what
+ * lands on disk in `.mcp.json` — a block written by the installer and a block
+ * hand-typed by a user with the same effective config hash identically.
+ * @param {Object} server - { command, args?, env? }
+ * @returns {string} sha256 hex digest
+ */
+function hashServerBlock(server) {
+  return crypto
+    .createHash('sha256')
+    .update(JSON.stringify(toServerConfig(server || {})))
+    .digest('hex');
 }
 
 /**
@@ -311,17 +328,42 @@ async function partitionAlreadyConfigured({ projectDir, mcps }) {
 /**
  * Merge the chosen MCP entries into `<projectDir>/.mcp.json`, additively.
  * Reads any existing file (preserving unknown keys and existing servers),
- * adds only ids not already present, and writes back pretty-printed JSON.
+ * adds ids not already present, and writes back pretty-printed JSON.
+ *
+ * A13 ("Merge aditivo do .mcp.json congela pins de segurança para sempre"):
+ * for an id already present, `previousPins[id]` (the hash the installer
+ * recorded the LAST time it wrote that block, from
+ * `skill-deps-cache.json`/`deps-cache.js`) tells us whether the on-disk block
+ * is still exactly what we wrote or whether the user hand-edited it:
+ *   - on-disk hash === current registry hash        → nothing to do (current)
+ *   - on-disk hash === previousPins[id] (untouched)  → the registry pin moved
+ *     and the user never touched this block: SAFE to apply the update automatically
+ *     (`pinUpdated`). This is not overwriting a customization — it is finishing
+ *     an update the user already implicitly opted into by never editing our block.
+ *   - on-disk hash !== previousPins[id] (or no recorded hash — pre-A13 install)
+ *     → the user's edit (or an unknown state) wins; NEVER overwritten, only
+ *     surfaced (`pinCustomized`) so the caller can warn "update available, but
+ *     this server was customized".
  *
  * @param {Object} args
  * @param {string} args.projectDir - Project root where `.mcp.json` lives
  * @param {Array<{id: string, server: Object}>} args.mcps - Entries to write
+ * @param {Record<string,string>} [args.previousPins] - id => hash recorded at
+ *   the installer's last write of that block (from skill-deps-cache.json)
  * @param {(absPath: string) => void} [args.trackFile] - Record the written file
- * @returns {Promise<{added: string[], skipped: string[], file: string|null}>}
- *   `added` = ids newly written, `skipped` = ids already present (left intact).
+ * @returns {Promise<{added: string[], skipped: string[], file: string|null,
+ *   pinHashes: Record<string,string>, pinUpdated: Array<{id:string,from:string,to:string}>,
+ *   pinCustomized: Array<{id:string}>}>}
+ *   `added` = ids newly written. `skipped` = ids already current, nothing to
+ *   do. `pinCustomized` = ids left intact because the on-disk block diverges
+ *   from what we last wrote (a separate bucket from `skipped` so the caller
+ *   can warn specifically about those). `pinHashes` = id => hash of what is
+ *   now on disk for every resolved id, meant to be persisted as the NEXT
+ *   `previousPins`.
  */
-async function writeMcpConfig({ projectDir, mcps, trackFile = () => {} }) {
-  if (!mcps || mcps.length === 0) return { added: [], skipped: [], file: null };
+async function writeMcpConfig({ projectDir, mcps, previousPins = {}, trackFile = () => {} }) {
+  const empty = { added: [], skipped: [], file: null, pinHashes: {}, pinUpdated: [], pinCustomized: [] };
+  if (!mcps || mcps.length === 0) return empty;
 
   const file = path.join(projectDir, '.mcp.json');
   let config = {};
@@ -337,25 +379,58 @@ async function writeMcpConfig({ projectDir, mcps, trackFile = () => {} }) {
 
   const added = [];
   const skipped = [];
+  const pinHashes = {};
+  const pinUpdated = [];
+  const pinCustomized = [];
+  let changed = false;
+
   for (const mcp of mcps) {
+    const newHash = hashServerBlock(mcp.server);
+
     if (Object.prototype.hasOwnProperty.call(config.mcpServers, mcp.id)) {
-      skipped.push(mcp.id); // never clobber the user's existing server
+      const onDisk = config.mcpServers[mcp.id];
+      const onDiskHash = hashServerBlock(onDisk);
+
+      if (onDiskHash === newHash) {
+        skipped.push(mcp.id); // already current, nothing to do
+        pinHashes[mcp.id] = newHash;
+        continue;
+      }
+
+      const recordedHash = previousPins[mcp.id];
+      if (recordedHash && recordedHash === onDiskHash) {
+        // Untouched since our last write, and the registry pin moved — safe
+        // to apply automatically. Never a silent overwrite of user work.
+        config.mcpServers[mcp.id] = toServerConfig(mcp.server);
+        pinUpdated.push({ id: mcp.id, from: recordedHash, to: newHash });
+        pinHashes[mcp.id] = newHash;
+        changed = true;
+      } else {
+        // No recorded hash (pre-A13 install) or the hash diverges: the user
+        // may have hand-edited this block. Never clobber it — only report.
+        pinCustomized.push({ id: mcp.id });
+        pinHashes[mcp.id] = onDiskHash;
+      }
       continue;
     }
+
     config.mcpServers[mcp.id] = toServerConfig(mcp.server);
     added.push(mcp.id);
+    pinHashes[mcp.id] = newHash;
+    changed = true;
   }
 
-  if (added.length === 0) return { added, skipped, file };
+  if (!changed) return { added, skipped, file, pinHashes, pinUpdated, pinCustomized };
 
   await fs.writeJson(file, config, { spaces: 2 });
   trackFile(file);
-  return { added, skipped, file };
+  return { added, skipped, file, pinHashes, pinUpdated, pinCustomized };
 }
 
 module.exports = {
   resolveMcps,
   toServerConfig,
+  hashServerBlock,
   renderAddCommand,
   writeMcpConfig,
   prepareMcp,

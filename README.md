@@ -32,6 +32,8 @@ A camada Wizz vale para todos os agentes: encerramento padrão (✅/➡️/🎯)
 
 **Pré-requisitos**: [Node.js](https://nodejs.org) v20.12+ · [Python](https://www.python.org) 3.10+ · [uv](https://docs.astral.sh/uv/)
 
+**Plataformas suportadas**: macOS, Linux e WSL (Windows Subsystem for Linux). Windows nativo (cmd.exe/PowerShell sem WSL) não é suportado — algumas CLIs opcionais do registry (`claude-video`, `voicebox`, `distribb`, `arcads`) usam checks POSIX (`test -d`, `$HOME`) e o installer as filtra fora dessa plataforma em vez de oferecer algo que nunca vai detectar como instalado.
+
 Instale o método no seu projeto:
 
 ```bash

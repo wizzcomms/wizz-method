@@ -71,9 +71,20 @@ else
   SOURCE_LABEL="mood: $MOOD"
 fi
 
+# BGM is a lazy asset (excluded from the npm tarball, Tarefa 2.8 da auditoria
+# de jul/2026): try an on-demand download the first time a preset mood is
+# missing locally, before giving up.
+if [ -z "$CUSTOM_MUSIC" ] && [ ! -f "$MUSIC" ]; then
+  echo "⏳ BGM preset not found locally, trying on-demand download (huashu-audio bundle)..." >&2
+  npx --yes wizz-method fetch-assets --bundle huashu-audio --dest "$ASSETS_DIR" >&2 || true
+fi
+
 if [ ! -f "$MUSIC" ]; then
   echo "✗ Music not found: $MUSIC" >&2
-  echo "  Available moods: $(ls "$ASSETS_DIR" | grep -E '^bgm-.*\.mp3$' | sed 's/^bgm-//;s/\.mp3$//' | tr '\n' ' ')" >&2
+  echo "  Available moods: $(ls "$ASSETS_DIR" 2>/dev/null | grep -E '^bgm-.*\.mp3$' | sed 's/^bgm-//;s/\.mp3$//' | tr '\n' ' ')" >&2
+  echo "  Offline or npx failed? Download manually:" >&2
+  echo "    https://github.com/wizzcomms/wizz-method/releases/download/assets-v1/huashu-audio.tar.gz" >&2
+  echo "  and extract it into: $ASSETS_DIR" >&2
   exit 1
 fi
 

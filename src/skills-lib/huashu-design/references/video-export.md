@@ -53,7 +53,7 @@ NODE_PATH=$(npm root -g) node /path/to/claude-design/scripts/render-video.js <ht
 bash add-music.sh <input.mp4> [--mood=<name>] [--music=<path>] [--out=<path>]
 ```
 
-**内置 BGM 库**（在 `assets/bgm-<mood>.mp3`）：
+**内置 BGM 库**（在 `assets/bgm-<mood>.mp3`；懒加载资产，不在 npm 包里，`add-music.sh` 首次缺失时自动下载，离线则报错给出手动下载链接，见 Tarefa 2.8 说明）：
 
 | `--mood=` | 风格 | 适配场景 |
 |-----------|------|---------|

@@ -8,6 +8,13 @@
 **生成模型**：ElevenLabs Sound Generation API（prompt_influence 0.4）
 **音质**：44.1kHz MP3，苹果发布会级清晰度，无额外混响
 
+> **懒加载资产**（2026-07 audit Tarefa 2.8）：`assets/sfx/` 不在 npm 包里（只在 git
+> 仓库和已下载的缓存中）。用某个 SFX 前先 `ls assets/sfx/<category>/` 确认文件存在；
+> 缺失就跑 `npx --yes wizz-method fetch-assets --bundle huashu-audio --dest
+> assets`（路径相对本 skill 根目录）。离线时手动下载
+> `https://github.com/wizzcomms/wizz-method/releases/download/assets-v1/huashu-audio.tar.gz`
+> 解压到 `assets/`，能力不受影响，只是首次用要等下载。
+
 ---
 
 ## 目录结构

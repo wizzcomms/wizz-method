@@ -14,7 +14,15 @@
  * Usage: node test/test-cli-config.js
  */
 
-const { resolveClis, renderInstallCommand, detectClis, installClis, matchesPlatform } = require('../tools/installer/modules/cli-config');
+const {
+  resolveClis,
+  renderInstallCommand,
+  detectClis,
+  installClis,
+  matchesPlatform,
+  extractVersion,
+  compareSemver,
+} = require('../tools/installer/modules/cli-config');
 
 const colors = {
   reset: '[0m',
@@ -264,13 +272,131 @@ async function runTests() {
   }
   {
     const res = await installClis({ clis: [], exec: fakeExec([]) });
-    assertEqual(res, { installed: [], failed: [] }, 'empty clis => no-op');
+    assertEqual(res, { installed: [], failed: [], warnings: [] }, 'empty clis => no-op');
   }
   {
     // a CLI with no install command cannot be installed — reported as failed, never run
     const exec = fakeExec([]);
     const res = await installClis({ clis: [{ id: 'broken' }], exec });
     assert(res.failed.length === 1 && exec.calls.length === 0, 'missing install command => failed without running anything');
+  }
+  {
+    // M14: verify runs post-install; a failure warns but the install itself
+    // still counts (fail-open, CLIs are opt-in — never abort).
+    const exec = fakeExec([
+      ['git clone', { ok: true, stdout: '', stderr: '' }],
+      ['command -v ffmpeg', { ok: false, stdout: '', stderr: 'ffmpeg: not found' }],
+    ]);
+    const res = await installClis({
+      clis: [{ id: 'buttercut', install: 'git clone x buttercut', verify: 'command -v ffmpeg' }],
+      exec,
+    });
+    assertEqual(res.installed, ['buttercut'], 'install still counts as installed despite verify failure');
+    assertEqual(res.failed, [], 'verify failure never lands in failed (fail-open)');
+    assert(res.warnings.length === 1 && res.warnings[0].id === 'buttercut', 'verify failure surfaces as a warning');
+    assert(/ffmpeg: not found/.test(res.warnings[0].warning), 'warning carries the verify stderr for the user');
+  }
+  {
+    // verify passes => installed cleanly, no warning at all.
+    const exec = fakeExec([
+      ['git clone', { ok: true, stdout: '', stderr: '' }],
+      ['command -v ffmpeg', { ok: true, stdout: '/usr/bin/ffmpeg', stderr: '' }],
+    ]);
+    const res = await installClis({
+      clis: [{ id: 'buttercut', install: 'git clone x buttercut', verify: 'command -v ffmpeg' }],
+      exec,
+    });
+    assertEqual(res.installed, ['buttercut'], 'installed');
+    assertEqual(res.warnings, [], 'verify success => no warning');
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('extractVersion / compareSemver');
+
+  assertEqual(extractVersion('rtk 0.43.0'), '0.43.0', 'extracts version from prefixed text');
+  assertEqual(extractVersion('agent-browser version: 0.27.0\n'), '0.27.0', 'extracts version with trailing newline');
+  assertEqual(extractVersion('no version here'), null, 'no version in text => null');
+  assert(compareSemver('0.30.1', '0.43.0') < 0, '0.30.1 < 0.43.0');
+  assert(compareSemver('0.43.0', '0.43.0') === 0, '0.43.0 == 0.43.0');
+  assert(compareSemver('1.0.0', '0.43.0') > 0, '1.0.0 > 0.43.0');
+  assert(compareSemver('0.43.1', '0.43.0') > 0, '0.43.1 > 0.43.0 (patch-level)');
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('detectClis — min_version (M27, rtk drift)');
+
+  {
+    // Installed version below the pin => NOT installed:true; the caller's
+    // existing "missing => offer install" path becomes "offer upgrade".
+    const clis = [{ id: 'rtk', check: 'rtk --version', min_version: '0.43.0' }];
+    const exec = fakeExec([['rtk --version', { ok: true, stdout: 'rtk 0.30.1\n', stderr: '' }]]);
+    const [detected] = await detectClis(clis, exec);
+    assert(detected.installed === false, 'below min_version => installed: false, not true');
+    assertEqual(detected.installedVersion, '0.30.1', 'carries the parsed installed version');
+    assertEqual(detected.upgradeMessage, 'atualizando rtk 0.30.1 → 0.43.0', 'carries a clear upgrade message');
+  }
+  {
+    // Installed version at or above the pin => installed:true, as normal.
+    const clis = [{ id: 'rtk', check: 'rtk --version', min_version: '0.43.0' }];
+    const exec = fakeExec([['rtk --version', { ok: true, stdout: 'rtk 0.43.0\n', stderr: '' }]]);
+    const [detected] = await detectClis(clis, exec);
+    assert(detected.installed === true, 'at min_version => installed: true');
+    assert(!('upgradeMessage' in detected), 'no upgrade message when current');
+  }
+  {
+    // Version above the pin also passes.
+    const clis = [{ id: 'rtk', check: 'rtk --version', min_version: '0.43.0' }];
+    const exec = fakeExec([['rtk --version', { ok: true, stdout: 'rtk 1.0.0\n', stderr: '' }]]);
+    const [detected] = await detectClis(clis, exec);
+    assert(detected.installed === true, 'above min_version => installed: true');
+  }
+  {
+    // check fails outright => installed:false regardless of min_version;
+    // no upgrade message (there is nothing installed to upgrade).
+    const clis = [{ id: 'rtk', check: 'rtk --version', min_version: '0.43.0' }];
+    const exec = fakeExec([['rtk --version', { ok: false, stdout: '', stderr: 'not found' }]]);
+    const [detected] = await detectClis(clis, exec);
+    assert(detected.installed === false && !detected.upgradeMessage, 'check fails => installed:false, no upgrade message');
+  }
+  {
+    // No min_version declared => old ok-only behavior, unaffected.
+    const clis = [{ id: 'agent-browser', check: 'agent-browser --version' }];
+    const exec = fakeExec([['agent-browser --version', { ok: true, stdout: '0.27.0', stderr: '' }]]);
+    const [detected] = await detectClis(clis, exec);
+    assert(detected.installed === true, 'no min_version => unaffected, installed: true');
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('detectClis — verify (M14, clone-and-run deps)');
+
+  {
+    // check passes (the clone exists) but verify (minimal runtime dep) fails
+    // => not considered plenously installed. A clear warning, never a throw.
+    const clis = [{ id: 'buttercut', check: 'test -d ./buttercut', verify: 'command -v ffmpeg' }];
+    const exec = fakeExec([
+      ['test -d ./buttercut', { ok: true, stdout: '', stderr: '' }],
+      ['command -v ffmpeg', { ok: false, stdout: '', stderr: 'ffmpeg: not found' }],
+    ]);
+    const [detected] = await detectClis(clis, exec);
+    assert(detected.installed === false, 'check ok but verify fails => installed: false');
+    assert(/verifica/.test(detected.verifyWarning || ''), 'carries a clear verify warning');
+  }
+  {
+    // Both check and verify pass => genuinely installed.
+    const clis = [{ id: 'buttercut', check: 'test -d ./buttercut', verify: 'command -v ffmpeg' }];
+    const exec = fakeExec([
+      ['test -d ./buttercut', { ok: true, stdout: '', stderr: '' }],
+      ['command -v ffmpeg', { ok: true, stdout: '/usr/bin/ffmpeg', stderr: '' }],
+    ]);
+    const [detected] = await detectClis(clis, exec);
+    assert(detected.installed === true, 'check + verify both pass => installed: true');
+    assert(!('verifyWarning' in detected), 'no verify warning when it passes');
+  }
+  {
+    // No verify declared => unaffected, old behavior.
+    const clis = [{ id: 'voicebox', check: 'test -d ./voicebox' }];
+    const exec = fakeExec([['test -d ./voicebox', { ok: true, stdout: '', stderr: '' }]]);
+    const [detected] = await detectClis(clis, exec);
+    assert(detected.installed === true, 'no verify field => unaffected, installed: true');
   }
 
   // ───────────────────────────────────────────────────────────────────────

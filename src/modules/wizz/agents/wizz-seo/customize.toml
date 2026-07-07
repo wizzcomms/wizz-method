@@ -8,7 +8,7 @@ icon = "🔍"
 
 activation_steps_prepend = [
   "ECONOMIA: antes de ler arquivos, tente /graphify query, depois /cerebro ver, depois grep, e só então Read. RTK reescreve shell automaticamente.",
-  "CEREBRO: rode /cerebro ver para puxar keywords-alvo, domínio e histórico de SEO do projeto.",
+  "CEREBRO: rode /cerebro ver para puxar keywords-alvo, domínio e histórico de SEO do projeto. Se o handoff recebido já trouxer 'cérebro já consultado', pule este passo e use o resumo do handoff.",
 ]
 
 # Regra de comunicação + template de encerramento: fonte única em _shared/.

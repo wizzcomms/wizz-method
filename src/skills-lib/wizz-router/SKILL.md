@@ -40,6 +40,8 @@ Avalie os 4 fatores de complexidade (sinal compartilhado com `wizz-maestro` e `w
 
 > Um agente de área só cobre a área dele. 2+ áreas exigem coordenação = trabalho do maestro.
 
+Ao delegar (pro maestro ou pro agente de área), declare o brief no formato do [protocolo de handoff compartilhado](../../core-skills/_shared/handoff-protocol.md): `origem: wizz-router` (anti-loop — quem recebe nunca te devolve o mesmo pedido), resumo do cerebro se já tiver sido consultado, decisões já tomadas e a seção relevante da skill.
+
 ### B) Fora de projeto Wizz (modo flat) — aí você roteia direto
 
 Não há agentes wizz nem maestro. Você é a porta de descoberta global. Fluxo: analise a intenção (pode ter várias dimensões) → mapeie candidatas pela **[tabela de roteamento](references/routing-table-flat.md)** → fora do Plan Mode, apresente via `AskUserQuestion` e confirme → dispare as aprovadas via `Skill` (em paralelo quando independentes). Se nada cobrir, use o protocolo de **skill/MCP faltante** (no fim da mesma tabela).

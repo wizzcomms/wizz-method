@@ -32,10 +32,13 @@
     "src/modules",
     "src/scripts",
     "src/skills-lib",
+    "!src/skills-lib/huashu-design/assets/**/*.mp3",
+    "!src/skills-lib/canvas-design/canvas-fonts/**/*.ttf",
     "web-bundles",
     "skills-registry.yaml",
     "wizz-modules.yaml",
-    "removals.txt"
+    "removals.txt",
+    "tools/fetch-assets.mjs"
   ],
   "scripts": {
     "docs:build": "node tools/build-docs.mjs",
@@ -56,10 +59,11 @@
     "rebundle": "node tools/installer/bundlers/bundle-web.js rebundle",
     "sync:check": "node tools/sync-check.mjs",
     "sync:global": "node tools/sync-global.mjs",
-    "test": "npm run test:refs && npm run test:install && npm run test:urls && npm run test:channels && npm run test:mcp && npm run test:cli && npm run test:deps && npm run test:hooks && npm run test:quickupdate && npm run test:registry-schema && npm run test:method-refs-allowlist && npm run test:rtk-hook && npm run test:network-retry && npm run test:sync-check && npm run test:resolver && npm run lint && npm run lint:md && npm run format:check && npm run sync:check",
+    "test": "npm run test:refs && npm run test:install && npm run test:urls && npm run test:channels && npm run test:mcp && npm run test:cli && npm run test:deps && npm run test:hooks && npm run test:quickupdate && npm run test:registry-schema && npm run test:method-refs-allowlist && npm run test:rtk-hook && npm run test:network-retry && npm run test:sync-check && npm run test:resolver && npm run test:fetch-assets && npm run lint && npm run lint:md && npm run format:check && npm run sync:check",
     "test:channels": "node test/test-installer-channels.js",
     "test:cli": "node test/test-cli-config.js",
     "test:deps": "node test/test-deps-cache.js",
+    "test:fetch-assets": "node test/test-fetch-assets.js",
     "test:hooks": "node test/test-router-hook.js",
     "test:install": "node test/test-installation-components.js",
     "test:mcp": "node test/test-mcp-config.js",

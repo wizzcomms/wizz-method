@@ -102,8 +102,20 @@ function validateMcpEntry(entry, where, errors) {
   }
 }
 
+// "x.y.z" (3-part numeric semver) — matches what cli-config.js's
+// extractVersion/compareSemver expect to parse out of a `check` command's output.
+const SEMVER_RE = /^\d+\.\d+\.\d+$/;
+
 /**
- * Validate one CLI-shaped entry ({id, when, check, install, platform?}).
+ * Validate one CLI-shaped entry
+ * ({id, when, check, install, platform?, min_version?, verify?}).
+ *
+ * `min_version` (M27) and `verify` (M14) are optional fields added in the
+ * fase 2 auditoria: `min_version` is compared via semver by `detectClis`
+ * against whatever version the `check` command prints, so it must itself be
+ * a plain "x.y.z" string the same comparator can parse. `verify` is just a
+ * shell command like `check`/`install` — a non-empty string is all that is
+ * required (its content is opaque to the schema, same as `check`).
  */
 function validateCliEntry(entry, where, errors) {
   if (!isPlainObject(entry)) {
@@ -121,6 +133,16 @@ function validateCliEntry(entry, where, errors) {
         errors.push(`${where}: invalid platform gate "${token}" (expected os/arch token like "darwin", "arm64" or "darwin-arm64")`);
       }
     }
+  }
+  if ('min_version' in entry) {
+    const raw = entry.min_version;
+    const asString = typeof raw === 'number' ? String(raw) : raw;
+    if (!isNonEmptyString(asString) || !SEMVER_RE.test(asString)) {
+      errors.push(`${where}: "min_version" must be a plain "x.y.z" version (got ${JSON.stringify(raw)})`);
+    }
+  }
+  if ('verify' in entry && !isNonEmptyString(entry.verify)) {
+    errors.push(`${where}: "verify" must be a non-empty string when present`);
   }
 }
 

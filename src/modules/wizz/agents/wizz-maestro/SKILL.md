@@ -96,6 +96,10 @@ Regra de handoff:
 
 **Pedido com várias áreas:** monte a ordem lógica (ex: design → dev → copy → seo), chame só o **primeiro** agente e, no encerramento, diga a sequência sugerida. Não dispare todos de uma vez (modo confirmado).
 
+### Handoff ao delegar
+
+Ao invocar o agente de área, declare o brief no formato do [protocolo de handoff compartilhado](../../../../core-skills/_shared/handoff-protocol.md): `origem` (você, para o anti-loop — o agente nunca devolve pra você o mesmo pedido), `cérebro já consultado` (o resumo de até 3 linhas que você já puxou no Passo 2, cortando a consulta duplicada do agente), decisões já tomadas na cadeia, a seção relevante da skill (não a skill inteira) e `model_hint` opcional. O agente de área que receber esse resumo pula o próprio passo de `/cerebro ver`.
+
 **Não tem agente/skill/MCP para o pedido:** diga isso e ofereça `find-skills`. Ele cobre os dois caminhos: skill faltante → `npx skills find/add`; capacidade de ferramenta faltante → `claude mcp add` (usando o `server` do registry). Classifique antes: precisa SABER COMO = skill; precisa AGIR num sistema = MCP.
 
 ## Encerramento

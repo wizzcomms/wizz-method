@@ -87,7 +87,7 @@ function matchesPlatform(cli, tag) {
  * @param {Object} registry - Parsed skills-registry.yaml
  * @param {string[]} [selectedAreas] - Area keys to resolve
  * @param {string} [platformTag] - Current "<platform>-<arch>" (injectable for tests)
- * @returns {Array<{id: string, when: string, check: string, install: string, platform: (string|string[]|undefined), areas: string[]}>}
+ * @returns {Array<{id: string, when: string, check: string, install: string, platform: (string|string[]|undefined), min_version: (string|undefined), verify: (string|undefined), areas: string[]}>}
  */
 function resolveClis(registry, selectedAreas, platformTag = currentPlatformTag()) {
   return resolveAreaEntries(registry, selectedAreas, {
@@ -99,6 +99,12 @@ function resolveClis(registry, selectedAreas, platformTag = currentPlatformTag()
       check: cli.check || '',
       install: cli.install,
       platform: cli.platform,
+      // M27: pin below which `detectClis` reports the entry as needing an
+      // upgrade instead of `installed: true`.
+      min_version: cli.min_version,
+      // M14: post-check/post-install probe for minimal runtime deps (e.g.
+      // clone-and-run tools where `check` only proves the clone exists).
+      verify: cli.verify,
     }),
   });
 }
@@ -114,10 +120,56 @@ function renderInstallCommand(cli) {
 }
 
 /**
+ * Extract the first "x.y.z" version number found in a command's output.
+ * @param {string} text
+ * @returns {string|null}
+ */
+function extractVersion(text) {
+  const m = String(text || '').match(/\d+\.\d+\.\d+/);
+  return m ? m[0] : null;
+}
+
+/**
+ * Compare two "x.y.z" version strings numerically, segment by segment (no
+ * external semver dependency needed for this simple 3-part comparison).
+ * @param {string} a
+ * @param {string} b
+ * @returns {number} negative if a<b, 0 if equal, positive if a>b
+ */
+function compareSemver(a, b) {
+  const pa = String(a)
+    .split('.')
+    .map((n) => Number(n) || 0);
+  const pb = String(b)
+    .split('.')
+    .map((n) => Number(n) || 0);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const diff = (pa[i] || 0) - (pb[i] || 0);
+    if (diff !== 0) return diff;
+  }
+  return 0;
+}
+
+/**
  * Annotate each CLI with `installed: boolean` by running its `check` command.
  * Immutable: returns new objects, never mutates the input. An entry without a
  * `check` cannot be verified, so it is reported as not installed (we offer it
  * rather than silently assume it is present).
+ *
+ * M27 (drift do RTK, 0.30.1 rodando com pin v0.43.0): when the entry declares
+ * `min_version`, a passing `check` is not enough — we also parse the version
+ * out of the check's output and compare it against the pin. Below the pin,
+ * the entry comes back `installed: false` (so the caller's existing "missing
+ * => offer install" path naturally becomes "offer upgrade") plus an
+ * `upgradeMessage` the caller can surface. A version that cannot be parsed
+ * falls back to the old ok-only behavior (nothing to compare against).
+ *
+ * M14 (assimetria MCP vs CLI): when the entry declares `verify` (a check of
+ * minimal runtime deps, e.g. `command -v ffmpeg`, for clone-and-run tools
+ * where `check` only proves "the clone exists"), it also runs AFTER `check`
+ * passes. A failing `verify` means the tool is not genuinely usable, so the
+ * entry is reported `installed: false` with a `verifyWarning` — never an
+ * abort, just a clearer "not really installed yet" signal (CLIs stay opt-in).
  *
  * @param {Array<Object>} clis - Resolved CLI entries
  * @param {Function} [exec] - Injected runner (command, opts) => {ok,...}
@@ -128,7 +180,32 @@ async function detectClis(clis, exec = defaultExec) {
     (clis || []).map(async (cli) => {
       if (!cli.check) return { ...cli, installed: false };
       const res = await exec(cli.check, { timeoutMs: 5000 });
-      return { ...cli, installed: !!res.ok };
+      if (!res.ok) return { ...cli, installed: false };
+
+      if (cli.min_version) {
+        const installedVersion = extractVersion(res.stdout) || extractVersion(res.stderr);
+        if (installedVersion && compareSemver(installedVersion, cli.min_version) < 0) {
+          return {
+            ...cli,
+            installed: false,
+            installedVersion,
+            upgradeMessage: `atualizando ${cli.id} ${installedVersion} → ${cli.min_version}`,
+          };
+        }
+      }
+
+      if (cli.verify) {
+        const verified = await exec(cli.verify, { timeoutMs: 15_000 });
+        if (!verified.ok) {
+          return {
+            ...cli,
+            installed: false,
+            verifyWarning: `${cli.id}: presente, mas a verificação de dependências falhou (${(verified.stderr || 'erro desconhecido').trim()}) — não considerado plenamente instalado`,
+          };
+        }
+      }
+
+      return { ...cli, installed: true };
     }),
   );
 }
@@ -138,24 +215,54 @@ async function detectClis(clis, exec = defaultExec) {
  * a failed install (network, EACCES, missing command) lands in `failed` with
  * its error so the caller can warn and continue the broader install.
  *
+ * M14: when the entry declares `verify`, it runs once the install succeeds
+ * (mirrors mcp-config's post-install VERIFY step). A failing verify does NOT
+ * move the entry to `failed` — the install itself worked (e.g. `git clone`
+ * for a clone-and-run tool) — it only adds a `warnings` entry so the caller
+ * can tell the user their runtime deps (ffmpeg, Ruby, Python...) still need
+ * attention. CLIs are opt-in and fail-open: a warning, never an abort.
+ *
  * @param {Object} args
- * @param {Array<{id: string, install?: string}>} args.clis - Entries to install
+ * @param {Array<{id: string, install?: string, verify?: string}>} args.clis - Entries to install
  * @param {Function} [args.exec] - Injected runner (command, opts) => {ok,...}
- * @returns {Promise<{installed: string[], failed: Array<{id: string, error: string}>}>}
+ * @returns {Promise<{installed: string[], failed: Array<{id: string, error: string}>, warnings: Array<{id: string, warning: string}>}>}
  */
 async function installClis({ clis, exec = defaultExec }) {
   const installed = [];
   const failed = [];
+  const warnings = [];
   for (const cli of clis || []) {
     if (!cli.install) {
       failed.push({ id: cli.id, error: 'sem comando de instalação no registry' });
       continue;
     }
     const res = await exec(cli.install, { timeoutMs: 300_000 });
-    if (res.ok) installed.push(cli.id);
-    else failed.push({ id: cli.id, error: (res.stderr || 'falha desconhecida').trim() });
+    if (!res.ok) {
+      failed.push({ id: cli.id, error: (res.stderr || 'falha desconhecida').trim() });
+      continue;
+    }
+    installed.push(cli.id);
+    if (cli.verify) {
+      const verified = await exec(cli.verify, { timeoutMs: 60_000 });
+      if (!verified.ok) {
+        warnings.push({
+          id: cli.id,
+          warning: `verificação pós-install falhou, dependência mínima pode estar ausente: ${(verified.stderr || 'erro desconhecido').trim()}`,
+        });
+      }
+    }
   }
-  return { installed, failed };
+  return { installed, failed, warnings };
 }
 
-module.exports = { resolveClis, renderInstallCommand, detectClis, installClis, defaultExec, matchesPlatform, currentPlatformTag };
+module.exports = {
+  resolveClis,
+  renderInstallCommand,
+  detectClis,
+  installClis,
+  defaultExec,
+  matchesPlatform,
+  currentPlatformTag,
+  extractVersion,
+  compareSemver,
+};

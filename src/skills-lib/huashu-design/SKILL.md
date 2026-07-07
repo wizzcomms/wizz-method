@@ -462,6 +462,7 @@ Screen 组件接 callback props（`onTabChange`、`onOpen`、`onClose`、`onTogg
    - 交付前 `ffprobe -select_streams a` 确认有 audio stream，没有则不是成品
    - **跳过音频的条件**：用户明确说「不要音频」「纯画面」「我要自己配音」——否则默认带。
    - 参考完整流程见 `references/video-export.md` + `references/audio-design-rules.md` + `references/sfx-library.md`。
+   - **BGM/SFX 是懒加载资产**（2026-07 audit Tarefa 2.8，不在 npm 包里）：`add-music.sh`/`mix-voiceover.sh` 首次用到缺失的 BGM 时会自动跑 `npx wizz-method fetch-assets` 下载；离线时脚本会报错并给出手动下载链接 + 目标路径，不会静默失败。SFX 同理，见 `references/sfx-library.md` 顶部说明。
 9.5. **（带解说时走这条）解说驱动动画 · L2 长概念视频**：用户要做「5-20 分钟解释一个概念」、「带配音的教程」、「长篇科普视频」时——**不要先做动画再配音**，那会让画面节奏跟解说对不上。改走 `references/voiceover-pipeline.md` 的解说驱动流程：
    - **写解说稿**（markdown，`## scene-id` 分段，`[[cue:xx]]` 标关键句）→ 解说稿是源代码，节奏靠它撑
    - **跑 narrate-pipeline.mjs**（豆包 TTS · `.env` 配置音色）→ 输出 voiceover.mp3 + timeline.json（cue 时间是真实测出来的，不是按字符估算）

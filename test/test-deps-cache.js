@@ -20,6 +20,7 @@ const {
   buildDepsCache,
   isEmptyDepsCache,
   writeDepsCache,
+  readPreviousMcpPins,
   shapeCli,
   shapeMcp,
   CACHE_BASENAME,
@@ -161,6 +162,48 @@ async function withTempWizzDir(fn) {
     assert(res.file === null, 'returns null file on no-op');
     assert(tracked.length === 0, 'tracks nothing on no-op');
     assert(!fs.existsSync(path.join(wizzDir, '_config', CACHE_BASENAME)), 'writes no file on no-op');
+  });
+
+  console.log(`\n${colors.cyan}A13 — MCP pin hashes (mcps.pins)${colors.reset}\n`);
+
+  await withTempWizzDir(async (wizzDir) => {
+    // buildDepsCache persists writeMcpConfig's `pinHashes` result as
+    // `mcps.pins`, and readPreviousMcpPins reads it straight back out — this
+    // is the round-trip the installer relies on across two runs.
+    const pinHashes = { magic: 'abc123', context7: 'def456' };
+    await writeDepsCache({
+      wizzDir,
+      selectedAreas: ['designer'],
+      cliPlan: {},
+      mcpPlan: { ...sampleMcpPlan, pinHashes },
+      trackFile: () => {},
+    });
+    const onDisk = JSON.parse(fs.readFileSync(path.join(wizzDir, '_config', CACHE_BASENAME), 'utf8'));
+    assert(JSON.stringify(onDisk.mcps.pins) === JSON.stringify(pinHashes), 'mcps.pins persisted verbatim');
+
+    const readBack = await readPreviousMcpPins(wizzDir);
+    assert(JSON.stringify(readBack) === JSON.stringify(pinHashes), 'readPreviousMcpPins reads the same map back');
+  });
+
+  await withTempWizzDir(async (wizzDir) => {
+    const pins = await readPreviousMcpPins(wizzDir);
+    assert(JSON.stringify(pins) === '{}', 'no cache file yet => {} (safe default)');
+  });
+
+  await withTempWizzDir(async (wizzDir) => {
+    fs.mkdirSync(path.join(wizzDir, '_config'), { recursive: true });
+    fs.writeFileSync(path.join(wizzDir, '_config', CACHE_BASENAME), '{ not json');
+    const pins = await readPreviousMcpPins(wizzDir);
+    assert(JSON.stringify(pins) === '{}', 'corrupt cache file => {} (never throws)');
+  });
+
+  await withTempWizzDir(async (wizzDir) => {
+    // Pre-A13 cache on disk (no mcps.pins key at all) => {} (safe default),
+    // matching the "no recorded pin history" conservative path.
+    fs.mkdirSync(path.join(wizzDir, '_config'), { recursive: true });
+    fs.writeFileSync(path.join(wizzDir, '_config', CACHE_BASENAME), JSON.stringify({ version: 1, mcps: { written: [], recommended: [] } }));
+    const pins = await readPreviousMcpPins(wizzDir);
+    assert(JSON.stringify(pins) === '{}', 'pre-A13 cache without mcps.pins => {} (safe default)');
   });
 
   console.log(`\n${colors.cyan}========================================${colors.reset}`);

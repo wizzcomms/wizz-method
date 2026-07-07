@@ -3,9 +3,9 @@ const fs = require('../fs-native');
 const { Manifest } = require('./manifest');
 const { OfficialModules } = require('../modules/official-modules');
 const { installSkillsLib } = require('../modules/skills-lib');
-const { writeMcpConfig, renderAddCommand, prepareMcps, partitionAlreadyConfigured } = require('../modules/mcp-config');
+const { writeMcpConfig, renderAddCommand, prepareMcps } = require('../modules/mcp-config');
 const { installClis, renderInstallCommand } = require('../modules/cli-config');
-const { writeDepsCache } = require('../modules/deps-cache');
+const { writeDepsCache, readPreviousMcpPins } = require('../modules/deps-cache');
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../file-ops');
 const { Config } = require('./config');
@@ -346,27 +346,21 @@ class Installer {
           // the rest. Additive + placeholder-secret, so it never clobbers config
           // or leaks tokens; a failure warns and never aborts the install.
           const mcpPlan = config.mcpPlan || { toWrite: [], toRecommend: [] };
+          let mcpPinHashes = {};
           try {
             const toWrite = mcpPlan.toWrite || [];
             if (toWrite.length > 0) {
               message('Configuring MCP servers...');
-              // Skip DETECT/INSTALL/VERIFY (prepareMcps) for ids the additive
-              // merge below will discard anyway because they already exist in
-              // .mcp.json; no point paying for a subprocess-heavy setup
-              // (npm install -g, browser download) on every re-install just
-              // to throw the result away.
-              const { toPrepare, alreadyConfigured } = await partitionAlreadyConfigured({
-                projectDir: paths.projectRoot,
-                mcps: toWrite,
-              });
-              // Some servers (e.g. scrapling) shell out to a binary that must be
-              // installed and resolved to an absolute path first — otherwise we
-              // would write a config the client can't launch (ENOENT). prepareMcps
-              // installs + verifies those, patching server.command to the absolute
-              // path; a server whose setup fails is dropped here (never written)
-              // and reported so the user can fix it, instead of leaving a broken
-              // config behind. Servers without a `setup` block pass through as-is.
-              const { ready: mcpsReady, failed: mcpsFailed } = await prepareMcps({ mcps: toPrepare });
+              // Every resolved MCP goes through prepareMcps (DETECT→INSTALL→
+              // VERIFY→RESOLVE) — including ids already present in .mcp.json.
+              // A13 needs the RESOLVED server (setup-bearing entries like
+              // scrapling get their command rewritten to an absolute path) to
+              // hash-compare against what's on disk; comparing against the raw
+              // registry command would always "look changed" for those. This
+              // is still cheap for an already-installed binary: prepareMcp is
+              // detect-first, so only a genuinely missing binary pays for the
+              // network-heavy install/post_install steps.
+              const { ready: mcpsReady, failed: mcpsFailed } = await prepareMcps({ mcps: toWrite });
               for (const f of mcpsFailed) {
                 await prompts.log.warn(
                   `MCP ${f.id} não pôde ser preparado (${f.error}). Config NÃO escrita para evitar ENOENT — instale manualmente e adicione depois com \`claude mcp add\`.`,
@@ -375,6 +369,11 @@ class Installer {
               if (mcpsFailed.length > 0) {
                 addResult('MCP servers', 'warn', `falharam: ${mcpsFailed.map((f) => f.id).join(', ')}`);
               }
+              // A13 ("merge aditivo congela pins para sempre"): read the pin
+              // hashes the LAST install recorded so writeMcpConfig can tell an
+              // untouched block (safe to auto-update the pin) from a
+              // user-customized one (never overwritten, only warned about).
+              const previousPins = await readPreviousMcpPins(paths.wizzDir);
               // Intentionally NOT tracked in installedFiles: .mcp.json is a
               // shared, user-owned config we merge into (it may hold the user's
               // own servers). Tracking it would expose it to uninstall removal
@@ -382,13 +381,27 @@ class Installer {
               const mcpResult = await writeMcpConfig({
                 projectDir: paths.projectRoot,
                 mcps: mcpsReady,
+                previousPins,
               });
+              mcpPinHashes = mcpResult.pinHashes || {};
               if (mcpResult.added.length > 0) {
                 addResult('MCP servers', 'ok', `${mcpResult.added.join(', ')} → .mcp.json`);
               }
-              const allSkipped = [...alreadyConfigured, ...mcpResult.skipped];
-              if (allSkipped.length > 0) {
-                await prompts.log.info(`MCPs já presentes no .mcp.json (mantidos): ${allSkipped.join(', ')}`);
+              const pinUpdated = mcpResult.pinUpdated || [];
+              if (pinUpdated.length > 0) {
+                await prompts.log.info(
+                  `MCPs com pin atualizado (bloco não havia sido customizado): ${pinUpdated.map((u) => u.id).join(', ')}`,
+                );
+                addResult('MCP servers', 'ok', `pin atualizado: ${pinUpdated.map((u) => u.id).join(', ')}`);
+              }
+              const pinCustomized = mcpResult.pinCustomized || [];
+              if (pinCustomized.length > 0) {
+                await prompts.log.warn(
+                  `Há atualização de pin disponível para ${pinCustomized.map((c) => c.id).join(', ')}, mas o bloco no .mcp.json foi customizado (diferente do que o installer escreveu) — mantido intacto. Atualize manualmente se quiser o pin novo.`,
+                );
+              }
+              if (mcpResult.skipped.length > 0) {
+                await prompts.log.info(`MCPs já presentes e atualizados no .mcp.json (mantidos): ${mcpResult.skipped.join(', ')}`);
               }
             }
             const toRecommend = mcpPlan.toRecommend || [];
@@ -434,6 +447,12 @@ class Installer {
               if (cliResult.failed.length > 0) {
                 addResult('CLIs', 'warn', `falharam: ${cliResult.failed.map((f) => f.id).join(', ')}`);
               }
+              // M14: verify failure never aborts (CLIs are opt-in) — just a
+              // clear warning that the tool cloned/installed but a runtime
+              // dependency might still be missing.
+              for (const w of cliResult.warnings || []) {
+                await prompts.log.warn(`CLI ${w.id} instalado, mas ${w.warning}`);
+              }
             }
             const toRecommend = cliPlan.toRecommend || [];
             if (toRecommend.length > 0) {
@@ -456,7 +475,10 @@ class Installer {
               wizzDir: paths.wizzDir,
               selectedAreas: config.selectedAreas || [],
               cliPlan: config.cliPlan || {},
-              mcpPlan: config.mcpPlan || {},
+              // pinHashes (A13) is the writeMcpConfig result computed above,
+              // not part of the config-time plan — merged in here so the
+              // NEXT install's readPreviousMcpPins() can see it.
+              mcpPlan: { ...config.mcpPlan, pinHashes: mcpPinHashes },
               trackFile: (p) => this.installedFiles.add(p),
             });
             if (depsResult.wrote) {

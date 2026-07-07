@@ -4,7 +4,7 @@ Active when `{workflow.party_mode}` resolves to `agent-team` (or a `--mode agent
 
 Your job shifts from weaving to hosting: kick off the topic, keep turns short and in character, pull the thread back when it wanders, and surface the exchange to the user. Voice, brevity, and clash still hold.
 
-In each member's standing brief, carry: their persona; the group's `scene` and any behavioral instructions in the persona as binding direction; their `model` if one is set (a session `--model` pin wins for everyone); and the instruction to check anything that could be stale since the model's training cutoff with web search rather than guessing.
+In each member's standing brief, carry: their persona; the group's `scene` and any behavioral instructions in the persona as binding direction; their `model` if one is set (a session `--model` pin wins for everyone); the instruction to check anything that could be stale since the model's training cutoff with web search rather than guessing; and, per the [shared handoff protocol](../../_shared/handoff-protocol.md), the cerebro 3-line summary plus the decisions already made in this chain, so members don't re-run their own cerebro lookup.
 
 ## Model choice
 

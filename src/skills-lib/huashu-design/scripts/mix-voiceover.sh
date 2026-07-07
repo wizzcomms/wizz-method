@@ -68,9 +68,20 @@ fi
 if [ -z "$BGM" ] && [ -n "$BGM_MOOD" ]; then
   BGM="$ASSETS_DIR/bgm-${BGM_MOOD}.mp3"
 fi
+
+# BGM 是懒加载资源（不在 npm 包里，2026-07 audit 的 Tarefa 2.8）：第一次用到
+# 且本地没有时，先尝试自动下载，再走原来的报错兜底。
+if [ -n "$BGM_MOOD" ] && [ -n "$BGM" ] && [ ! -f "$BGM" ]; then
+  echo "⏳ BGM 预设本地不存在，尝试自动下载（huashu-audio bundle）..." >&2
+  npx --yes wizz-method fetch-assets --bundle huashu-audio --dest "$ASSETS_DIR" >&2 || true
+fi
+
 if [ -n "$BGM" ] && [ ! -f "$BGM" ]; then
   echo "✗ BGM 文件不存在: $BGM" >&2
   echo "  可用 mood: $(ls "$ASSETS_DIR" 2>/dev/null | grep -E '^bgm-.*\.mp3$' | sed 's/^bgm-//;s/\.mp3$//' | tr '\n' ' ')" >&2
+  echo "  离线，或 npx 失败？手动下载：" >&2
+  echo "    https://github.com/wizzcomms/wizz-method/releases/download/assets-v1/huashu-audio.tar.gz" >&2
+  echo "  解压到：$ASSETS_DIR" >&2
   exit 1
 fi
 

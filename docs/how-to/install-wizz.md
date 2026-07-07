@@ -22,6 +22,12 @@ Use `npx wizz-method install` to set up the Wizz Method in your project. One com
 
 :::
 
+### Supported platforms
+
+Officially supported: **macOS, Linux, and WSL** (Windows Subsystem for Linux). Native Windows (cmd.exe/PowerShell without WSL) is not supported: several optional CLIs in the registry (`claude-video`, `voicebox`, `distribb`, `arcads`) detect themselves with POSIX-only shell commands (`test -d`, `$HOME`, `grep`) and are gated to `darwin`/`linux` for that reason — on native Windows the installer simply does not offer them, rather than looping on a check that can never pass. If you're on Windows, install and run everything from inside WSL.
+
+
+
 ## First-time install (the fast path)
 
 ```bash

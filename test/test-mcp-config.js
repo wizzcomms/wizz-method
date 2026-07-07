@@ -18,6 +18,7 @@ const fsp = require('node:fs/promises');
 const {
   resolveMcps,
   toServerConfig,
+  hashServerBlock,
   renderAddCommand,
   writeMcpConfig,
   prepareMcp,
@@ -202,7 +203,7 @@ async function runTests() {
     {
       const tmp2 = await fsp.mkdtemp(path.join(os.tmpdir(), 'wizz-mcp-'));
       const res = await writeMcpConfig({ projectDir: tmp2, mcps: [] });
-      assertEqual(res, { added: [], skipped: [], file: null }, 'empty mcps => no-op');
+      assertEqual(res, { added: [], skipped: [], file: null, pinHashes: {}, pinUpdated: [], pinCustomized: [] }, 'empty mcps => no-op');
       assert(!fs.existsSync(path.join(tmp2, '.mcp.json')), 'empty mcps => no .mcp.json created');
       await fsp.rm(tmp2, { recursive: true, force: true });
     }
@@ -222,6 +223,106 @@ async function runTests() {
     }
   } finally {
     await fsp.rm(tmp, { recursive: true, force: true });
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('writeMcpConfig — pin content marker (A13)');
+
+  {
+    const tmpPin = await fsp.mkdtemp(path.join(os.tmpdir(), 'wizz-mcp-pin-'));
+    try {
+      const oldMagic = { id: 'magic', when: 'UI', server: { command: 'npx', args: ['-y', '@21st-dev/magic@0.1.0'] } };
+      const newMagic = { id: 'magic', when: 'UI', server: { command: 'npx', args: ['-y', '@21st-dev/magic@0.2.0'] } };
+
+      // 1. First write: records the hash of what actually landed on disk.
+      const first = await writeMcpConfig({ projectDir: tmpPin, mcps: [oldMagic] });
+      assertEqual(first.added, ['magic'], 'first write: added');
+      const recordedHash = first.pinHashes.magic;
+      assert(!!recordedHash, 'first write: returns a pinHash for the written id');
+      assertEqual(recordedHash, hashServerBlock(oldMagic.server), 'pinHash matches hashServerBlock of what was written');
+
+      // 2. Re-install with the registry pin bumped + the PREVIOUS hash passed
+      //    in: the on-disk block is untouched since our last write (its hash
+      //    equals the recorded one) => safe to auto-apply the new pin.
+      const second = await writeMcpConfig({
+        projectDir: tmpPin,
+        mcps: [newMagic],
+        previousPins: { magic: recordedHash },
+      });
+      assertEqual(
+        second.pinUpdated,
+        [{ id: 'magic', from: recordedHash, to: hashServerBlock(newMagic.server) }],
+        'hash matches previous => pin update applied',
+      );
+      assertEqual(second.pinCustomized, [], 'no customization reported when the update was applied');
+      const afterUpdate = JSON.parse(fs.readFileSync(path.join(tmpPin, '.mcp.json'), 'utf8'));
+      assertEqual(afterUpdate.mcpServers.magic.args, ['-y', '@21st-dev/magic@0.2.0'], 'on-disk block now carries the new pin');
+
+      // 3. Re-install again, same registry pin, same previousPins as last
+      //    write recorded => nothing to do (already current).
+      const third = await writeMcpConfig({
+        projectDir: tmpPin,
+        mcps: [newMagic],
+        previousPins: { magic: second.pinHashes.magic },
+      });
+      assertEqual(third.skipped, ['magic'], 'already current => skipped, no pinUpdated/pinCustomized');
+      assertEqual(third.pinUpdated, [], 'nothing to update when already current');
+      assertEqual(third.pinCustomized, [], 'nothing customized when already current');
+    } finally {
+      await fsp.rm(tmpPin, { recursive: true, force: true });
+    }
+  }
+
+  {
+    const tmpPin2 = await fsp.mkdtemp(path.join(os.tmpdir(), 'wizz-mcp-pin-'));
+    try {
+      const oldMagic = { id: 'magic', when: 'UI', server: { command: 'npx', args: ['-y', '@21st-dev/magic@0.1.0'] } };
+      const newMagic = { id: 'magic', when: 'UI', server: { command: 'npx', args: ['-y', '@21st-dev/magic@0.2.0'] } };
+
+      const first = await writeMcpConfig({ projectDir: tmpPin2, mcps: [oldMagic] });
+      const recordedHash = first.pinHashes.magic;
+
+      // The user hand-edits the block after our write (e.g. adds a flag) —
+      // its on-disk hash no longer matches what we recorded.
+      const file = path.join(tmpPin2, '.mcp.json');
+      const cfg = JSON.parse(fs.readFileSync(file, 'utf8'));
+      cfg.mcpServers.magic.args.push('--my-flag');
+      fs.writeFileSync(file, JSON.stringify(cfg, null, 2));
+
+      const second = await writeMcpConfig({
+        projectDir: tmpPin2,
+        mcps: [newMagic],
+        previousPins: { magic: recordedHash },
+      });
+      assertEqual(second.pinUpdated, [], 'hash diverges (user edit) => no auto-apply');
+      assert(second.pinCustomized.length === 1 && second.pinCustomized[0].id === 'magic', 'diverging hash reported as customized');
+      const untouched = JSON.parse(fs.readFileSync(file, 'utf8'));
+      assert(untouched.mcpServers.magic.args.includes('--my-flag'), 'customized block is never overwritten');
+      assert(!untouched.mcpServers.magic.args.includes('@21st-dev/magic@0.2.0'), 'new pin was NOT silently applied over a customization');
+    } finally {
+      await fsp.rm(tmpPin2, { recursive: true, force: true });
+    }
+  }
+
+  {
+    const tmpPin3 = await fsp.mkdtemp(path.join(os.tmpdir(), 'wizz-mcp-pin-'));
+    try {
+      // Pre-A13 install: a block already on disk with NO recorded pin hash at
+      // all (previousPins is empty/missing the id). Same conservative
+      // behavior as a diverging hash: never overwritten, only reported.
+      const oldMagic = { id: 'magic', when: 'UI', server: { command: 'npx', args: ['-y', '@21st-dev/magic@0.1.0'] } };
+      const newMagic = { id: 'magic', when: 'UI', server: { command: 'npx', args: ['-y', '@21st-dev/magic@0.2.0'] } };
+      await writeMcpConfig({ projectDir: tmpPin3, mcps: [oldMagic] }); // no previousPins recorded downstream
+
+      const res = await writeMcpConfig({ projectDir: tmpPin3, mcps: [newMagic] }); // previousPins defaults to {}
+      assertEqual(res.pinUpdated, [], 'no recorded pin history => never auto-applied');
+      assert(
+        res.pinCustomized.length === 1 && res.pinCustomized[0].id === 'magic',
+        'no history => reported same as customized (conservative default)',
+      );
+    } finally {
+      await fsp.rm(tmpPin3, { recursive: true, force: true });
+    }
   }
 
   // ───────────────────────────────────────────────────────────────────────

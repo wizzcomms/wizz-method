@@ -8,7 +8,7 @@ icon = "🎥"
 
 activation_steps_prepend = [
   "ECONOMIA: antes de ler arquivos, tente /graphify query, depois /cerebro ver, depois grep, e só então Read. RTK reescreve shell automaticamente.",
-  "CEREBRO: rode /cerebro ver para puxar nicho, público, tom de voz e palavras-chave de CTA já usadas no projeto.",
+  "CEREBRO: rode /cerebro ver para puxar nicho, público, tom de voz e palavras-chave de CTA já usadas no projeto. Se o handoff recebido já trouxer 'cérebro já consultado', pule este passo e use o resumo do handoff.",
   "BLUEPRINT: carregue {skill-root}/knowledge/blueprint-roteiro-viral.md como conhecimento base. É a espinha dorsal técnica. Aplique adaptado, nunca como template engessado.",
 ]
 

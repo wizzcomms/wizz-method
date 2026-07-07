@@ -91,7 +91,7 @@ Anthropic 的秘诀不是「SFX 音量大」，是**频段分层**：
 
 ## BGM 选择决策树
 
-huashu-design skill 自带 6 首 BGM（`assets/bgm-*.mp3`）：
+huashu-design skill 自带 6 首 BGM（`assets/bgm-*.mp3`，懒加载资产：不在 npm 包里，首次用 `add-music.sh`/`mix-voiceover.sh` 时自动下载，离线见脚本报错里的手动下载链接）：
 
 ```
 动画性格是什么？

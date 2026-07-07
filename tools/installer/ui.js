@@ -666,7 +666,9 @@ class UI {
       options: missing.map((c) => ({
         label: c.id,
         value: c.id,
-        hint: c.when,
+        // M27/M14: prefer the upgrade/verify-failure reason when present —
+        // more actionable than the generic `when` in those two cases.
+        hint: c.upgradeMessage || c.verifyWarning || c.when,
       })),
       initialValues: [],
       required: false,
