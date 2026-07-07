@@ -531,19 +531,29 @@ dependencies:
           BMad Master (orchestrator), Business Analyst, Product Manager,
           System Architect, Scrum Master, Developer, UX Designer,
           Builder (custom agents/workflows), Creative Intelligence.
-        workflow_commands:
-          - "/bmad-help"
-          - "/bmad-bmm-create-prd"
-          - "/bmad-bmm-create-architecture"
-          - "/bmad-bmm-create-epics-and-stories"
-          - "/bmad-bmm-sprint-planning"
-          - "/bmad-bmm-create-story"
-          - "/bmad-bmm-dev-story"
-          - "/bmad-bmm-code-review"
-          - "/bmad-bmm-check-implementation-readiness"
-          - "/bmad-brainstorming"
-          - "/bmad-bmm-quick-spec"
-          - "/bmad-bmm-quick-dev"
+        workflow_commands: |
+          These are the third-party aj-geddes/claude-code-bmad-skills package's
+          own slash commands (cited above) — NOT available in a Wizz Method
+          project, do not suggest them to a Wizz user:
+          "/bmad-help", "/bmad-bmm-create-prd", "/bmad-bmm-create-architecture",
+          "/bmad-bmm-create-epics-and-stories", "/bmad-bmm-sprint-planning",
+          "/bmad-bmm-create-story", "/bmad-bmm-dev-story", "/bmad-bmm-code-review",
+          "/bmad-bmm-check-implementation-readiness", "/bmad-brainstorming",
+          "/bmad-bmm-quick-spec", "/bmad-bmm-quick-dev".
+        wizz_method_equivalent: |
+          Wizz Method ships the same phases as bmm-skills/core-skills invoked
+          via the Skill tool by natural-language description (no slash
+          prefix, see skills-registry.yaml), not slash commands. Rough mapping:
+          bmad-help -> wizz-help; bmad-bmm-create-prd -> wizz-create-prd;
+          bmad-bmm-create-architecture -> wizz-create-architecture;
+          bmad-bmm-create-epics-and-stories -> wizz-create-epics-and-stories;
+          bmad-bmm-sprint-planning -> wizz-sprint-planning;
+          bmad-bmm-create-story -> wizz-create-story;
+          bmad-bmm-dev-story -> wizz-dev-story;
+          bmad-bmm-code-review -> wizz-code-review;
+          bmad-bmm-check-implementation-readiness -> wizz-check-implementation-readiness;
+          bmad-brainstorming -> wizz-brainstorming;
+          bmad-bmm-quick-spec -> wizz-spec; bmad-bmm-quick-dev -> wizz-quick-dev.
 
   tools:
     - git # Read-only: status, log, diff (NO PUSH - use @devops)

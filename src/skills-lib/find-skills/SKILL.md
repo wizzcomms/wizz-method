@@ -159,17 +159,20 @@ Cada entrada traz `id`, `when` e o bloco `server` (command/args/env) pronto. Pre
 # Sintaxe geral (Claude Code):
 claude mcp add <id> [-e VAR=valor ...] -- <command> [args...]
 
-# Exemplos comuns:
-claude mcp add context7 -- npx -y @upstash/context7-mcp
-claude mcp add playwright -- npx -y @playwright/mcp@latest
-claude mcp add magic -e API_KEY=$MAGIC_API_KEY -- npx -y @21st-dev/magic
-claude mcp add supabase -e SUPABASE_ACCESS_TOKEN=$SUPABASE_ACCESS_TOKEN -- npx -y @supabase/mcp-server-supabase@latest
+# Exemplos comuns (SEMPRE pin de versão fixa, nunca @latest — supply chain,
+# mesma convenção do skills-registry.yaml; atualizar conscientemente quando
+# necessário):
+claude mcp add context7 -- npx -y @upstash/context7-mcp@3.2.2
+claude mcp add exa -e EXA_API_KEY=$EXA_API_KEY -- npx -y exa-mcp-server@3.2.1
+claude mcp add magic -e API_KEY=$MAGIC_API_KEY -- npx -y @21st-dev/magic@0.1.0
+claude mcp add supabase -e SUPABASE_ACCESS_TOKEN=$SUPABASE_ACCESS_TOKEN -- npx -y @supabase/mcp-server-supabase@0.8.2 --read-only
 ```
+Versões acima são as pinadas hoje em `skills-registry.yaml` — confira lá antes de copiar, pode ter mudado. Não sugira o MCP do Playwright: browser é sempre via CLI `agent-browser` neste framework, nunca Playwright.
 
 Ou edite o `.mcp.json` do projeto (merge aditivo, nunca apague servers existentes):
 
 ```json
-{ "mcpServers": { "context7": { "command": "npx", "args": ["-y", "@upstash/context7-mcp"] } } }
+{ "mcpServers": { "context7": { "command": "npx", "args": ["-y", "@upstash/context7-mcp@3.2.2"] } } }
 ```
 
 ### Passo 4: Secrets

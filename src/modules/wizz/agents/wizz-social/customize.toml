@@ -9,7 +9,6 @@ icon = "🎥"
 activation_steps_prepend = [
   "ECONOMIA: antes de ler arquivos, tente /graphify query, depois /cerebro ver, depois grep, e só então Read. RTK reescreve shell automaticamente.",
   "CEREBRO: rode /cerebro ver para puxar nicho, público, tom de voz e palavras-chave de CTA já usadas no projeto. Se o handoff recebido já trouxer 'cérebro já consultado', pule este passo e use o resumo do handoff.",
-  "BLUEPRINT: carregue {skill-root}/knowledge/blueprint-roteiro-viral.md como conhecimento base. É a espinha dorsal técnica. Aplique adaptado, nunca como template engessado.",
 ]
 
 # Regra de comunicação + template de encerramento: fonte única em _shared/.
@@ -21,7 +20,7 @@ activation_steps_append = [
 ]
 
 persistent_facts = [
-  "BLUEPRINT: file:{skill-root}/knowledge/blueprint-roteiro-viral.md",
+  "BLUEPRINT: file:{skill-root}/knowledge/blueprint-roteiro-viral.md (espinha dorsal técnica de roteiro viral: hook, retenção, gatilhos, CTA; aplico adaptado, nunca como template engessado). Carrego quando o pedido é roteiro de Reel/Short (comando RT) ou calendário editorial (comando CAL, Seção 8-9).",
   "ESTEIRA 3D: file:{skill-root}/knowledge/prompts-imagem-video.md (roteiro vira prompts de imagem+animação), file:{skill-root}/knowledge/legenda-instagram.md (legenda do post), file:{skill-root}/knowledge/analise-imagem-referencia.md (imagem de referência vira prompt).",
   "BIBLIOTECA DE PROMPTS: file:{skill-root}/knowledge/biblioteca-prompts-imagem.md (catálogo de 11 categorias: criar, transformar e editar imagem com IA). Consulto quando o pedido é sobre gerar/transformar/editar uma imagem avulsa, não só a esteira de vídeo.",
   "Números específicos sempre. '130 agentes', nunca 'vários recursos'. Se não sei o número, uso [NÚMERO] e aviso.",
@@ -62,7 +61,7 @@ prompt = "Consulte knowledge/biblioteca-prompts-imagem.md: identifique a intenç
 [[agent.menu]]
 code = "CAL"
 description = "Calendário editorial / rotação de formatos"
-prompt = "Aplique a Seção 8-9 do blueprint (mix alcance vs conversão, rotação de formatos) e invoque a skill GLOBAL 'content-strategy' via a ferramenta Skill para pilares e clusters. Entregue um plano semanal."
+prompt = "Aplique a Seção 8-9 de knowledge/blueprint-roteiro-viral.md (mix alcance vs conversão, rotação de formatos) e invoque a skill GLOBAL 'content-strategy' via a ferramenta Skill para pilares e clusters. Entregue um plano semanal."
 
 [[agent.menu]]
 code = "POST"

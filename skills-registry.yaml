@@ -27,6 +27,15 @@
 # 1. ESCOPO: sempre validar o escopo antes de instalar. PREFERIR local por projeto
 #    (.claude/skills do projeto). NÃO instalar em cloud global geral por padrão.
 #    Global do projeto apenas quando necessário. Nunca assumir global como padrão.
+#    EXCEÇÃO documentada: `wizz-router` (utility, id acima em `utility:`) é o
+#    único caso onde global é o padrão operacionalmente correto — sua função é
+#    ser o roteador flat que funciona mesmo FORA de um projeto Wizz (`when`:
+#    "descobre skills quando não se sabe a área"). Ele é sincronizado junto do
+#    hook global `wizz-router-enforce.js` via `npm run sync:global`
+#    (tools/sync-global.mjs só resincroniza skills que já existem em
+#    ~/.claude/skills — não instala novas; a instalação global inicial é
+#    escolha explícita do usuário via `npx skills add`/installer com escopo
+#    global). Todas as outras skills seguem a regra 1 normalmente (local).
 # 2. AUTO-DETECÇÃO DE DEPENDÊNCIAS (NPX/CLI/MCP): se a skill tem dependências,
 #    detectar automaticamente e instalar junto no momento do install da skill,
 #    cachear no projeto e reutilizar nas execuções futuras. Evitar re-instalação a
@@ -392,7 +401,7 @@ areas:
     summary: "QA: verificar o código de fora (testes, E2E, review adversarial)."
     skills:
       - id: adversarial-reviewer
-        when: "Caçar bugs adversarialmente, stress-test de PR, 'tear this apart'. (Global; o engine usa wizz-review-adversarial-general por dentro.)"
+        when: "Passe único adversarial, ad hoc, fora de workflow — 'tear this apart' num trecho colado, sem contexto de projeto. Não confundir com wizz-review-adversarial-general (camada interna 'Blind Hunter' chamada só por wizz-code-review) nem com wizz-code-review (orquestrador bmm: 3 camadas paralelas + triagem, para review real de diff/PR)."
       - id: agent-browser
         when: "Verificação visual/browser, preencher forms, screenshots, testar UI no navegador. CLI já instalado (não é MCP); browser SEMPRE via agent-browser, nunca Playwright."
     # qa NÃO declara mcps: verificação de browser é via agent-browser (CLI/skill),

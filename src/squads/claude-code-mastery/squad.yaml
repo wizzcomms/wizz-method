@@ -1,0 +1,42 @@
+name: claude-code-mastery
+version: "1.0.0"
+short-title: "Claude Code Mastery Squad"
+description: "Full-spectrum expertise in Claude Code: hooks, skills, subagents, MCP, plugins, agent teams, customization, integration, and roadmap awareness. 8 agents distilled from 8 real-world Claude Code frameworks."
+author: "Wizz! comms. (wizzcomms) — Squad Architect"
+license: MIT
+slashPrefix: "claude-code-mastery"
+
+aios:
+  minVersion: "4.0.0"
+  type: squad
+
+tags:
+  - claude-code
+  - hooks
+  - mcp
+  - skills
+  - subagents
+  - plugins
+  - agent-teams
+  - config
+  - roadmap
+
+components:
+  agents:
+    - claude-mastery-chief.md
+    - hooks-architect.md
+    - mcp-integrator.md
+    - swarm-orchestrator.md
+    - config-engineer.md
+    - skill-craftsman.md
+    - project-integrator.md
+    - roadmap-sentinel.md
+
+config:
+  extends: extend
+
+# Note: unlike the other squads under src/squads/ (sourced from an external
+# AIOS marketplace with tasks/workflows/checklists), this squad was built
+# from scratch through Elite Minds research (see README.md) and never had
+# BMAD-style scaffolding — there is nothing to list under tasks/workflows/
+# checklists here. See README.md for full attribution and architecture.

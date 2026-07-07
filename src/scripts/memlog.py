@@ -34,6 +34,15 @@ Three invariants make it trustworthy:
 Atomicity: every write goes to a temp file, is flushed and fsync'd, then atomically
 renamed over the target, so a crash never leaves a half-written entry.
 
+Known limitation (by design, not a bug): there is no compaction, archival, or size
+cap. Append-only + no lifecycle status (invariant 3 above) means a `.memlog.md` grows
+without bound for the life of the workspace — fine for a single brainstorm/spec/
+architecture session (dozens to low hundreds of entries), but a caller resuming a very
+long-running or repeatedly-reused workspace pays an ever-larger read on every resume.
+If that ever becomes a real problem, the fix is a new host-skill-driven step (e.g.
+"archive entries older than the last milestone to a sibling file"), not a change to
+this script's invariants — memlog stays a dumb, trustworthy, append-only primitive.
+
 The file shape (.memlog.md):
 
     ---

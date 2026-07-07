@@ -90,6 +90,9 @@ module.exports = {
       const { checkWindowsNodeFromWsl } = require('../core/wsl-node-check');
       await checkWindowsNodeFromWsl();
 
+      const { checkRequiredTools } = require('../core/preflight-tools-check');
+      await checkRequiredTools();
+
       // Set debug flag as environment variable for all components
       if (options.debug) {
         process.env.WIZZ_DEBUG_MANIFEST = 'true';

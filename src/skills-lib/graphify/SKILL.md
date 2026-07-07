@@ -987,16 +987,7 @@ Replace `QUESTION` with the question, `ANSWER` with your full answer text, `SOUR
 
 Find the shortest path between two named concepts in the graph.
 
-First check the graph exists:
-```bash
-$(cat graphify-out/.graphify_python) -c "
-from pathlib import Path
-if not Path('graphify-out/graph.json').exists():
-    print('ERROR: No graph found. Run /graphify <path> first to build the graph.')
-    raise SystemExit(1)
-"
-```
-If it fails, stop and tell the user to run `/graphify <path>` first.
+First check the graph exists - run the same pre-check as `/graphify query` above (identical `graphify-out/graph.json` existence check). If it fails, stop and tell the user to run `/graphify <path>` first.
 
 ```bash
 $(cat graphify-out/.graphify_python) -c "
@@ -1060,16 +1051,7 @@ $(cat graphify-out/.graphify_python) -m graphify save-result --question "Path fr
 
 Give a plain-language explanation of a single node - everything connected to it.
 
-First check the graph exists:
-```bash
-$(cat graphify-out/.graphify_python) -c "
-from pathlib import Path
-if not Path('graphify-out/graph.json').exists():
-    print('ERROR: No graph found. Run /graphify <path> first to build the graph.')
-    raise SystemExit(1)
-"
-```
-If it fails, stop and tell the user to run `/graphify <path>` first.
+First check the graph exists - run the same pre-check as `/graphify query` above (identical `graphify-out/graph.json` existence check). If it fails, stop and tell the user to run `/graphify <path>` first.
 
 ```bash
 $(cat graphify-out/.graphify_python) -c "

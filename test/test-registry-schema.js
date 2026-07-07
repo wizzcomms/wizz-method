@@ -168,6 +168,41 @@ section('validateRegistrySchema — skill entry errors');
   );
 }
 
+section('validateRegistrySchema — metadata.version (fase 3, item 3.7)');
+{
+  // Optional field: absent entirely is fine (no error), even on the real
+  // registry's dozens of pre-existing entries (checked separately below).
+  const reg = validRegistry();
+  const { errors } = validateRegistrySchema(reg);
+  assert(errors.length === 0, 'entries without "metadata" at all are still valid', JSON.stringify(errors));
+}
+{
+  const reg = validRegistry();
+  reg.areas.qa.skills[0].metadata = { version: '1.0.0' };
+  const { errors } = validateRegistrySchema(reg);
+  assert(errors.length === 0, 'skill entry with a valid "metadata.version" (x.y.z) passes', JSON.stringify(errors));
+}
+{
+  const reg = validRegistry();
+  reg.areas.qa.skills[0].metadata = { version: '1.0' }; // not x.y.z
+  const { errors } = validateRegistrySchema(reg);
+  assert(
+    errors.some((e) => e.includes('"metadata.version" must be a plain "x.y.z" version')),
+    'skill entry with a malformed "metadata.version" is caught',
+    JSON.stringify(errors),
+  );
+}
+{
+  const reg = validRegistry();
+  reg.areas.qa.mcps[0].metadata = 'not-an-object';
+  const { errors } = validateRegistrySchema(reg);
+  assert(
+    errors.some((e) => e.includes('"metadata" must be an object')),
+    'MCP entry with non-object "metadata" is caught',
+    JSON.stringify(errors),
+  );
+}
+
 section('validateRegistrySchema — MCP entry errors');
 {
   const reg = validRegistry();

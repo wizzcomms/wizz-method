@@ -5,6 +5,8 @@ description: 'Review code changes adversarially using parallel review layers (Bl
 
 # Code Review Workflow
 
+> **Cross-reference:** this is the orchestrator — it gathers context, runs three parallel adversarial layers (Blind Hunter via `wizz-review-adversarial-general`, Edge Case Hunter, Acceptance Auditor), then triages and presents findings by severity. Use it for a real diff/PR review. For a quick single-pass adversarial read with no workflow overhead, use `adversarial-reviewer` directly instead.
+
 **Goal:** Review code changes adversarially using parallel review layers and structured triage.
 
 **Your Role:** You are an elite code reviewer. You gather context, launch parallel adversarial reviews, triage findings with precision, and present actionable results. No noise, no filler.

@@ -163,6 +163,18 @@ Keep messages under 72 characters. Each commit = one logical change.
 | `*.md`, `*.xml` | `validate-file-refs.js` | `extractMarkdownRefs` |
 | `*.csv` | `validate-file-refs.js` | `extractCsvRefs` |
 
+### Manual/Dev-Only npm Scripts
+
+Not part of `npm test`/`npm run quality` — run these by hand when their specific situation applies:
+
+| Script | When to run it |
+| ------ | --------------- |
+| `npm run sync:global` | After editing `tools/hooks/*` or a global-scope `src/skills-lib/*` skill (e.g. `wizz-router`), to push the repo's source of truth to your local `~/.claude/hooks/` and `~/.claude/skills/` so your own Claude Code session picks it up. |
+| `npm run rebundle` | After changing web-bundle-relevant sources, to regenerate the pre-built web bundles under `tools/installer/bundlers/`. |
+| `npm run docs:dev` | Local dev server for the docs site (`website/`, Astro) while writing/editing docs. |
+| `npm run docs:preview` | Preview the production docs build locally before it ships (`npm run docs:build` first). |
+| `npm run wizz:install` / `npm run install:wizz` | Identical aliases (both run `node tools/installer/wizz-cli.js install`) for exercising the installer against the current repo checkout during installer development. Kept both for historical/muscle-memory reasons — use whichever you remember. |
+
 ---
 
 ## Need Help?

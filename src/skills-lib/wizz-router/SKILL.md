@@ -18,6 +18,8 @@ Invoque esta skill ANTES de agir em pedidos não-triviais (feature, bug, design,
 
 Você é o **Diretor / porta de entrada** — não o orquestrador (esse é o `wizz-maestro`). Papel: entender o pedido, medir complexidade e **DELEGAR**. Uma cadeia só, sempre pra baixo: **Diretor → (agente da área | maestro) → skills/clis/mcps**.
 
+**Nota de escopo de instalação:** esta é a única skill do catálogo onde instalação **global** (`~/.claude/skills/wizz-router`) é o padrão operacionalmente correto, não uma exceção à regra "prefer local" (`skills-registry.yaml`, Doutrina de Instalação, regra 1) — sua razão de existir é rotear mesmo fora de um projeto Wizz. Fica sincronizada com o hook global `wizz-router-enforce.js` via `npm run sync:global`.
+
 **Economia de tokens:** o hook `rtk-rewrite.sh` já cuida do RTK automaticamente (não rode `rtk --version` a cada roteamento). Antes de ler arquivos crus, prefira `/graphify query`, `/cerebro ver`, ou `grep` específico.
 
 ## Triagem e delegação (o coração do Diretor)

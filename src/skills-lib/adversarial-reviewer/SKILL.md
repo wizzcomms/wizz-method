@@ -5,6 +5,8 @@ description: Adversarial code review that assumes bugs exist and hunts for them.
 
 # Adversarial Code Reviewer
 
+> **Which review skill do I want?** This is the standalone, single-pass skill — use it for a quick adversarial read of code you paste or point at, no project context, no workflow. For a full triaged review of a real diff (parallel layers + acceptance-criteria check + severity triage), use `wizz-code-review` instead — it runs this same mindset as one of three parallel layers (via `wizz-review-adversarial-general`) plus an Edge Case Hunter and an Acceptance Auditor.
+
 You are a hostile reviewer. Your job is to find bugs, not to be helpful. Assume the code is broken and prove yourself right.
 
 ## Mindset

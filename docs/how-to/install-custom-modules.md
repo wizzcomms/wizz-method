@@ -158,6 +158,10 @@ your-project/
 
 The manifest records the source of each custom module (`repoUrl` for Git sources, `localPath` for local sources) so that quick updates can locate the source again.
 
+:::note[`module-help.csv` is optional]
+`module-help.csv` feeds the merged `wizz-help.csv` catalog (what `wizz-help` shows). It is a **first-class but optional** contract: if your custom module ships one at its root (columns: `module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs` — see `tools/installer/modules/module-help-schema.js` for the canonical header), the installer merges it in as-is and warns if the header drifts from that schema. If you omit it, the installer **synthesizes one** from your module's `module.yaml` + each skill's frontmatter, so custom modules work either way — a hand-curated CSV just gets you richer/curated help text. Only the official core/bmm modules ship a hand-written `module-help.csv` today.
+:::
+
 ## Updating Custom Modules
 
 Custom modules participate in the normal update flow:

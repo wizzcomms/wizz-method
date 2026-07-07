@@ -104,3 +104,28 @@ The QA Automate workflow appears in Phase 4 (Implementation) of the Wizz Method 
 The built-in QA workflow works directly from source code without loading planning documents (PRD, architecture). TEA workflows can integrate with upstream planning artifacts for traceability.
 
 For more on where testing fits in the overall process, see the [Workflow Map](./workflow-map.md).
+
+## Testing This Repo Itself
+
+Everything above covers testing *inside a project you build with* Wizz Method. This section is about the different thing: how the wizz-method **framework repository** tests itself (the installer, hooks, registry, and docs build).
+
+### Unit/integration suite (`npm test`)
+
+`npm test` runs ~20 plain-Node test scripts (no test-framework dependency; each exits non-zero on failure) covering the installer's modules (CLI/MCP resolution, custom-file preservation, quick-update gate, channel planning), the registry schema validator, the two global hooks (`wizz-router-enforce.js`, `rtk-rewrite.sh`), the `resolve_customization.py` TOML merge resolver, and the docs-site rehype plugins — plus lint/format/`sync:check` at the end. Full list and what each one covers: `test/README.md`.
+
+A new test file must be wired into `package.json` (`test:<name>` script + appended to the `test` aggregate) or it silently never runs in CI — this happened to two tests (`test-rehype-plugins.mjs`, `test-workflow-path-regex.js`) before the Fase 3 audit caught and fixed it.
+
+### Routing evals (`eval:routing`, `eval:routing:llm`)
+
+Two separate evals score the wizz-router/maestro dispatch decision against a fixture dataset (`evals/routing/`):
+
+- `npm run eval:routing` — deterministic, rule-based scoring. Runs as its own step in `.github/workflows/quality.yaml` on every PR (a real gate).
+- `npm run eval:routing:llm` — LLM-graded scoring of the same dataset, for nuance a deterministic rule can't capture. Runs on a manual/weekly schedule (`.github/workflows/routing-eval-llm.yaml`), **not** a merge gate — see `docs/governance.md` § "Gatilhos de reavaliação" for when it's promoted to one.
+
+### Install smoke test (CI, Linux container)
+
+`.github/workflows/quality.yaml` runs on `ubuntu-latest` and its "Run test suite" step includes `test/test-install-smoke.js`, which spawns a real `wizz-cli.js install --yes` against a temp directory and validates `_wizz/` + manifests + copied skills end-to-end. It intentionally does not select the `wizz` module (external MCP/CLI provisioning, area selection) — a real end-to-end run of a `setup:`-block CLI (e.g. `pip install "scrapling[ai]"`) is a known remaining gap, not yet covered by any CI job (see `_audit/2026-07-07-parte2-auditoria-mcps-clis-memoria-rtk.md` § J).
+
+### Strict validators (`npm run quality`)
+
+`npm run quality` adds strict-mode validators on top of `npm test`: `validate:refs` (file references), `validate:method-refs` (registry-id references), `validate:skills` (SKILL.md frontmatter), and `docs:build`/`docs:validate-sidebar` (the docs site actually builds and its sidebar order is valid). These are stricter/slower than their `test:*` counterparts and are meant for pre-release checks, not every commit.

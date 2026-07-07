@@ -47,6 +47,32 @@ function isValidPlatformToken(token) {
   return KNOWN_OS.has(os) && KNOWN_ARCH.has(arch);
 }
 
+// "x.y.z" (3-part numeric semver) — matches what cli-config.js's
+// extractVersion/compareSemver expect to parse out of a `check` command's
+// output, and reused below for `metadata.version` (fase 3, item 3.7).
+const SEMVER_RE = /^\d+\.\d+\.\d+$/;
+
+/**
+ * Validate the optional `metadata.version` field on any entry type (skill,
+ * MCP, CLI). Added in fase 3 (item 3.7) as prep work for eventual decoupled
+ * distribution: OPTIONAL everywhere, not retroactively required on existing
+ * entries — see docs/governance.md "Adding Components". When present it must
+ * be a plain "x.y.z" semver string, same shape as `min_version` below.
+ */
+function validateMetadataVersion(entry, where, errors) {
+  if (!('metadata' in entry)) return;
+  if (!isPlainObject(entry.metadata)) {
+    errors.push(`${where}: "metadata" must be an object when present`);
+    return;
+  }
+  if ('version' in entry.metadata) {
+    const raw = entry.metadata.version;
+    if (!isNonEmptyString(raw) || !SEMVER_RE.test(raw)) {
+      errors.push(`${where}: "metadata.version" must be a plain "x.y.z" version (got ${JSON.stringify(raw)})`);
+    }
+  }
+}
+
 /**
  * Validate one skill-shaped entry ({id, when, ...}).
  * @param {*} entry
@@ -66,6 +92,7 @@ function validateSkillEntry(entry, where, errors) {
   if ('door' in entry && !isNonEmptyString(entry.door)) {
     errors.push(`${where}: "door" must be a non-empty string when present`);
   }
+  validateMetadataVersion(entry, where, errors);
 }
 
 /**
@@ -100,11 +127,8 @@ function validateMcpEntry(entry, where, errors) {
       errors.push(`${where}: server.env must be an object when present`);
     }
   }
+  validateMetadataVersion(entry, where, errors);
 }
-
-// "x.y.z" (3-part numeric semver) — matches what cli-config.js's
-// extractVersion/compareSemver expect to parse out of a `check` command's output.
-const SEMVER_RE = /^\d+\.\d+\.\d+$/;
 
 /**
  * Validate one CLI-shaped entry
@@ -144,6 +168,7 @@ function validateCliEntry(entry, where, errors) {
   if ('verify' in entry && !isNonEmptyString(entry.verify)) {
     errors.push(`${where}: "verify" must be a non-empty string when present`);
   }
+  validateMetadataVersion(entry, where, errors);
 }
 
 /**
