@@ -97,3 +97,7 @@ dist/web-bundles/
 # Graphify caches (path-leaking, never version)
 graphify-out/
 *.pyc
+
+# Documentos internos de trabalho (relatórios de auditoria, playbooks) — nunca versionar
+_audit/
+_local/

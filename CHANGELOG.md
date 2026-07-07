@@ -4,9 +4,19 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [1.4.2] - 2026-07-07
+## [1.5.0] - 2026-07-07
+
+> Consolida as fases 1, 2 e 3 do plano de auditoria de julho/2026. A 1.4.2 nunca foi publicada no npm; este release absorve aquele conteúdo.
 
 ### Adicionado
+
+- Fase 3 da auditoria (refatoração do installer e experiência de instalação, tarefas 3.1-3.8):
+  - `installer.js` reduzido de 1870 para ~1280 linhas com extração de módulos dedicados (`user-file-preservation`, `env-vars`, `banner`, entre outros); smoke test de MCP real no CI (`test:install-smoke-mcp`, workflow próprio fora do agregado).
+  - Install atômico no fresh install: escreve em `_wizz.tmp-<pid>/` e faz swap só depois de gerar os manifests; em falha remove apenas o tmp e o `_wizz/` real nunca chega a existir; `skill-manifest.csv` deixa de gravar o nome do diretório temporário.
+  - Env vars de MCP no install (`modules/env-vars.js`): extrai placeholders `${VAR}` dos servers selecionados, resolve por `process.env` → prompt com `password()` (valor nunca ecoado), grava em `.claude/settings.local.json`; skip em `--yes`/sem TTY; resumo por variável no fim do install (`test:env-vars`, 46 asserts).
+  - Progressive disclosure em 19 skills (corpo enxuto + referências carregadas sob demanda), índice do `huashu-design` e blueprint lazy no `wizz-social`; dedup do graphify e cross-refs da tríade de review.
+  - Medidor de roteamento opt-in no install: pergunta se liga o trace e grava `env.WIZZ_TRACE="1"` em `.claude/settings.local.json`; `npx wizz-method trace-report` agrega os traces; `--yes`/sem TTY nunca liga.
+  - `metadata.version` opcional no validador de skills, seção "Gatilhos de reavaliação" em `docs/governance.md`, template de PR atualizado; testes diretos de `selectMcps`/`selectClis` e do parsing de `--mcps`/`--clis`.
 
 - Fase 2 da auditoria (consolidação, tarefas 2.1-2.9 e 2.12):
   - `include = [...]` no `resolve_customization.py` + `_shared/communication-rules.md` como fonte única da regra de comunicação (15 cópias colapsadas em 1); protocolo de handoff compartilhado (`src/core-skills/_shared/handoff-protocol.md`: origem anti-loop, cérebro consultado 1x, decisões da cadeia, seção relevante da skill, `model_hint` opcional) referenciado por router, maestro, agentes, party-mode e swarm.
