@@ -13,6 +13,12 @@
 // It also installs the registry itself into `_wizz/_config/` so the maestro can
 // read the same file at runtime (the routing source and the install source stay
 // identical by construction). Every step is a no-op when its source is missing.
+//
+// On top of the monolith copy, it also SLICES the registry per area into
+// `_wizz/_config/registry/` (index.yaml + <area>.yaml + _shared.yaml). Area
+// agents read their own slice at runtime instead of the whole ~26KB file; the
+// monolith copy stays in place as the fallback/compat path (see
+// generateRegistrySlices doc below for the exact shape of each slice).
 
 const path = require('node:path');
 const fs = require('../fs-native');
@@ -73,6 +79,64 @@ const isCopyableEntry = (src) => {
   return !(name.startsWith('.') && name !== '.gitkeep');
 };
 
+// Header stamped on every generated slice — warns readers (humans and agents)
+// not to hand-edit a file that gets clobbered on the next install.
+const SLICE_HEADER =
+  '# GERADO PELO INSTALLER — NÃO EDITAR (sobrescrito a cada install).\n' +
+  '# Fonte única: skills-registry.yaml na raiz do repo. Esta fatia existe só\n' +
+  '# para leitura leve em runtime; qualquer mudança de conteúdo vai no monólito.\n\n';
+
+/**
+ * Slice the parsed registry into `_wizz/_config/registry/`:
+ *   - index.yaml: version + areas (only `agent`/`summary`) — a lightweight
+ *     area→agent map for the maestro to route without loading full skill lists.
+ *   - <area>.yaml: the full block for that area (skills/mcps/clis/references),
+ *     wrapped as `area: <name>` + the area's own fields, for the area agent
+ *     that owns it to read directly instead of the monolith.
+ *   - _shared.yaml: the cross-cutting sections (utility, mcp_utility,
+ *     cli_utility, squads) any agent may still need alongside its own slice.
+ *
+ * ALL areas are sliced regardless of `selectedAreas` — generation is cheap
+ * (in-memory yaml.stringify) and this avoids a missing-slice bug if the user
+ * later switches to an agent whose area wasn't installed this run.
+ *
+ * @param {Object} registry - Parsed skills-registry.yaml
+ * @param {string} registryDir - Destination dir (`_wizz/_config/registry`)
+ * @param {(absPath: string) => void} trackFile - Record an installed file
+ */
+async function generateRegistrySlices(registry, registryDir, trackFile) {
+  await fs.ensureDir(registryDir);
+
+  const areas = (registry && registry.areas) || {};
+
+  const indexAreas = {};
+  for (const [name, area] of Object.entries(areas)) {
+    indexAreas[name] = { agent: area && area.agent, summary: area && area.summary };
+  }
+  const indexPath = path.join(registryDir, 'index.yaml');
+  await fs.writeFile(indexPath, SLICE_HEADER + yaml.stringify({ version: registry && registry.version, areas: indexAreas }));
+  trackFile(indexPath);
+
+  for (const [name, area] of Object.entries(areas)) {
+    const areaPath = path.join(registryDir, `${name}.yaml`);
+    await fs.writeFile(areaPath, SLICE_HEADER + yaml.stringify({ area: name, ...area }));
+    trackFile(areaPath);
+  }
+
+  const sharedPath = path.join(registryDir, '_shared.yaml');
+  await fs.writeFile(
+    sharedPath,
+    SLICE_HEADER +
+      yaml.stringify({
+        utility: (registry && registry.utility) || [],
+        mcp_utility: (registry && registry.mcp_utility) || [],
+        cli_utility: (registry && registry.cli_utility) || [],
+        squads: (registry && registry.squads) || {},
+      }),
+  );
+  trackFile(sharedPath);
+}
+
 /**
  * Copy the area-selected skills from src/skills-lib into `_wizz/skills-lib`, and
  * the registry into `_wizz/_config/skills-registry.yaml`. No-op when sources are
@@ -129,7 +193,12 @@ async function installSkillsLib({ wizzDir, selectedAreas, trackFile = () => {} }
   await fs.copy(srcRegistry, destRegistry);
   trackFile(destRegistry);
 
+  // Also slice it per area (see generateRegistrySlices) so agents can read a
+  // few KB instead of the whole monolith; the copy above stays as fallback.
+  const registryDir = path.join(wizzDir, '_config', 'registry');
+  await generateRegistrySlices(registry, registryDir, trackFile);
+
   return { copied, skipped, registry: true };
 }
 
-module.exports = { installSkillsLib, resolveSkillIds };
+module.exports = { installSkillsLib, resolveSkillIds, generateRegistrySlices };

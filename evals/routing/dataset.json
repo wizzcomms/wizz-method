@@ -1,0 +1,290 @@
+[
+  {
+    "id": "t01",
+    "prompt": "oi",
+    "expected": "trivial",
+    "note": "saudação simples, sem ação"
+  },
+  {
+    "id": "t02",
+    "prompt": "obrigado",
+    "expected": "trivial",
+    "note": "agradecimento puro"
+  },
+  {
+    "id": "t03",
+    "prompt": "sim",
+    "expected": "trivial",
+    "note": "resposta curta (sim/não/ok)"
+  },
+  {
+    "id": "t04",
+    "prompt": "não",
+    "expected": "trivial",
+    "note": "resposta curta (sim/não/ok)"
+  },
+  {
+    "id": "t05",
+    "prompt": "ok",
+    "expected": "trivial",
+    "note": "resposta curta (sim/não/ok)"
+  },
+  {
+    "id": "t06",
+    "prompt": "o que foi feito?",
+    "expected": "trivial",
+    "note": "pergunta de status, sem ação técnica"
+  },
+  {
+    "id": "t07",
+    "prompt": "trocar 'envie' por 'enviar' na linha 42",
+    "expected": "trivial",
+    "note": "typo/rename de 1 linha"
+  },
+  {
+    "id": "t08",
+    "prompt": "rebatiza Home para Landing",
+    "expected": "trivial",
+    "note": "rename simples, 1 arquivo"
+  },
+  {
+    "id": "t09",
+    "prompt": "/help",
+    "expected": "trivial",
+    "note": "slash command"
+  },
+  {
+    "id": "t10",
+    "prompt": "/config",
+    "expected": "trivial",
+    "note": "slash command"
+  },
+  {
+    "id": "t11",
+    "prompt": "como tá o deploy?",
+    "expected": "trivial",
+    "note": "pergunta conversacional, sem ação"
+  },
+  {
+    "id": "t12",
+    "prompt": "tudo bem?",
+    "expected": "trivial",
+    "note": "conversação pura"
+  },
+  {
+    "id": "t13",
+    "prompt": "link?",
+    "expected": "trivial",
+    "note": "pergunta muito curta, sem verbo de ação"
+  },
+  {
+    "id": "t14",
+    "prompt": "esqueci a senha",
+    "expected": "trivial",
+    "note": "frase curta sem ação técnica (info only)"
+  },
+  {
+    "id": "a01",
+    "prompt": "redesenha o hero da landing com a nova brand",
+    "expected": "agent:designer",
+    "note": "UI update, 1 area, pontual"
+  },
+  {
+    "id": "a02",
+    "prompt": "cria um card component pra portfolio",
+    "expected": "agent:designer",
+    "note": "componente isolado, designer"
+  },
+  {
+    "id": "a03",
+    "prompt": "anima o scroll de entrada da página",
+    "expected": "agent:designer",
+    "note": "motion/animation, 1 area"
+  },
+  {
+    "id": "a04",
+    "prompt": "escreve uma headline pra vender este plano",
+    "expected": "agent:copy",
+    "note": "copy de venda, 1 area, focado"
+  },
+  {
+    "id": "a05",
+    "prompt": "melhora o email de onboarding",
+    "expected": "agent:copy",
+    "note": "email copy, 1 area"
+  },
+  {
+    "id": "a06",
+    "prompt": "cria 3 variações de CTA pra testar",
+    "expected": "agent:copy",
+    "note": "copy de botão, A/B ready, 1 area"
+  },
+  {
+    "id": "a07",
+    "prompt": "faz auditoria SEO do site",
+    "expected": "agent:seo",
+    "note": "auditoria, 1 area"
+  },
+  {
+    "id": "a08",
+    "prompt": "adiciona schema markup no produto",
+    "expected": "agent:seo",
+    "note": "schema SEO, 1 area, técnico"
+  },
+  {
+    "id": "a09",
+    "prompt": "otimiza as meta descriptions",
+    "expected": "agent:seo",
+    "note": "SEO on-page, 1 area"
+  },
+  {
+    "id": "a10",
+    "prompt": "como melhorar a taxa de conversão do signup?",
+    "expected": "agent:growth",
+    "note": "CRO question, 1 area, lightweight"
+  },
+  {
+    "id": "a11",
+    "prompt": "qual o melhor preço pra este feature?",
+    "expected": "agent:growth",
+    "note": "pricing, 1 area"
+  },
+  {
+    "id": "a12",
+    "prompt": "plano pra reduzir churn",
+    "expected": "agent:growth",
+    "note": "churn analysis, 1 area, mas esperaria maestro por depth — porém 'plano' é leve: just brainstorm; se fosse 'executa o plano' seria maestro"
+  },
+  {
+    "id": "a13",
+    "prompt": "cria post pra LinkedIn sobre o lançamento",
+    "expected": "agent:social",
+    "note": "social copy, 1 area"
+  },
+  {
+    "id": "a14",
+    "prompt": "escreve copy pra Instagram story",
+    "expected": "agent:social",
+    "note": "social content, 1 area"
+  },
+  {
+    "id": "a15",
+    "prompt": "cria variações de ad criativo pra Meta",
+    "expected": "agent:ads",
+    "note": "paid ads, 1 area, copywriting"
+  },
+  {
+    "id": "a16",
+    "prompt": "setup de tracking no Google Ads",
+    "expected": "agent:ads",
+    "note": "ads technical, 1 area"
+  },
+  {
+    "id": "a17",
+    "prompt": "roda teste E2E do fluxo de checkout",
+    "expected": "agent:qa",
+    "note": "QA, 1 area, pontual"
+  },
+  {
+    "id": "a18",
+    "prompt": "verifica visualmente a responsividade do site",
+    "expected": "agent:qa",
+    "note": "visual QA, 1 area"
+  },
+  {
+    "id": "a19",
+    "prompt": "anota que definimos não fazer autenticação social por hora",
+    "expected": "agent:memoria",
+    "note": "memory, decisão registrada"
+  },
+  {
+    "id": "a20",
+    "prompt": "salva a decisão sobre pricing em tiers",
+    "expected": "agent:memoria",
+    "note": "memory, arquitetura de preço"
+  },
+  {
+    "id": "a21",
+    "prompt": "corrige o bug de logout no mobile",
+    "expected": "agent:dev",
+    "note": "bug fix, 1 arquivo, pontual"
+  },
+  {
+    "id": "a22",
+    "prompt": "ajusta a cor do botão secundário",
+    "expected": "agent:dev",
+    "note": "CSS fix, 1 arquivo"
+  },
+  {
+    "id": "m01",
+    "prompt": "cria a landing completa, escreve a copy de venda e configura o tracking",
+    "expected": "maestro",
+    "note": "3 áreas (designer, copy, growth/ads), artefato alto"
+  },
+  {
+    "id": "m02",
+    "prompt": "novo produto do zero: UI, docs, schema SEO, post de lançamento",
+    "expected": "maestro",
+    "note": "4 áreas (designer, dev, seo, social), multi-passo alto"
+  },
+  {
+    "id": "m03",
+    "prompt": "auditoria completa do site: performance, SEO, segurança, acessibilidade",
+    "expected": "maestro",
+    "note": "2+ áreas, complexidade alta, relatório merecedor de memória"
+  },
+  {
+    "id": "m04",
+    "prompt": "redesenha o onboarding, reescreve os emails, testa tudo E2E",
+    "expected": "maestro",
+    "note": "3 áreas (designer, copy, qa), integrado"
+  },
+  {
+    "id": "m05",
+    "prompt": "plano de crescimento: pricing, copy, anúncios, CRO do signup",
+    "expected": "maestro",
+    "note": "3-4 áreas (growth, copy, ads), estratégico"
+  },
+  {
+    "id": "m06",
+    "prompt": "refactor de infra: banco de dados, APIs, deploy, monitoria",
+    "expected": "maestro",
+    "note": "1 área (dev) mas multi-passo pesado, arquitetura alta"
+  },
+  {
+    "id": "m07",
+    "prompt": "integra pagamento: back, front, testes, comunicação com cliente",
+    "expected": "maestro",
+    "note": "1 area (dev) mas multi-passo pesado, requer planning"
+  },
+  {
+    "id": "m08",
+    "prompt": "melhora de churn: análise, copy de reativação, anúncios, UI de upgrade",
+    "expected": "maestro",
+    "note": "3-4 áreas (growth, copy, ads, designer), integrado"
+  },
+  {
+    "id": "m09",
+    "prompt": "lançamento beta: site, emails, social, ads, suporte inicial",
+    "expected": "maestro",
+    "note": "4+ áreas (designer, copy, social, ads), event-driven"
+  },
+  {
+    "id": "m10",
+    "prompt": "internacionalização: tradução completa, schema por locale, testes",
+    "expected": "maestro",
+    "note": "2+ áreas (dev, seo, qa), multi-passo pesado"
+  },
+  {
+    "id": "m11",
+    "prompt": "migração de plataforma: arquitetura, testes, rollout, suporte",
+    "expected": "maestro",
+    "note": "1 área (dev) mas crítico, multi-passo, requer planning e memória"
+  },
+  {
+    "id": "m12",
+    "prompt": "estratégia de referral: programa, UI, emails, tracking, análise",
+    "expected": "maestro",
+    "note": "4+ áreas (growth, designer, copy, ads), artefato alto"
+  }
+]

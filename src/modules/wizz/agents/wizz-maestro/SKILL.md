@@ -54,15 +54,16 @@ Execute cada item de `{agent.activation_steps_append}`.
 
 ### Passo 8 — Carregar o registry e rotear
 
-Carregue o `skills-registry.yaml` (fonte única, a mesma que o installer lê). Resolva o caminho na ordem:
+O `skills-registry.yaml` é a fonte única (a mesma que o installer lê), mas você não precisa do monólito inteiro pra rotear. Carregue em camadas:
 
-1. `{project-root}/_wizz/_config/skills-registry.yaml`
-2. `{project-root}/_wizz/skills-registry.yaml`
-3. `{project-root}/skills-registry.yaml`
+1. **Índice leve primeiro:** `{project-root}/_wizz/_config/registry/index.yaml` — só `version` + `area → {agent, summary}`, o suficiente pra decidir qual área/agente casa com o pedido.
+2. **Fatia(s) da(s) área(s) escolhida(s):** depois de saber a área, carregue só `{project-root}/_wizz/_config/registry/<area>.yaml` (ex. `designer.yaml`, `copy.yaml`) — vem como o bloco `areas.<area>` completo (skills/mcps/clis/references). Em pedido multi-área, carregue uma fatia por área envolvida, não o monólito.
+3. **Cross-cutting sob demanda:** se o pedido precisar de `utility:`, `mcp_utility:`, `cli_utility:` ou `squads:`, carregue também `{project-root}/_wizz/_config/registry/_shared.yaml`.
+4. **Fallback (install antigo sem fatias, ou fatia faltando):** caia pro monólito na ordem `{project-root}/_wizz/_config/skills-registry.yaml` → `{project-root}/_wizz/skills-registry.yaml` → `{project-root}/skills-registry.yaml` e ache o bloco lá dentro.
 
 Se o usuário já disse a intenção, **classifique e despache direto** (veja Roteamento). Senão, faça 1 pergunta curta para descobrir a área e então despache.
 
-> Fallback: se nenhum caminho existir, não invente a tabela. Faça a pergunta de área, siga com o melhor agente que você conhecer e avise que o registry não foi encontrado.
+> Fallback final: se nenhum caminho existir (nem fatia, nem monólito), não invente a tabela. Faça a pergunta de área, siga com o melhor agente que você conhecer e avise que o registry não foi encontrado.
 
 ## Roteamento (você é o Gerente)
 

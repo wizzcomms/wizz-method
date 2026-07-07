@@ -3598,6 +3598,63 @@ async function runTests() {
   console.log('');
 
   // ============================================================
+  // Test Suite 49: skills-lib registry slicing (_wizz/_config/registry/)
+  // installSkillsLib copies the skills-registry.yaml monolith AND generates
+  // per-area slices (index.yaml + <area>.yaml + _shared.yaml) so agents can
+  // read a few KB at runtime instead of the whole ~26KB file. All areas get
+  // sliced regardless of which area was selected for this install.
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 49: skills-lib registry slicing${colors.reset}`);
+  try {
+    const { installSkillsLib } = require('../tools/installer/modules/skills-lib');
+    const yaml49 = require('yaml');
+
+    const tempRoot49 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-registry-slice-'));
+    const wizzDir49 = path.join(tempRoot49, '_wizz');
+    await fs.ensureDir(wizzDir49);
+
+    // Select only 'copy' — designer.yaml must still be generated (all areas sliced).
+    const result49 = await installSkillsLib({ wizzDir: wizzDir49, selectedAreas: ['copy'] });
+
+    const registryDir49 = path.join(wizzDir49, '_config', 'registry');
+    const indexPath49 = path.join(registryDir49, 'index.yaml');
+    const designerPath49 = path.join(registryDir49, 'designer.yaml');
+    const sharedPath49 = path.join(registryDir49, '_shared.yaml');
+    const monolithPath49 = path.join(wizzDir49, '_config', 'skills-registry.yaml');
+
+    assert(result49.registry === true, 'installSkillsLib reports the registry as installed');
+    assert(await fs.pathExists(monolithPath49), 'monolith skills-registry.yaml is still copied (fallback/compat)');
+    assert(await fs.pathExists(indexPath49), 'index.yaml slice is generated in _config/registry/');
+    assert(await fs.pathExists(designerPath49), 'designer.yaml slice is generated even though only "copy" was selected (all areas sliced)');
+    assert(await fs.pathExists(sharedPath49), '_shared.yaml slice is generated in _config/registry/');
+
+    const indexDoc49 = yaml49.parse(await fs.readFile(indexPath49, 'utf8'));
+    assert(
+      indexDoc49.areas && indexDoc49.areas.designer && indexDoc49.areas.designer.agent === 'wizz-designer',
+      'index.yaml maps area -> agent (designer -> wizz-designer)',
+    );
+    assert(!indexDoc49.areas.designer.skills, 'index.yaml area entries omit the skills list (lightweight)');
+
+    const designerDoc49 = yaml49.parse(await fs.readFile(designerPath49, 'utf8'));
+    assert(
+      designerDoc49.area === 'designer' && Array.isArray(designerDoc49.skills),
+      'designer.yaml slice carries the full area block (area + skills)',
+    );
+
+    const sharedDoc49 = yaml49.parse(await fs.readFile(sharedPath49, 'utf8'));
+    assert(
+      Array.isArray(sharedDoc49.utility) && sharedDoc49.squads && typeof sharedDoc49.squads === 'object',
+      '_shared.yaml carries the cross-cutting utility/mcp_utility/cli_utility/squads sections',
+    );
+  } catch (error) {
+    console.log(`${colors.red}Test Suite 49 setup failed: ${error.message}${colors.reset}`);
+    console.log(error.stack);
+    failed++;
+  }
+
+  console.log('');
+
+  // ============================================================
   // Summary
   // ============================================================
   console.log(`${colors.cyan}========================================`);

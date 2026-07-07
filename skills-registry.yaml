@@ -61,37 +61,64 @@ areas:
   designer:
     agent: wizz-designer
     summary: "Design de produto e UI: interfaces, landing pages, design systems, motion, 3D."
+    # 3 PORTAS DE ENTRADA (2026-07, consolidação leve): o agente OFERECE/INVOCA
+    # apenas as skills com `entry: true`. As demais são puxadas PELA porta da sua
+    # camada (campo `door`) ou por pedido explícito do usuário — nunca oferecidas
+    # soltas. Nada foi fundido: todos os arquivos e references continuam intactos.
     skills:
+      # ── Porta 1: DIREÇÃO (decidir antes de construir) ──
+      - id: decision-maker
+        entry: true
+        door: direcao
+        when: "PORTA de direção: todo trabalho de decidir ANTES de construir. Brief visual inicial (6 decisões de estética + 3 lógicas) no kickoff. Puxa: taste-skill (direção anti-slop de brief novo) e motion-3d-director (decidir caminho motion/3D/vídeo)."
+      - id: taste-skill
+        door: direcao
+        when: "Anti-slop em briefs NOVOS: lê o brief, define a direção e audita contra defaults de AI."
+      - id: motion-3d-director
+        door: direcao
+        when: "Direção de motion/animação, 3D, WebGL, scroll cinematográfico, image-to-video. Decide o caminho ANTES de implementar."
+
+      # ── Porta 2: CONSTRUÇÃO E POLISH DE UI ──
       - id: ui-ux-pro-max
-        when: "Design system, paleta, tipografia, componente; pedido de UI amplo. Principal de busca de padrões/estilos."
-      - id: impeccable
-        when: "Gate de polish/qualidade de frontend: hardening de UI, acessibilidade, anti-padrões. Refina o que já existe."
-      - id: huashu-design
-        when: "Direção visual + protótipo HTML hi-fi, exploração de variantes, review 5-dim, export MP4/GIF."
+        entry: true
+        door: construcao
+        when: "PORTA de construção: criar/melhorar UI (design system, paleta, tipografia, componente, página). Puxa: premium-landing-ui-researcher (landing premium greenfield), ui-component-curator (1 componente em projeto existente), impeccable (gate de polish/acessibilidade), taste-redesign (anti-slop em código existente), huashu-design (protótipo HTML hi-fi/variantes/review) e react-components (Stitch→React)."
       - id: premium-landing-ui-researcher
+        door: construcao
         when: "Projeto NOVO (greenfield): cria landing premium do zero, hero, 3D high-end. Estratégia source-first."
       - id: ui-component-curator
+        door: construcao
         when: "Projeto EXISTENTE: qual componente/efeito adicionar que combina com o estilo atual."
-      - id: motion-3d-director
-        when: "Direção de motion/animação, 3D, WebGL, scroll cinematográfico, image-to-video."
-      - id: remotion-best-practices
-        when: "Vídeo programático em React (Remotion) especificamente."
+      - id: impeccable
+        door: construcao
+        when: "Gate de polish/qualidade de frontend: hardening de UI, acessibilidade, anti-padrões. Refina o que já existe."
+      - id: taste-redesign
+        door: construcao
+        when: "Anti-slop em projeto EXISTENTE: audita o código atual, lista problemas, prioriza fixes."
+      - id: huashu-design
+        door: construcao
+        when: "Direção visual + protótipo HTML hi-fi, exploração de variantes, review 5-dim, export MP4/GIF."
+      - id: react-components
+        door: construcao
+        when: "Converter design (Stitch MCP) em componentes React/Vite."
+
+      # ── Porta 3: MOTION E ASSETS (executar animação e gerar mídia) ──
       - id: animate
-        when: "Craft de animação/micro-interação: regras do Emil Kowalski (saída > entrada, só transform/opacity, respeitar reduced-motion). Complementa o motion-3d-director com a execução fina. Traz references + exemplos .tsx."
+        entry: true
+        door: motion
+        when: "PORTA de motion/assets: executar animação e gerar mídia. Craft de micro-interação (regras do Emil Kowalski: saída > entrada, só transform/opacity, reduced-motion). Puxa: design-motion-principles (auditar animação existente), remotion-best-practices (vídeo em React), canvas-design (PNG/PDF por código) e algorithmic-art (visual generativo)."
       - id: design-motion-principles
+        door: motion
         when: "Auditor de movimento: revisa animação existente e aponta scale(0) no início, easing cru, reduced-motion faltando; pesa contenção/polimento/diversão pelo contexto."
+      - id: remotion-best-practices
+        door: motion
+        when: "Vídeo programático em React (Remotion) especificamente."
       - id: canvas-design
+        door: motion
         when: "Gerar PNG/PDF editável por código (carrossel, quote card, infográfico) com fonte/cor/logo sempre certos. Traz canvas-fonts."
       - id: algorithmic-art
+        door: motion
         when: "Visual generativo por código (flow fields, ruído, partículas) para fundo/textura de hero, único a cada render, sem cara de banco de imagem."
-      - id: taste-skill
-        when: "Anti-slop em briefs NOVOS: lê o brief, define a direção e audita contra defaults de AI."
-      - id: taste-redesign
-        when: "Anti-slop em projeto EXISTENTE: audita o código atual, lista problemas, prioriza fixes."
-      - id: react-components
-        when: "Converter design (Stitch MCP) em componentes React/Vite."
-      - id: decision-maker
-        when: "Brief visual inicial: força 6 decisões de estética + 3 lógicas. Entra no kickoff, antes de construir."
     mcps:
       - id: magic
         when: "Gerar/refinar componentes prontos via 21st.dev (UI builder, inspiration, refiner)."
