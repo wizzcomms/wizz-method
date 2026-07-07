@@ -70,6 +70,7 @@
     "test:hooks": "node test/test-router-hook.js",
     "test:install": "node test/test-installation-components.js",
     "test:install-smoke": "node test/test-install-smoke.js",
+    "test:install-smoke-mcp": "node test/test-install-smoke-mcp.js",
     "test:mcp": "node test/test-mcp-config.js",
     "test:method-refs-allowlist": "node test/test-method-refs-allowlist.js",
     "test:network-retry": "node test/test-network-retry.js",

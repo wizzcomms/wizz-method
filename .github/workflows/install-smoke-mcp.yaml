@@ -1,0 +1,58 @@
+name: Install Smoke (MCP setup:)
+
+# Real, non-mocked run of the `setup:` pipeline (detect -> install ->
+# post_install -> verify -> resolve to absolute path) for the only MCP entry
+# in skills-registry.yaml that declares one today: `scrapling` (area
+# `growth`). test-install-smoke.js explicitly stays out of MCP/CLI
+# provisioning scope, and test-mcp-config.js mocks `exec`, so neither closes
+# this gap (2026-07-07 audit, Parte 2, seção J / Fase 3 item 3.6).
+#
+# This installs a real Python package (`uv tool install` / `pipx install` /
+# `pip install --user "scrapling[ai]==0.4.10"`) and downloads browser
+# binaries (`scrapling install`) — real network, real minutes. Same
+# reasoning as routing-eval-llm.yaml: NOT a PR gate, manual or weekly only.
+# test/test-install-smoke-mcp.js lives outside the aggregate `npm test`
+# script for the same reason and is only ever invoked here.
+#
+# The test self-skips (exit 0, clear warning) if none of uv/pipx/pip/pip3 is
+# on PATH, so a missing package manager never looks like a pipeline
+# regression — this job installs Python explicitly so that path is only hit
+# if the pip ecosystem itself is unavailable in the runner image.
+
+"on":
+  workflow_dispatch:
+  schedule:
+    # Toda segunda-feira, 09:30 UTC (30min depois do routing-eval-llm, para
+    # não competir por runners).
+    - cron: "30 9 * * 1"
+
+jobs:
+  install-smoke-mcp:
+    runs-on: ubuntu-latest
+    # Informativo, não bloqueante: uma falha aqui (rede instável, mudança
+    # upstream do pacote scrapling) não deve impedir merges em outros PRs
+    # (este workflow não roda em pull_request).
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install --user uv
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install smoke (MCP setup:)
+        run: npm run test:install-smoke-mcp

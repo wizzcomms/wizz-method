@@ -9,17 +9,19 @@ const { writeDepsCache, readPreviousMcpPins } = require('../modules/deps-cache')
 const { IdeManager } = require('../ide/manager');
 const { FileOps } = require('../file-ops');
 const { Config } = require('./config');
-const { getProjectRoot, getSourcePath } = require('../project-root');
 const { ManifestGenerator } = require('./manifest-generator');
 const prompts = require('../prompts');
 const { WIZZ_FOLDER_NAME } = require('../ide/shared/path-utils');
 const { InstallPaths } = require('./install-paths');
 const { ExternalModuleManager } = require('../modules/external-manager');
 const { resolveModuleVersion } = require('../modules/version-resolver');
-const { MODULE_HELP_CSV_HEADER } = require('../modules/module-help-schema');
 
 const { ExistingInstall } = require('./existing-install');
 const { warnPreNativeSkillsLegacy } = require('./legacy-warnings');
+const userFilePreservation = require('./user-file-preservation');
+const moduleConfigWriter = require('./module-config-writer');
+const helpCatalog = require('./help-catalog');
+const quickUpdateModule = require('./quick-update');
 
 class Installer {
   constructor() {
@@ -714,66 +716,7 @@ class Installer {
    * @returns {Object} { customFiles, modifiedFiles } — lists of restored files
    */
   async _restoreUserFiles(paths, updateState) {
-    const noFiles = { customFiles: [], modifiedFiles: [] };
-
-    if (!updateState || (updateState.customFiles.length === 0 && updateState.modifiedFiles.length === 0)) {
-      return noFiles;
-    }
-
-    let restoredCustomFiles = [];
-    let restoredModifiedFiles = [];
-
-    await prompts.tasks([
-      {
-        title: 'Finalizing installation',
-        task: async (message) => {
-          if (updateState.customFiles.length > 0) {
-            message(`Restoring ${updateState.customFiles.length} custom files...`);
-
-            for (const originalPath of updateState.customFiles) {
-              const relativePath = path.relative(paths.wizzDir, originalPath);
-              const backupPath = path.join(updateState.tempBackupDir, relativePath);
-
-              if (await fs.pathExists(backupPath)) {
-                await fs.ensureDir(path.dirname(originalPath));
-                await fs.copy(backupPath, originalPath, { overwrite: true });
-              }
-            }
-
-            if (updateState.tempBackupDir && (await fs.pathExists(updateState.tempBackupDir))) {
-              await fs.remove(updateState.tempBackupDir);
-            }
-
-            restoredCustomFiles = updateState.customFiles;
-          }
-
-          if (updateState.modifiedFiles.length > 0) {
-            restoredModifiedFiles = updateState.modifiedFiles;
-
-            if (updateState.tempModifiedBackupDir && (await fs.pathExists(updateState.tempModifiedBackupDir))) {
-              message(`Restoring ${restoredModifiedFiles.length} modified files as .bak...`);
-
-              for (const modifiedFile of restoredModifiedFiles) {
-                const relativePath = path.relative(paths.wizzDir, modifiedFile.path);
-                const tempBackupPath = path.join(updateState.tempModifiedBackupDir, relativePath);
-                const bakPath = modifiedFile.path + '.bak';
-
-                if (await fs.pathExists(tempBackupPath)) {
-                  await fs.ensureDir(path.dirname(bakPath));
-                  await fs.copy(tempBackupPath, bakPath, { overwrite: true });
-                }
-              }
-
-              await fs.remove(updateState.tempModifiedBackupDir);
-            }
-          }
-
-          return 'Installation finalized';
-        },
-      },
-    ]);
-
-    return { customFiles: restoredCustomFiles, modifiedFiles: restoredModifiedFiles };
+    return userFilePreservation.restoreUserFiles(paths, updateState);
   }
 
   /**
@@ -824,34 +767,7 @@ class Installer {
    * @returns {Object} { tempBackupDir, tempModifiedBackupDir } — undefined if no files
    */
   async _backupUserFiles(paths, customFiles, modifiedFiles) {
-    let tempBackupDir;
-    let tempModifiedBackupDir;
-
-    if (customFiles.length > 0) {
-      tempBackupDir = path.join(paths.projectRoot, '_wizz-custom-backup-temp');
-      await fs.ensureDir(tempBackupDir);
-
-      for (const customFile of customFiles) {
-        const relativePath = path.relative(paths.wizzDir, customFile);
-        const backupPath = path.join(tempBackupDir, relativePath);
-        await fs.ensureDir(path.dirname(backupPath));
-        await fs.copy(customFile, backupPath);
-      }
-    }
-
-    if (modifiedFiles.length > 0) {
-      tempModifiedBackupDir = path.join(paths.projectRoot, '_wizz-modified-backup-temp');
-      await fs.ensureDir(tempModifiedBackupDir);
-
-      for (const modifiedFile of modifiedFiles) {
-        const relativePath = path.relative(paths.wizzDir, modifiedFile.path);
-        const tempBackupPath = path.join(tempModifiedBackupDir, relativePath);
-        await fs.ensureDir(path.dirname(tempBackupPath));
-        await fs.copy(modifiedFile.path, tempBackupPath, { overwrite: true });
-      }
-    }
-
-    return { tempBackupDir, tempModifiedBackupDir };
+    return userFilePreservation.backupUserFiles(paths, customFiles, modifiedFiles);
   }
 
   /**
@@ -1032,118 +948,7 @@ class Installer {
    * @returns {Object} Object with customFiles and modifiedFiles arrays
    */
   async detectCustomFiles(wizzDir, existingFilesManifest) {
-    const customFiles = [];
-    const modifiedFiles = [];
-
-    // Memory subtrees (v6.1: _wizz/_memory, current: _wizz/memory) hold
-    // per-user runtime data generated by agents with sidecars. These files
-    // aren't installer-managed and must never be reported as "custom" or
-    // "modified" — they're user state, not user overrides.
-    const wizzMemoryPaths = ['_memory', 'memory'];
-
-    // Check if the manifest has hashes - if not, we can't detect modifications
-    let manifestHasHashes = false;
-    if (existingFilesManifest && existingFilesManifest.length > 0) {
-      manifestHasHashes = existingFilesManifest.some((f) => f.hash);
-    }
-
-    // Build map of previously installed files from files-manifest.csv with their hashes
-    const installedFilesMap = new Map();
-    for (const fileEntry of existingFilesManifest) {
-      if (fileEntry.path) {
-        const absolutePath = path.join(wizzDir, fileEntry.path);
-        installedFilesMap.set(path.normalize(absolutePath), {
-          hash: fileEntry.hash,
-          relativePath: fileEntry.path,
-        });
-      }
-    }
-
-    // Recursively scan wizzDir for all files
-    const scanDirectory = async (dir) => {
-      try {
-        const entries = await fs.readdir(dir, { withFileTypes: true });
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-
-          if (entry.isDirectory()) {
-            // Skip certain directories
-            if (entry.name === 'node_modules' || entry.name === '.git') {
-              continue;
-            }
-            await scanDirectory(fullPath);
-          } else if (entry.isFile()) {
-            const normalizedPath = path.normalize(fullPath);
-            const fileInfo = installedFilesMap.get(normalizedPath);
-
-            // Skip certain system files that are auto-generated
-            const relativePath = path.relative(wizzDir, fullPath);
-            const fileName = path.basename(fullPath);
-
-            // Skip _config directory EXCEPT for modified agent customizations
-            if (relativePath.startsWith('_config/') || relativePath.startsWith('_config\\')) {
-              // Special handling for .customize.yaml files - only preserve if modified
-              if (relativePath.includes('/agents/') && fileName.endsWith('.customize.yaml')) {
-                // Check if the customization file has been modified from manifest
-                const manifestPath = path.join(wizzDir, '_config', 'manifest.yaml');
-                if (await fs.pathExists(manifestPath)) {
-                  const crypto = require('node:crypto');
-                  const currentContent = await fs.readFile(fullPath, 'utf8');
-                  const currentHash = crypto.createHash('sha256').update(currentContent).digest('hex');
-
-                  const yaml = require('yaml');
-                  const manifestContent = await fs.readFile(manifestPath, 'utf8');
-                  const manifestData = yaml.parse(manifestContent);
-                  const originalHash = manifestData.agentCustomizations?.[relativePath];
-
-                  // Only add to customFiles if hash differs (user modified)
-                  if (originalHash && currentHash !== originalHash) {
-                    customFiles.push(fullPath);
-                  }
-                }
-              }
-              continue;
-            }
-
-            if (wizzMemoryPaths.some((mp) => relativePath === mp || relativePath.startsWith(mp + '/'))) {
-              continue;
-            }
-
-            // Skip config.yaml files - these are regenerated on each install/update
-            if (fileName === 'config.yaml') {
-              continue;
-            }
-
-            if (!fileInfo) {
-              // File not in manifest = custom file
-              // EXCEPT: Agent .md files in module folders are generated files, not custom
-              // Only treat .md files under _config/agents/ as custom
-              if (!(fileName.endsWith('.md') && relativePath.includes('/agents/') && !relativePath.startsWith('_config/'))) {
-                customFiles.push(fullPath);
-              }
-            } else if (manifestHasHashes && fileInfo.hash) {
-              // File in manifest with hash - check if it was modified
-              const currentHash = await this.manifest.calculateFileHash(fullPath);
-              if (currentHash && currentHash !== fileInfo.hash) {
-                // Hash changed = file was modified
-                modifiedFiles.push({
-                  path: fullPath,
-                  relativePath: fileInfo.relativePath,
-                });
-              }
-            }
-          }
-        }
-      } catch (error) {
-        // Best-effort: a permission error mid-scan must not silently decide
-        // what gets preserved on the next update (this scan is what
-        // detects custom/modified files), so warn instead of swallowing it.
-        await prompts.log.warn(`Warning: could not scan ${dir} for custom/modified files: ${error.message}`);
-      }
-    };
-
-    await scanDirectory(wizzDir);
-    return { customFiles, modifiedFiles };
+    return userFilePreservation.detectCustomFiles(wizzDir, existingFilesManifest, { manifest: this.manifest });
   }
 
   /**
@@ -1152,93 +957,7 @@ class Installer {
    * @param {Object} moduleConfigs - Collected configuration values
    */
   async generateModuleConfigs(wizzDir, moduleConfigs) {
-    const yaml = require('yaml');
-
-    // Extract core config values to share with other modules
-    const coreConfig = moduleConfigs.core || {};
-
-    // Get all installed module directories
-    const entries = await fs.readdir(wizzDir, { withFileTypes: true });
-    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
-    const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
-
-    // Generate config.yaml for each installed module
-    for (const moduleName of installedModules) {
-      const modulePath = path.join(wizzDir, moduleName);
-
-      // Get module-specific config or use empty object if none
-      const config = moduleConfigs[moduleName] || {};
-
-      if (await fs.pathExists(modulePath)) {
-        const configPath = path.join(modulePath, 'config.yaml');
-
-        // Create header
-        const packageJson = require(path.join(getProjectRoot(), 'package.json'));
-        const header = `# ${moduleName.toUpperCase()} Module Configuration
-# Generated by Wizz Method installer
-# Version: ${packageJson.version}
-# Date: ${new Date().toISOString()}
-
-`;
-
-        // For non-core modules, add core config values directly
-        let finalConfig = { ...config };
-        let coreSection = '';
-
-        if (moduleName !== 'core' && coreConfig && Object.keys(coreConfig).length > 0) {
-          // Add core values directly to the module config
-          // These will be available for reference in the module
-          finalConfig = {
-            ...config,
-            ...coreConfig, // Spread core config values directly into the module config
-          };
-
-          // Create a comment section to identify core values
-          coreSection = '\n# Core Configuration Values\n';
-        }
-
-        // Clean the config to remove any non-serializable values (like functions)
-        const cleanConfig = structuredClone(finalConfig);
-
-        // Convert config to YAML
-        let yamlContent = yaml.stringify(cleanConfig, {
-          indent: 2,
-          lineWidth: 0,
-          minContentWidth: 0,
-        });
-
-        // If we have core values, reorganize the YAML to group them with their comment
-        if (coreSection && moduleName !== 'core') {
-          // Split the YAML into lines
-          const lines = yamlContent.split('\n');
-          const moduleConfigLines = [];
-          const coreConfigLines = [];
-
-          // Separate module-specific and core config lines
-          for (const line of lines) {
-            const key = line.split(':')[0].trim();
-            if (Object.prototype.hasOwnProperty.call(coreConfig, key)) {
-              coreConfigLines.push(line);
-            } else {
-              moduleConfigLines.push(line);
-            }
-          }
-
-          // Rebuild YAML with module config first, then core config with comment
-          yamlContent = moduleConfigLines.join('\n');
-          if (coreConfigLines.length > 0) {
-            yamlContent += coreSection + coreConfigLines.join('\n');
-          }
-        }
-
-        // Write the clean config file with POSIX-compliant final newline
-        const content = header + yamlContent;
-        await fs.writeFile(configPath, content.endsWith('\n') ? content : content + '\n', 'utf8');
-
-        // Track the config file in installedFiles
-        this.installedFiles.add(configPath);
-      }
-    }
+    return moduleConfigWriter.generateModuleConfigs(wizzDir, moduleConfigs, { trackFile: (p) => this.installedFiles.add(p) });
   }
 
   /**
@@ -1248,112 +967,8 @@ class Installer {
    * @param {string} wizzDir - WIZZ installation directory
    * @param {Array<Object>} _agentEntries - Unused; retained for call-site compatibility
    */
-  async mergeModuleHelpCatalogs(wizzDir, _agentEntries = []) {
-    const allRows = [];
-    const headerRow = MODULE_HELP_CSV_HEADER;
-    const COLUMN_COUNT = 13;
-    const PHASE_INDEX = 7;
-
-    // Get all installed module directories
-    const entries = await fs.readdir(wizzDir, { withFileTypes: true });
-    const nonModuleDirs = new Set(['_config', '_memory', 'memory', 'docs', 'scripts', 'custom']);
-    const installedModules = entries.filter((entry) => entry.isDirectory() && !nonModuleDirs.has(entry.name)).map((entry) => entry.name);
-
-    // Add core module to scan (it's installed at root level as _config, but we check src/core-skills)
-    const coreModulePath = getSourcePath('core-skills');
-    const modulePaths = new Map();
-
-    // Map all module source paths
-    if (await fs.pathExists(coreModulePath)) {
-      modulePaths.set('core', coreModulePath);
-    }
-
-    // Map installed module paths
-    for (const moduleName of installedModules) {
-      const modulePath = path.join(wizzDir, moduleName);
-      modulePaths.set(moduleName, modulePath);
-    }
-
-    // Scan each module for module-help.csv
-    for (const [moduleName, modulePath] of modulePaths) {
-      const helpFilePath = path.join(modulePath, 'module-help.csv');
-
-      if (await fs.pathExists(helpFilePath)) {
-        try {
-          const content = await fs.readFile(helpFilePath, 'utf8');
-          const lines = content.split('\n').filter((line) => line.trim() && !line.startsWith('#'));
-
-          let headerWarned = false;
-          for (const line of lines) {
-            // Header row: warn on drift from canonical schema, then skip.
-            // Data rows are loaded positionally regardless, so the warning
-            // is advisory — the maintainer should rename their columns.
-            if (line.startsWith('module,')) {
-              if (!headerWarned && line.trim() !== headerRow) {
-                await prompts.log.warn(
-                  `  ${moduleName}/module-help.csv header does not match canonical schema. ` +
-                    `Expected: ${headerRow} | Found: ${line.trim()} | Data loaded positionally.`,
-                );
-                headerWarned = true;
-              }
-              continue;
-            }
-
-            // Parse the line - handle quoted fields with commas
-            const columns = this.parseCSVLine(line);
-            if (columns.length < COLUMN_COUNT - 1) continue;
-
-            // Pad short rows; truncate over-long rows
-            const padded = columns.slice(0, COLUMN_COUNT);
-            while (padded.length < COLUMN_COUNT) padded.push('');
-
-            // If module column is empty, fill with this module's name
-            // (core stays empty so its rows render as universal tools)
-            if ((!padded[0] || padded[0].trim() === '') && moduleName !== 'core') {
-              padded[0] = moduleName;
-            }
-
-            allRows.push(padded.map((c) => this.escapeCSVField(c)).join(','));
-          }
-
-          if (process.env.WIZZ_VERBOSE_INSTALL === 'true') {
-            await prompts.log.message(`  Merged module-help from: ${moduleName}`);
-          }
-        } catch (error) {
-          await prompts.log.warn(`  Warning: Failed to read module-help.csv from ${moduleName}: ${error.message}`);
-        }
-      }
-    }
-
-    // Sort by module, then phase. Stable sort preserves authored order within a phase.
-    const decorated = allRows.map((row, index) => ({ row, index, cols: this.parseCSVLine(row) }));
-    decorated.sort((a, b) => {
-      const moduleA = (a.cols[0] || '').toLowerCase();
-      const moduleB = (b.cols[0] || '').toLowerCase();
-      if (moduleA !== moduleB) return moduleA.localeCompare(moduleB);
-
-      const phaseA = a.cols[PHASE_INDEX] || '';
-      const phaseB = b.cols[PHASE_INDEX] || '';
-      if (phaseA !== phaseB) return phaseA.localeCompare(phaseB);
-
-      return a.index - b.index;
-    });
-    const sortedRows = decorated.map((d) => d.row);
-
-    // Write merged catalog
-    const outputDir = path.join(wizzDir, '_config');
-    await fs.ensureDir(outputDir);
-    const outputPath = path.join(outputDir, 'wizz-help.csv');
-
-    const mergedContent = [headerRow, ...sortedRows].join('\n');
-    await fs.writeFile(outputPath, mergedContent, 'utf8');
-
-    // Track the installed file
-    this.installedFiles.add(outputPath);
-
-    if (process.env.WIZZ_VERBOSE_INSTALL === 'true') {
-      await prompts.log.message(`  Generated wizz-help.csv: ${sortedRows.length} workflows`);
-    }
+  async mergeModuleHelpCatalogs(wizzDir, agentEntries = []) {
+    return helpCatalog.mergeModuleHelpCatalogs(wizzDir, agentEntries, { trackFile: (p) => this.installedFiles.add(p) });
   }
 
   /**
@@ -1454,188 +1069,7 @@ class Installer {
    * @returns {Object} Update result
    */
   async quickUpdate(config) {
-    const projectDir = path.resolve(config.directory);
-    const { wizzDir } = await this.findWizzDir(projectDir);
-
-    // Check if wizz directory exists
-    if (!(await fs.pathExists(wizzDir))) {
-      throw new Error(`Wizz not installed at ${wizzDir}. Use regular install for first-time setup.`);
-    }
-
-    // Announce the scope up front: Quick Update only refreshes already
-    // installed modules with preserved settings. It never provisions global
-    // skills, MCP servers, or CLIs (see the isQuickUpdate() gate below, in
-    // _installAndConfigure); that only happens on a fresh install or
-    // Modify. Surfacing this before any work starts avoids the confusion of
-    // "I updated and skills didn't come" (see project memory).
-    await prompts.log.info(
-      'Quick Update: atualiza os módulos já instalados com as configurações preservadas. Skills globais, MCPs e CLIs novos não são provisionados neste modo; rode install e escolha "Modify Wizz Installation" para isso.',
-    );
-
-    // Detect existing installation
-    const existingInstall = await ExistingInstall.detect(wizzDir);
-    const installedModules = existingInstall.moduleIds;
-    const configuredIdes = existingInstall.ides;
-    const projectRoot = path.dirname(wizzDir);
-
-    // Get available modules (what we have source for)
-    const availableModulesData = await new OfficialModules().listAvailable();
-    const availableModules = [...availableModulesData.modules];
-
-    // Add external official modules to available modules
-    const externalModules = await this.externalModuleManager.listAvailable();
-    for (const externalModule of externalModules) {
-      if (installedModules.includes(externalModule.code) && !availableModules.some((m) => m.id === externalModule.code)) {
-        availableModules.push({
-          id: externalModule.code,
-          name: externalModule.name,
-          isExternal: true,
-          fromExternal: true,
-        });
-      }
-    }
-
-    // Add installed custom modules to available modules
-    const { CustomModuleManager } = require('../modules/custom-module-manager');
-    const customMgr = new CustomModuleManager();
-    for (const moduleId of installedModules) {
-      if (!availableModules.some((m) => m.id === moduleId)) {
-        const customSource = await customMgr.findModuleSourceByCode(moduleId, { wizzDir });
-        if (customSource) {
-          availableModules.push({
-            id: moduleId,
-            name: moduleId,
-            isExternal: true,
-            fromCustom: true,
-          });
-        }
-      }
-    }
-
-    const availableModuleIds = new Set(availableModules.map((m) => m.id));
-
-    // Only update modules that are BOTH installed AND available (we have source for)
-    const modulesToUpdate = installedModules.filter((id) => availableModuleIds.has(id));
-    const skippedModules = installedModules.filter((id) => !availableModuleIds.has(id));
-
-    if (skippedModules.length > 0) {
-      await prompts.log.warn(`Skipping ${skippedModules.length} module(s) - no source available: ${skippedModules.join(', ')}`);
-    }
-
-    // Build channel options from the existing manifest FIRST so the config
-    // collector below (which triggers external-module clones via
-    // findModuleSource) knows each module's recorded channel and doesn't
-    // silently redecide it. Without this, modules previously on 'next' or
-    // 'pinned' would trigger a stable-channel tag lookup at config-collection
-    // time, burning GitHub API quota and potentially failing.
-    const manifestData = await this.manifest.read(wizzDir);
-    const channelOptions = { global: null, nextSet: new Set(), pins: new Map(), warnings: [] };
-    if (manifestData?.modulesDetailed) {
-      const { fetchStableTags, classifyUpgrade, parseGitHubRepo } = require('../modules/channel-resolver');
-      for (const entry of manifestData.modulesDetailed) {
-        if (!entry?.name || !entry?.channel) continue;
-        if (entry.channel === 'pinned' && entry.version) {
-          channelOptions.pins.set(entry.name, entry.version);
-          continue;
-        }
-        if (entry.channel === 'next') {
-          channelOptions.nextSet.add(entry.name);
-          continue;
-        }
-        // Stable: classify the available upgrade. Patches and minors fall
-        // through (stable default picks up the top tag). A major upgrade
-        // requires opt-in, so under quick-update's non-interactive semantics
-        // we pin to the current version to prevent a silent breaking jump.
-        if (entry.channel === 'stable' && entry.version && entry.repoUrl) {
-          const parsed = parseGitHubRepo(entry.repoUrl);
-          if (!parsed) continue;
-          try {
-            const tags = await fetchStableTags(parsed.owner, parsed.repo);
-            if (tags.length === 0) continue;
-            const topTag = tags[0].tag;
-            const cls = classifyUpgrade(entry.version, topTag);
-            if (cls === 'major') {
-              channelOptions.pins.set(entry.name, entry.version);
-              await prompts.log.warn(
-                `${entry.name} ${entry.version} → ${topTag} is a new major release; staying on ${entry.version}. ` +
-                  `Run \`wizz install\` (Modify) with \`--pin ${entry.name}=${topTag}\` to accept.`,
-              );
-            }
-          } catch (error) {
-            // Tag lookup failed (offline, rate-limited). Stay on the current
-            // version rather than guessing — the existing cache is already
-            // at that ref, so re-using it keeps the install stable.
-            channelOptions.pins.set(entry.name, entry.version);
-            await prompts.log.warn(`Could not check ${entry.name} for updates (${error.message}); staying on ${entry.version}.`);
-          }
-        }
-      }
-    }
-
-    // Load existing configs and collect new fields (if any)
-    await prompts.log.info('Checking for new configuration options...');
-    const quickModules = new OfficialModules({ channelOptions });
-    await quickModules.loadExistingConfig(projectDir);
-
-    let promptedForNewFields = false;
-
-    const corePrompted = await quickModules.collectModuleConfigQuick('core', projectDir, true);
-    if (corePrompted) {
-      promptedForNewFields = true;
-    }
-
-    for (const moduleName of modulesToUpdate) {
-      if (moduleName === 'core') continue; // Already collected above
-      const modulePrompted = await quickModules.collectModuleConfigQuick(moduleName, projectDir, true);
-      if (modulePrompted) {
-        promptedForNewFields = true;
-      }
-    }
-
-    if (!promptedForNewFields) {
-      await prompts.log.success('All configuration is up to date, no new options to configure');
-    }
-
-    quickModules.collectedConfig._meta = {
-      version: require(path.join(getProjectRoot(), 'package.json')).version,
-      installDate: new Date().toISOString(),
-      lastModified: new Date().toISOString(),
-    };
-
-    // Build config and delegate to install()
-    const installConfig = {
-      directory: projectDir,
-      modules: modulesToUpdate,
-      ides: configuredIdes,
-      coreConfig: quickModules.collectedConfig.core,
-      moduleConfigs: quickModules.collectedConfig,
-      // Forward `--set` overrides so the post-install patch step
-      // (`applySetOverrides`) runs at the end of quick-update too. The
-      // installer.install path applies them after writeCentralConfig.
-      setOverrides: config.setOverrides || {},
-      actionType: 'install',
-      _quickUpdate: true,
-      _preserveModules: skippedModules,
-      _existingModules: installedModules,
-      channelOptions,
-    };
-
-    const installResult = await this.install(installConfig);
-
-    return {
-      // Quick Update delegates to install() under the hood; propagate its
-      // real success/errors/warnings instead of always reporting success so
-      // a partial failure (e.g. an IDE setup step) isn't hidden behind a
-      // green "Quick update complete!" (see M24 in the installer audit).
-      success: installResult.success,
-      moduleCount: modulesToUpdate.length,
-      hadNewFields: promptedForNewFields,
-      modules: modulesToUpdate,
-      skippedModules: skippedModules,
-      ides: configuredIdes,
-      errors: installResult.errors || 0,
-      warnings: installResult.warnings || 0,
-    };
+    return quickUpdateModule.quickUpdate(this, config);
   }
 
   /**
@@ -1821,49 +1255,25 @@ class Installer {
 
   /**
    * Parse a CSV line, handling quoted fields.
-   *
-   * M15 (auditoria 2026-07-07): este método tinha um parser manual próprio,
-   * convivendo com `csv-parse/sync` já usado em `_cleanupSkillDirs` /
-   * `_readSkillManifestRows`. Único parser de LEITURA de CSV no installer
-   * agora — csv-parse/sync fica por trás dos dois caminhos. Preserva o
-   * contrato "nunca lança" do parser manual antigo: uma linha malformada
-   * (aspas não fechadas, raríssimo num module-help.csv curado à mão) cai no
-   * fallback e devolve a linha inteira como campo único, que o chamador já
-   * descarta (`columns.length < COLUMN_COUNT - 1`).
+   * Thin wrapper — see `core/help-catalog.js` for the implementation and the
+   * M15 rationale (auditoria 2026-07-07) on why this delegates to
+   * `csv-parse/sync`.
    * @param {string} line - CSV line to parse
    * @returns {Array} Array of field values
    */
   parseCSVLine(line) {
-    const { parse } = require('csv-parse/sync');
-    try {
-      const rows = parse(line, { relax_column_count: true, relax_quotes: true, skip_empty_lines: false });
-      return rows[0] || [line];
-    } catch {
-      return [line];
-    }
+    return helpCatalog.parseCSVLine(line);
   }
 
   /**
    * Escape a CSV field if it contains special characters.
-   *
-   * Continua manual de propósito (M15): `csv-stringify/sync`, o par de
-   * ESCRITA de `csv-parse/sync`, não é dependência deste repo (conferido em
-   * package.json). Adicionar uma lib só para este método não compensa;
-   * remover o parser de LEITURA duplicado já fecha a lacuna real do
-   * finding.
+   * Thin wrapper — see `core/help-catalog.js` for the implementation and the
+   * M15 rationale (auditoria 2026-07-07) on why this stays manual.
    * @param {string} field - Field value to escape
    * @returns {string} Escaped field
    */
   escapeCSVField(field) {
-    if (field === null || field === undefined) {
-      return '';
-    }
-    const str = String(field);
-    // If field contains comma, quote, or newline, wrap in quotes and escape inner quotes
-    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-      return `"${str.replaceAll('"', '""')}"`;
-    }
-    return str;
+    return helpCatalog.escapeCSVField(field);
   }
 }
 
