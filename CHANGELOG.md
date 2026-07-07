@@ -4,6 +4,13 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.5.1] - 2026-07-08
+
+### Corrigido
+
+- Instalação dos CLIs `hyperframes`, `claude-video` e `distribb` quebrada pelo pin de SHA da 1.5.0: a convenção `npx skills add <url>#<sha>` nunca funcionou (a CLI `skills` trata o fragmento como branch e o `git clone --branch <sha>` falha com "Remote branch not found"; não existe flag `--ref`). O `install:` agora faz clone temporário + `git checkout <sha>` + `skills add <path-local> -g -y --copy` (o `--copy` evita symlink para o diretório temporário apagado), mantendo o pin de supply chain de fato.
+- `check:` do `hyperframes` era `npx --yes hyperframes --version`, que baixa o pacote do npm e passa sempre; o installer reportava "já instalado" sem as skills nunca terem sido adicionadas. Agora testa `test -d $HOME/.claude/skills/hyperframes`, e a entrada ganhou `platform: [darwin, linux]` (install virou POSIX, mesma regra das demais clone-and-run).
+
 ## [1.5.0] - 2026-07-07
 
 > Consolida as fases 1, 2 e 3 do plano de auditoria de julho/2026. A 1.4.2 nunca foi publicada no npm; este release absorve aquele conteúdo.
