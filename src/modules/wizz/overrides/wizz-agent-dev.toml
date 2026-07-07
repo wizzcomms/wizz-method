@@ -28,12 +28,12 @@ principles = [
 [[agent.menu]]
 code = "TDD"
 description = "Escrever testes primeiro (red/green/refactor)"
-prompt = "Invoque a skill GLOBAL 'tdd-guide' via a ferramenta Skill (ou o agente tdd-guide) para guiar TDD."
+prompt = "Guie TDD diretamente: escreva o teste primeiro (red), implemente o mínimo para passar (green), refatore com a suíte verde e registre evidência. Para fluxo completo de implementação, use wizz-quick-dev quando for ajuste pontual."
 
 [[agent.menu]]
 code = "REV"
 description = "Revisão de código após implementar"
-prompt = "Invoque a skill GLOBAL 'code-reviewer' via a ferramenta Skill (ou o agente code-reviewer)."
+prompt = "Invoque a skill GLOBAL 'wizz-code-review' via a ferramenta Skill."
 
 [[agent.menu]]
 code = "DBG"

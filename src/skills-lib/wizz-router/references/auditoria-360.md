@@ -7,10 +7,10 @@ Ao detectar o gatilho, apresente o menu de áreas via `AskUserQuestion`:
 ```
 Vou fazer uma Auditoria 360° do projeto. Escolha as áreas:
 
-[ ] 🔧 Código e Arquitetura — code-reviewer + architect
-[ ] 🔒 Segurança — web-security + security-reviewer + auth-and-secrets
-[ ] 🗄️ Banco de Dados — database-reviewer + database-and-deps
-[ ] 🎨 Design e UX — ui-ux-pro-max + premium-landing (Audit Passes)
+[ ] 🔧 Código e Arquitetura — wizz-code-review + wizz-agent-architect
+[ ] 🔒 Segurança — web-security + auth-and-secrets
+[ ] 🗄️ Banco de Dados — supabase-postgres-best-practices + database-scaling + database-and-deps
+[ ] 🎨 Design e UX — ui-ux-pro-max + premium-landing-ui-researcher
 [ ] 📈 Growth e SEO — seo-audit + page-cro + analytics-tracking
 [ ] ⚡ Performance — database-scaling + caching-and-queues + infrastructure
 [ ] 🧠 Contexto e Decisões — cerebro (aprendizados registrados)

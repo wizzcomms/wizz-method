@@ -6,26 +6,26 @@ Use esta tabela **só fora de projeto Wizz** (sem `_wizz/`), quando o router map
 
 | Intenção / palavras-chave | Skills a oferecer | Prioridade |
 |---|---|---|
-| Banco lento, queries, índices, N+1, sharding, connection pool | `database-scaling` + `database-reviewer` | 1 |
+| Banco lento, queries, índices, N+1, sharding, connection pool | `database-scaling` + `supabase-postgres-best-practices` | 1 |
 | Cache, Redis, filas, BullMQ, SQS, Kafka, job assíncrono | `caching-and-queues` | 1 |
 | Kubernetes, auto-scaling, CDN, capacidade, SLO, load test | `infrastructure` | 1 |
 | Cloud spend, custo de infra, right-sizing, AWS/GCP billing | `cloud-and-infra` | 1 |
-| Auth, secrets, tokens, OAuth, JWT, Clerk, permissões | `auth-and-secrets` + `security-reviewer` | 1 |
+| Auth, secrets, tokens, OAuth, JWT, Clerk, permissões | `auth-and-secrets` + `web-security` | 1 |
 | Dependências, packages, vulnerabilidades, npm audit | `database-and-deps` | 2 |
-| Segurança, XSS, CSRF, SQLi, IDOR, OWASP, rate limit, CORS, clickjacking, PII na resposta, enumeração de usuário, headers | `web-security` + `security-reviewer` + `auth-and-secrets` | 1 |
+| Segurança, XSS, CSRF, SQLi, IDOR, OWASP, rate limit, CORS, clickjacking, PII na resposta, enumeração de usuário, headers | `web-security` + `auth-and-secrets` | 1 |
 | Desktop, Electron, contextIsolation, code signing | `desktop-security` | 2 |
 
 ## Área Técnica — Código e Qualidade
 
 | Intenção / palavras-chave | Skills a oferecer | Prioridade |
 |---|---|---|
-| Revisar código, code review, qualidade, refatorar | `code-reviewer` (agente nativo) | 1 |
-| Novo feature, bug fix, TDD, testes, cobertura | `tdd-guide` (agente nativo) | 1 |
-| Build quebrado, erros de TypeScript, lint, CI | `build-error-resolver` (agente nativo) | 1 |
-| Arquitetura, design de sistema, decisão técnica | `architect` (agente nativo) | 1 |
-| Fluxo crítico, E2E, testes de ponta a ponta | `e2e-runner` (agente nativo) | 2 |
-| Dead code, limpeza, refactoring, knip | `refactor-cleaner` (agente nativo) | 2 |
-| SQL, schema, migrations, Supabase, RLS, performance de queries | `database-reviewer` (agente nativo) | 1 |
+| Revisar código, code review, qualidade, refatorar | `wizz-code-review` | 1 |
+| Novo feature, bug fix, TDD, testes, cobertura | `wizz-quick-dev` ou `wizz-agent-dev` | 1 |
+| Build quebrado, erros de TypeScript, lint, CI | `wizz-quick-dev` | 1 |
+| Arquitetura, design de sistema, decisão técnica | `wizz-agent-architect` | 1 |
+| Fluxo crítico, E2E, testes de ponta a ponta | `wizz-qa-generate-e2e-tests` + `agent-browser` | 2 |
+| Dead code, limpeza, refactoring, knip | `wizz-code-review` + `wizz-quick-dev` | 2 |
+| SQL, schema, migrations, Supabase, RLS, performance de queries | `supabase-postgres-best-practices` + `database-scaling` | 1 |
 | Segunda opinião, revisão crítica adversarial | `adversarial-reviewer` | 2 |
 | Plano técnico, breakdown de tasks, handoff de dev | `implementation-planner` | 2 |
 | Novo projeto, iniciar app, ponto de partida, onboarding dev | `inicio-de-projeto` | 1 |
@@ -71,7 +71,7 @@ Use esta tabela **só fora de projeto Wizz** (sem `_wizz/`), quando o router map
 | Ferramenta grátis de captação de leads | `free-tool-strategy` | 2 |
 | A/B test, variações, experimentos de conversão | `ab-test-setup` + `analytics-tracking` | 2 |
 | Copywriting, copy, persuasão, texto de venda | `copywriting` + `humanizer` | 1 |
-| Pesquisa de mercado, inteligência competitiva | agentes nativos: `market-research` / `deep-research` | 2 |
+| Pesquisa de mercado, inteligência competitiva | `wizz-market-research` / `wizz-domain-research` | 2 |
 
 ## Contexto e Memória
 

@@ -485,10 +485,10 @@ If this skill is running inside a Wizz Method project (a `_wizz/` folder exists,
 | Section 1 — Copywriter | `wizz-copy` | the `Skill` tool, passing the copy prompt as the brief |
 | Section 2 — 3D / Illustration | `wizz-designer` | routes onward to `motion-3d-director` |
 | Section 3 — Design (layout spec) | `wizz-designer` | routes onward to `ui-ux-pro-max` / `premium-landing-ui-researcher` |
-| Section 4 — Developer | `wizz-dev` (quick-dev for small builds) | builds from the dev prompt + assets |
+| Section 4 — Developer | `wizz-agent-dev` (`wizz-quick-dev` for small builds) | builds from the dev prompt + assets |
 
 Recommended close inside the method:
-> Brief locked. Want me to dispatch it? I can send the copy to **wizz-copy**, the visual direction to **wizz-designer**, and the build to **wizz-dev** — in that order. Or run the launch guide yourself.
+> Brief locked. Want me to dispatch it? I can send the copy to **wizz-copy**, the visual direction to **wizz-designer**, and the build to **wizz-agent-dev** — or **wizz-quick-dev** for a small build — in that order. Or run the launch guide yourself.
 >
 > For the engineering setup (folder structure, stack, patterns, dev checklist), run **`/inicio-de-projeto`** — this brief is the visual direction; that one is the technical foundation.
 

@@ -19,9 +19,9 @@ activation_steps_append = [
 ]
 
 persistent_facts = [
-  "BLUEPRINT: file:src/modules/wizz/agents/wizz-social/knowledge/blueprint-roteiro-viral.md",
-  "ESTEIRA 3D: file:src/modules/wizz/agents/wizz-social/knowledge/prompts-imagem-video.md (roteiro vira prompts de imagem+animação), file:src/modules/wizz/agents/wizz-social/knowledge/legenda-instagram.md (legenda do post), file:src/modules/wizz/agents/wizz-social/knowledge/analise-imagem-referencia.md (imagem de referência vira prompt).",
-  "BIBLIOTECA DE PROMPTS: file:src/modules/wizz/agents/wizz-social/knowledge/biblioteca-prompts-imagem.md (catálogo de 11 categorias: criar, transformar e editar imagem com IA). Consulto quando o pedido é sobre gerar/transformar/editar uma imagem avulsa, não só a esteira de vídeo.",
+  "BLUEPRINT: file:{skill-root}/knowledge/blueprint-roteiro-viral.md",
+  "ESTEIRA 3D: file:{skill-root}/knowledge/prompts-imagem-video.md (roteiro vira prompts de imagem+animação), file:{skill-root}/knowledge/legenda-instagram.md (legenda do post), file:{skill-root}/knowledge/analise-imagem-referencia.md (imagem de referência vira prompt).",
+  "BIBLIOTECA DE PROMPTS: file:{skill-root}/knowledge/biblioteca-prompts-imagem.md (catálogo de 11 categorias: criar, transformar e editar imagem com IA). Consulto quando o pedido é sobre gerar/transformar/editar uma imagem avulsa, não só a esteira de vídeo.",
   "Números específicos sempre. '130 agentes', nunca 'vários recursos'. Se não sei o número, uso [NÚMERO] e aviso.",
   "CTA Triplo na ordem: isca de DM com palavra-chave, CTA de seguidor, assinatura verbal 'Tamo junto e let's go'.",
   "Nunca uso em-dash. Substituo por ponto, vírgula, dois-pontos ou parênteses.",

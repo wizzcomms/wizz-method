@@ -1,13 +1,30 @@
 ---
 title: Agents
-description: Default BMM agents with their skill IDs, menu triggers, and primary workflows
+description: Wizz agency agents and default BMM agents with their skill IDs, triggers, and primary workflows
 sidebar:
   order: 2
 ---
 
-## Default Agents
+## Wizz Agency Agents
 
-This page lists the default BMM (Agile suite) agents that install with the Wizz Method, along with their skill IDs, menu triggers, and primary workflows. Each agent is invoked as a skill.
+These agents are the Wizz agency layer. The canonical entrypoint is `wizz-router`: it sends light one-area work directly to the matching area agent and escalates complex or multi-area work to `wizz-maestro`.
+
+| Agent | Skill ID | Use for | Routes to |
+| --- | --- | --- | --- |
+| Router | `wizz-router` | First-pass triage for non-trivial requests | Area agent or `wizz-maestro` |
+| Maestro | `wizz-maestro` | Complex or multi-area orchestration | Wizz and BMM agents |
+| Designer | `wizz-designer` | UI, landing pages, design systems, motion, 3D | Design/UI/motion skills and CLIs |
+| QA | `wizz-qa` | Tests, E2E, adversarial review, acceptance checks | `wizz-qa-generate-e2e-tests`, `agent-browser`, `adversarial-reviewer`, `wizz-code-review` |
+| Copy | `wizz-copy` | Sales copy, pages, e-mail, headlines | Copywriting and editing skills |
+| SEO | `wizz-seo` | SEO, AI search, schema, programmatic SEO | SEO skills and Distribb CLI |
+| Growth | `wizz-growth` | CRO, launches, pricing, retention, analytics | Growth/CRO/analytics skills |
+| Social | `wizz-social` | Reels/Shorts scripts, hooks, content calendar | Social/content skills and video CLIs via Designer |
+| Ads | `wizz-ads` | Paid media, ad creative, tracking | Paid ads skills and Meta Ads MCP |
+| Memory | `wizz-memoria` | Project memory and decisions | `cerebro` |
+
+## Default BMM Agents
+
+These are the default BMM (Agile suite) agents that install with the Wizz Method, along with their skill IDs, menu triggers, and primary workflows. Each agent is invoked as a skill.
 
 ## Notes
 

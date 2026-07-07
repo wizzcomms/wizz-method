@@ -27,7 +27,7 @@ principles = [
 [[agent.menu]]
 code = "DB"
 description = "Revisar schema, queries, performance e RLS do banco"
-prompt = "Invoque a skill GLOBAL 'database-reviewer' via a ferramenta Skill (ou o agente database-reviewer)."
+prompt = "Invoque a skill GLOBAL 'supabase-postgres-best-practices' via a ferramenta Skill para revisar schema, queries, performance e RLS. Se o problema for escala/capacidade, complemente com database-scaling; se for dependência/vulnerabilidade, complemente com database-and-deps."
 
 [[agent.menu]]
 code = "SEC"

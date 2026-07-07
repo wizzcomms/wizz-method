@@ -152,7 +152,9 @@ async function main() {
 
   console.log('✅ wizz-init concluído:');
   for (const d of done) console.log(`   - ${d}`);
-  console.log('\n➡️ Próximo passo: invoque o wizz-maestro e mande seu pedido. Ele escolhe o agente certo.');
+  console.log(
+    '\n➡️ Próximo passo: invoque o wizz-router e mande seu pedido. Ele escolhe o agente certo ou chama o wizz-maestro quando precisar orquestrar.',
+  );
 }
 
 try {

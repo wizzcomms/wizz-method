@@ -8,7 +8,7 @@ The **Wizz Method** is an AI-driven agency development and production method. It
 If you're comfortable working with AI assistants like Claude, Cursor, or GitHub Copilot, you're ready to get started.
 
 :::note[Independent fork of the Wizz Method]
-The Wizz Method is an independent fork of the [Wizz Method](https://github.com/bmad-code-org/WIZZ-METHOD), maintained by Wizz! comms. The engine is still BMAD (credited in the repository's `TRADEMARK.md`); the Wizz layer adds agency routing through `wizz-maestro`, a standardized closeout (✅ what I did, ➡️ next step, 🎯 command), and Portuguese-friendly defaults for the agency's skills.
+The Wizz Method is an independent fork of the [Wizz Method](https://github.com/bmad-code-org/WIZZ-METHOD), maintained by Wizz! comms. The engine is still BMAD (credited in the repository's `TRADEMARK.md`); the Wizz layer adds agency routing through `wizz-router` and orchestration through `wizz-maestro`, a standardized closeout (✅ what I did, ➡️ next step, 🎯 command), and Portuguese-friendly defaults for the agency's skills.
 :::
 
 ## Getting Started
@@ -19,7 +19,7 @@ The fastest way to understand the method is to try it.
 - **[Workflow map](./reference/workflow-map.md)**: an overview of the phases, workflows, and context management.
 
 :::tip[Just want to dive in?]
-Install the Wizz Method and invoke `wizz-maestro`. It reads your request and dispatches the right agent based on your project and installed modules.
+Install the Wizz Method and invoke `wizz-router`. It reads your request and dispatches the right agent based on your project and installed modules. For complex, multi-area work it escalates to `wizz-maestro`.
 :::
 
 ## How to Use These Docs

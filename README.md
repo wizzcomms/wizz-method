@@ -2,7 +2,7 @@
 
 # Wizz Method
 
-**O método de agência orientado por IA, em português.** Um maestro lê seu pedido, descobre a área e chama o agente certo. Você fala normal, ele organiza o trabalho.
+**O método de agência orientado por IA, em português.** Um router lê seu pedido, descobre a área e chama o agente certo. Quando o trabalho cruza áreas, o Maestro organiza a sequência. Você fala normal, ele estrutura o trabalho.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.12.0-brightgreen)](https://nodejs.org)
@@ -10,7 +10,7 @@
 
 Cansado de reexplicar o contexto a cada conversa com a IA? O Wizz Method dá ao seu time uma estrutura fixa: agentes especializados (dev, design, copy, SEO, growth, ads, memória), linguagem fácil e resumida, e um encerramento padrão em toda resposta (**✅ o que fiz**, **➡️ próximo passo**, **🎯 comando**). Tudo em PT-BR, dentro do seu assistente de IA favorito.
 
-O ponto de entrada é um só. Invoque o `wizz-maestro`, mande o pedido, ele despacha para quem resolve.
+O ponto de entrada técnico é o `wizz-router`: ele faz a triagem e manda pedidos leves direto ao agente da área, ou chama o `wizz-maestro` quando precisa de orquestração.
 
 ## Os 7 agentes
 
@@ -46,7 +46,7 @@ Em seguida, rode a personalização Wizz. Ela pergunta o idioma de comunicação
 node <caminho-do-wizz-method>/src/modules/wizz/scripts/wizz-init.mjs .
 ```
 
-Por fim, invoque o `wizz-maestro` e mande seu pedido.
+Por fim, invoque o `wizz-router` e mande seu pedido. Se preferir começar simples, chamar o `wizz-maestro` também funciona para trabalhos multi-área, mas o router é a entrada canônica.
 
 **Instalação não-interativa** (para CI/CD):
 

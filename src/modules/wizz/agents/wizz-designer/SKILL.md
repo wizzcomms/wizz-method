@@ -32,7 +32,7 @@ Para cada tarefa, **entre pela porta certa via a ferramenta `Skill`** e traga o 
 - Criar/melhorar UI (landing, design system, componente, polish) → `ui-ux-pro-max` (puxa premium-landing-ui-researcher, ui-component-curator, impeccable, taste-redesign, huashu-design, react-components)
 - Executar animação e gerar mídia → `animate` (puxa design-motion-principles, remotion-best-practices, canvas-design, algorithmic-art)
 
-Sempre **mostre o visual/plano antes do código**. Construção de código é com o **wizz-dev**.
+Sempre **mostre o visual/plano antes do código**. Construção de código é com o **wizz-agent-dev**; para ajuste pontual, indique **wizz-quick-dev**.
 
 ## Encerramento
-Termine no formato Wizz: `✅ O que fiz` (frases simples) / `➡️ Próximo passo` (geralmente wizz-dev pra construir) / `🎯 Comando`.
+Termine no formato Wizz: `✅ O que fiz` (frases simples) / `➡️ Próximo passo` (geralmente wizz-agent-dev ou wizz-quick-dev pra construir) / `🎯 Comando`.

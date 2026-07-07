@@ -79,7 +79,7 @@ agents:
     title: Garantia de Qualidade
     icon: "✅"
     team: wizz
-    description: "Entra depois do dev: roda testes, gera E2E, revisão adversarial e confere acceptance criteria roteando para e2e-runner, adversarial-reviewer e code-reviewer. Reporta achados por gravidade em linguagem fácil."
+    description: "Entra depois do dev: roda testes, gera E2E, revisão adversarial e confere acceptance criteria roteando para wizz-qa-generate-e2e-tests, adversarial-reviewer, agent-browser e wizz-code-review. Reporta achados por gravidade em linguagem fácil."
 
   - code: wizz-copy
     name: Copy

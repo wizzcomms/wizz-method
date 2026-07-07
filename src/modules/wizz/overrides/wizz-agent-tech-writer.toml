@@ -28,4 +28,4 @@ principles = [
 [[agent.menu]]
 code = "DOC"
 description = "Atualizar codemaps e documentação do projeto"
-prompt = "Invoque a skill GLOBAL 'doc-updater' via a ferramenta Skill (ou o agente doc-updater)."
+prompt = "Invoque a skill GLOBAL 'wizz-document-project' via a ferramenta Skill para atualizar documentação e codemaps do projeto. Para indexar documentação existente, use wizz-index-docs quando esse for o objetivo."

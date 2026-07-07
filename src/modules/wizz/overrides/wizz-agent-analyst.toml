@@ -28,7 +28,7 @@ principles = [
 [[agent.menu]]
 code = "DEEP"
 description = "Pesquisa profunda multi-fonte com verificação"
-prompt = "Invoque a skill GLOBAL 'deep-research' via a ferramenta Skill para uma pesquisa aprofundada e citada."
+prompt = "Escolha e invoque a skill Wizz de pesquisa mais adequada via ferramenta Skill: wizz-market-research para mercado/concorrência, wizz-domain-research para domínio/indústria, ou wizz-technical-research para viabilidade técnica. Para pesquisa web atual, use o MCP exa quando estiver ativo."
 
 [[agent.menu]]
 code = "MAP"

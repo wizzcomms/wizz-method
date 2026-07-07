@@ -1,12 +1,12 @@
 # Módulo Wizz — método de agência em PT-BR
 
-Personalização do WIZZ para a Wizz: linguagem fácil e resumida, cada agente termina com **✅ o que fiz / ➡️ próximo passo / 🎯 comando**, e o roteamento (`/wizz-router`) está dissolvido nos menus dos agentes, ligando-os às ~80 skills globais.
+Personalização do WIZZ para a Wizz: linguagem fácil e resumida, cada agente termina com **✅ o que fiz / ➡️ próximo passo / 🎯 comando**, e o `wizz-router` é a porta técnica que triageia pedidos leves para agentes de área ou casos complexos para o `wizz-maestro`.
 
 ## Agentes
 
 | Agente | Ícone | Faz | Rota para (skills globais) |
 |---|---|---|---|
-| `wizz-maestro` | 🧭 | Lê o pedido e despacha o agente certo (router dissolvido) | todos os agentes wizz/wizz |
+| `wizz-maestro` | 🧭 | Orquestra trabalhos complexos e multi-área recebidos do router | todos os agentes wizz/wizz |
 | `wizz-designer` | 🎨 | Design visual, landing, motion, 3D | premium-landing-ui-researcher, ui-ux-pro-max, motion-3d-director, taste-skill, ui-component-curator |
 | `wizz-copy` | ✍️ | Copy, e-mail, headlines | copywriting, email-sequence, humanizer, copy-editing |
 | `wizz-seo` | 🔍 | SEO tradicional e de IA | seo-audit, ai-seo, schema-markup, programmatic-seo, site-architecture |
@@ -32,7 +32,7 @@ Os papéis de dev/produto reusam os agentes WIZZ (Mary, John, Winston, Amelia, S
    node <caminho-do-wizz-method>/src/modules/wizz/scripts/wizz-init.mjs .
    ```
    Ele pergunta o idioma. Para CI, use `--lang "English"` ou `WIZZ_LANG`. Idempotente: pode rodar quantas vezes quiser.
-3. Invoque o `wizz-maestro` e mande seu pedido.
+3. Invoque o `wizz-router` e mande seu pedido. Para trabalhos claramente multi-área, o `wizz-maestro` também pode ser chamado direto.
 
 ## Customização pessoal
 
