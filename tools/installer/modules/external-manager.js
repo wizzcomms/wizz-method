@@ -141,7 +141,9 @@ class ExternalModuleManager {
       name: mod.display_name || mod.name,
       description: mod.description || '',
       defaultSelected: mod.default_selected === true || mod.defaultSelected === true,
-      type: mod.type || 'wizz-org',
+      // Default 'upstream-org': módulo de org terceira com confiança delegada
+      // (decisão 2.10/A4 da auditoria, 2026-07-07; ver wizz-modules.yaml).
+      type: mod.type || 'upstream-org',
       npmPackage: mod.npm_package || mod.npmPackage || null,
       pluginName: mod.plugin_name || mod.pluginName || null,
       defaultChannel: normalizeChannelName(mod.default_channel || mod.defaultChannel) || 'stable',

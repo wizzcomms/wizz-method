@@ -26,6 +26,8 @@ All decisions about Wizz Method follow this process:
 
 **Internal naming**: We do not rename BMAD-internal components (files, classes, module names). This keeps sync simple and preserves credit.
 
+**External modules**: The optional modules in `wizz-modules.yaml` (Test Architect, Builder, Creative Intelligence Suite, Game Dev Studio, WDS, Automator) live in third-party repositories under `bmad-code-org`. They are labeled `type: upstream-org` to make the delegated trust explicit: Wizz does not control those repos, and the installer downloads them as-is (opt-in, never selected by default). Decision recorded 2026-07-07: honest labeling instead of maintaining forks. We will fork under `wizzcomms` only if an upstream repo changes owner or behaves unexpectedly.
+
 ## Versioning
 
 Wizz Method uses [Semantic Versioning](https://semver.org/):

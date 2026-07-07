@@ -7,6 +7,16 @@
 # default_channel (optional) — the install channel when the user does not
 # override with --channel/--pin/--next. Valid values: stable | next.
 # Omit to inherit the installer's hardcoded default (stable).
+#
+# type: upstream-org — the module lives in a third-party org (bmad-code-org)
+# and Wizz delegates trust to that upstream: the installer resolves and
+# downloads it without Wizz controlling the repo. Decision recorded on
+# 2026-07-07 (audit task 2.10, finding A4): honest label instead of forking,
+# acceptable because every upstream module is defaultSelected: false and the
+# install is explicit opt-in. Revisit (fork under wizzcomms) if an upstream
+# repo changes owner, disappears, or ships something unexpected.
+# type: experimental — same delegated trust, plus unstable by upstream's
+# own definition.
 
 modules:
   bmad-method-test-architecture-enterprise:
@@ -16,7 +26,7 @@ modules:
     name: "Wizz Test Architect"
     description: "Quality strategy, test automation, and release gates for enterprise teams"
     defaultSelected: false
-    type: wizz-org
+    type: upstream-org
     npmPackage: bmad-method-test-architecture-enterprise
     default_channel: stable
 
@@ -27,7 +37,7 @@ modules:
     name: "Wizz Builder"
     description: "Build AI agents, workflows, and modules from a conversation"
     defaultSelected: false
-    type: wizz-org
+    type: upstream-org
     npmPackage: bmad-builder
     default_channel: stable
 
@@ -49,7 +59,7 @@ modules:
     name: "Wizz Creative Intelligence Suite"
     description: "Brainstorming, ideation, storytelling, design thinking, and problem-solving"
     defaultSelected: false
-    type: wizz-org
+    type: upstream-org
     npmPackage: bmad-creative-intelligence-suite
     default_channel: stable
 
@@ -60,7 +70,7 @@ modules:
     name: "Wizz Game Dev Studio"
     description: "Game design and development for Unity, Unreal, Godot, and Phaser."
     defaultSelected: false
-    type: wizz-org
+    type: upstream-org
     npmPackage: bmad-game-dev-studio
     default_channel: stable
 
@@ -72,6 +82,6 @@ modules:
     name: "Whiteport Design Studio"
     description: "Strategic UX and Design first planning methodology"
     defaultSelected: false
-    type: wizz-org
+    type: upstream-org
     npmPackage: bmad-wds
     default_channel: stable
