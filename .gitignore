@@ -1,5 +1,11 @@
 # Dependencies
-**/node_modules/
+**/node_modules
+# Secrets — nunca commitados
+.env
+.env.local
+*.pem
+*_token*
+*_secret*/
 pnpm-lock.yaml
 bun.lock
 deno.lock
