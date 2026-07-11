@@ -4,6 +4,21 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.6.0] - 2026-07-11
+
+### Adicionado
+
+- CLI `21st-cli` na área de design do registry (fonte PAGA complementar, gate de aprovação do usuário): busca, inspeção, instalação e publicação de componentes no 21st.dev via terminal (`search`/`get`/`add`/`publish`, registry do time `@wizzdigitalagency`); o install traz também as skills oficiais `21st-cli-use`, `21st-registry` e `21st-design-sync`. Complementa o Magic MCP (geração assistida) como caminho de catálogo/registry e fallback declarado quando o MCP está offline.
+- Flag `recommended:` no registry de CLIs: entradas marcadas vêm PRÉ-marcadas no multiselect do installer (label `(recomendado)`), sem instalar nada à revelia — continua opt-in, `--yes`/sem TTY seguem recommend-only. Hoje só o `rtk` é flagado (o wizz-router assume RTK ativo no Passo 0); CLIs de área continuam desmarcadas por padrão.
+
+### Alterado
+
+- Fontes da skill `premium-landing-ui-researcher` atualizadas:
+  - v0 removido do fluxo; 21st CLI documentada como caminho de catálogo/registry (mineração em 3 passos: `search` → `get` → `add`), com publicação de volta no registry do time via `21st publish`.
+  - Componentry ganhou o caminho de instalação via MCP do shadcn (`pnpm dlx shadcn@latest mcp init` + registry `@componentry` no `components.json`), além do copy-paste.
+  - Refero Styles (`styles.refero.design`, gratuito em beta) adicionado: biblioteca de `DESIGN.md` extraídos de sites reais (paleta, tipografia, spacing, motion, componentes) pra colar no contexto do agente; priorizado sobre inspiração visual pura.
+  - Animmaster Lib registrada como fonte paga (mesmo gate do 21st.dev); fluxo de pesquisa reordenado com gratuitas primeiro e cache central em `~/.claude/design-sources/`.
+
 ## [1.5.2] - 2026-07-08
 
 ### Corrigido
