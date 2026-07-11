@@ -12,7 +12,7 @@ A skill deve:
 - escolher o nível visual correto do projeto;
 - pesquisar componentes, animações e referências nas fontes configuradas;
 - usar 21st.dev diretamente via MCP/API quando disponível;
-- usar o catálogo público do v0.app (WebFetch) para descoberta de templates de referência;
+- usar a 21st CLI (`21st search` / `21st get` / `21st add`) para descoberta e instalação de componentes de referência;
 - usar repositórios autorizados como fonte de pesquisa;
 - clonar temporariamente repositórios autorizados apenas quando necessário e com permissão;
 - escolher scroll effects, 3D hero, WebGL, shaders, microinterações e componentes com base no tom da marca;

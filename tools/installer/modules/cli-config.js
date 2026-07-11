@@ -105,6 +105,10 @@ function resolveClis(registry, selectedAreas, platformTag = currentPlatformTag()
       // M14: post-check/post-install probe for minimal runtime deps (e.g.
       // clone-and-run tools where `check` only proves the clone exists).
       verify: cli.verify,
+      // recommended (2026-07-08): entries the UI should PRE-CHECK in the
+      // opt-in multiselect (e.g. rtk — the router assumes it active). Coerced
+      // to a real boolean so a missing field is `false`, never undefined.
+      recommended: !!cli.recommended,
     }),
   });
 }

@@ -76,6 +76,7 @@ const REGISTRY = {
       when: 'token economy',
       check: 'rtk --version',
       install: 'curl -fsSL https://example.test/install.sh | sh',
+      recommended: true,
     },
   ],
 };
@@ -120,6 +121,15 @@ async function runTests() {
       ['rtk'],
       'area without clis still gets utility only',
     );
+  }
+  {
+    // `recommended` flows through mapEntry so the UI can pre-check it. rtk
+    // (cross-cutting utility) is flagged; area CLIs default to false.
+    const r = resolveClis(REGISTRY, ['qa']);
+    const rtk = r.find((c) => c.id === 'rtk');
+    const browser = r.find((c) => c.id === 'agent-browser');
+    assert(rtk.recommended === true, 'recommended:true carried through for rtk');
+    assert(browser.recommended === false, 'missing recommended coerced to false');
   }
   {
     const r = resolveClis({ areas: {} }, ['qa']);

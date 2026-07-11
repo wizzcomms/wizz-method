@@ -138,6 +138,10 @@ areas:
           env:
             API_KEY: "${MAGIC_API_KEY}"
     clis:
+      - id: 21st-cli
+        when: "Fonte PAGA complementar (catálogos gratuitos como React Bits/Cult UI/Componentry vêm primeiro; gate de aprovação do usuário). Buscar, inspecionar, instalar e publicar componentes no 21st.dev via terminal (search/get/add/publish, registry do time @wizzdigitalagency). Complementa o Magic MCP (geração assistida); é o caminho de catálogo/registry e o fallback declarado quando o MCP está offline. O install traz também as skills oficiais 21st-cli-use, 21st-registry e 21st-design-sync. Login interativo: `21st login` (em CI usar env API_KEY_21ST)."
+        check: "command -v 21st"
+        install: "npm i -g @21st-dev/cli && npx @21st-dev/cli install-skill"
       - id: hyperframes
         when: "Renderizar vídeo a partir de HTML/CSS/animação (HTML→MP4, agent-native, 20+ skills). Alternativa HTML-nativa ao Remotion (que é React). Precisa ffmpeg + Node 22 + Chrome headless."
         # Gate de plataforma (2026-07-08): o `install` virou clone+checkout
@@ -491,6 +495,13 @@ mcp_utility:
 cli_utility:
   - id: rtk
     when: "Token economy: proxy que corta 60-90% de tokens em comandos de dev. O wizz-router assume RTK ativo (Passo 0). Útil em todo o ecossistema."
+    # recommended (2026-07-08): o wizz-router assume RTK ativo no Passo 0, então
+    # o rtk vem PRÉ-MARCADO no multiselect de CLIs (initialValues) em vez de
+    # desmarcado como os demais. Continua opt-in — o install roda `curl | sh`,
+    # logo o usuário ainda vê a seleção e pode desmarcar. Só muda o default de
+    # "vazio" pra "rtk marcado", nunca instala à revelia (--yes/non-TTY seguem
+    # recommend-only). É a única CLI cross-cutting; as de área ficam opt-out.
+    recommended: true
     # min_version formal (2026-07-07, M27) substitui o sort -V embutido no
     # shell que existia aqui antes: auditoria 2026-07-07 (C4/RT1) achou 0.30.1
     # instalado vs v0.43.0 pinado, invisível ao check anterior a ele (`rtk

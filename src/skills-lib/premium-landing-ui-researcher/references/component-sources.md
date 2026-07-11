@@ -4,16 +4,15 @@ Priorizar fontes gratuitas, open source, públicas, registry-based ou fornecidas
 
 Não depender de fontes pagas como parte central do fluxo.
 
-Fluxo recomendado de pesquisa:
+Fluxo recomendado de pesquisa (gratuito primeiro; 21st.dev é PAGO e entra como complemento):
 
-1. 21st.dev via MCP/API (`mcp__magic__*`), quando disponível;
-2. v0.app community (WebFetch, catálogo de referência, sem API key);
-3. repositórios open source autorizados: cache central em `~/.claude/design-sources/`;
-4. registries shadcn públicos;
-5. fontes de taste/motion (Reference Sources);
-6. fontes visuais abertas (Visual Inspiration Sources);
-7. referências enviadas pelo usuário;
-8. hipóteses estratégicas coerentes, quando não houver acesso externo.
+1. referências enviadas pelo usuário (`modelos lp/`, prints, links);
+2. repositórios open source autorizados: cache central em `~/.claude/design-sources/` (React Bits, Cult UI, Ali Imam, Watermelon, StyleUI) + Skiper UI via shadcn + Componentry (componentry.dev, gratuito, React animado);
+3. registries shadcn públicos;
+4. fontes de taste/motion (Impeccable, Taste Skill, Design Motion Principles, MotionSites, Vibe Code Components, Refero Styles com DESIGN.md gratuito);
+5. fontes visuais abertas (Landing Love, Godly, Design Spells, Mobbin, Refero, ScreensDesign, DesignVault, Spline, Unicorn Studio);
+6. 21st.dev (fonte PAGA, complementar, com aprovação do usuário): Magic MCP (`mcp__magic__*`) e 21st CLI (`21st search`/`get`/`add`, registry do time);
+7. hipóteses estratégicas coerentes, quando não houver acesso externo.
 
 ## 21st.dev / Magic MCP
 
@@ -48,29 +47,23 @@ Fluxo recomendado:
 
 Se o Magic MCP ou API do 21st.dev não estiver disponível: não inventar resultados específicos, informar que o 21st.dev não está conectado, continuar usando as outras fontes disponíveis, pedir ao usuário para conectar o MCP/API se quiser busca direta no 21st.dev.
 
-## v0.app: catálogo de referência
+## 21st CLI: busca, inspeção e registry do time
 
-O v0 é usado **exclusivamente como catálogo de referência** (não como gerador). O MCP `v0-platform-mcp` foi removido do ecossistema: para geração de UI, use o **Magic MCP (21st.dev)**.
+O v0 saiu do fluxo (não é mais usado). A **CLI oficial do 21st.dev** cobre busca, inspeção, instalação e publicação, direto do terminal, com o registry do time (`@wizzdigitalagency`).
 
-**Fluxo de catálogo (3 passos):**
+**Setup (uma vez):** `npm i -g @21st-dev/cli` + `21st login` (browser; em CI usar env `API_KEY_21ST`). As skills oficiais (`21st-cli-use`, `21st-registry`, `21st-design-sync`) instalam com `npx @21st-dev/cli install-skill` e ensinam o agente a publicar/editar/instalar sozinho.
 
-1. **Buscar templates via WebFetch em `https://v0.app/community?q=<termo>`.** Funciona para queries como `liquid+glass`, `portfolio+dark`, `bento+grid`, `case+study`, `hero+webgl`.
+**Fluxo de mineração (3 passos):**
 
-   Exemplo:
-   ```
-   url: https://v0.app/community?q=liquid+glass
-   prompt: List all templates returned. For each: title, author, URL, brief description.
-   ```
+1. **Buscar:** `21st search "<termo>"` (ex: `pricing table`, `hero glass`, `testimonials`), com `--type component|theme|template` quando fizer sentido.
+2. **Inspecionar:** `21st get <id>` pra ver o item antes de decidir; `21st bookmarks` lista os salvos do usuário.
+3. **Instalar/adaptar:** `21st add <user>/<slug>` ou `npx shadcn@latest add https://21st.dev/r/<user>/<slug>`; depois adaptar tokens/tipografia à marca (nunca colar cru).
 
-2. **Apresentar 5-10 links curados** com título, autor, link absoluto e o que cada um oferece.
+**Publicar de volta (registry do time):** componente maduro adaptado à marca vira ativo reutilizável: `21st publish ./Componente.tsx --to default` (multi-arquivo via `21st.json`). Temas: `21st publish-theme`. Ver skill `21st-registry`.
 
-3. **Usuário abre os templates no navegador**, copia o JSX e salva em `modelos lp/<nome>/`. A skill inspeciona a pasta local e adapta à marca.
+**Complemento, não substituto, do Magic MCP:** o Magic MCP continua sendo o caminho de GERAÇÃO/refino assistido (inspiration/builder/refiner); a CLI é o caminho de CATÁLOGO/registry. Se o MCP estiver offline ou sem `MAGIC_API_KEY`, a CLI é o fallback declarado.
 
-**Caveat:** WebFetch lê a lista de busca, mas não o código do template individual (renderizado por JS client-side). Por isso o passo 3 é manual. Não tente extrair código de template via WebFetch diretamente.
-
-**Alternativa opt-in:** usar **agent-browser** pra abrir o template no browser real e extrair código/screenshot. Mais tokens: só vale quando o template é crítico e o usuário não quer copiar manual. **Não usar Playwright.**
-
-**Overlap com modelos locais:** muitos templates populares do v0 já podem estar na pasta `modelos lp/` do usuário. Inspecionar a pasta local primeiro antes de chamar WebFetch.
+**Overlap com modelos locais:** inspecionar a pasta `modelos lp/` do usuário primeiro; o que já foi minerado e salvo localmente não precisa de rede.
 
 ## Authorized Component / Code Inspection Sources
 
@@ -124,6 +117,19 @@ https://github.com/heyfabrika/styleui.git
 ```
 
 Usar para: templates, landing page layouts, páginas prontas, seções instaláveis, fundamentos rápidos de layout, páginas base.
+
+### Componentry
+
+- Site: https://componentry.dev/ (gratuito, open source, Vercel OSS Program)
+- Componentes React já animados (styling + animação resolvidos), copy-paste
+- Fonte GRATUITA prioritária pra micro-interação/animação de componente antes de qualquer fonte paga
+- **MCP oficial** (https://componentry.dev/docs/mcp): via MCP do shadcn — `pnpm dlx shadcn@latest mcp init` + registry `"@componentry": "https://componentry.fun/r/{name}.json"` no `components.json`; o agente instala componentes/animações direto, sem copy-paste manual
+
+### Animmaster Lib
+
+- Site: https://animmasterlib.dev/ — **fonte PAGA** (300 componentes animados PRO, HTML/CSS/JS/React/Next)
+- Mesmo gate de custo do 21st.dev: só com aprovação do usuário, quando as gratuitas não cobrirem
+- O que o usuário já comprou/baixou dela vale como recurso local (inspecionar em `modelos lp/`)
 
 ### Skiper UI
 
@@ -249,6 +255,12 @@ Quando usar: site precisa de impacto visual, projeto quer WebGL sem implementar 
 
 Trabalhar dentro do plano gratuito. Respeitar limites e marca d'água. Não pressupor licença paga.
 
+### 6b. Refero
+
+- https://refero.design/ — inspiração UI/UX de apps e sites reais, por tela e por fluxo
+- Usar como Mobbin: referência visual de padrões reais, não fonte de código
+- **Refero Styles** (https://styles.refero.design/, gratuito em beta): biblioteca de `DESIGN.md` extraídos de sites reais — paleta, tipografia, spacing, motion e padrões de componente num único markdown. Buscar por marca/mood/cor, copiar o DESIGN.md e colar no contexto do agente. Pra direção visual concreta, priorizar sobre inspiração visual pura (screenshot)
+
 ### 6. Mobbin
 
 URL: `https://mobbin.com/`
@@ -321,7 +333,7 @@ Remover dependência obrigatória de:
 - Skiper UI premium;
 - Spline pago;
 - Unicorn Studio pago;
-- v0 pago como obrigação.
+- planos pagos do 21st.dev como obrigação (o fluxo funciona no free tier).
 
 Usar ferramentas pagas apenas se:
 

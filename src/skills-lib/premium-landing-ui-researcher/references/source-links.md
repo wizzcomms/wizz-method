@@ -10,14 +10,17 @@
 - Watermelon UI: https://github.com/WatermelonCorp/watermellon-registry.git
 - StyleUI: https://github.com/heyfabrika/styleui.git
 - Skiper UI command: `npx shadcn add @skiper-ui/skiper40`
+- Componentry (React animado, gratuito/open source, Vercel OSS): https://componentry.dev/
+- Componentry MCP (via shadcn MCP + registry `@componentry`): https://componentry.dev/docs/mcp
+- Animmaster Lib (300 componentes animados, PAGO): https://animmasterlib.dev/
 - 21st.dev: https://21st.dev/
 - 21st.dev Magic MCP: https://21st.dev/magic
 - 21st.dev MCP: https://21st.dev/mcp
-- v0.app: https://v0.app/
-- v0 Community Search (catálogo via WebFetch): https://v0.app/community?q=<termo>
-- v0 Template direto: https://v0.app/templates/<id>
-- v0 API Keys (regenerar quando 401): https://v0.app/chat/settings/keys
-- v0 API Docs: https://v0.app/docs/en/docs/api
+- 21st CLI (buscar/instalar/publicar via terminal): `npm i -g @21st-dev/cli` + `21st login`
+- 21st CLI skills oficiais (21st-cli-use, 21st-registry, 21st-design-sync): `npx @21st-dev/cli install-skill`
+- 21st busca: `21st search "<termo>" [--type component|theme|template]` + `21st get <id>`
+- 21st instalação: `21st add <user>/<slug>` ou `npx shadcn@latest add https://21st.dev/r/<user>/<slug>`
+- 21st API keys (CI/headless, env API_KEY_21ST): https://21st.dev/settings/api-keys
 
 ## Reference Sources (taste, qualidade visual, motion)
 
@@ -35,5 +38,7 @@
 - Spline: https://spline.design/
 - Unicorn Studio: https://www.unicorn.studio/
 - Mobbin: https://mobbin.com/
+- Refero (inspiração UI/UX de apps/sites reais): https://refero.design/
+- Refero Styles (DESIGN.md gratuito pra contexto do agente): https://styles.refero.design/
 - ScreensDesign: https://screensdesign.com/
 - DesignVault: https://designvault.io/

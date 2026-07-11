@@ -1,6 +1,6 @@
 ---
 name: premium-landing-ui-researcher
-description: Pesquisar animações, componentes, referências visuais e padrões de conversão para criar landing pages premium em React, Next.js, Tailwind, shadcn/ui, Framer Motion, Three.js e React Three Fiber. Use esta skill quando o usuário pedir para analisar um projeto existente, classificar o nível de complexidade do site (básico, intermediário, avançado, 3D high-end com modo Signature), escolher componentes ou animações adequados, melhorar uma UI genérica, criar uma landing page completa, transformar uma oferta em página estratégica, projetar também um dashboard SaaS junto da landing, criar um site de autoridade/portfolio para agência, estúdio, consultoria, marca pessoal ou lead passivo, criar case studies e selected work editoriais, criar uma experiência 3D cinematográfica para marcas premium, buscar referências em React Bits, Cult UI, Ali Imam, Watermelon UI, StyleUI, Impeccable, Taste Skill, Design Motion Principles, MotionSites, Vibe Code Components, Landing Love, Godly, Design Spells, Mobbin, ScreensDesign, DesignVault, Spline, Unicorn Studio, Skiper UI, 21st.dev ou v0.app, ou implementar uma experiência visual sofisticada orientada à conversão ou à autoridade.
+description: Pesquisar animações, componentes, referências visuais e padrões de conversão para criar landing pages premium em React, Next.js, Tailwind, shadcn/ui, Framer Motion, Three.js e React Three Fiber. Use esta skill quando o usuário pedir para analisar um projeto existente, classificar o nível de complexidade do site (básico, intermediário, avançado, 3D high-end com modo Signature), escolher componentes ou animações adequados, melhorar uma UI genérica, criar uma landing page completa, transformar uma oferta em página estratégica, projetar também um dashboard SaaS junto da landing, criar um site de autoridade/portfolio para agência, estúdio, consultoria, marca pessoal ou lead passivo, criar case studies e selected work editoriais, criar uma experiência 3D cinematográfica para marcas premium, buscar referências em React Bits, Cult UI, Componentry, Animmaster Lib, Ali Imam, Watermelon UI, StyleUI, Refero, Impeccable, Taste Skill, Design Motion Principles, MotionSites, Vibe Code Components, Landing Love, Godly, Design Spells, Mobbin, ScreensDesign, DesignVault, Spline, Unicorn Studio, Skiper UI, 21st.dev (Magic MCP ou 21st CLI), ou implementar uma experiência visual sofisticada orientada à conversão ou à autoridade.
 ---
 
 # Premium Landing UI Researcher
@@ -9,7 +9,7 @@ Estrategista autônomo de landing pages premium, UI SaaS e experiências visuais
 
 ## Gate 1: Source-First (sempre, antes de qualquer código de UI)
 
-Esta skill existe porque escrever shaders, animações, hovers e componentes do zero NÃO é o caminho. O caminho é curar componentes, animações e shaders maduros de fontes profissionais (21st.dev via Magic MCP, v0.app, React Bits, Cult UI, Ali Imam, Watermelon, StyleUI, Skiper UI, `modelos lp/` do usuário) e adaptar à marca.
+Esta skill existe porque escrever shaders, animações, hovers e componentes do zero NÃO é o caminho. O caminho é curar componentes, animações e shaders maduros de fontes profissionais (`modelos lp/` do usuário, React Bits, Cult UI, Ali Imam, Watermelon, StyleUI, Skiper UI e, como fonte PAGA complementar, 21st.dev via Magic MCP e 21st CLI) e adaptar à marca.
 
 Regra absoluta: inspecione fontes reais, ofereça opções ao usuário, adapte à marca. Nunca recrie o que já existe maduro. Se uma fonte estiver indisponível (MCP offline, sem rede, sem permissão pra clone), declare isso explicitamente ao usuário antes de cair pro fallback de criar do zero. Nunca cair pro fallback silenciosamente. O mandato completo (anti-patterns e required pattern) está no topo de [source-first-protocol](references/source-first-protocol.md).
 
@@ -47,9 +47,9 @@ Classificar o projeto em um dos 5 níveis (regras, motion permitido/proibido e b
 | Handoffs pro motion-3d-director e implementation-planner, regra final do ladder | [handoffs](references/handoffs.md) |
 | SaaS Dashboard Mode e Portfolio / Authority Site Mode | [dashboard-and-portfolio-modes](references/dashboard-and-portfolio-modes.md) |
 | Processo obrigatório de 12 passos e checkpoint de honestidade | [mandatory-process](references/mandatory-process.md) |
-| Source-First Mandate completo + protocolo em 5 fases (inventário, Magic MCP, v0, repos em cache, confirmação) | [source-first-protocol](references/source-first-protocol.md) |
+| Source-First Mandate completo + protocolo em 5 fases (inventário, repos em cache, Magic MCP, 21st CLI, confirmação; 21st = fonte paga complementar) | [source-first-protocol](references/source-first-protocol.md) |
 | Audit Protocol: Pass 1 Taste, Pass 2 Impeccable, Pass 3 Cross-check, Pass 4 A11y/Perf | [audit-protocol](references/audit-protocol.md) |
-| Fontes de componentes (React Bits, Cult UI, Ali Imam, Watermelon, StyleUI, Skiper UI, 21st.dev, v0.app), fontes de referência e inspiração visual, Clone Policy, Paid Source Policy | [component-sources](references/component-sources.md) |
+| Fontes de componentes (React Bits, Cult UI, Ali Imam, Watermelon, StyleUI, Skiper UI, 21st.dev + 21st CLI), fontes de referência e inspiração visual, Clone Policy, Paid Source Policy | [component-sources](references/component-sources.md) |
 | Stack default, direção visual, paletas, tipografia e regras de seleção de animação | [stack-and-visual-direction](references/stack-and-visual-direction.md) |
 | Estrutura obrigatória da landing, case studies/portfolio, copywriting, conversão e CTA externo/WhatsApp | [landing-page-strategy](references/landing-page-strategy.md) |
 | Prompts base (landing completa e hero 3D com scroll) | [prompt-templates](references/prompt-templates.md) |

@@ -673,17 +673,22 @@ class UI {
     // Non-interactive: don't run system commands, just recommend everything.
     if (options.yes) return { toInstall: [], toRecommend: missing, alreadyInstalled };
 
-    // Default UNCHECKED: install runs a system command, so opt-in only.
+    // Opt-in still: install runs a system command, so the user always sees the
+    // multiselect and confirms. But entries flagged `recommended` in the
+    // registry (today only rtk — the router assumes it active at Passo 0) come
+    // PRE-CHECKED, so pressing enter installs them; everything else stays
+    // unchecked. Nothing installs à revelia — a recommended entry can still be
+    // unchecked here, and the --yes/non-TTY paths above never reach this.
     const selected = await prompts.multiselect({
       message: 'Quais CLIs instalar agora? (não marcados viram comando pra rodar depois)',
       options: missing.map((c) => ({
-        label: c.id,
+        label: c.recommended ? `${c.id} (recomendado)` : c.id,
         value: c.id,
         // M27/M14: prefer the upgrade/verify-failure reason when present —
         // more actionable than the generic `when` in those two cases.
         hint: c.upgradeMessage || c.verifyWarning || c.when,
       })),
-      initialValues: [],
+      initialValues: missing.filter((c) => c.recommended).map((c) => c.id),
       required: false,
     });
 

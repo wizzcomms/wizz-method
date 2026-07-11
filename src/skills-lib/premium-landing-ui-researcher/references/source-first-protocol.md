@@ -2,7 +2,7 @@
 
 ## Source-First Mandate (read this FIRST, every time)
 
-**Esta skill existe porque escrever shaders, animações, hovers e componentes do zero NÃO é o caminho.** O caminho é **curar componentes, animações e shaders maduros de bibliotecas profissionais** (21st.dev, v0, React Bits, Cult UI, Ali Imam, Watermelon, StyleUI, Skiper UI, modelos lp do usuário) e **adaptar à marca**.
+**Esta skill existe porque escrever shaders, animações, hovers e componentes do zero NÃO é o caminho.** O caminho é **curar componentes, animações e shaders maduros de bibliotecas profissionais** (modelos lp do usuário, React Bits, Cult UI, Ali Imam, Watermelon, StyleUI, Skiper UI e, como fonte PAGA complementar, 21st.dev) e **adaptar à marca**.
 
 Se você se pegar pensando "vou escrever um shader perlin do zero" ou "vou criar uma esfera de partículas no R3F na mão" ou "vou desenhar um SVG de carousel": **PARE**. Isso é o anti-pattern que essa skill foi feita pra prevenir.
 
@@ -39,45 +39,9 @@ Antes de qualquer rede ou MCP, inspecionar o que o usuário já tem:
 
 Saída desta fase: lista de **componentes, libs e padrões reaproveitáveis** com path absoluto.
 
-### Fase 2: Magic MCP do 21st.dev
+### Fase 2: Busca nos repos de referência (cache central primeiro) — FASE PADRÃO
 
-**Ferramentas disponíveis (chamar via ToolSearch se não estiverem carregadas):**
-
-- `mcp__magic__21st_magic_component_inspiration`: buscar referências e padrões para uma seção específica (hero, pricing, testimonials, navbar, contact dialog, etc.)
-- `mcp__magic__21st_magic_component_builder`: gerar/instalar componente alinhado ao stack do usuário
-- `mcp__magic__21st_magic_component_refiner`: refinar componente existente
-- `mcp__magic__logo_search`: logos de marcas para integrações/prova social
-
-**Quando chamar (mínimo obrigatório por landing):**
-
-- 1 chamada de `inspiration` para o **hero** (ex: liquid glass hero, particle hero, mask reveal hero)
-- 1 chamada para o **bloco principal de conversão** (ex: pricing, contact dialog, CTA group)
-- 1 chamada para **selected work / portfolio grid** se o projeto for autoridade/portfolio
-- 1 chamada para **navigation** se a direção visual exigir navbar não-padrão
-
-Se o Magic MCP não estiver disponível no ambiente: declarar ao usuário "o Magic MCP do 21st.dev não está conectado nesta sessão" e perguntar se ele quer conectar ou seguir com as outras fontes. **Não cair pro fallback de criar do zero sem essa pergunta.**
-
-### Fase 3: v0.app community (catálogo de referência via WebFetch)
-
-**Esta é a fase padrão.** v0 entra como banco de templates pra inspecionar e adaptar, não como gerador. Ver "Uso A: v0 como CATÁLOGO DE REFERÊNCIA" na seção `## v0.app` em references/component-sources.md pro fluxo completo.
-
-**Fluxo resumido:**
-
-1. WebFetch em `https://v0.app/community?q=<termo>` (queries do tipo `liquid+glass`, `portfolio+dark+editorial`, `bento+grid`, `hero+webgl`, `case+study`). Resposta vem como lista estruturada de templates com URL `/templates/<id>`.
-2. Apresentar 5-10 links curados ao usuário com título, autor, link absoluto.
-3. Usuário abre os templates relevantes no navegador, copia o código (View code → copia o JSX) e salva em `modelos lp/<nome>/`. Skill então inspeciona a pasta local.
-
-**Mínimo obrigatório por landing:** 1 query relacionada ao hero/estética principal + 1 query relacionada à seção crítica de conteúdo (portfolio/products/cases conforme o projeto).
-
-**Antes da Fase 3**, sempre fazer overlap-check: muitos templates v0 populares já podem estar na pasta local do usuário desde a Fase 1 (inventário). Não recomendar baixar o que ele já tem.
-
-### ~~Fase 3b~~: v0 como gerador (REMOVIDO)
-
-> O MCP `v0-platform-mcp` foi removido do ecossistema. Para geração de UI, use o **Magic MCP (21st.dev)** como fonte principal: `mcp__magic__21st_magic_component_builder` e `mcp__magic__21st_magic_component_refiner`. O catálogo do v0 (WebFetch) continua disponível para descoberta de referências na Fase 3.
-
-### Fase 4: Busca nos repos de referência (cache central primeiro)
-
-Para cada efeito visual ainda não resolvido pelas fases 1-3, inspecionar o **cache central de design** em `~/.claude/design-sources/` antes de qualquer clone. Só clonar se o repo não estiver em cache ou estiver desatualizado.
+Para cada efeito visual ainda não resolvido pela fase 1, inspecionar o **cache central de design** em `~/.claude/design-sources/` antes de qualquer clone. Só clonar se o repo não estiver em cache ou estiver desatualizado.
 
 **Mapa de decisão "preciso disso → fonte":**
 
@@ -103,6 +67,41 @@ Para cada efeito visual ainda não resolvido pelas fases 1-3, inspecionar o **ca
 - Nunca adicionar o repo inteiro como dependência permanente
 - Não clonar em `.design-sources-temp/` se o cache já tem o repo: usar o cache diretamente
 
+### Fase 3: Magic MCP do 21st.dev (fonte PAGA, complementar)
+
+**Ferramentas disponíveis (chamar via ToolSearch se não estiverem carregadas):**
+
+- `mcp__magic__21st_magic_component_inspiration`: buscar referências e padrões para uma seção específica (hero, pricing, testimonials, navbar, contact dialog, etc.)
+- `mcp__magic__21st_magic_component_builder`: gerar/instalar componente alinhado ao stack do usuário
+- `mcp__magic__21st_magic_component_refiner`: refinar componente existente
+- `mcp__magic__logo_search`: logos de marcas para integrações/prova social
+
+**Gate de custo:** o 21st.dev é plano PAGO. Esta fase só roda quando as fases 1-2 não cobrirem o efeito/section necessário E com aprovação do usuário. Não é mais mínimo obrigatório.
+
+**Quando chamar (se aprovado):**
+
+- 1 chamada de `inspiration` para o **hero** (ex: liquid glass hero, particle hero, mask reveal hero)
+- 1 chamada para o **bloco principal de conversão** (ex: pricing, contact dialog, CTA group)
+- 1 chamada para **selected work / portfolio grid** se o projeto for autoridade/portfolio
+- 1 chamada para **navigation** se a direção visual exigir navbar não-padrão
+
+Se o Magic MCP não estiver disponível no ambiente: declarar ao usuário "o Magic MCP do 21st.dev não está conectado nesta sessão" e perguntar se ele quer conectar ou seguir com as outras fontes. **Não cair pro fallback de criar do zero sem essa pergunta.**
+
+### Fase 4: 21st CLI (catálogo e registry — fonte PAGA, complementar)
+
+O v0 foi removido do ecossistema. Mesmo gate de custo da Fase 3: plano pago, usar só quando as fases gratuitas não cobrirem e com aprovação do usuário. Componente do time já publicado no registry conta como recurso já pago: pode usar sem novo gate.
+
+**Fluxo resumido:**
+
+1. Checar a CLI: `command -v 21st`. Se ausente, propor (opt-in, nunca auto-rodar): `npm i -g @21st-dev/cli && npx @21st-dev/cli install-skill` e `21st login` com o usuário.
+2. Buscar: `21st search "<termo>"` (`--type component|theme|template`); inspecionar com `21st get <id>`.
+3. Instalar o escolhido no projeto: `21st add <user>/<slug>` ou `npx shadcn@latest add <url do item>`; adaptar à marca.
+4. Componente do time já publicado no registry `@wizzdigitalagency` tem prioridade sobre item público equivalente.
+
+
+
+Se a CLI não estiver instalada e o usuário recusar o install: declarar e seguir pra Fase 5 (confirmação), nunca criar do zero em silêncio.
+
 ### Fase 5: Apresentação ao usuário e confirmação
 
 Antes de implementar, apresentar ao usuário uma resposta estruturada:
@@ -113,7 +112,7 @@ Source-First Inventory para sua landing:
 HERO (efeito liquid glass)
 ├─ Opção A: 21st.dev → componente "X" via Magic MCP (recomendado, já compatível com Next + Tailwind)
 ├─ Opção B: clonar Ali Imam → arquivo `liquid-wave.tsx` adaptado para token #FF4500
-└─ Opção C: gerar variação no v0 com `generate_prototype`
+└─ Opção C: buscar/instalar alternativa via 21st CLI (`21st search` + `21st add`)
 
 CAROUSEL DE PRODUTOS
 ├─ Opção A: Embla Carousel (lib oficial, já no seu /modelos lp/ em `air-pods-max-product-showcase`)

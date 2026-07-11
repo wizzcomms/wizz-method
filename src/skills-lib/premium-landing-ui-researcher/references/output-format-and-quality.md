@@ -115,7 +115,7 @@ A entrega deve parecer um trabalho premium de estratégia, copywriting, design e
 Antes de declarar a landing pronta, perguntar-se honestamente:
 
 - Eu **chamei o Magic MCP do 21st.dev** ou declarei que ele não estava disponível? Se não chamei nem declarei, voltar e fazer.
-- Eu **invoquei o v0 via v0-platform-mcp** ou declarei indisponível? Mesma regra.
+- Eu **usei a 21st CLI (search/get/add)** ou declarei indisponível? Mesma regra.
 - Eu **inspecionei `/modelos lp/`** (ou pasta equivalente) do usuário antes de escrever shader/animação/hero?
 - Eu **pedi autorização para clones** das fontes autorizadas quando o efeito era específico (Ali Imam pra shader, React Bits pra animação)?
 - Cada componente que entreguei tem uma **fonte rastreável** (link 21st.dev, output v0, repo clonado, ou pasta do usuário), ou foi escrito do zero com declaração explícita?
