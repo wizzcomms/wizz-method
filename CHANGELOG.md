@@ -4,6 +4,21 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.7.0] - 2026-07-19
+
+### Adicionado
+
+- Bklit UI (`github.com/bklit/bklit-ui`, MIT) como fonte de componentes da skill `premium-landing-ui-researcher`: charts e utilitários React/TypeScript/Tailwind via registry shadcn (`npx shadcn@latest add @bklit/<chart>`, sem clone), ~15 tipos de gráfico; fonte prioritária para dashboards SaaS, data viz e seções de métricas, complementando o Recharts do stack default.
+- Seção "Animation Engine Libraries" (libs npm, sem clone) nas fontes da `premium-landing-ui-researcher`:
+  - GSAP (`npm i gsap @gsap/react`): 100% gratuito desde a v3.13 (Webflow), todos os plugins incluídos (ScrollTrigger, ScrollSmoother, SplitText, MorphSVG, DrawSVG); indicado para scroll storytelling, pinning, timelines cinematográficas e text reveal avançado.
+  - anime.js v4 (`npm i animejs`, MIT, ~10kb core): stagger, springs, SVG motion, scroll observer; indicado para microinterações imperativas leves.
+  - Regra de escolha documentada: Framer Motion/Motion para UI React declarativa → anime.js para efeitos leves imperativos → GSAP para scroll orquestrado e timelines longas.
+- Mapa de decisão do Source-First Protocol ganhou 3 linhas novas (charts → Bklit UI; scroll/timeline → GSAP; microinteração/SVG → anime.js), e os três nomes entraram no description do SKILL.md (triggering), no `source-links.md` e no stack default.
+
+### Alterado
+
+- `motion-3d-director`: GSAP deixou de ser "apenas se necessário" no caminho 3D real (agora recomendado quando o scroll orquestra a cena, já que ficou gratuito); caminho Motion 2D premium ganhou stack recomendada explícita (Framer Motion/Motion, GSAP + ScrollTrigger/SplitText, anime.js v4).
+
 ## [1.6.0] - 2026-07-11
 
 ### Adicionado
