@@ -10,6 +10,7 @@
 - Watermelon UI: https://github.com/WatermelonCorp/watermellon-registry.git
 - StyleUI: https://github.com/heyfabrika/styleui.git
 - Skiper UI command: `npx shadcn add @skiper-ui/skiper40`
+- Bklit UI (charts shadcn, MIT, gratuito): https://github.com/bklit/bklit-ui — `npx shadcn@latest add @bklit/<chart>`
 - Componentry (React animado, gratuito/open source, Vercel OSS): https://componentry.dev/
 - Componentry MCP (via shadcn MCP + registry `@componentry`): https://componentry.dev/docs/mcp
 - Animmaster Lib (300 componentes animados, PAGO): https://animmasterlib.dev/
@@ -21,6 +22,11 @@
 - 21st busca: `21st search "<termo>" [--type component|theme|template]` + `21st get <id>`
 - 21st instalação: `21st add <user>/<slug>` ou `npx shadcn@latest add https://21st.dev/r/<user>/<slug>`
 - 21st API keys (CI/headless, env API_KEY_21ST): https://21st.dev/settings/api-keys
+
+## Animation Engine Libraries (npm)
+
+- GSAP (100% gratuito desde a v3.13, todos os plugins incluídos): https://github.com/greensock/GSAP.git — `npm i gsap @gsap/react`
+- anime.js v4 (MIT, ~10kb core): https://github.com/juliangarnier/anime.git — `npm i animejs`
 
 ## Reference Sources (taste, qualidade visual, motion)
 

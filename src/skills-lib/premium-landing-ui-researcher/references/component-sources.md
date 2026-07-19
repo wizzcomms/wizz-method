@@ -131,6 +131,14 @@ Usar para: templates, landing page layouts, páginas prontas, seções instaláv
 - Mesmo gate de custo do 21st.dev: só com aprovação do usuário, quando as gratuitas não cobrirem
 - O que o usuário já comprou/baixou dela vale como recurso local (inspecionar em `modelos lp/`)
 
+### Bklit UI
+
+- Site: https://bklit.com/ · GitHub: https://github.com/bklit/bklit-ui (MIT, gratuito, open source)
+- Charts e componentes utilitários React/TypeScript/Tailwind via registry shadcn (~15 tipos: área, barras, linha, pizza, radar, Sankey, candlestick, choropleth, gauge)
+- **Não clonar**: instalar direto pelo registry — `npx shadcn@latest add @bklit/<chart>` (ex: `@bklit/line-chart`)
+- Fonte prioritária para: dashboards SaaS, data viz, seções de métricas/estatísticas na landing, gráficos animados premium (complementa/substitui Recharts cru)
+- O Bklit Studio (playground) é proprietário; os componentes em si são MIT
+
 ### Skiper UI
 
 Skiper UI **não deve ser clonado**.
@@ -146,6 +154,24 @@ Usar somente componentes públicos/gratuitos, a menos que o usuário confirme ac
 Usar para: uncommon shadcn components, efeitos visuais diferenciados, seções premium, animações avançadas, componentes menos genéricos.
 
 Evitar: depender de componentes premium sem autorização; assumir acesso pago.
+
+## Animation Engine Libraries (libs de código, via npm)
+
+Motores de animação instaláveis como dependência npm normal (não são registries de componentes; não precisam de clone — os repos podem ser inspecionados para exemplos/demos).
+
+### GSAP
+
+- GitHub: https://github.com/greensock/GSAP.git · Docs: https://gsap.com/docs/
+- **100% gratuito desde a v3.13** (aquisição pela Webflow, 2025), incluindo todos os plugins antes pagos: ScrollTrigger, ScrollSmoother, SplitText, MorphSVG, DrawSVG, etc. Instalar: `npm i gsap` (+ `@gsap/react` para o hook `useGSAP`)
+- Usar para: scroll storytelling e animações scroll-driven complexas (ScrollTrigger), timelines longas e sequenciadas, text reveal por caractere/palavra (SplitText), morph de SVG, animações fora do ciclo do React, sites high-end estilo Awwwards
+- Preferir GSAP sobre Framer Motion quando: a animação é orquestrada por scroll com pinning/scrub, a timeline tem muitos passos encadeados, ou o efeito anima elementos fora de componentes React
+
+### anime.js
+
+- GitHub: https://github.com/juliangarnier/anime.git · Docs: https://animejs.com/ (MIT, gratuito)
+- v4: API modular e tree-shakeable (~10kb core), timelines, stagger, springs, draggable, scroll observer, SVG (draw/morph/motion path), WAAPI. Instalar: `npm i animejs`
+- Usar para: microinterações e animações leves quando GSAP seria peso demais, stagger/grid animations, animação de SVG, contadores/números animados, projetos sem React ou fora do ecossistema Motion
+- Regra de escolha: Framer Motion/Motion para UI React declarativa → anime.js para efeitos leves imperativos → GSAP para scroll orquestrado e timelines cinematográficas
 
 ## Authorized Reference Inspection Sources
 

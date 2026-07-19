@@ -27,7 +27,7 @@ Usar quando precisa de **interação real**.
 - Drei;
 - GLSL / shaders;
 - Framer Motion ou Motion para integração com scroll;
-- GSAP apenas se necessário.
+- GSAP (ScrollTrigger) quando o scroll orquestra a cena — 100% gratuito desde a v3.13, todos os plugins incluídos.
 
 **Exemplos:** objeto 3D que segue o cursor; esfera de partículas mouse-reactive; câmera que avança no scroll; wireframe terrain em tempo real; produto 3D configurável; background WebGL interativo.
 
@@ -106,6 +106,8 @@ Usar quando o melhor resultado mistura **vídeo/image-to-video com UI animada**.
 Usar quando 3D é exagero ou não aumenta conversão.
 
 **Inclui:** text reveal; parallax; masked typography; image reveal; hover cards; SVG motion; scroll storytelling; magnetic buttons; animated mockups; cinematic section transitions; gradient background animado; background noise; reveal por seção; staggered animations.
+
+**Stack recomendada:** Framer Motion/Motion para UI React declarativa; GSAP + ScrollTrigger/SplitText para scroll storytelling, pinning e text reveal avançado (gratuito desde a v3.13); anime.js v4 para stagger, SVG motion e microinterações imperativas leves (~10kb core, MIT).
 
 **Usar quando:**
 

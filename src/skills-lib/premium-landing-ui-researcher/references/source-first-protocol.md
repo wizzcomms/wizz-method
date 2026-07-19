@@ -53,6 +53,9 @@ Para cada efeito visual ainda não resolvido pela fase 1, inspecionar o **cache 
 | SaaS components / dashboards / product UI blocks | `~/.claude/design-sources/watermelon/` | `git -C ~/.claude/design-sources/watermelon pull` |
 | Templates / landing layouts prontos / páginas base | `~/.claude/design-sources/styleui/` | `git -C ~/.claude/design-sources/styleui pull` |
 | Componentes shadcn premium específicos | **Skiper UI** | `npx shadcn add @skiper-ui/skiperXX` (sem clone, instala direto) |
+| Charts / data viz / seções de métricas / gráficos de dashboard | **Bklit UI** | `npx shadcn@latest add @bklit/<chart>` (sem clone, registry shadcn) |
+| Scroll storytelling / pinning / timelines cinematográficas / SplitText | **GSAP** (lib npm, 100% gratuita desde a v3.13) | `npm i gsap @gsap/react` (sem clone) |
+| Microinterações imperativas leves / stagger / SVG motion / contadores | **anime.js v4** (lib npm, MIT) | `npm i animejs` (sem clone) |
 
 **Fluxo de uso do cache:**
 

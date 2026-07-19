@@ -8,11 +8,13 @@ Se o usuário não especificar stack, assumir:
 - Tailwind CSS;
 - shadcn/ui;
 - Framer Motion ou Motion;
+- GSAP (com ScrollTrigger/SplitText, 100% gratuito desde a v3.13) para scroll storytelling e timelines cinematográficas;
+- anime.js v4 para microinterações imperativas leves e SVG motion;
 - React Bits;
 - React Three Fiber para projetos 3D;
 - Three.js para WebGL avançado;
 - lucide-react para ícones;
-- Recharts para dashboards SaaS.
+- Recharts ou Bklit UI (charts shadcn) para dashboards SaaS.
 
 Se o projeto for simples, reduzir stack e evitar complexidade desnecessária.
 
