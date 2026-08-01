@@ -23,6 +23,7 @@ const {
   writeMcpConfig,
   prepareMcp,
   prepareMcps,
+  partitionGloballyConfigured,
   shellQuote,
   substituteBin,
 } = require('../tools/installer/modules/mcp-config');
@@ -524,6 +525,55 @@ async function runTests() {
       assert(!('setup' in written.mcpServers.scrapling), 'setup block is never written to .mcp.json');
     } finally {
       await fsp.rm(tmp4, { recursive: true, force: true });
+    }
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('partitionGloballyConfigured (user-scope ~/.claude.json)');
+
+  {
+    const tmp5 = await fsp.mkdtemp(path.join(os.tmpdir(), 'wizz-mcp-global-'));
+    try {
+      const claudeJsonPath = path.join(tmp5, '.claude.json');
+      const mcps = [
+        { id: 'magic', server: { command: 'npx' } },
+        { id: 'exa', server: { command: 'npx' } },
+      ];
+
+      // No ~/.claude.json at all => nothing is global.
+      let r = await partitionGloballyConfigured({ mcps, claudeJsonPath });
+      assertEqual(r.globallyConfigured, [], 'missing ~/.claude.json => nothing global');
+      assertEqual(
+        r.toInstall.map((m) => m.id),
+        ['magic', 'exa'],
+        'missing ~/.claude.json => all offered',
+      );
+
+      // magic configured at user scope => split out.
+      fs.writeFileSync(claudeJsonPath, JSON.stringify({ mcpServers: { magic: { command: 'npx', env: { API_KEY: 'real' } } } }));
+      r = await partitionGloballyConfigured({ mcps, claudeJsonPath });
+      assertEqual(r.globallyConfigured, ['magic'], 'user-scope server => globallyConfigured');
+      assertEqual(
+        r.toInstall.map((m) => m.id),
+        ['exa'],
+        'the rest still offered',
+      );
+
+      // Malformed file => safe fallback, nothing global.
+      fs.writeFileSync(claudeJsonPath, '{ not json');
+      r = await partitionGloballyConfigured({ mcps, claudeJsonPath });
+      assertEqual(r.globallyConfigured, [], 'malformed ~/.claude.json => safe fallback, nothing global');
+
+      // mcpServers with a weird shape (array) => ignored.
+      fs.writeFileSync(claudeJsonPath, JSON.stringify({ mcpServers: ['magic'] }));
+      r = await partitionGloballyConfigured({ mcps, claudeJsonPath });
+      assertEqual(r.globallyConfigured, [], 'array mcpServers => ignored');
+
+      // Empty input list => empty everything.
+      r = await partitionGloballyConfigured({ mcps: [], claudeJsonPath });
+      assertEqual(r, { toInstall: [], globallyConfigured: [] }, 'empty mcps => empty result');
+    } finally {
+      await fsp.rm(tmp5, { recursive: true, force: true });
     }
   }
 

@@ -29,16 +29,35 @@
 //     placeholder stays in `.mcp.json`, and the summary explains how to
 //     configure it later.
 //
+// GLOBAL KEY STORE (`~/.claude/wizz-env.json`): a key the user already typed
+// in ANY project is reused silently in every new install — the store is read
+// by the installer only (C7 still holds: the runtime never reads it), and a
+// hit is copied into the new project's `settings.local.json`. A key typed at
+// the prompt is saved to the store too, so it is only ever asked once.
+//
 // API (decomposed per E3 so each piece is unit-testable without a TTY):
 //   extractEnvPlaceholders(mcps)              — pure
 //   resolveEnvVars(vars, opts)                — I/O read (providers + prompt)
 //   persistEnvValues(toPersist, opts)         — I/O write (settings.local.json)
 //   persistProjectEnv(projectDir, envRecord)  — the actual writer, reusable
+//   persistGlobalEnv(storePath, envRecord)    — writer do store global
 //   promptMissingEnvVars(mcps, opts)          — thin orchestrator of the above
 
 const path = require('node:path');
+const os = require('node:os');
 const fs = require('../fs-native');
 const prompts = require('../prompts');
+
+// Global key store, read by the INSTALLER only (never by the Claude Code
+// runtime — C7 still holds). A value found here is copied into the project's
+// `.claude/settings.local.json` at install time, which IS what reaches the
+// MCP subprocess. This is what makes a key typed once in project A resolve
+// silently in projects B, C, D... without ever living in the global
+// settings.json `env` (which would expose it to every session of every
+// project — the exact pattern the 360° audit flagged as a security critical).
+function defaultGlobalEnvPath() {
+  return path.join(os.homedir(), '.claude', 'wizz-env.json');
+}
 
 // Deliberately POSIX-strict (uppercase + underscore only): this both matches
 // standard env var naming and doubles as a defensive filter against false
@@ -168,12 +187,51 @@ function createDotenvFileProvider(dotenvPath) {
 }
 
 /**
- * Try each provider in order, returning the first non-empty value found.
+ * The global key store (`~/.claude/wizz-env.json`, flat `{ "VAR": "value" }`
+ * map, chmod 600) as a provider. Read-only here — `persistGlobalEnv` is the
+ * writer. Marked `persistToProject: true`: unlike `process.env`, a value from
+ * this store is NOT in the runtime's environment, so the resolver must copy
+ * it into the project's `settings.local.json` for it to actually reach the
+ * MCP subprocess (C7).
+ * @param {string} storePath - Absolute path to the global store file
+ * @returns {{name: string, persistToProject: boolean, available: () => Promise<boolean>, get: (name: string) => Promise<string|undefined>}}
+ */
+function createGlobalStoreProvider(storePath) {
+  let cache = null;
+
+  async function load() {
+    if (cache) return cache;
+    cache = {};
+    if (!storePath || !(await fs.pathExists(storePath))) return cache;
+    try {
+      const parsed = JSON.parse(await fs.readFile(storePath, 'utf8'));
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) cache = parsed;
+    } catch {
+      // Malformed/unreadable store — treat as empty, never throw.
+      cache = {};
+    }
+    return cache;
+  }
+
+  return {
+    name: 'global-store',
+    persistToProject: true,
+    available: async () => !!storePath && (await fs.pathExists(storePath)),
+    get: async (name) => {
+      const value = (await load())[name];
+      return typeof value === 'string' && value !== '' ? value : undefined;
+    },
+  };
+}
+
+/**
+ * Try each provider in order, returning the first non-empty value found and
+ * the provider that had it (so the caller can honor `persistToProject`).
  * A provider throwing or being unavailable is skipped, never fatal — one
  * broken provider must not block the chain (e.g. an unreadable `.env`).
  * @param {string} name - Var name to look up
  * @param {Array<Object>} providers
- * @returns {Promise<string|undefined>}
+ * @returns {Promise<{value: string, provider: Object}|undefined>}
  */
 async function findInProviders(name, providers) {
   for (const provider of providers || []) {
@@ -182,7 +240,7 @@ async function findInProviders(name, providers) {
       const isAvailable = typeof provider.available === 'function' ? await provider.available() : true;
       if (!isAvailable) continue;
       const value = await provider.get(name);
-      if (value !== undefined && value !== null && value !== '') return value;
+      if (value !== undefined && value !== null && value !== '') return { value, provider };
     } catch {
       continue;
     }
@@ -221,7 +279,14 @@ function createDefaultPrompter() {
  * @param {boolean} [opts.interactive=false] - Whether to prompt for missing vars
  * @param {Array<Object>} [opts.providers] - Provider chain, tried in order
  * @param {(entry) => Promise<string|undefined>} [opts.prompter] - Injectable prompt fn
- * @returns {Promise<{filled: Array, skipped: Array, existing: Array, toPersist: Record<string,string>}>}
+ * @returns {Promise<{filled: Array, skipped: Array, existing: Array, imported: Array,
+ *   toPersist: Record<string,string>, toPersistGlobal: Record<string,string>}>}
+ *   `existing` = found in a runtime-visible source (process.env/.env), nothing
+ *   to write. `imported` = found in a `persistToProject` provider (the global
+ *   store): resolved without prompting, but must be written to the project's
+ *   settings.local.json (included in `toPersist`). `toPersistGlobal` = the
+ *   subset of typed answers that should ALSO be saved to the global store so
+ *   the next project never asks.
  */
 async function resolveEnvVars(vars, opts = {}) {
   const { interactive = false, providers = [createProcessEnvProvider()], prompter = null } = opts;
@@ -229,7 +294,9 @@ async function resolveEnvVars(vars, opts = {}) {
   const filled = [];
   const skipped = [];
   const existing = [];
+  const imported = [];
   const toPersist = {};
+  const toPersistGlobal = {};
 
   for (const entry of vars || []) {
     // A default is resolved by the Claude Code runtime itself; asking would
@@ -242,7 +309,12 @@ async function resolveEnvVars(vars, opts = {}) {
 
     const found = await findInProviders(entry.name, providers);
     if (found !== undefined) {
-      existing.push(entry);
+      if (found.provider && found.provider.persistToProject) {
+        imported.push(entry);
+        toPersist[entry.name] = found.value;
+      } else {
+        existing.push(entry);
+      }
       continue;
     }
 
@@ -259,9 +331,10 @@ async function resolveEnvVars(vars, opts = {}) {
 
     filled.push(entry);
     toPersist[entry.name] = answer;
+    toPersistGlobal[entry.name] = answer;
   }
 
-  return { filled, skipped, existing, toPersist };
+  return { filled, skipped, existing, imported, toPersist, toPersistGlobal };
 }
 
 /**
@@ -353,22 +426,79 @@ async function persistEnvValues(toPersist, opts = {}) {
 }
 
 /**
+ * Merge `envRecord` into the flat global store (`~/.claude/wizz-env.json`).
+ * Additive only — a key already present is never overwritten (same rule as
+ * `persistProjectEnv`; a prompt only ever fires for a var no provider had,
+ * so an overwrite here would always mean clobbering something newer). File
+ * is chmod 600 after any write that changed it, same best-effort semantics
+ * as the project writer.
+ *
+ * @param {string} storePath - Absolute path to the global store file
+ * @param {Record<string,string>} envRecord - Vars to merge
+ * @returns {Promise<string|null>} Path written/merged, or null when empty
+ */
+async function persistGlobalEnv(storePath, envRecord) {
+  if (!storePath || !envRecord || Object.keys(envRecord).length === 0) return null;
+
+  await fs.ensureDir(path.dirname(storePath));
+
+  let store = {};
+  if (await fs.pathExists(storePath)) {
+    try {
+      const parsed = JSON.parse(await fs.readFile(storePath, 'utf8'));
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) store = parsed;
+    } catch {
+      // A corrupt store must never eat keys the user just typed: keep the
+      // broken file aside and start a fresh store with the new values.
+      try {
+        await fs.rename(storePath, `${storePath}.bak`);
+      } catch {
+        // Even the rename failing must not block the install.
+      }
+    }
+  }
+
+  let changed = false;
+  for (const [key, value] of Object.entries(envRecord)) {
+    if (Object.prototype.hasOwnProperty.call(store, key)) continue;
+    store[key] = value;
+    changed = true;
+  }
+
+  if (changed) {
+    await fs.writeJson(storePath, store, { spaces: 2 });
+    if (process.platform !== 'win32') {
+      try {
+        await fs.chmod(storePath, 0o600);
+      } catch {
+        // Best-effort, same as persistProjectEnv.
+      }
+    }
+  }
+
+  return storePath;
+}
+
+/**
  * Render the DX summary (E6) — the highest-value part of this feature: turn
  * a skipped var from a dead end into a 30-second fix. One line per var,
  * grouped by outcome. Never includes a raw secret value, only names/status.
- * @param {{filled: Array, skipped: Array, existing: Array}} resolved
+ * @param {{filled: Array, skipped: Array, existing: Array, imported: Array}} resolved
  * @returns {string|null} Formatted block, or null when there is nothing to say
  */
-function formatSummary({ filled, skipped, existing }) {
-  const total = (filled?.length || 0) + (skipped?.length || 0) + (existing?.length || 0);
+function formatSummary({ filled, skipped, existing, imported }) {
+  const total = (filled?.length || 0) + (skipped?.length || 0) + (existing?.length || 0) + (imported?.length || 0);
   if (total === 0) return null;
 
   const lines = [];
   for (const entry of existing || []) {
     lines.push(`  ✓ ${entry.name.padEnd(28)} já existia no ambiente`);
   }
+  for (const entry of imported || []) {
+    lines.push(`  ✓ ${entry.name.padEnd(28)} importada do global (~/.claude/wizz-env.json)`);
+  }
   for (const entry of filled || []) {
-    lines.push(`  ✓ ${entry.name.padEnd(28)} configurada agora (.claude/settings.local.json)`);
+    lines.push(`  ✓ ${entry.name.padEnd(28)} configurada agora (+ salva no global p/ próximos projetos)`);
   }
   for (const entry of skipped || []) {
     if (entry.hasDefault) {
@@ -403,18 +533,26 @@ function formatSummary({ filled, skipped, existing }) {
  * @param {string} opts.projectDir - Project root (for persistence + the
  *   default `.env` provider)
  * @param {boolean} [opts.interactive=false]
- * @param {Array<Object>} [opts.providers] - Defaults to `[processEnv, dotenvFile(<projectDir>/.env)]`
+ * @param {Array<Object>} [opts.providers] - Defaults to `[processEnv,
+ *   dotenvFile(<projectDir>/.env), globalStore(~/.claude/wizz-env.json)]`
+ * @param {string} [opts.globalEnvPath] - Global store path (default
+ *   `~/.claude/wizz-env.json`); used for both the default provider chain and
+ *   the save-on-prompt write. Injectable so tests never touch the real home.
  * @param {(entry) => Promise<string|undefined>} [opts.prompter] - Defaults to
  *   the masked `password()` prompter
- * @returns {Promise<{filled: Array, skipped: Array, existing: Array, envFile: string|null}>}
+ * @returns {Promise<{filled: Array, skipped: Array, existing: Array, imported: Array, envFile: string|null}>}
  */
 async function promptMissingEnvVars(mcps, opts = {}) {
-  const { projectDir, interactive = false, providers, prompter } = opts;
+  const { projectDir, interactive = false, providers, prompter, globalEnvPath = defaultGlobalEnvPath() } = opts;
 
   const vars = extractEnvPlaceholders(mcps);
-  if (vars.length === 0) return { filled: [], skipped: [], existing: [], envFile: null };
+  if (vars.length === 0) return { filled: [], skipped: [], existing: [], imported: [], envFile: null };
 
-  const resolvedProviders = providers || [createProcessEnvProvider(), createDotenvFileProvider(path.join(projectDir, '.env'))];
+  const resolvedProviders = providers || [
+    createProcessEnvProvider(),
+    createDotenvFileProvider(path.join(projectDir, '.env')),
+    createGlobalStoreProvider(globalEnvPath),
+  ];
   const resolvedPrompter = interactive ? prompter || createDefaultPrompter() : null;
 
   const resolved = await resolveEnvVars(vars, {
@@ -428,10 +566,27 @@ async function promptMissingEnvVars(mcps, opts = {}) {
     envFile = await persistEnvValues(resolved.toPersist, { projectDir, target: 'settings-local' });
   }
 
+  // Typed answers also go to the global store so the NEXT project resolves
+  // them silently. Failure here must never block the install — the project
+  // write above already succeeded, which is what this install needs.
+  if (Object.keys(resolved.toPersistGlobal).length > 0) {
+    try {
+      await persistGlobalEnv(globalEnvPath, resolved.toPersistGlobal);
+    } catch {
+      // Global save is a convenience for future installs, never a blocker.
+    }
+  }
+
   const summary = formatSummary(resolved);
   if (summary) await prompts.log.info(summary);
 
-  return { filled: resolved.filled, skipped: resolved.skipped, existing: resolved.existing, envFile };
+  return {
+    filled: resolved.filled,
+    skipped: resolved.skipped,
+    existing: resolved.existing,
+    imported: resolved.imported,
+    envFile,
+  };
 }
 
 module.exports = {
@@ -439,8 +594,11 @@ module.exports = {
   resolveEnvVars,
   persistEnvValues,
   persistProjectEnv,
+  persistGlobalEnv,
   promptMissingEnvVars,
   createProcessEnvProvider,
   createDotenvFileProvider,
+  createGlobalStoreProvider,
+  defaultGlobalEnvPath,
   formatSummary,
 };

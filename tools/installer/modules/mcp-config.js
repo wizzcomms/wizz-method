@@ -19,6 +19,7 @@
 // a `claude mcp add` command renderer for the recommend path.
 
 const path = require('node:path');
+const os = require('node:os');
 const crypto = require('node:crypto');
 const fs = require('../fs-native');
 const { defaultExec } = require('./cli-config');
@@ -326,6 +327,48 @@ async function partitionAlreadyConfigured({ projectDir, mcps }) {
 }
 
 /**
+ * Split resolved MCP entries into those still worth offering/installing in
+ * the project and those the user already configured GLOBALLY (user scope, the
+ * `mcpServers` key of `~/.claude.json`). A server configured there is live in
+ * every project already — usually with the real key embedded — so writing the
+ * registry's `${VAR}`-placeholder copy into the project `.mcp.json` would at
+ * best duplicate it and at worst shadow a working global config with a broken
+ * placeholder one, then prompt the user for a key they already provided.
+ *
+ * Read failures (missing/malformed `~/.claude.json`) fall back to "nothing is
+ * global", the safe default: worst case the user sees the old behavior.
+ *
+ * @param {Object} args
+ * @param {Array<{id: string}>} args.mcps - Resolved MCP entries to partition
+ * @param {string} [args.claudeJsonPath] - Override of `~/.claude.json` (tests)
+ * @returns {Promise<{toInstall: Array<Object>, globallyConfigured: string[]}>}
+ */
+async function partitionGloballyConfigured({ mcps, claudeJsonPath }) {
+  if (!mcps || mcps.length === 0) return { toInstall: [], globallyConfigured: [] };
+
+  const file = claudeJsonPath || path.join(os.homedir(), '.claude.json');
+  let globalIds = new Set();
+  if (await fs.pathExists(file)) {
+    try {
+      const config = JSON.parse(await fs.readFile(file, 'utf8'));
+      const servers =
+        config && typeof config === 'object' && config.mcpServers && !Array.isArray(config.mcpServers) ? config.mcpServers : null;
+      if (servers) globalIds = new Set(Object.keys(servers));
+    } catch {
+      globalIds = new Set();
+    }
+  }
+
+  const toInstall = [];
+  const globallyConfigured = [];
+  for (const mcp of mcps) {
+    if (mcp && mcp.id && globalIds.has(mcp.id)) globallyConfigured.push(mcp.id);
+    else toInstall.push(mcp);
+  }
+  return { toInstall, globallyConfigured };
+}
+
+/**
  * Merge the chosen MCP entries into `<projectDir>/.mcp.json`, additively.
  * Reads any existing file (preserving unknown keys and existing servers),
  * adds ids not already present, and writes back pretty-printed JSON.
@@ -442,6 +485,7 @@ module.exports = {
   prepareMcp,
   prepareMcps,
   partitionAlreadyConfigured,
+  partitionGloballyConfigured,
   resolveBinPath,
   shellQuote,
   substituteBin,

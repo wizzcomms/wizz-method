@@ -25,9 +25,12 @@ const {
   resolveEnvVars,
   persistEnvValues,
   persistProjectEnv,
+  persistGlobalEnv,
   promptMissingEnvVars,
   createProcessEnvProvider,
   createDotenvFileProvider,
+  createGlobalStoreProvider,
+  formatSummary,
 } = require('../tools/installer/modules/env-vars');
 
 const colors = {
@@ -447,6 +450,7 @@ async function runTests() {
           projectDir: tmp,
           interactive: true,
           providers: [],
+          globalEnvPath: path.join(tmp, 'wizz-env.json'),
           prompter: async () => SECRET_MARKER,
         });
       } finally {
@@ -479,8 +483,169 @@ async function runTests() {
     const tmp = await fsp.mkdtemp(path.join(os.tmpdir(), 'wizz-env-orch-'));
     try {
       const res = await promptMissingEnvVars([{ id: 'x', server: { command: 'npx' } }], { projectDir: tmp, interactive: true });
-      assertEqual(res, { filled: [], skipped: [], existing: [], envFile: null }, 'no placeholders => fully empty result');
+      assertEqual(res, { filled: [], skipped: [], existing: [], imported: [], envFile: null }, 'no placeholders => fully empty result');
       assert(!fs.existsSync(path.join(tmp, '.claude')), 'no placeholders => .claude/ never created');
+    } finally {
+      await fsp.rm(tmp, { recursive: true, force: true });
+    }
+  }
+
+  // ───────────────────────────────────────────────────────────────────────
+  section('global key store (~/.claude/wizz-env.json)');
+
+  {
+    // Provider: missing file => unavailable, get => undefined.
+    const provider = createGlobalStoreProvider(path.join(os.tmpdir(), 'wizz-env-nonexistent-xyz.json'));
+    assert((await provider.available()) === false, 'global store: missing file => unavailable');
+    assert((await provider.get('ANY_VAR')) === undefined, 'global store: missing file => get undefined');
+  }
+
+  {
+    const tmp = await fsp.mkdtemp(path.join(os.tmpdir(), 'wizz-env-store-'));
+    try {
+      const storePath = path.join(tmp, 'wizz-env.json');
+
+      // persistGlobalEnv: empty record => no-op.
+      assertEqual(await persistGlobalEnv(storePath, {}), null, 'persistGlobalEnv: empty record => null no-op');
+      assert(!fs.existsSync(storePath), 'persistGlobalEnv: empty record => no file created');
+
+      // First write creates the file (chmod 600 on POSIX).
+      await persistGlobalEnv(storePath, { STORE_KEY_A: 'value-a' });
+      assertEqual(JSON.parse(fs.readFileSync(storePath, 'utf8')), { STORE_KEY_A: 'value-a' }, 'persistGlobalEnv: creates flat store');
+      if (process.platform !== 'win32') {
+        const mode = fs.statSync(storePath).mode & 0o777;
+        assertEqual(mode, 0o600, 'persistGlobalEnv: store is chmod 600');
+      }
+
+      // Additive: an existing key is never overwritten; new keys merge in.
+      await persistGlobalEnv(storePath, { STORE_KEY_A: 'CLOBBERED', STORE_KEY_B: 'value-b' });
+      assertEqual(
+        JSON.parse(fs.readFileSync(storePath, 'utf8')),
+        { STORE_KEY_A: 'value-a', STORE_KEY_B: 'value-b' },
+        'persistGlobalEnv: additive merge, existing key wins',
+      );
+
+      // Provider reads it back; non-string values are ignored.
+      fs.writeFileSync(storePath, JSON.stringify({ STORE_KEY_A: 'value-a', BAD_KEY: 42 }));
+      const provider = createGlobalStoreProvider(storePath);
+      assertEqual(await provider.get('STORE_KEY_A'), 'value-a', 'global store provider: reads value back');
+      assert((await provider.get('BAD_KEY')) === undefined, 'global store provider: non-string value => undefined');
+      assert(provider.persistToProject === true, 'global store provider: flagged persistToProject');
+
+      // Malformed store => provider treats as empty, never throws.
+      const malformedPath = path.join(tmp, 'broken.json');
+      fs.writeFileSync(malformedPath, '{ not json');
+      const broken = createGlobalStoreProvider(malformedPath);
+      assert((await broken.get('ANY')) === undefined, 'global store provider: malformed JSON => empty, no throw');
+
+      // persistGlobalEnv over a corrupt store: keeps a .bak, writes fresh.
+      await persistGlobalEnv(malformedPath, { RESCUED_KEY: 'v' });
+      assertEqual(
+        JSON.parse(fs.readFileSync(malformedPath, 'utf8')),
+        { RESCUED_KEY: 'v' },
+        'persistGlobalEnv: corrupt store => fresh write',
+      );
+      assert(fs.existsSync(`${malformedPath}.bak`), 'persistGlobalEnv: corrupt store preserved as .bak');
+    } finally {
+      await fsp.rm(tmp, { recursive: true, force: true });
+    }
+  }
+
+  {
+    // resolveEnvVars classification: a persistToProject provider hit is
+    // `imported` (and lands in toPersist), NOT `existing`; a plain provider
+    // earlier in the chain still wins (precedence unchanged).
+    const globalProvider = {
+      name: 'global-store',
+      persistToProject: true,
+      available: async () => true,
+      get: async (name) => ({ FROM_GLOBAL: 'global-value', BOTH_SOURCES: 'global-loses' })[name],
+    };
+    const plainProvider = {
+      name: 'process.env',
+      available: async () => true,
+      get: async (name) => ({ BOTH_SOURCES: 'env-wins' })[name],
+    };
+    const vars = [
+      { name: 'FROM_GLOBAL', mcpIds: ['magic'], hasDefault: false },
+      { name: 'BOTH_SOURCES', mcpIds: ['exa'], hasDefault: false },
+    ];
+    const res = await resolveEnvVars(vars, { interactive: false, providers: [plainProvider, globalProvider] });
+    assertEqual(
+      res.imported.map((e) => e.name),
+      ['FROM_GLOBAL'],
+      'global hit => classified imported',
+    );
+    assertEqual(
+      res.existing.map((e) => e.name),
+      ['BOTH_SOURCES'],
+      'earlier plain provider wins => existing',
+    );
+    assertEqual(res.toPersist, { FROM_GLOBAL: 'global-value' }, 'imported value lands in toPersist (project write)');
+    assertEqual(res.toPersistGlobal, {}, 'imported value NOT re-persisted to global');
+  }
+
+  {
+    // A typed answer goes to BOTH persistence targets.
+    const vars = [{ name: 'TYPED_VAR', mcpIds: [], hasDefault: false }];
+    const res = await resolveEnvVars(vars, { interactive: true, providers: [], prompter: async () => 'typed-value' });
+    assertEqual(res.toPersist, { TYPED_VAR: 'typed-value' }, 'typed answer => toPersist');
+    assertEqual(res.toPersistGlobal, { TYPED_VAR: 'typed-value' }, 'typed answer => toPersistGlobal');
+  }
+
+  {
+    // formatSummary renders the imported bucket.
+    const summary = formatSummary({ filled: [], skipped: [], existing: [], imported: [{ name: 'EXA_API_KEY', mcpIds: ['exa'] }] });
+    assert(summary.includes('EXA_API_KEY') && summary.includes('importada do global'), 'summary: imported var line rendered');
+  }
+
+  {
+    // End-to-end: project A prompts once (saved to global store), project B
+    // resolves silently from the store and still gets settings.local.json.
+    const tmp = await fsp.mkdtemp(path.join(os.tmpdir(), 'wizz-env-e2e-'));
+    try {
+      const globalEnvPath = path.join(tmp, 'wizz-env.json');
+      const projectA = path.join(tmp, 'project-a');
+      const projectB = path.join(tmp, 'project-b');
+      await fsp.mkdir(projectA);
+      await fsp.mkdir(projectB);
+      const mcps = [{ id: 'exa', server: { command: 'npx', env: { EXA_API_KEY: '${EXA_API_KEY}' } } }];
+
+      const resA = await promptMissingEnvVars(mcps, {
+        projectDir: projectA,
+        interactive: true,
+        globalEnvPath,
+        prompter: async () => 'exa-key-value',
+      });
+      assertEqual(
+        resA.filled.map((e) => e.name),
+        ['EXA_API_KEY'],
+        'project A: var prompted and filled',
+      );
+      assertEqual(
+        JSON.parse(fs.readFileSync(globalEnvPath, 'utf8')),
+        { EXA_API_KEY: 'exa-key-value' },
+        'project A: typed key saved to global store',
+      );
+
+      let promptCallsB = 0;
+      const resB = await promptMissingEnvVars(mcps, {
+        projectDir: projectB,
+        interactive: true,
+        globalEnvPath,
+        prompter: async () => {
+          promptCallsB++;
+          return 'should-never-be-asked';
+        },
+      });
+      assert(promptCallsB === 0, 'project B: never prompted');
+      assertEqual(
+        resB.imported.map((e) => e.name),
+        ['EXA_API_KEY'],
+        'project B: var imported from global store',
+      );
+      const persistedB = JSON.parse(fs.readFileSync(path.join(projectB, '.claude', 'settings.local.json'), 'utf8'));
+      assertEqual(persistedB.env.EXA_API_KEY, 'exa-key-value', 'project B: value persisted to settings.local.json');
     } finally {
       await fsp.rm(tmp, { recursive: true, force: true });
     }

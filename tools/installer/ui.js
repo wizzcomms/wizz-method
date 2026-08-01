@@ -17,7 +17,7 @@ const {
   bundledTargetWarnings,
 } = require('./modules/channel-plan');
 const channelResolver = require('./modules/channel-resolver');
-const { resolveMcps } = require('./modules/mcp-config');
+const { resolveMcps, partitionGloballyConfigured } = require('./modules/mcp-config');
 const { resolveClis, detectClis } = require('./modules/cli-config');
 const prompts = require('./prompts');
 const { parseSetEntries } = require('./set-overrides');
@@ -571,8 +571,20 @@ class UI {
     if (!selectedModules.includes('bmm')) return { toWrite: [], toRecommend: [] };
 
     const registry = this._loadSkillsRegistry();
-    const resolved = resolveMcps(registry, selectedAreas);
+    let resolved = resolveMcps(registry, selectedAreas);
     if (resolved.length === 0) return { toWrite: [], toRecommend: [] };
+
+    // A server the user already configured globally (user scope, `mcpServers`
+    // in ~/.claude.json) is live in every project — offering it again would
+    // duplicate config and re-prompt for a key that already works. Filter it
+    // out of every path below (multiselect, --mcps, --yes) with an info line
+    // so nothing disappears silently.
+    const { toInstall, globallyConfigured } = await partitionGloballyConfigured({ mcps: resolved });
+    if (globallyConfigured.length > 0) {
+      await prompts.log.info(`MCPs já configurados no seu Claude global (~/.claude.json), pulados: ${globallyConfigured.join(', ')}`);
+      resolved = toInstall;
+      if (resolved.length === 0) return { toWrite: [], toRecommend: [] };
+    }
 
     const byId = new Map(resolved.map((m) => [m.id, m]));
     const split = (writeIds) => {
