@@ -4,6 +4,17 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.8.0] - 2026-08-01
+
+### Adicionado
+
+- Store global de API keys em `~/.claude/wizz-env.json` (chmod 600, lido só pelo installer): uma key digitada no install de qualquer projeto é reutilizada em silêncio nos próximos installs — o valor é importado do store e gravado no `.claude/settings.local.json` do projeto novo (único local lido pelo runtime; C7 preservado), com categoria `imported` no resumo de env vars. Key digitada no prompt agora salva no store também, então cada key só é pedida uma única vez, para sempre.
+- Skip de MCPs já configurados no escopo global do usuário (`mcpServers` do `~/.claude.json`): `partitionGloballyConfigured` filtra esses servers de todos os caminhos do `selectMcps` (multiselect, `--mcps`, `--yes`) com aviso informativo — evita duplicar config no `.mcp.json` do projeto e evita um placeholder `${VAR}` quebrado sombrear um server global que já funciona com a key real.
+
+### Corrigido
+
+- Instalar o method em projeto novo pedia todas as API keys de novo mesmo com tudo já configurado globalmente (a cadeia de providers só olhava `process.env` e o `.env` do projeto).
+
 ## [1.7.0] - 2026-07-19
 
 ### Adicionado
