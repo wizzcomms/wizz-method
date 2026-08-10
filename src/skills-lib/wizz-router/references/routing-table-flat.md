@@ -15,6 +15,7 @@ Use esta tabela **só fora de projeto Wizz** (sem `_wizz/`), quando o router map
 | Auth, secrets, tokens, OAuth, JWT, Clerk, permissões | `auth-and-secrets` + `web-security` | 1 |
 | Dependências, packages, vulnerabilidades, npm audit | `database-and-deps` | 2 |
 | Segurança, XSS, CSRF, SQLi, IDOR, OWASP, rate limit, CORS, clickjacking, PII na resposta, enumeração de usuário, headers | `web-security` + `auth-and-secrets` | 1 |
+| Auditoria/pentest de segurança do app inteiro, "auditar segurança", "pentest", "encontrar vulnerabilidades", varredura antes de release | `security-audit-pentest` | 1 |
 | Desktop, Electron, contextIsolation, code signing | `desktop-security` | 2 |
 
 ## Área Técnica — Código e Qualidade

@@ -42,6 +42,7 @@ Evita que um atacante descubra quais e-mails existem na base (login, signup, res
 - Auth gerenciada pelo Clerk: nunca reimplementar flows de auth manualmente
 - Toda rota protegida, Server Action e route handler chama `auth()` do Clerk no servidor. Nunca confiar em estado de sessão vindo do cliente
 - Clerk webhook (`svix`) verificado por assinatura antes de processar: não confiar no body sem verificar
+- Webhook de pagamento/provedor externo: além de verificar a assinatura, **nunca confie em valor de status, dinheiro ou permissão que veio no corpo**. Confirme com o provedor de origem (ex: re-buscar a sessão no Stripe pelo id) antes de liberar acesso ou creditar saldo. Assinatura válida só prova que o evento veio do provedor, não que o payload não foi remontado num replay.
 - Supabase RLS: toda tabela de domínio deve ter RLS ativo; queries devem filtrar por `workspace_id`/`user_id`
 - `SUPABASE_SERVICE_ROLE_KEY` bypassa RLS: só em server-side (API routes, jobs), nunca exposta no frontend
 - `NEXT_PUBLIC_*` = seguro expor no cliente; tudo sem `NEXT_PUBLIC_` = server-only

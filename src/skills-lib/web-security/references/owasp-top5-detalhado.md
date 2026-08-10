@@ -28,6 +28,38 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 }
 ```
 
+### RLS: policy permissiva é pior que policy nenhuma
+Ler os arquivos de migration/policy versionados e checar:
+- Toda tabela de domínio tem `ENABLE ROW LEVEL SECURITY`?
+- Nenhuma policy é permissiva: `USING (true)` ou `WITH CHECK (true)` libera geral, mas o painel do Supabase mostra a trava como "ativa". Amarre sempre ao dono: `USING (auth.uid() = user_id)`.
+- Tabela criada em migration recente **sem** policy correspondente = exposta.
+
+```sql
+-- ERRADO: mostra RLS ativo no painel, mas libera qualquer um
+create policy "read" on projects for select using (true);
+
+-- CERTO: amarra o dono
+alter table projects enable row level security;
+create policy "own rows" on projects
+  for select using (auth.uid() = user_id);
+```
+
+> RLS de verdade é estado do banco, não arquivo. O que está no repo é ponto de partida: confirme o estado real no dashboard/`\d+` do Postgres.
+
+## 6. Mass Assignment (atribuição em massa)
+O corpo da requisição inteiro repassado para o banco (`spread` do objeto, `update`/`create` com o payload completo) deixa o atacante setar qualquer coluna, mesmo as que não estão no formulário. Alvos clássicos: `role`, `is_admin`, `plan`, `balance`, `payment_status`, `user_id`/`owner_id`.
+
+```ts
+// ERRADO: o cliente manda { name: "x", role: "admin" } e vira admin
+await supabase.from("users").update({ ...body }).eq("id", userId)
+
+// CERTO: allowlist explícita, só os campos do formulário
+const { name, bio } = updateSchema.parse(body) // Zod com só os campos permitidos
+await supabase.from("users").update({ name, bio }).eq("id", userId)
+```
+
+Regra: **nunca** `...body` / `...req.body` num write. Sempre desestruture (ou valide com um schema que só contém os campos editáveis). Campos de papel, permissão, plano, saldo, status de pagamento e id de dono nunca vêm do cliente.
+
 ## 2. Cryptographic Failures
 - HTTPS em tudo, sem exceção
 - HSTS header com includeSubDomains

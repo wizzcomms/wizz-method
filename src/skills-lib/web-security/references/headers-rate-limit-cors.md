@@ -56,6 +56,17 @@ async headers() {
 - Comparações de token/secret: `crypto.timingSafeEqual`, nunca `!==` (detalhe em auth-and-secrets)
 - Sem rate limit = brute force de graça. Somar lockout/CAPTCHA após N falhas no login
 
+### Origem do IP atrás de proxy/CDN
+Se o app roda atrás de Vercel/Cloudflare/qualquer proxy, o IP do socket é o do proxy, não o do cliente. Ler o socket direto faz **o mundo inteiro contar como um IP só** e o rate limit deixa de existir na prática.
+- Vercel: use `x-forwarded-for` (ou `req.ip` no runtime que já resolve). Pegue o **primeiro** IP da lista, mas só confie na cadeia que vem do seu proxy.
+- Nunca confie em `x-forwarded-for` cru vindo de origem não-proxy (o cliente falsifica o header). Configure a lib de rate limit para o número certo de proxies à frente.
+
+### Custo por chamada (rota que gasta dinheiro real)
+Toda rota que chama modelo de linguagem, dispara SMS, envia e-mail, processa arquivo ou bate em API paga de terceiro precisa de rate limit **e** quota por conta. Rota de agente de IA exposta sem limitador é crítica mesmo sem vazar dado nenhum: 10.000 chamadas em loop viram conta de centenas a milhares de reais/dólares. Estime o custo unitário e multiplique por 10k ao avaliar a rota.
+
+### Extração por paginação
+Rota que devolve um registro por vez e, chamada em sequência, entrega a base inteira. Barre com: filtro por dono na query (o mesmo do IDOR), limite máximo de página, e detecção de varredura (muitos ids sequenciais do mesmo cliente).
+
 ## CORS
 - **Nunca reflita o header `Origin` recebido** de volta em `Access-Control-Allow-Origin` (isso libera qualquer site a chamar sua API com credenciais)
 - Use uma **allowlist explícita** de origens: compare o `Origin` recebido contra a lista e só então ecoe o valor exato daquela origem
