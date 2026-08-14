@@ -4,6 +4,12 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.11.1] - 2026-08-14
+
+### Modificado
+
+- Economia de tokens no Gate de Planejamento: o include completo de `planning-gate.md` (~700 tokens por ativação) fica só no maestro; os 7 agentes de área e o override do agente dev carregam 1 linha de fato persistente e leem o arquivo apenas quando o gate dispara (progressive disclosure).
+
 ## [1.11.0] - 2026-08-14
 
 ### Adicionado
