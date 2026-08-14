@@ -4,6 +4,23 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.10.0] - 2026-08-14
+
+### Adicionado
+
+- Skill `site-launch-kit`: checklist operacional de pré-lançamento de site em 15 rodadas corretivas (CTA principal acima da dobra, barra fixa mobile, promessa de tempo de resposta, prova social real, FAQ de decisão com FAQPage, imagens reais, endereço e como chegar, titles únicos, Open Graph, breadcrumbs, alt text, schema do negócio local, robots/sitemap, privacidade e termos LGPD, medição de eventos). Contrato comum: detectar o terreno lendo o repo, nenhum dado de negócio inventado (placeholder `{{ASSIM}}` + seção PENDÊNCIAS), saída em tabela padronizada e regra de corte por rodada; rodadas 07 e 10 são condicionais (ITEM NÃO SE APLICA). Posição no fluxo: depois do site construído, antes do deploy.
+- Registro da skill nova nos dois caminhos de roteamento: área `growth` do `skills-registry.yaml` (projetos Wizz) e linha própria na `routing-table-flat.md` do `wizz-router` (modo flat), com gatilhos de pré-go-live e de itens isolados (og:image, FAQ com schema, robots.txt).
+
+### Corrigido
+
+- Redação da description da skill `security-audit-pentest` (frase truncada "Use para revisão de correção de uma falha isolada as skills" virou "Para corrigir uma falha isolada, use as skills").
+
+## [1.9.0] - 2026-08-10
+
+### Adicionado
+
+- (registro retroativo; versão publicada sem entrada no changelog) Skill `security-audit-pentest`: auditoria adversarial de segurança em 5 estágios, com plano priorizado ("as três de hoje"); 5 lacunas cobertas nas skills de correção `web-security` e `auth-and-secrets`.
+
 ## [1.8.0] - 2026-08-01
 
 ### Adicionado
