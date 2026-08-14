@@ -4,6 +4,18 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.11.0] - 2026-08-14
+
+### Adicionado
+
+- **Gate de Planejamento** (`src/modules/wizz/_shared/planning-gate.md`): o fator "precisa planejar antes?" do sinal de complexidade agora vira ação. Em pedido de execução com complexidade alta e sem PRD/story/brief/estratégia correspondente, o agente pergunta **1x por cadeia** se cria o artefato antes (recomendado) ou pula. Tabela área → passo de planejamento cobre todas as áreas (dev = `wizz-create-story`/`wizz-prd`/`wizz-architecture`; design = brief visual; copy = contexto de marketing; seo = audit; growth = estratégia; ads = estratégia antes de criativos; social = briefing/calendário; qa = plano de testes). Gate incluído via `include` no maestro, nos 7 agentes de área e no override do agente dev; seção "Planning gate" no `wizz-quick-dev`.
+- Campos opcionais `precisa planejar` e `gate: resolvido|pulado` no protocolo de handoff compartilhado: quem delega passa o veredito dos 4 fatores e o estado do gate, então quem recebe não re-deriva o sinal nem pergunta o gate de novo. O `wizz-router` passa esse veredito no brief de delegação.
+- Gatilhos em PT-BR nas descriptions das skills de planejamento BMM (`wizz-prd`, `wizz-product-brief`, `wizz-architecture`, `wizz-create-epics-and-stories`, `wizz-create-story`, `wizz-dev-story`): "cria o PRD", "cria a story", "implementa a story" etc. agora ativam as skills sem precisar da frase em inglês.
+
+### Modificado
+
+- **Encadeamento automático substituiu o modo confirmado**: o maestro anuncia a sequência completa no início e executa os agentes em ordem até o fim, sem pedir confirmação entre eles; pausa só em decisão de negócio do usuário ou risco irreversível (deploy, delete, gasto). Atualizado no maestro (SKILL + customize), no protocolo de encerramento, no README do módulo wizz e nos 6 overrides dos agentes WIZZ (analyst, pm, architect, dev, tech-writer, ux-designer).
+
 ## [1.10.0] - 2026-08-14
 
 ### Adicionado
