@@ -1,6 +1,6 @@
 ---
 name: wizz-product-brief
-description: Create, update, or validate a product brief. Use when the user wants help producing, editing, or validating a brief.
+description: Create, update, or validate a product brief. Use when the user wants help producing, editing, or validating a brief. Also triggers in PT-BR — "cria o brief do produto", "brief do projeto".
 ---
 
 # Overview

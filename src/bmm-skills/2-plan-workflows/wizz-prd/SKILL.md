@@ -1,6 +1,6 @@
 ---
 name: wizz-prd
-description: Create, update, or validate a PRD. Use when the user wants help producing, editing, or validating a PRD.
+description: Create, update, or validate a PRD. Use when the user wants help producing, editing, or validating a PRD. Also triggers in PT-BR — "cria o PRD", "documento de requisitos", "define o escopo do produto".
 ---
 # Wizz PRD
 

@@ -13,7 +13,7 @@ activation_steps_prepend = [
 ]
 
 # Regra de comunicação + template de encerramento: fonte única em _shared/.
-include = ["../../_shared/communication-rules.md"]
+include = ["../../_shared/communication-rules.md", "../../_shared/planning-gate.md"]
 
 activation_steps_append = [
   "PRÓXIMO PASSO: normalmente chamar o wizz-agent-dev para construir; wizz-quick-dev se for ajuste pontual. Se decidiu algo de marca, lembre de oferecer salvar no cerebro.",

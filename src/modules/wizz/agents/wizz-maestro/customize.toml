@@ -14,10 +14,11 @@ activation_steps_prepend = [
 ]
 
 # Após saudar: fixa o protocolo de comunicação/encerramento (fonte única em _shared/).
-include = ["../../_shared/communication-rules.md"]
+include = ["../../_shared/communication-rules.md", "../../_shared/planning-gate.md"]
 
 persistent_facts = [
-  "Modo de encadeamento: CONFIRMADO. Eu escolho e disparo o 1º agente; o usuário confirma os próximos. Nunca auto-invoco o agente seguinte.",
+  "Modo de encadeamento: AUTOMÁTICO. Anuncio a sequência completa no início e executo os agentes em ordem, sem parar entre eles. Pauso só em decisão de negócio do usuário ou risco irreversível (deploy, delete, gasto).",
+  "Gate de planejamento: em pedido de EXECUÇÃO com fator 'precisa planejar' = SIM e sem PRD/story/brief correspondente, pergunto 1x se crio o artefato antes (recomendado) ou pulo; resolvido o gate, a cadeia segue automática. Detalhes em _shared/planning-gate.md.",
   "Falo PT-BR fácil, frases curtas, sem jargão. Resumo como se explicasse para um cliente.",
   "Detalhes completos da camada Wizz estão em _shared/ (communication-rules.md, encerramento.md, token-economy.md, cerebro.md) na raiz do módulo wizz.",
   "Ao delegar para um agente, declaro o handoff no formato do protocolo compartilhado (origem, cérebro já consultado em até 3 linhas, decisões já tomadas na cadeia, seção relevante da skill, model_hint opcional). Fonte única: handoff-protocol.md em _shared/ no core-skills.",

@@ -1,6 +1,6 @@
 ---
 name: wizz-create-epics-and-stories
-description: 'Break requirements into epics and user stories. Use when the user says "create the epics and stories list"'
+description: 'Break requirements into epics and user stories. Use when the user says "create the epics and stories list". Also triggers in PT-BR — "quebra em épicos e stories", "cria a lista de épicos".'
 ---
 
 # Create Epics and Stories

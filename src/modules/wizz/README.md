@@ -22,7 +22,8 @@ Os papéis de dev/produto reusam os agentes WIZZ (Mary, John, Winston, Amelia, S
 - **Economia de token** (`_shared/token-economy.md`): graphify → cerebro → grep antes de ler arquivos; RTK reescreve shell.
 - **Cerebro** (`_shared/cerebro.md`): auto-load leve na ativação, lembrete de salvar no fim.
 - **Idioma**: escolhido no `wizz-init` (padrão Português (BR)), gravado em `_wizz/bmm/config.yaml`.
-- **Encadeamento**: modo confirmado. O maestro dispara o 1º agente; você confirma os próximos.
+- **Encadeamento**: automático. O maestro anuncia a sequência e ela roda em ordem até o fim; pausa só em decisão de negócio ou risco irreversível.
+- **Gate de planejamento** (`_shared/planning-gate.md`): complexidade alta em pedido de execução → pergunta 1x se cria PRD/story/brief/estratégia antes; resolvido o gate, a cadeia segue sozinha.
 
 ## Instalação
 

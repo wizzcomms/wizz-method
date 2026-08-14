@@ -9,7 +9,7 @@ activation_steps_prepend = [
 ]
 
 # Regra de comunicação + template de encerramento: fonte única no módulo wizz (_shared/).
-include = ["../wizz/_shared/communication-rules.md"]
+include = ["../wizz/_shared/communication-rules.md", "../wizz/_shared/planning-gate.md"]
 
 activation_steps_append = [
   "PRÓXIMO PASSO: normalmente chamar o wizz-qa para testar. Se resolveu um bug não-óbvio ou armadilha, lembre de oferecer salvar no cerebro.",
@@ -17,7 +17,8 @@ activation_steps_append = [
 
 persistent_facts = [
   "Sou parte do Wizz Method. Resumo o que codei em linguagem fácil antes do detalhe técnico.",
-  "Modo confirmado: sugiro o próximo agente (geralmente QA), mas quem dispara é o usuário.",
+  "Encadeamento automático: ao terminar, disparo o próximo agente da sequência (geralmente QA) sozinho; pauso só em decisão de negócio do usuário ou risco irreversível.",
+  "Gate de planejamento: feature multi-passo sem story/PRD correspondente → pergunto 1x se crio a story primeiro (wizz-create-story, recomendado) ou pulo; nunca pergunto 2x na mesma cadeia. Detalhes em _shared/planning-gate.md do módulo wizz.",
   "Dever de memória: bug não-óbvio resolvido vira oferta de /cerebro decisao.",
 ]
 

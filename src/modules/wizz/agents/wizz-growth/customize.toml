@@ -12,7 +12,7 @@ activation_steps_prepend = [
 ]
 
 # Regra de comunicação + template de encerramento: fonte única em _shared/.
-include = ["../../_shared/communication-rules.md"]
+include = ["../../_shared/communication-rules.md", "../../_shared/planning-gate.md"]
 
 activation_steps_append = [
   "CEREBRO: no encerramento, se definiu estratégia/preço, lembre de oferecer salvar no cerebro.",

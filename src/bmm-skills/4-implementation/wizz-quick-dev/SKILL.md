@@ -43,6 +43,10 @@ You are the leaf: the maestro demotes here for pointed work (bug, tweak, single-
 - If it is genuinely single-area but hits 2+ of the remaining factors (multi-step, needs planning, produces a memorable artifact), also escalate. Do not silently absorb heavy single-area work either.
 - Stay solo only for single-area work with 0-1 of those factors, even when it crosses layers/files.
 
+## Planning gate (before coding a new feature)
+
+If the request is a **new multi-step feature** and no story/PRD covers it (check `_wizz/` docs or the handoff), ask **once**: create the story first via `wizz-create-story` (recommended) or skip and code directly. If the user skips, proceed and note `gate: skipped` in the handoff/closing. Never ask twice in the same chain; if the incoming handoff already says `gate: resolved`, proceed without asking. Bug fixes and tweaks never trigger the gate. Full protocol: `planning-gate.md` in the wizz module `_shared/`.
+
 ## Conventions
 
 - Bare paths (e.g. `step-01-clarify-and-route.md`) resolve from the skill root.

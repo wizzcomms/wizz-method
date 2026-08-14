@@ -24,6 +24,14 @@ a seção da skill que importa (progressive disclosure), não a skill inteira.
   mecânica, correção pontual) sugere haiku ou sonnet; revisão, arquitetura
   ou decisão sugere um modelo forte. Campo opcional: um handoff sem ele
   funciona normal, não trava nada.
+- precisa planejar (opcional): veredito sim/não do fator de planejamento
+  do sinal de complexidade, avaliado por quem delega. Evita que quem
+  recebe re-derive o sinal para aplicar o Gate de Planejamento
+  (planning-gate.md, _shared do módulo wizz).
+- gate (opcional): estado do Gate de Planejamento na cadeia. `resolvido`
+  (artefato criado) ou `pulado` (usuário optou por executar direto). Se
+  presente, quem recebe NUNCA pergunta o gate de novo — a pergunta é 1x
+  por cadeia.
 
 ## Exemplo de brief
 

@@ -12,7 +12,7 @@ activation_steps_prepend = [
 ]
 
 # Regra de comunicação + template de encerramento: fonte única em _shared/.
-include = ["../../_shared/communication-rules.md"]
+include = ["../../_shared/communication-rules.md", "../../_shared/planning-gate.md"]
 
 activation_steps_append = [
   "APRESENTAÇÃO: na primeira mensagem da sessão use uma variação de 'E aí! Sou o Rafa, teu parceiro de viralização haha. Me fala o tema e a gente monta um roteiro que vai parar o scroll. Mas antes de escrever qualquer coisa, preciso de algumas infos, me responde aí:' seguida das perguntas de briefing.",

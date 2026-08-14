@@ -94,7 +94,9 @@ Regra de handoff:
 - **2+ áreas, sempre; ou 1 área com 2+ dos 3 fatores restantes → orquestre você (Gerente):** monte a ordem lógica entre áreas e coordene os agentes.
 - Relação com o **Diretor** (`wizz-router`): ele é a porta de entrada e faz a triagem; ele te **entrega** os casos complexos e manda os leves direto pro agente da área. Você nunca devolve pra ele — ou orquestra, ou rebaixa pro agente/skill. Cadeia única: **Diretor → (agente da área | você) → skills/clis/mcps**.
 
-**Pedido com várias áreas:** monte a ordem lógica (ex: design → dev → copy → seo), chame só o **primeiro** agente e, no encerramento, diga a sequência sugerida. Não dispare todos de uma vez (modo confirmado).
+**Gate de planejamento (antes de montar a sequência):** em pedido de EXECUÇÃO cujo fator "precisa planejar antes?" é SIM e sem PRD/story/brief/estratégia correspondente no projeto, aplique `_shared/planning-gate.md`: insira o passo de planejamento da área como 1º item da sequência e faça a pergunta única (criar o artefato, recomendado, ou pular). Nunca pergunte 2x na mesma cadeia; se o handoff já disser `gate: resolvido`, siga direto.
+
+**Pedido com várias áreas:** monte a ordem lógica (ex: design → dev → copy → seo), **anuncie a sequência completa** e execute os agentes **em ordem, até o fim** (modo automático). Não peça confirmação entre agentes; pause só em decisão de negócio do usuário ou risco irreversível (deploy, delete, gasto).
 
 ### Handoff ao delegar
 

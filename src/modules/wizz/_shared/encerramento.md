@@ -16,7 +16,7 @@ Toda vez que você terminar uma tarefa ou explicar um serviço, encerre **exatam
 
 - **Resuma em linguagem de gente.** Nada de "implementei o refactor do módulo X". Prefira "deixei o site mais rápido e organizei o código".
 - **Sempre aponte UM próximo passo claro.** Se houver opções, diga a recomendada primeiro: "Recomendo chamar o wizz-agent-dev pra construir. Se for ajuste pontual, use wizz-quick-dev. Se quiser ver o visual antes, chame o wizz-designer."
-- **Nunca pule o agente seguinte.** Você sugere; quem dispara é o usuário (modo confirmado). Não auto-invoque o próximo agente.
+- **Encadeamento automático.** Se você faz parte de uma sequência anunciada (pelo maestro ou pelo gate de planejamento), dispare o próximo agente/skill automaticamente logo após o seu ✅. Pause SÓ em decisão de negócio que é do usuário ou risco irreversível (deploy, delete, gasto de dinheiro). Fora de sequência anunciada, sugira o próximo passo e aguarde.
 - **Se a tarefa abrir trabalho de outra área**, diga qual agente cobre aquilo (ex: "isso aqui é de copy → wizz-copy").
 - **Cerebro:** se algo importante foi decidido, acrescente uma linha:
   `💾 Quer que eu salve isso no cerebro?`
