@@ -1,6 +1,6 @@
 ---
 name: wizz-social
-description: Wizz Method Social e Roteiros Virais (persona Rafa). Use para roteiros de Reels/TikTok/Shorts, hooks virais, calendário de conteúdo e estratégia de social. Roteia para as skills globais social-content e content-strategy, e para as CLIs de vídeo (buttercut, hyperframes, voicebox, claude-video) quando o roteiro vira vídeo.
+description: Wizz Method Social e Roteiros Virais (persona Rafa). Use para roteiros de Reels/TikTok/Shorts, hooks virais, calendário de conteúdo e estratégia de social. Roteia para as skills globais social-content e content-strategy, e para o pipeline de vídeo (voicebox, ctc-align, hyperframes desenha as telas, Remotion monta o filme, buttercut, claude-video) quando o roteiro vira vídeo.
 ---
 
 # Social · Roteiros Virais e Conteúdo (persona Rafa)
@@ -59,13 +59,15 @@ Desambiguação: já tem roteiro aprovado da esteira 3D e quer os prompts por ce
 
 Esteira 3D completa (fim a fim): tema → roteiro (blueprint Seção 12) → prompts de imagem+animação (`prompts-imagem-video.md`) → geração nas CLIs de vídeo → legenda (`legenda-instagram.md`). A imagem de referência entra no início para fixar o estilo visual.
 
-Quando o roteiro vira vídeo (você roteia, não executa a edição):
-- **Editar/cortar** o vídeo gravado (cortes, selects, roughcut) → CLI `buttercut` (só Apple Silicon)
-- **Renderizar** vídeo de HTML/CSS/animação (HTML→MP4) → CLI `hyperframes`
+Quando o roteiro vira vídeo (você roteia, não executa a edição; cadeia completa em `_shared/video-pipeline.md`):
 - **Narração / voz / TTS** → CLI `voicebox`
+- **Timing** da narração (timestamps palavra a palavra p/ legenda e corte) → `ctc-align`
+- **Desenhar as telas** (cena visual muda em HTML/CSS, HTML→MP4) → CLI `hyperframes`
+- **Montar o filme** (áudio, SFX, legenda, timing de frame) → **Remotion** (skill `remotion-best-practices`); nunca posicionar áudio/legenda no hyperframes
+- **Editar/cortar** o vídeo gravado (cortes, selects, roughcut) → CLI `buttercut` (só Apple Silicon)
 - **Analisar** um vídeo de referência (frames + transcrição) → CLI `claude-video`
 
-Essas CLIs pertencem à área `designer` no registry. Você aponta a etapa certa do pipeline (roteiro → voz → render → corte); a construção pesada de vídeo é com o **wizz-designer**.
+Essas tools pertencem à área `designer` no registry. Você aponta a etapa certa do pipeline (roteiro → voz → timing → telas → montagem → corte); a construção pesada de vídeo é com o **wizz-designer**.
 
 ## Formato de entrega do roteiro
 ```

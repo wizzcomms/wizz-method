@@ -121,7 +121,7 @@ areas:
         when: "Auditor de movimento: revisa animação existente e aponta scale(0) no início, easing cru, reduced-motion faltando; pesa contenção/polimento/diversão pelo contexto."
       - id: remotion-best-practices
         door: motion
-        when: "Vídeo programático em React (Remotion) especificamente."
+        when: "MONTAR o filme: vídeo em React (Remotion) com áudio, SFX, legenda e timing com precisão de frame. No pipeline de vídeo é o Remotion que faz a montagem final; o hyperframes só desenha as telas mudas (regra: HyperFrames desenha, Remotion monta — ver _shared/video-pipeline.md do módulo wizz)."
       - id: canvas-design
         door: motion
         when: "Gerar PNG/PDF editável por código (carrossel, quote card, infográfico) com fonte/cor/logo sempre certos. Traz canvas-fonts."
@@ -143,7 +143,7 @@ areas:
         check: "command -v 21st"
         install: "npm i -g @21st-dev/cli && npx @21st-dev/cli install-skill"
       - id: hyperframes
-        when: "Renderizar vídeo a partir de HTML/CSS/animação (HTML→MP4, agent-native, 20+ skills). Alternativa HTML-nativa ao Remotion (que é React). Precisa ffmpeg + Node 22 + Chrome headless."
+        when: "DESENHAR telas de vídeo em HTML/CSS (HTML→MP4, agent-native, 20+ skills): cena isolada e MUDA — maqueta de WhatsApp/ChatGPT, gráfico animado, título, loop. NÃO usar para montagem com áudio/SFX/legenda sincronizada (posicionador de áudio falhou em produção, ~2,76s de drift; CSS vaza entre telas): a montagem final é do Remotion (regra: HyperFrames desenha, Remotion monta — ver _shared/video-pipeline.md do módulo wizz). Precisa ffmpeg + Node 22 + Chrome headless."
         # Gate de plataforma (2026-07-08): o `install` virou clone+checkout
         # POSIX (mktemp/rm), então macOS/Linux/WSL — mesma regra das
         # clone-and-run abaixo. (Antes ficava sem gate porque check/install
@@ -325,12 +325,15 @@ areas:
     # Roteiro viral em si (hook, corpo, CTA) é conhecimento do próprio agente
     # wizz-social (Blueprint de Roteiro Viral em knowledge/), não uma skill global.
     #
-    # CLIs de vídeo: o roteiro é o começo do pipeline (roteiro → voz → render →
-    # corte → publicação). As tools de vídeo VIVEM na área `designer` (fonte única,
-    # não duplicar aqui). O wizz-social ROTEIA para elas pelo `when:`; a construção
-    # pesada de vídeo é com o wizz-designer:
+    # CLIs de vídeo: o roteiro é o começo do pipeline (roteiro → voz → timing →
+    # telas → montagem → corte → publicação). As tools de vídeo VIVEM na área
+    # `designer` (fonte única, não duplicar aqui). O wizz-social ROTEIA para elas
+    # pelo `when:`; a construção pesada de vídeo é com o wizz-designer. Cadeia e
+    # regra completa em src/modules/wizz/_shared/video-pipeline.md:
     #   voicebox     → narração/voz/TTS do roteiro
-    #   hyperframes  → renderizar vídeo de HTML/CSS (HTML→MP4)
+    #   ctc-align    → timestamps palavra a palavra da narração (fonte de timing)
+    #   hyperframes  → desenhar as TELAS (visual mudo, HTML→MP4)
+    #   remotion     → MONTAR o filme (áudio, SFX, legenda, timing de frame)
     #   buttercut    → editar/cortar o vídeo gravado (só darwin-arm64)
     #   claude-video → analisar um vídeo de referência (frames + transcrição)
 

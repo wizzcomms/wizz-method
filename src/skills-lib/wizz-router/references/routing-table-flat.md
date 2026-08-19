@@ -44,7 +44,9 @@ Use esta tabela **só fora de projeto Wizz** (sem `_wizz/`), quando o router map
 | Animação, motion, vídeo programático em código, Remotion, Three.js, 3D, WebGL | `motion-3d-director` + `remotion-best-practices` | 1 |
 | Craft de animação/micro-interação, easing, timing, reduced-motion, "essa animação travou/tá ruim" | `animate` + `design-motion-principles` | 2 |
 | Gerar imagem por código: carrossel, quote card, infográfico (PNG/PDF editável), fundo/textura generativa de hero | `canvas-design` + `algorithmic-art` | 2 |
-| Renderizar vídeo de HTML/CSS (HTML→MP4, agent-native) | CLI `hyperframes` (registry designer; `npx skills add heygen-com/hyperframes`) | 2 |
+| **Vídeo com áudio, narração, SFX ou legenda sincronizada** (montagem do filme) | `remotion-best-practices` (Remotion monta; timing de frame). Regra do pipeline: HyperFrames desenha as telas mudas, Remotion monta o filme — não usar hyperframes para posicionar áudio/legenda (drift de ~2,76s e CSS vazando entre telas em produção) | 1 |
+| Desenhar TELA/cena de vídeo em HTML/CSS, visual mudo (maqueta de app, gráfico animado, título, loop; HTML→MP4) | CLI `hyperframes` (registry designer; `npx skills add heygen-com/hyperframes`) — só telas mudas; montagem com áudio vai pro Remotion (linha acima) | 2 |
+| Timestamps palavra a palavra de narração TTS (sincronizar legenda/corte/animação com a fala) | `ctc-align` (registry designer; fonte única de timing, substitui Whisper) | 2 |
 | **Editar/cortar vídeo** (cortes, selects, roughcut) | CLI `buttercut` (registry designer; **só Apple Silicon**, clone-and-run no projeto, deps pesadas) | 1 |
 | Gerar vídeo-ad/imagem por IA (Sora/Veo/Kling) + publicar Meta | CLI `arcads` (registry `ads`; git clone + Arcads API key) | 1 |
 | Analisar/entender vídeo existente (frames + transcrição) | CLI `claude-video` (registry designer; `npx skills add bradautomates/claude-video`) | 2 |
