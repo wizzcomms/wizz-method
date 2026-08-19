@@ -4,6 +4,23 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.14.0] - 2026-08-19
+
+### Adicionado
+
+- **Camada de decisão de vídeo** (`src/modules/wizz/_shared/video-pipeline.md`): regra permanente vinda de falha real em produção — HyperFrames desenha as telas (visual mudo, uma cena por composição), Remotion monta o filme (áudio, SFX, legenda, timing de frame), com `ctc-align` como fonte única de timestamps da narração. Motivo documentado: posicionador de áudio do HyperFrames driftou ~2,76s e CSS vazou entre telas. Inclui tabela de decisão rápida, cadeia completa (roteiro → voz → timing → telas → montagem → corte → publicação) e anti-padrões (não posicionar áudio no HyperFrames; não migrar composição Remotion funcional "para padronizar").
+
+### Alterado
+
+- `skills-registry.yaml`: `when:` de `hyperframes` (só telas mudas) e `remotion-best-practices` (montagem final com precisão de frame) reescritos com a regra do pipeline; comentário da área social atualizado com `remotion` e `ctc-align` na cadeia.
+- `routing-table-flat.md` (wizz-router): vídeo com áudio/narração/legenda roteia para Remotion com prioridade 1; `hyperframes` rebaixado a telas mudas; linha nova para `ctc-align`. Agentes `wizz-designer` e `wizz-social` apontam para `_shared/video-pipeline.md`.
+- 22 skills ganharam frase de gatilho literal ("Use quando"/"Use when") na `description`, derivada do conteúdo real de cada uma, zerando os avisos SKILL-06 do `validate:skills` (169 skills, 0 findings). A `description` da `premium-landing-ui-researcher` (que já estourava 1024 chars) foi condensada com ponteiro para `references/component-sources.md`.
+
+### Corrigido
+
+- `tools/validate-skills.js`: SKILL.md aninhado dentro de outra skill (ex. os 45 `references/` do bundle `ai-product-design`) não exige mais frase de gatilho — nunca é roteado sozinho, o gatilho pertence à skill-mãe (elimina 45 falsos positivos).
+- `copywriting/references/copy-frameworks.md`: exemplo de copy com "takes 2 minutes" virou bloco fenced (é copy de exemplo, não estimativa de tempo do workflow; SEQ-02 ignora código por design).
+
 ## [1.13.0] - 2026-08-19
 
 ### Adicionado
