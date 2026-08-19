@@ -82,6 +82,19 @@ async function createTestWizzFixture() {
   );
   await fs.writeFile(path.join(skillDir, 'workflow.md'), '# Test Workflow\nStep 1: Do the thing.\n');
 
+  // Minimal native subagent fixtures under the wizz module, mirroring
+  // src/modules/wizz/subagents/*.md — used by the Claude Code agents_target_dir test.
+  const subagentsDir = path.join(fixtureDir, 'wizz', 'subagents');
+  await fs.ensureDir(subagentsDir);
+  await fs.writeFile(
+    path.join(subagentsDir, 'wizz-exec-haiku.md'),
+    ['---', 'name: wizz-exec-haiku', 'description: Test cheap executor fixture', 'model: haiku', '---', '', 'Test body.'].join('\n'),
+  );
+  await fs.writeFile(
+    path.join(subagentsDir, 'wizz-exec-sonnet.md'),
+    ['---', 'name: wizz-exec-sonnet', 'description: Test executor fixture', 'model: sonnet', '---', '', 'Test body.'].join('\n'),
+  );
+
   return fixtureDir;
 }
 
@@ -373,9 +386,15 @@ async function runTests() {
     const claudeInstaller = platformCodes9.platforms['claude-code']?.installer;
 
     assert(claudeInstaller?.target_dir === '.claude/skills', 'Claude Code target_dir uses native skills path');
+    assert(claudeInstaller?.agents_target_dir === '.claude/agents', 'Claude Code agents_target_dir points at .claude/agents');
 
     const tempProjectDir9 = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-claude-code-test-'));
     const installedWizzDir9 = await createTestWizzFixture();
+
+    // Pre-existing user-owned subagent file — must survive install/cleanup untouched.
+    const agentsDir9 = path.join(tempProjectDir9, '.claude', 'agents');
+    await fs.ensureDir(agentsDir9);
+    await fs.writeFile(path.join(agentsDir9, 'my-custom-agent.md'), '---\nname: my-custom-agent\n---\n\nUser-owned.\n');
 
     const ideManager9 = new IdeManager();
     await ideManager9.ensureInitialized();
@@ -393,6 +412,22 @@ async function runTests() {
     const skillContent9 = await fs.readFile(skillFile9, 'utf8');
     const nameMatch9 = skillContent9.match(/^name:\s*(.+)$/m);
     assert(nameMatch9 && nameMatch9[1].trim() === 'wizz-master', 'Claude Code skill name frontmatter matches directory name exactly');
+
+    // Verify native subagents were copied to .claude/agents
+    const haikuAgentFile9 = path.join(agentsDir9, 'wizz-exec-haiku.md');
+    const sonnetAgentFile9 = path.join(agentsDir9, 'wizz-exec-sonnet.md');
+    assert(await fs.pathExists(haikuAgentFile9), 'Claude Code install writes wizz-exec-haiku.md subagent');
+    assert(await fs.pathExists(sonnetAgentFile9), 'Claude Code install writes wizz-exec-sonnet.md subagent');
+    assert(result9.handlerResult?.results?.subagents === 2, 'Claude Code setup result reports subagents count');
+
+    const haikuContent9 = await fs.readFile(haikuAgentFile9, 'utf8');
+    assert(/^model:\s*haiku$/m.test(haikuContent9), 'Claude Code subagent file preserves model frontmatter');
+
+    // Pre-existing user-owned agent must be untouched.
+    assert(
+      await fs.pathExists(path.join(agentsDir9, 'my-custom-agent.md')),
+      "Claude Code install doesn't delete unrelated user-owned agent files",
+    );
 
     await fs.remove(tempProjectDir9);
     await fs.remove(path.dirname(installedWizzDir9));

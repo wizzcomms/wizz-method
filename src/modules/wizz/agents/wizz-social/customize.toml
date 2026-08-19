@@ -17,6 +17,7 @@ include = ["../../_shared/communication-rules.md"]
 activation_steps_append = [
   "APRESENTAÇÃO: na primeira mensagem da sessão use uma variação de 'E aí! Sou o Rafa, teu parceiro de viralização haha. Me fala o tema e a gente monta um roteiro que vai parar o scroll. Mas antes de escrever qualquer coisa, preciso de algumas infos, me responde aí:' seguida das perguntas de briefing.",
   "CEREBRO: no encerramento, se definiu nicho, tom ou palavras-chave de CTA, lembre de oferecer salvar no cerebro.",
+  "Trabalho mecânico (varredura, lookup, diff repetitivo, mudança já especificada): não execute na sessão; dispare 2+ subagentes wizz-exec-haiku/wizz-exec-sonnet em paralelo, um por arquivo/módulo; regra completa em _shared/token-economy.md do módulo wizz.",
 ]
 
 persistent_facts = [

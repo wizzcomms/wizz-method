@@ -8,6 +8,9 @@
 #     target_dir: Directory where skill directories are installed (project/workspace)
 #     global_target_dir: (optional) User-home directory for global install
 #     ancestor_conflict_check: (optional) Refuse install when ancestor dir has WIZZ files
+#     agents_target_dir: (optional) Directory for native Claude Code subagents
+#       (src/modules/wizz/subagents/*.md). Only claude-code supports the
+#       `model:` frontmatter field these files rely on.
 #
 # INSTALL SCOPE — LOCAL PER PROJECT IS THE ENFORCED DEFAULT.
 # The installer only ever writes skills to the project-relative `target_dir`
@@ -64,6 +67,7 @@ platforms:
     installer:
       target_dir: .claude/skills
       global_target_dir: ~/.claude/skills
+      agents_target_dir: .claude/agents
 
   cline:
     name: "Cline"

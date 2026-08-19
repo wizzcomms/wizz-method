@@ -24,90 +24,25 @@ const os = require('node:os');
 const TRIVIAL_PATTERNS = [
   // Já é slash command / invocação explícita de skill — já roteado
   /^\s*\//,
-  // Conversa pura / saudações
-  /^(oi|olá|ola|hey|hi|hello|tudo bem|bom dia|boa tarde|boa noite|obrigad[oa]|valeu|vlw|ok|okay|certo|perfeito|show|massa)\b/i,
+  // Conversa pura / saudações / reação sem pedido
+  /^(oi|olá|ola|hey|hi|hello|tudo bem|bom dia|boa tarde|boa noite|obrigad[oa]|valeu|vlw|ok|okay|certo|perfeito|show|massa|legal)\b/i,
   // Typo / rename / ajuste inline pequeno
   /\btypo\b/i,
   /\bcorrige?\s+(esse|este|o|a)?\s*typo\b/i,
   /\brename\s+(a\s+)?(vari[aá]vel|fun[cç][aã]o|arquivo|classe|m[eé]todo)\b/i,
   /\brenomei[ao]\s+(a\s+)?(vari[aá]vel|fun[cç][aã]o|arquivo|classe|m[eé]todo)\b/i,
+  // Rename no formato "rebatiza/renomeia X para Y" (objeto é nome próprio, não termo técnico)
+  /\b(rename|renomeia|renomear|renomeou|rebatiza|rebatizar|rebatizou)\b.*\bpara\b/i,
   // Edição pontual apontando linha específica ("troca X por Y na linha 42")
   /\bna linha \d+\b/i,
   // Resposta a pergunta do próprio router — evita re-injetar no follow-up
   /^(sim|n[aã]o|todas|nenhuma|cancela|dispara?\s+(todas|ambas|essas|todas\s+as\s+skills))/i,
   // Perguntas puras de status / o que foi feito
   /^(o que foi feito|qual o status|me conta|como (t[aá]|est[aá]|ficou|ficaram)|me mostra|explica)/i,
-];
-
-// Verbos técnicos de ação que, mesmo em prompt curto, justificam roteamento
-const ACTION_VERBS = [
-  'cria',
-  'criar',
-  'adiciona',
-  'adicionar',
-  'implementa',
-  'implementar',
-  'constrói',
-  'construir',
-  'faz',
-  'fazer',
-  'desenvolve',
-  'desenvolver',
-  'refatora',
-  'refatorar',
-  'muda',
-  'mudar',
-  'altera',
-  'alterar',
-  'conserta',
-  'consertar',
-  'corrige',
-  'corrigir',
-  'fix',
-  'fixes',
-  'otimiza',
-  'otimizar',
-  'improve',
-  'redesign',
-  'migra',
-  'migrar',
-  'build',
-  'deploy',
-  'configura',
-  'configurar',
-  'setup',
-  'integra',
-  'integrar',
-  'add',
-  'update',
-  'remove',
-  'delete',
-  'instala',
-  'instalar',
-  'testa',
-  'testar',
-  'audita',
-  'auditar',
-  'analisa',
-  'analisar',
-  'melhora',
-  'melhorar',
-  'escreve',
-  'escrever',
-  'gera',
-  'gerar',
-  'revisa',
-  'revisar',
-  'ajusta',
-  'ajustar',
-  'monta',
-  'montar',
-  'plano',
-  'planeja',
-  'reduz',
-  'aumenta',
-  'lança',
-  'publica',
+  // Pergunta de 1 palavra só ("link?", "cadê?") — informacional, sem pedido de trabalho
+  /^\S+\?$/,
+  // Frase de suporte/estado pessoal ("esqueci a senha") — informacional, não é tarefa
+  /^esqueci\b/i,
 ];
 
 function isTrivial(prompt) {
@@ -121,13 +56,10 @@ function isTrivial(prompt) {
     if (pattern.test(trimmed)) return true;
   }
 
-  // Prompt muito curto (< 30 chars) sem verbo de ação conhecido
-  if (trimmed.length < 30) {
-    const lower = trimmed.toLowerCase();
-    const hasActionVerb = ACTION_VERBS.some((v) => lower.includes(v));
-    if (!hasActionVerb) return true;
-  }
-
+  // Sem heurística de tamanho: um prompt curto e ambíguo (ex.: "e o funil?",
+  // "melhora isso") NÃO é trivial por padrão. Custo de injetar contexto à toa
+  // é ~50-70 tokens; custo de deixar um pedido real escapar do roteamento é
+  // alto (ver bug de 2026-08-19). Só as regras explícitas acima marcam trivial.
   return false;
 }
 

@@ -16,6 +16,10 @@ activation_steps_prepend = [
 # Após saudar: fixa o protocolo de comunicação/encerramento (fonte única em _shared/).
 include = ["../../_shared/communication-rules.md", "../../_shared/planning-gate.md"]
 
+activation_steps_append = [
+  "Trabalho mecânico (varredura, lookup, diff repetitivo, mudança já especificada): não execute na sessão; dispare 2+ subagentes wizz-exec-haiku/wizz-exec-sonnet em paralelo, um por arquivo/módulo; regra completa em _shared/token-economy.md do módulo wizz.",
+]
+
 persistent_facts = [
   "Modo de encadeamento: AUTOMÁTICO. Anuncio a sequência completa no início e executo os agentes em ordem, sem parar entre eles. Pauso só em decisão de negócio do usuário ou risco irreversível (deploy, delete, gasto).",
   "Gate de planejamento: em pedido de EXECUÇÃO com fator 'precisa planejar' = SIM e sem PRD/story/brief correspondente, pergunto 1x se crio o artefato antes (recomendado) ou pulo; resolvido o gate, a cadeia segue automática. Detalhes em _shared/planning-gate.md.",

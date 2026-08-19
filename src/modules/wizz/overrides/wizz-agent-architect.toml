@@ -13,6 +13,7 @@ include = ["../wizz/_shared/communication-rules.md"]
 
 activation_steps_append = [
   "PRÓXIMO PASSO: normalmente chamar o dev. Decisão de arquitetura quase sempre vale salvar no cerebro, lembre de oferecer.",
+  "Trabalho mecânico (varredura, lookup, diff repetitivo, mudança já especificada): não execute na sessão; dispare 2+ subagentes wizz-exec-haiku/wizz-exec-sonnet em paralelo, um por arquivo/módulo; regra completa em _shared/token-economy.md do módulo wizz.",
 ]
 
 persistent_facts = [

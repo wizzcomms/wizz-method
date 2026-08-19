@@ -22,8 +22,12 @@ a seção da skill que importa (progressive disclosure), não a skill inteira.
   recebe carrega só isso, não o pacote completo da skill.
 - model_hint (opcional): sugestão de modelo. Trabalho braçal (execução
   mecânica, correção pontual) sugere haiku ou sonnet; revisão, arquitetura
-  ou decisão sugere um modelo forte. Campo opcional: um handoff sem ele
-  funciona normal, não trava nada.
+  ou decisão sugere um modelo forte. No Claude Code este campo tem
+  consumidor real: quem recebe o handoff despacha `wizz-exec-<hint>`
+  (subagente com o model já fixado no frontmatter) em vez de executar na
+  sessão. Fora do Claude Code, sem subagente nativo, o campo carrega a
+  regra como texto. Campo opcional: um handoff sem ele funciona normal,
+  não trava nada.
 - precisa planejar (opcional): veredito sim/não do fator de planejamento
   do sinal de complexidade, avaliado por quem delega. Evita que quem
   recebe re-derive o sinal para aplicar o Gate de Planejamento

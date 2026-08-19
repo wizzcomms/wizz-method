@@ -29,3 +29,14 @@ Nunca abra arquivos grandes "para entender o contexto" sem antes tentar os 3 pas
 ## Delegação
 
 Quando a tarefa exigir varrer muitos arquivos, lance um subagente Explore e fique só com a conclusão, não com o despejo de arquivos.
+
+## Despacho barato (regra, não sugestão)
+
+Trabalho mecânico NUNCA roda na sessão principal. Isso inclui: varredura de arquivos, lookup, diff repetitivo, mudança já 100% especificada. Sempre despache 2+ subagentes em paralelo, particionados por arquivo/módulo (nunca dois no mesmo arquivo), com model explícito:
+
+- **`wizz-exec-haiku`**: varredura, lookup, renomeação, diff mecânico, mudança já 100% especificada. Sem ambiguidade nenhuma.
+- **`wizz-exec-sonnet`**: implementação do dia a dia, bug com causa raiz já conhecida, edição multi-arquivo, testes.
+
+Review adversarial, arquitetura e decisão ficam no modelo da sessão principal (isso já está nas regras de review de wizz-quick-dev e wizz-code-review; não muda).
+
+Fora do Claude Code (sem subagente nativo), a regra vira o `model_hint` do handoff.

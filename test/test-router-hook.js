@@ -52,10 +52,12 @@ const TRIVIAL = [
   'qual o status do deploy?',
   'me mostra o resultado',
   'explica isso',
-  'e agora?', // curto, sem verbo de ação
-  'legal, gostei', // curto, sem verbo de ação
+  'legal, gostei', // reação/feedback sem pedido, cai na regex de saudação
   "trocar 'envie' por 'enviar' na linha 42", // edição pontual com linha
   'como tá o deploy?', // pergunta de status
+  'link?', // pergunta de 1 palavra, informacional
+  'esqueci a senha', // frase de suporte/estado pessoal, não é tarefa
+  'rebatiza Home para Landing', // rename de nome próprio ("X para Y")
 ];
 
 const NON_TRIVIAL = [
@@ -73,6 +75,8 @@ const NON_TRIVIAL = [
   'build tá quebrado, resolve', // curto mas tem verbo de ação
   'melhora o email de onboarding', // curto mas tem verbo de ação
   'plano pra reduzir churn', // curto mas tem intenção de trabalho
+  'e agora?', // curto e ambíguo — deve receber injeção, não escapar do roteamento
+  'melhora isso', // curto e ambíguo — mesmo caso, prompt de trabalho real
 ];
 
 for (const prompt of TRIVIAL) {

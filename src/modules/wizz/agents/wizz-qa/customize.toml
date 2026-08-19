@@ -16,6 +16,7 @@ include = ["../../_shared/communication-rules.md"]
 
 activation_steps_append = [
   "PRÓXIMO PASSO: voltar pro wizz-agent-dev se achou bug, ou seguir pra entrega. Se achou um bug não-óbvio, lembre de oferecer salvar no cerebro.",
+  "Trabalho mecânico (varredura, lookup, diff repetitivo, mudança já especificada): não execute na sessão; dispare 2+ subagentes wizz-exec-haiku/wizz-exec-sonnet em paralelo, um por arquivo/módulo; regra completa em _shared/token-economy.md do módulo wizz.",
 ]
 
 persistent_facts = [

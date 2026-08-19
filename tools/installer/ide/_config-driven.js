@@ -224,6 +224,9 @@ class ConfigDrivenIdeSetup {
       if (this.installerConfig.commands_target_dir) {
         results.commands = await this.installCommandPointers(projectDir, wizzDir, this.installerConfig, options);
       }
+      if (this.installerConfig.agents_target_dir) {
+        results.subagents = await this.installSubagents(projectDir, wizzDir, this.installerConfig);
+      }
       return { success: true, results };
     }
 
@@ -255,6 +258,10 @@ class ConfigDrivenIdeSetup {
 
     if (config.commands_target_dir) {
       results.commands = await this.installCommandPointers(projectDir, wizzDir, config, options);
+    }
+
+    if (config.agents_target_dir) {
+      results.subagents = await this.installSubagents(projectDir, wizzDir, config);
     }
 
     await this.printSummary(results, target_dir, options);
@@ -468,6 +475,53 @@ class ConfigDrivenIdeSetup {
   }
 
   /**
+   * Install WIZZ-authored native subagents (e.g. wizz-exec-haiku.md,
+   * wizz-exec-sonnet.md) into the platform's subagent directory.
+   *
+   * Only Claude Code declares `agents_target_dir` today — it's the only
+   * platform whose native subagent files honor a `model:` frontmatter field.
+   * The source lives inside the installed wizz module at
+   * `{wizzDir}/wizz/subagents/`, mirroring how `installVerbatimSkills`
+   * resolves module-relative source paths.
+   *
+   * Ownership is scoped to the `wizz-exec-*.md` naming convention — only
+   * files matching that pattern are ever written here, so a user's own
+   * hand-authored subagents in the same directory are never touched.
+   * Silently no-ops when the source directory doesn't exist (e.g. install
+   * without the wizz module).
+   *
+   * @param {string} projectDir - Project directory
+   * @param {string} wizzDir - WIZZ installation directory
+   * @param {Object} config - Installation configuration; reads agents_target_dir
+   * @returns {Promise<number>} Count of subagent files installed
+   */
+  async installSubagents(projectDir, wizzDir, config) {
+    const sourceDir = path.join(wizzDir, 'wizz', 'subagents');
+    if (!(await fs.pathExists(sourceDir))) return 0;
+
+    let entries;
+    try {
+      entries = await fs.readdir(sourceDir);
+    } catch {
+      return 0;
+    }
+
+    const subagentFiles = entries.filter((entry) => entry.startsWith('wizz-exec-') && entry.endsWith('.md'));
+    if (subagentFiles.length === 0) return 0;
+
+    const targetPath = path.join(projectDir, config.agents_target_dir);
+    await fs.ensureDir(targetPath);
+
+    let count = 0;
+    for (const entry of subagentFiles) {
+      await fs.copy(path.join(sourceDir, entry), path.join(targetPath, entry), { overwrite: true });
+      count++;
+    }
+
+    return count;
+  }
+
+  /**
    * Print installation summary
    * @param {Object} results - Installation results
    * @param {string} targetDir - Target directory (relative)
@@ -489,6 +543,9 @@ class ConfigDrivenIdeSetup {
       if (cmd.writeFailures > 0) {
         await prompts.log.warn(`  (${cmd.writeFailures} pointer writes failed — see warnings above)`);
       }
+    }
+    if (results.subagents > 0 && this.installerConfig?.agents_target_dir) {
+      await prompts.log.success(`${this.name} subagents: ${results.subagents} → ${this.installerConfig.agents_target_dir}`);
     }
   }
 
@@ -558,6 +615,16 @@ class ConfigDrivenIdeSetup {
         activeSkillIds,
         extension,
       );
+    }
+
+    // Clean stale wizz-exec-*.md subagent files. Like command pointers, these
+    // live in a per-IDE directory (.claude/agents) that isn't deduped across
+    // peers, so this runs regardless of skipTarget. installSubagents always
+    // overwrites with the current source content, so unconditional removal
+    // here is safe — a routine reinstall just recreates the files moments
+    // later.
+    if (this.installerConfig?.agents_target_dir) {
+      await this.cleanupSubagents(projectDir, this.installerConfig.agents_target_dir);
     }
 
     // Skip target_dir cleanup when a peer platform owns this directory
@@ -719,6 +786,46 @@ class ConfigDrivenIdeSetup {
       const remaining = await fs.readdir(commandsPath);
       if (remaining.length === 0) {
         await fs.remove(commandsPath);
+      }
+    } catch {
+      // Directory may already be gone.
+    }
+  }
+
+  /**
+   * Remove WIZZ-owned `wizz-exec-*.md` subagent files from the platform's
+   * subagent directory (e.g. .claude/agents). Symmetric counterpart to
+   * installSubagents. Only touches files matching that naming convention —
+   * a user's own hand-authored subagents in the same directory are never
+   * removed. Removes the directory entirely if it ends up empty.
+   * @param {string} projectDir
+   * @param {string} agentsTargetDir - Relative dir (e.g. .claude/agents)
+   */
+  async cleanupSubagents(projectDir, agentsTargetDir) {
+    const agentsPath = path.join(projectDir, agentsTargetDir);
+    if (!(await fs.pathExists(agentsPath))) return;
+
+    let entries;
+    try {
+      entries = await fs.readdir(agentsPath);
+    } catch {
+      return;
+    }
+
+    for (const entry of entries) {
+      if (!entry.startsWith('wizz-exec-') || !entry.endsWith('.md')) continue;
+      try {
+        await fs.remove(path.join(agentsPath, entry));
+      } catch {
+        // Skip files we can't remove.
+      }
+    }
+
+    // Remove the agents directory if we emptied it.
+    try {
+      const remaining = await fs.readdir(agentsPath);
+      if (remaining.length === 0) {
+        await fs.remove(agentsPath);
       }
     } catch {
       // Directory may already be gone.

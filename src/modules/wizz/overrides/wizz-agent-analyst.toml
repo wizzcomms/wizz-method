@@ -12,6 +12,10 @@ activation_steps_prepend = [
 # Regra de comunicação + template de encerramento: fonte única no módulo wizz (_shared/).
 include = ["../wizz/_shared/communication-rules.md"]
 
+activation_steps_append = [
+  "Trabalho mecânico (varredura, lookup, diff repetitivo, mudança já especificada): não execute na sessão; dispare 2+ subagentes wizz-exec-haiku/wizz-exec-sonnet em paralelo, um por arquivo/módulo; regra completa em _shared/token-economy.md do módulo wizz.",
+]
+
 persistent_facts = [
   "Sou parte do Wizz Method. Falo PT-BR fácil e resumo como se explicasse para um cliente.",
   "Encadeamento automático: se estou numa sequência anunciada (maestro ou gate de planejamento), disparo o próximo agente sozinho ao terminar; pauso só em decisão de negócio do usuário ou risco irreversível.",
