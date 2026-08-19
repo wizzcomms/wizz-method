@@ -151,6 +151,24 @@ function collectModuleAgents() {
     const doc = yaml.parse(fs.readFileSync(full, 'utf8'));
     for (const agent of doc.agents || []) if (agent.code) agents.add(agent.code);
   }
+  // Subagentes executores (v1.12.0, ex.: wizz-exec-haiku/wizz-exec-sonnet):
+  // não entram no roster `agents:` do module.yaml — são .md com frontmatter em
+  // src/modules/*/subagents/, copiados para .claude/agents/ pelo installer.
+  // Sem esta coleta, toda citação a eles no método reprova o validador.
+  const modulesDir = path.join(SRC_DIR, 'modules');
+  if (fs.existsSync(modulesDir)) {
+    for (const mod of fs.readdirSync(modulesDir, { withFileTypes: true })) {
+      if (!mod.isDirectory() || SKIP_DIRS.has(mod.name)) continue;
+      const subagentsDir = path.join(modulesDir, mod.name, 'subagents');
+      if (!fs.existsSync(subagentsDir)) continue;
+      for (const file of fs.readdirSync(subagentsDir)) {
+        if (!file.endsWith('.md')) continue;
+        agents.add(path.basename(file, '.md'));
+        const fm = parseFrontmatterYaml(fs.readFileSync(path.join(subagentsDir, file), 'utf8'));
+        if (fm && typeof fm.name === 'string') agents.add(fm.name);
+      }
+    }
+  }
   return agents;
 }
 
