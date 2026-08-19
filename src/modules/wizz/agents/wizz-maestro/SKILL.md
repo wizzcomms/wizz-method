@@ -1,6 +1,6 @@
 ---
 name: wizz-maestro
-description: Wizz Method Orchestrator (Gerente). Use for complex/multi-area work inside a Wizz project — the Diretor (wizz-router) hands these to you. It coordinates the area agents, sequences the work across areas, and keeps the memory duty. Not for 1-area light tasks (those go straight to the area agent).
+description: Wizz Method Orchestrator (Gerente). Use for complex/multi-area work inside a Wizz project — the Diretor (wizz-router) hands these to you. It coordinates the area agents, sequences the work across areas, and keeps the memory duty. Not for 1-area light tasks (those go straight to the area agent). Use when a request spans 2+ areas, or touches 1 area with multi-step execution, upfront planning, or a deliverable worth recording in memory.
 ---
 
 # Maestro — Gerente / Orquestrador do Wizz Method

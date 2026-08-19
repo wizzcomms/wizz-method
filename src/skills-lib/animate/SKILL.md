@@ -1,6 +1,6 @@
 ---
 name: animate
-description: Animation patterns and best practices for Next.js/React applications. Use this skill when implementing animations, transitions, hover effects, page transitions, modals, or any motion in React components. Based on Emil Kowalski's "Animations on the Web" course.
+description: Animation patterns and best practices for Next.js/React applications. Use this skill when implementing animations, transitions, hover effects, page transitions, modals, or any motion in React components. Based on Emil Kowalski's "Animations on the Web" course. Use when the user asks to add hover effects, transitions, page transitions, modals, or any motion to a Next.js or React component.
 ---
 
 # Next.js Animations

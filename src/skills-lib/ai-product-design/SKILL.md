@@ -6,7 +6,9 @@ description: >
   agente/assistente/chatbot, escrever ou revisar system prompt, definir persona/tom/voz, montar few-shot,
   chain-of-thought, guardrails, recusas, escalonamento pra humano, handoff entre agentes, detecção de
   frustração, generative UI, ou medir qualidade de saída de IA. Base: Owl-Listener/ai-design-skills (MIT).
-  44 padrões em 6 categorias, cada um detalhado em references/.
+  44 padrões em 6 categorias, cada um detalhado em references/. Use quando o pedido mencionar system
+  prompt, persona de agente, guardrails, orquestração multi-agente, handoff entre agentes ou avaliação
+  de qualidade de IA.
 ---
 
 # AI Product Design — 44 padrões

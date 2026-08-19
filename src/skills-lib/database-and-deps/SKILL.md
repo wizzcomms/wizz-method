@@ -3,7 +3,8 @@ name: database-and-deps
 description: >
   Segurança de banco de dados e dependências. Usar quando: revisar queries de banco, checar SQL injection,
   auditar permissões de banco, criptografar PII, revisar pacotes vulneráveis, configurar Dependabot/Renovate,
-  auditar RPCs Supabase, verificar menor privilégio no banco.
+  auditar RPCs Supabase, verificar menor privilégio no banco. Use quando o usuário mencionar SQL,
+  query builder, RPC do Supabase, npm/pnpm audit, Dependabot, pacotes vulneráveis, PII no banco ou lock file.
 ---
 
 # Database and Dependencies Security

@@ -4,7 +4,8 @@ description: >
   Segurança de autenticação e gestão de secrets. Usar quando: implementar auth, lidar com JWT/OAuth/SSO,
   token no header vs URL, revogação de token no logout, enumeração de usuário/mensagem genérica,
   guardar API keys ou credenciais, configurar Clerk/Supabase auth, revisar onde secrets estão armazenados,
-  rotação de credenciais, checar se .env está seguro.
+  rotação de credenciais, checar se .env está seguro. Use quando o usuário mencionar login, cadastro,
+  senha, JWT, OAuth, SSO, 2FA, sessão, logout, API key ou variável de ambiente/.env.
 ---
 
 # Auth and Secrets

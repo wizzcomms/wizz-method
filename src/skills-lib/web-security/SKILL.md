@@ -5,6 +5,7 @@ description: >
   adicionar endpoint de API, lidar com input de usuário, configurar headers, CSP, rate limiting, CORS, clickjacking,
   IDOR, SQL injection, vazamento de PII/dados na resposta, enumeração de usuário, OWASP Top 10.
   Inclui triagem de falhas recorrentes de pentest + checklist das 8 vulnerabilidades e exemplos para Next.js + Supabase + Clerk.
+  Use quando o usuário pedir auditoria de segurança ou revisão pré-deploy, ou mencionar CORS, CSP, rate limiting, IDOR ou OWASP.
 ---
 
 # Web Security (OWASP Top 10)

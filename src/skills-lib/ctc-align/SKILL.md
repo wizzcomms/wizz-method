@@ -1,6 +1,6 @@
 ---
 name: ctc-align
-description: Timestamps palavra a palavra confiáveis para narração TTS via alinhamento forçado (ctc-forced-aligner + âncora nos silêncios reais). Usar SEMPRE antes de definir tempo de legenda, corte de cena, animação ou elemento sincronizado com fala em qualquer vídeo (HyperFrames ou outro editor). Substitui o Whisper como fonte de timing quando o texto do roteiro é conhecido. Gatilhos - sincronizar legenda, timing de cena, alinhar áudio e texto, palavra a palavra, forced alignment, legenda karaokê, corrigir sync de vídeo.
+description: Timestamps palavra a palavra confiáveis para narração TTS via alinhamento forçado (ctc-forced-aligner + âncora nos silêncios reais). Usar SEMPRE antes de definir tempo de legenda, corte de cena, animação ou elemento sincronizado com fala em qualquer vídeo (HyperFrames ou outro editor). Substitui o Whisper como fonte de timing quando o texto do roteiro é conhecido. Gatilhos - sincronizar legenda, timing de cena, alinhar áudio e texto, palavra a palavra, forced alignment, legenda karaokê, corrigir sync de vídeo. Use quando o roteiro exato da narração for conhecido e for preciso decidir timing de legenda, corte de cena ou animação sincronizada com a fala.
 ---
 
 # ctc-align — timing de fala como fonte única de verdade

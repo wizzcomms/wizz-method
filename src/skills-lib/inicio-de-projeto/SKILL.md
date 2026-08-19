@@ -5,6 +5,8 @@ description: >
   precisar de padrões de arquitetura, definir estrutura de pastas, estabelecer regras de código, começar um app SaaS/produto,
   onboarding de desenvolvedor no projeto. Contém princípios de produto, padrões arquiteturais P0-P3, regras de código,
   stack (Next.js + Supabase + Clerk + Zod), estrutura de pastas e checklist de início.
+  Use quando o pedido for começar um projeto novo, criar um módulo/feature do zero, ou definir
+  arquitetura, stack e estrutura de pastas antes de codar.
 ---
 
 # Início de Projeto — Padrões de Engenharia

@@ -229,7 +229,21 @@ function validateSkill(skillDir) {
       });
     }
 
+    // A skill aninhada dentro de outra skill (ex. references/ de um bundle,
+    // como ai-product-design/references/**) nunca é roteada sozinha — só é
+    // carregada pela skill-mãe. Exigir frase de gatilho ("Use when...") na
+    // description dela é falso positivo: a frase de gatilho pertence à porta
+    // de entrada (a skill-mãe). As demais regras continuam valendo.
+    let isNestedSkill = false;
+    for (let dir = path.dirname(skillDir); dir.length >= PROJECT_ROOT.length && dir !== path.dirname(dir); dir = path.dirname(dir)) {
+      if (fs.existsSync(path.join(dir, 'SKILL.md'))) {
+        isNestedSkill = true;
+        break;
+      }
+    }
+
     if (
+      !isNestedSkill &&
       !/use\s+when\b/i.test(description) &&
       !/use\s+if\b/i.test(description) &&
       !/use\s+para\b/i.test(description) &&

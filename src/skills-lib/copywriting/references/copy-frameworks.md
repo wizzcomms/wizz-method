@@ -326,9 +326,12 @@ Each step should be:
 - **Outcome-oriented**: What they get from this step
 
 Example:
+
+```text
 1. Connect your tools (takes 2 minutes)
 2. Set your preferences
 3. Get automated reports every Monday
+```
 
 ### Testimonial Selection
 

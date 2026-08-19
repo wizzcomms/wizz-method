@@ -3,7 +3,8 @@ name: desktop-security
 description: >
   Segurança para apps desktop e Electron. Usar quando: desenvolver app Electron, configurar contextIsolation/IPC,
   implementar code signing, armazenar tokens/credenciais localmente, configurar auto-update seguro,
-  distribuir app para macOS/Windows.
+  distribuir app para macOS/Windows. Use quando o usuário mencionar Electron, IPC, contextBridge,
+  preload script, safeStorage, code signing, notarização ou auto-update.
 ---
 
 # Desktop Security

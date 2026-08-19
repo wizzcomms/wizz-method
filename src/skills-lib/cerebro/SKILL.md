@@ -9,6 +9,8 @@ description: >
   usuário entre Claude Code, Codex e qualquer outro agente.
   CONTEXT.md no repo é o espelho do vault para agentes cloud (Codex). Fluxo: Codex atualiza
   CONTEXT.md → usuário roda /sync no Claude Code → vault atualizado.
+  Use quando o usuário digitar um desses comandos de barra ou mencionar memória, sessão,
+  decisão, ideia de conteúdo, prospect ou sincronização do cérebro.
 ---
 
 # Cérebro — Sistema de Memória Persistente
