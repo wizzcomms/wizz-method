@@ -198,6 +198,12 @@ areas:
         # sistema específica (é um app desktop autocontido que expõe um
         # endpoint MCP local) — nada de concreto pra checar sem inventar um
         # requisito que o registry não afirma.
+      - id: ctc-align
+        when: "Timestamps palavra a palavra CONFIÁVEIS de narração TTS (texto conhecido): sincronizar legenda, corte de cena, animação e elemento gráfico com a fala. Fonte única de timing em vídeo — substitui timestamps do Whisper e estimativa manual. Skill da lib: ctc-align (instalação + helper align.py + regras de âncora monotônica e duração mínima). Roda em CPU, sem CUDA."
+        platform: [darwin, linux]
+        check: "test -x ./tools/ctc-align/.venv/bin/ctc-forced-aligner"
+        install: 'mkdir -p tools/ctc-align && uv venv --python 3.12 tools/ctc-align/.venv && uv pip install --python tools/ctc-align/.venv/bin/python "git+https://github.com/MahmoudAshraf97/ctc-forced-aligner.git"'
+        verify: "command -v ffmpeg >/dev/null 2>&1 && command -v uv >/dev/null 2>&1"
     references:
       - "references/premium-agency-rules.md (regras $150k-tier, importadas por impeccable/huashu no modo high-end)"
 
