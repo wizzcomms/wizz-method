@@ -4,6 +4,23 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.12.0] - 2026-08-19
+
+### Adicionado
+
+- **Subagentes executores com modelo barato** (`src/modules/wizz/subagents/`): `wizz-exec-haiku` (varredura, lookup, diff mecânico, mudança 100% especificada) e `wizz-exec-sonnet` (implementação do dia a dia, bug com causa conhecida, multi-arquivo), com `model:` fixo no frontmatter. No Claude Code o installer os copia para `.claude/agents/` via novo campo `agents_target_dir` do `platform-codes.yaml` (só claude-code; cleanup remove apenas `wizz-exec-*.md` e preserva agents do usuário). Fora do Claude Code a regra viaja como texto via `model_hint` do handoff.
+- Seção "Despacho barato (regra, não sugestão)" em `_shared/token-economy.md`: trabalho mecânico nunca roda na sessão principal; sempre 2+ executores em paralelo, particionados por arquivo/módulo; review adversarial, arquitetura e decisão ficam no modelo da sessão.
+- Linha-fato de despacho barato no `activation_steps_append` dos 15 agentes (9 `customize.toml` do módulo wizz + 6 overrides BMM), no mesmo padrão de progressive disclosure do Gate de Planejamento.
+
+### Modificado
+
+- `model_hint` do protocolo de handoff deixou de ser decorativo: no Claude Code, quem recebe o handoff despacha `wizz-exec-<hint>` via subagente.
+- README do módulo wizz corrigido: a economia de tokens não era incluída "em todos os agentes" (nenhum `include` existia); agora reflete a realidade (linha-fato na ativação + detalhe no arquivo compartilhado).
+
+### Corrigido
+
+- Bypass no `isTrivial()` do hook `wizz-router-enforce.js`: prompt com menos de 30 caracteres sem verbo de ação era tratado como trivial e não recebia injeção de roteamento (ex.: "e agora?", "melhora isso" escapavam do method). Agora só slash command e regex explícitas de saudação/typo/rename/pergunta-de-1-palavra contam como trivial; a lista de ~90 verbos de ação foi removida. Eval determinístico segue 48/48.
+
 ## [1.11.1] - 2026-08-14
 
 ### Modificado
