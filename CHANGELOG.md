@@ -4,6 +4,12 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.13.0] - 2026-08-19
+
+### Adicionado
+
+- **Skill `ctc-align`** (`src/skills-lib/ctc-align/`): timestamps palavra a palavra confiáveis para narração TTS via forced alignment (ctc-forced-aligner/MMS) com âncoras nos silêncios reais do áudio (ffmpeg silencedetect). Inclui o helper `scripts/align.py` e as regras do método: âncora monotônica (nunca busca global de palavra repetida), duração mínima de cena de 1,2s e QA de fronteiras contra os silêncios antes do render. Registrada como CLI da área designer no `skills-registry.yaml` (check/install via uv, CPU-only, `verify` de ffmpeg + uv). Validada em produção (VSL Equipa Invisível, 2026-08-19): Whisper derivava até 6s e interpolação por silêncios deslocava palavras de bloco; o CTC com o texto exato do roteiro acertou as 34 fronteiras de frase.
+
 ## [1.12.0] - 2026-08-19
 
 ### Adicionado
