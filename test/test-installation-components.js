@@ -94,6 +94,39 @@ async function createTestWizzFixture() {
     path.join(subagentsDir, 'wizz-exec-sonnet.md'),
     ['---', 'name: wizz-exec-sonnet', 'description: Test executor fixture', 'model: sonnet', '---', '', 'Test body.'].join('\n'),
   );
+  await fs.writeFile(
+    path.join(subagentsDir, 'wizz-exec-opus.md'),
+    ['---', 'name: wizz-exec-opus', 'description: Test heavy executor fixture', 'model: opus', '---', '', 'Test body.'].join('\n'),
+  );
+  await fs.writeFile(
+    path.join(subagentsDir, 'wizz-exec-review.md'),
+    ['---', 'name: wizz-exec-review', 'description: Test review executor fixture', 'model: inherit', '---', '', 'Test body.'].join('\n'),
+  );
+
+  // Per-platform native subagent formats, mirroring
+  // src/modules/wizz/subagents/{codex,opencode,gemini}/ — used by the
+  // agents_source_subdir tests. These must never leak into a platform whose
+  // installer doesn't declare agents_source_subdir (e.g. Claude Code).
+  const codexSubagentsDir = path.join(subagentsDir, 'codex');
+  await fs.ensureDir(codexSubagentsDir);
+  await fs.writeFile(
+    path.join(codexSubagentsDir, 'wizz-exec-haiku.toml'),
+    ['name = "wizz-exec-haiku"', 'description = "Test cheap executor fixture"', '', 'prompt = "Test body."'].join('\n'),
+  );
+
+  const opencodeSubagentsDir = path.join(subagentsDir, 'opencode');
+  await fs.ensureDir(opencodeSubagentsDir);
+  await fs.writeFile(
+    path.join(opencodeSubagentsDir, 'wizz-exec-haiku.md'),
+    ['---', 'name: wizz-exec-haiku', 'description: Test cheap executor fixture', '---', '', 'Test body.'].join('\n'),
+  );
+
+  const geminiSubagentsDir = path.join(subagentsDir, 'gemini');
+  await fs.ensureDir(geminiSubagentsDir);
+  await fs.writeFile(
+    path.join(geminiSubagentsDir, 'wizz-exec-haiku.md'),
+    ['---', 'name: wizz-exec-haiku', 'description: Test cheap executor fixture', '---', '', 'Test body.'].join('\n'),
+  );
 
   return fixtureDir;
 }
@@ -416,18 +449,34 @@ async function runTests() {
     // Verify native subagents were copied to .claude/agents
     const haikuAgentFile9 = path.join(agentsDir9, 'wizz-exec-haiku.md');
     const sonnetAgentFile9 = path.join(agentsDir9, 'wizz-exec-sonnet.md');
+    const opusAgentFile9 = path.join(agentsDir9, 'wizz-exec-opus.md');
+    const reviewAgentFile9 = path.join(agentsDir9, 'wizz-exec-review.md');
     assert(await fs.pathExists(haikuAgentFile9), 'Claude Code install writes wizz-exec-haiku.md subagent');
     assert(await fs.pathExists(sonnetAgentFile9), 'Claude Code install writes wizz-exec-sonnet.md subagent');
-    assert(result9.handlerResult?.results?.subagents === 2, 'Claude Code setup result reports subagents count');
+    assert(await fs.pathExists(opusAgentFile9), 'Claude Code install writes wizz-exec-opus.md subagent');
+    assert(await fs.pathExists(reviewAgentFile9), 'Claude Code install writes wizz-exec-review.md subagent');
+    assert(result9.handlerResult?.results?.subagents === 4, 'Claude Code setup result reports subagents count');
 
     const haikuContent9 = await fs.readFile(haikuAgentFile9, 'utf8');
     assert(/^model:\s*haiku$/m.test(haikuContent9), 'Claude Code subagent file preserves model frontmatter');
+
+    const opusContent9 = await fs.readFile(opusAgentFile9, 'utf8');
+    assert(/^model:\s*opus$/m.test(opusContent9), 'Claude Code opus subagent file preserves model: opus frontmatter');
+
+    const reviewContent9 = await fs.readFile(reviewAgentFile9, 'utf8');
+    assert(/^model:\s*inherit$/m.test(reviewContent9), 'Claude Code review subagent file preserves model: inherit frontmatter');
 
     // Pre-existing user-owned agent must be untouched.
     assert(
       await fs.pathExists(path.join(agentsDir9, 'my-custom-agent.md')),
       "Claude Code install doesn't delete unrelated user-owned agent files",
     );
+
+    // Claude Code declares no agents_source_subdir — the per-platform
+    // codex/opencode/gemini subdirs must never leak into .claude/agents.
+    assert(!(await fs.pathExists(path.join(agentsDir9, 'codex'))), 'Claude Code install does not copy the codex/ subagent subdir');
+    assert(!(await fs.pathExists(path.join(agentsDir9, 'opencode'))), 'Claude Code install does not copy the opencode/ subagent subdir');
+    assert(!(await fs.pathExists(path.join(agentsDir9, 'gemini'))), 'Claude Code install does not copy the gemini/ subagent subdir');
 
     await fs.remove(tempProjectDir9);
     await fs.remove(path.dirname(installedWizzDir9));
@@ -4098,6 +4147,80 @@ async function runTests() {
     }
 
     UI.prototype._loadSkillsRegistry = originalLoadRegistry53;
+  }
+
+  console.log('');
+
+  // ============================================================
+  // Test Suite 54: agents_source_subdir subagent install (OpenCode, Codex)
+  // ============================================================
+  console.log(`${colors.yellow}Test Suite 54: agents_source_subdir subagent install${colors.reset}\n`);
+
+  try {
+    clearCache();
+    const platformCodes54 = await loadPlatformCodes();
+    const opencodeInstaller54 = platformCodes54.platforms.opencode?.installer;
+    const codexInstaller54 = platformCodes54.platforms.codex?.installer;
+    const geminiInstaller54 = platformCodes54.platforms.gemini?.installer;
+
+    assert(opencodeInstaller54?.agents_target_dir === '.opencode/agents', 'OpenCode agents_target_dir points at .opencode/agents');
+    assert(opencodeInstaller54?.agents_source_subdir === 'opencode', 'OpenCode agents_source_subdir is "opencode"');
+    assert(codexInstaller54?.agents_target_dir === '.codex/agents', 'Codex agents_target_dir points at .codex/agents');
+    assert(codexInstaller54?.agents_source_subdir === 'codex', 'Codex agents_source_subdir is "codex"');
+    assert(geminiInstaller54?.agents_target_dir === '.gemini/agents', 'Gemini agents_target_dir points at .gemini/agents');
+    assert(geminiInstaller54?.agents_source_subdir === 'gemini', 'Gemini agents_source_subdir is "gemini"');
+
+    // --- OpenCode: installs from subagents/opencode/*.md into .opencode/agents ---
+    const tempProjectDir54a = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-opencode-agents-test-'));
+    const installedWizzDir54a = await createTestWizzFixture();
+
+    const ideManager54a = new IdeManager();
+    await ideManager54a.ensureInitialized();
+    const result54a = await ideManager54a.setup('opencode', tempProjectDir54a, installedWizzDir54a, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result54a.success === true, 'OpenCode setup succeeds against temp project');
+
+    const opencodeAgentFile54 = path.join(tempProjectDir54a, '.opencode', 'agents', 'wizz-exec-haiku.md');
+    assert(await fs.pathExists(opencodeAgentFile54), 'OpenCode install writes wizz-exec-haiku.md from subagents/opencode/');
+    assert(result54a.handlerResult?.results?.subagents === 1, 'OpenCode setup result reports 1 subagent installed');
+
+    // The Claude-Code-shaped root files (with model: frontmatter) must not
+    // leak into the OpenCode target — only subagents/opencode/ content does.
+    assert(
+      !(await fs.pathExists(path.join(tempProjectDir54a, '.opencode', 'agents', 'wizz-exec-sonnet.md'))),
+      'OpenCode install does not copy root-level (Claude Code) subagent files',
+    );
+
+    await fs.remove(tempProjectDir54a);
+    await fs.remove(path.dirname(installedWizzDir54a));
+
+    // --- Codex: installs from subagents/codex/*.toml into .codex/agents ---
+    const tempProjectDir54b = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-codex-agents-test-'));
+    const installedWizzDir54b = await createTestWizzFixture();
+
+    const ideManager54b = new IdeManager();
+    await ideManager54b.ensureInitialized();
+    const result54b = await ideManager54b.setup('codex', tempProjectDir54b, installedWizzDir54b, {
+      silent: true,
+      selectedModules: ['bmm'],
+    });
+
+    assert(result54b.success === true, 'Codex setup succeeds against temp project');
+
+    const codexAgentFile54 = path.join(tempProjectDir54b, '.codex', 'agents', 'wizz-exec-haiku.toml');
+    assert(await fs.pathExists(codexAgentFile54), 'Codex install writes wizz-exec-haiku.toml from subagents/codex/');
+    assert(result54b.handlerResult?.results?.subagents === 1, 'Codex setup result reports 1 subagent installed');
+
+    const codexAgentContent54 = await fs.readFile(codexAgentFile54, 'utf8');
+    assert(codexAgentContent54.includes('name = "wizz-exec-haiku"'), 'Codex subagent .toml content is copied verbatim');
+
+    await fs.remove(tempProjectDir54b);
+    await fs.remove(path.dirname(installedWizzDir54b));
+  } catch (error) {
+    assert(false, 'agents_source_subdir subagent install test succeeds', error.message);
   }
 
   console.log('');

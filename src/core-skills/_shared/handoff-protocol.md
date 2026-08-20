@@ -20,14 +20,13 @@ a seção da skill que importa (progressive disclosure), não a skill inteira.
 - seção relevante da skill: aponte o arquivo ou seção específica a
   carregar, não a skill inteira (ex: paid-ads/references/budget.md). Quem
   recebe carrega só isso, não o pacote completo da skill.
-- model_hint (opcional): sugestão de modelo. Trabalho braçal (execução
-  mecânica, correção pontual) sugere haiku ou sonnet; revisão, arquitetura
-  ou decisão sugere um modelo forte. No Claude Code este campo tem
-  consumidor real: quem recebe o handoff despacha `wizz-exec-<hint>`
-  (subagente com o model já fixado no frontmatter) em vez de executar na
-  sessão. Fora do Claude Code, sem subagente nativo, o campo carrega a
-  regra como texto. Campo opcional: um handoff sem ele funciona normal,
-  não trava nada.
+- model_hint (opcional): degrau da escada, não modelo cru. Valores:
+  `haiku | sonnet | opus | review`. Quem recebe despacha `wizz-exec-<hint>`
+  (nativo em Claude Code, Codex, OpenCode e Gemini CLI). Escalada: no
+  máximo 1 degrau acima se o executor devolver ambiguidade ou os testes
+  falharem 2x. `opus` é condicional, só quando a sessão que delega roda
+  acima de Opus (detalhe completo em `_shared/model-ladder.md`, no
+  módulo wizz). Campo opcional: sem ele o handoff funciona normal.
 - precisa planejar (opcional): veredito sim/não do fator de planejamento
   do sinal de complexidade, avaliado por quem delega. Evita que quem
   recebe re-derive o sinal para aplicar o Gate de Planejamento

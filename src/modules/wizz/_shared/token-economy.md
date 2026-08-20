@@ -36,7 +36,11 @@ Trabalho mecânico NUNCA roda na sessão principal. Isso inclui: varredura de ar
 
 - **`wizz-exec-haiku`**: varredura, lookup, renomeação, diff mecânico, mudança já 100% especificada. Sem ambiguidade nenhuma.
 - **`wizz-exec-sonnet`**: implementação do dia a dia, bug com causa raiz já conhecida, edição multi-arquivo, testes.
+- **`wizz-exec-opus`** (condicional): bug sem causa clara, refactor cruzando módulos. Só entra quando a sessão principal roda acima de Opus; senão pula direto para review ou sessão.
+- **`wizz-exec-review`** (model inherit): review do diff produzido pelos degraus acima antes de integrar.
 
-Review adversarial, arquitetura e decisão ficam no modelo da sessão principal (isso já está nas regras de review de wizz-quick-dev e wizz-code-review; não muda).
+Escalada: se o executor devolveu ambiguidade ou os testes falharam 2x no mesmo brief, reemita 1 degrau acima. Máximo 1 escalada por brief. Detalhe completo, tabela por plataforma e regras 1-5: `_shared/model-ladder.md`.
 
-Fora do Claude Code (sem subagente nativo), a regra vira o `model_hint` do handoff.
+Review de diff pode ir para `wizz-exec-review`; arquitetura e decisão de produto ficam no modelo da sessão principal (isso já está nas regras de review de wizz-quick-dev e wizz-code-review; não muda).
+
+Codex, OpenCode e Gemini CLI recebem os mesmos subagentes em formato nativo via installer; em outras plataformas a regra vira o `model_hint` do handoff.

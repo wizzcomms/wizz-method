@@ -476,37 +476,49 @@ class ConfigDrivenIdeSetup {
 
   /**
    * Install WIZZ-authored native subagents (e.g. wizz-exec-haiku.md,
-   * wizz-exec-sonnet.md) into the platform's subagent directory.
+   * wizz-exec-sonnet.md, or a platform-specific wizz-exec-haiku.toml) into
+   * the platform's subagent directory.
    *
-   * Only Claude Code declares `agents_target_dir` today — it's the only
-   * platform whose native subagent files honor a `model:` frontmatter field.
-   * The source lives inside the installed wizz module at
-   * `{wizzDir}/wizz/subagents/`, mirroring how `installVerbatimSkills`
-   * resolves module-relative source paths.
+   * Claude Code, Codex, OpenCode, and Gemini CLI declare `agents_target_dir`.
+   * Each platform reads its own native subagent file format, so the source
+   * files live in a per-platform subdirectory declared via
+   * `agents_source_subdir`: `{wizzDir}/wizz/subagents/<subdir>/`. Claude
+   * Code has no subdir — its files sit directly in `{wizzDir}/wizz/subagents/`
+   * as *.md with a `model:` frontmatter field, which is the only native
+   * format that field means anything to. This mirrors how
+   * `installVerbatimSkills` resolves module-relative source paths.
    *
-   * Ownership is scoped to the `wizz-exec-*.md` naming convention — only
-   * files matching that pattern are ever written here, so a user's own
-   * hand-authored subagents in the same directory are never touched.
+   * Ownership is scoped to the `wizz-exec-*` naming convention (`.md` or
+   * `.toml` extension) — only files matching that pattern are ever written
+   * here, so a user's own hand-authored subagents in the same directory are
+   * never touched. Directory entries (including the per-platform subdirs
+   * that live alongside Claude Code's root-level files) are skipped
+   * explicitly rather than relying on the extension filter to exclude them.
    * Silently no-ops when the source directory doesn't exist (e.g. install
    * without the wizz module).
    *
    * @param {string} projectDir - Project directory
    * @param {string} wizzDir - WIZZ installation directory
    * @param {Object} config - Installation configuration; reads agents_target_dir
+   *   and the optional agents_source_subdir
    * @returns {Promise<number>} Count of subagent files installed
    */
   async installSubagents(projectDir, wizzDir, config) {
-    const sourceDir = path.join(wizzDir, 'wizz', 'subagents');
+    const sourceDir = config.agents_source_subdir
+      ? path.join(wizzDir, 'wizz', 'subagents', config.agents_source_subdir)
+      : path.join(wizzDir, 'wizz', 'subagents');
     if (!(await fs.pathExists(sourceDir))) return 0;
 
     let entries;
     try {
-      entries = await fs.readdir(sourceDir);
+      entries = await fs.readdir(sourceDir, { withFileTypes: true });
     } catch {
       return 0;
     }
 
-    const subagentFiles = entries.filter((entry) => entry.startsWith('wizz-exec-') && entry.endsWith('.md'));
+    const subagentFiles = entries.filter(
+      (entry) => entry.isFile() && entry.name.startsWith('wizz-exec-') && (entry.name.endsWith('.md') || entry.name.endsWith('.toml')),
+    );
     if (subagentFiles.length === 0) return 0;
 
     const targetPath = path.join(projectDir, config.agents_target_dir);
@@ -514,7 +526,7 @@ class ConfigDrivenIdeSetup {
 
     let count = 0;
     for (const entry of subagentFiles) {
-      await fs.copy(path.join(sourceDir, entry), path.join(targetPath, entry), { overwrite: true });
+      await fs.copy(path.join(sourceDir, entry.name), path.join(targetPath, entry.name), { overwrite: true });
       count++;
     }
 
@@ -617,12 +629,12 @@ class ConfigDrivenIdeSetup {
       );
     }
 
-    // Clean stale wizz-exec-*.md subagent files. Like command pointers, these
-    // live in a per-IDE directory (.claude/agents) that isn't deduped across
-    // peers, so this runs regardless of skipTarget. installSubagents always
-    // overwrites with the current source content, so unconditional removal
-    // here is safe — a routine reinstall just recreates the files moments
-    // later.
+    // Clean stale wizz-exec-* subagent files (.md or .toml). Like command
+    // pointers, these live in a per-IDE directory (e.g. .claude/agents,
+    // .codex/agents) that isn't deduped across peers, so this runs
+    // regardless of skipTarget. installSubagents always overwrites with the
+    // current source content, so unconditional removal here is safe — a
+    // routine reinstall just recreates the files moments later.
     if (this.installerConfig?.agents_target_dir) {
       await this.cleanupSubagents(projectDir, this.installerConfig.agents_target_dir);
     }
@@ -793,11 +805,12 @@ class ConfigDrivenIdeSetup {
   }
 
   /**
-   * Remove WIZZ-owned `wizz-exec-*.md` subagent files from the platform's
-   * subagent directory (e.g. .claude/agents). Symmetric counterpart to
-   * installSubagents. Only touches files matching that naming convention —
-   * a user's own hand-authored subagents in the same directory are never
-   * removed. Removes the directory entirely if it ends up empty.
+   * Remove WIZZ-owned `wizz-exec-*` subagent files (`.md` or `.toml`) from
+   * the platform's subagent directory (e.g. .claude/agents, .codex/agents).
+   * Symmetric counterpart to installSubagents. Only touches files matching
+   * that naming convention — a user's own hand-authored subagents in the
+   * same directory are never removed. Removes the directory entirely if it
+   * ends up empty.
    * @param {string} projectDir
    * @param {string} agentsTargetDir - Relative dir (e.g. .claude/agents)
    */
@@ -807,15 +820,16 @@ class ConfigDrivenIdeSetup {
 
     let entries;
     try {
-      entries = await fs.readdir(agentsPath);
+      entries = await fs.readdir(agentsPath, { withFileTypes: true });
     } catch {
       return;
     }
 
     for (const entry of entries) {
-      if (!entry.startsWith('wizz-exec-') || !entry.endsWith('.md')) continue;
+      if (!entry.isFile()) continue;
+      if (!entry.name.startsWith('wizz-exec-') || !(entry.name.endsWith('.md') || entry.name.endsWith('.toml'))) continue;
       try {
-        await fs.remove(path.join(agentsPath, entry));
+        await fs.remove(path.join(agentsPath, entry.name));
       } catch {
         // Skip files we can't remove.
       }

@@ -4,6 +4,25 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.15.0] - 2026-08-20
+
+### Adicionado
+
+- **Escada de modelos** (`src/modules/wizz/_shared/model-ladder.md`): 4 degraus com nome de degrau, não de modelo. `wizz-exec-haiku` (mecânico), `wizz-exec-sonnet` (padrão), `wizz-exec-opus` (forte, condicional: só quando a sessão principal roda um modelo acima de Opus, ex.: Fable) e `wizz-exec-review` (revisor adversarial em `model: inherit`, roda no modelo da sessão). Regras: despacho no menor degrau que qualifica; escalada automática de no máximo 1 degrau quando o executor devolve ambiguidade ou os testes falham 2x no mesmo brief; implementa barato, revisa forte (conflito executor vs revisor sobe para a sessão); decisão de arquitetura/produto nunca desce a escada.
+- Subagentes novos para Claude Code: `wizz-exec-opus.md` e `wizz-exec-review.md` em `src/modules/wizz/subagents/`.
+- **Subagentes nativos em 3 plataformas novas**: o installer agora instala a escada em formato nativo no Codex (`.codex/agents/*.toml`, gpt-5.6-luna/terra/gpt-5.6 com `model_reasoning_effort`), no OpenCode (`.opencode/agents/*.md`, claude-haiku-4-5/sonnet-5/opus-5) e no Gemini CLI (`.gemini/agents/*.md`, gemini-3-flash/pro). O degrau review não pina modelo em nenhuma delas (herda a sessão). Fontes em `src/modules/wizz/subagents/{codex,opencode,gemini}/`.
+
+### Alterado
+
+- `platform-codes.yaml`: `agents_target_dir` deixou de ser exclusivo do claude-code; chave nova `agents_source_subdir` aponta o subdiretório com o formato nativo de cada plataforma.
+- Installer (`_config-driven.js`): `installSubagents`/`cleanupSubagents` aceitam `wizz-exec-*` em `.md` e `.toml`, resolvem o subdiretório por plataforma e ignoram diretórios explicitamente (via `withFileTypes`), preservando subagentes autorais do usuário.
+- `handoff-protocol.md`: `model_hint` passou a ser degrau da escada (`haiku | sonnet | opus | review`), com a regra de escalada e a condicional do opus.
+- `token-economy.md`, README do módulo wizz e a linha de despacho dos 15 agentes (9 customize + 6 overrides) atualizados para citar a escada completa.
+
+### Testes
+
+- Suite de instalação cobre os 4 subagentes do claude-code (asserts de `model: opus` e `model: inherit`), garante que os subdiretórios de plataforma não vazam para `.claude/agents` e ganha suite nova para OpenCode e Codex (`agents_source_subdir` + `.toml`).
+
 ## [1.14.0] - 2026-08-19
 
 ### Adicionado

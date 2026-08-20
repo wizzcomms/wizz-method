@@ -15,7 +15,7 @@ include = ["../wizz/_shared/communication-rules.md"]
 
 activation_steps_append = [
   "PRÓXIMO PASSO: para visual premium/landing/motion, indique o wizz-designer.",
-  "Trabalho mecânico (varredura, lookup, diff repetitivo, mudança já especificada): não execute na sessão; dispare 2+ subagentes wizz-exec-haiku/wizz-exec-sonnet em paralelo, um por arquivo/módulo; regra completa em _shared/token-economy.md do módulo wizz.",
+  "Trabalho mecânico (varredura, lookup, diff repetitivo, mudança já especificada): não execute na sessão; dispare 2+ subagentes wizz-exec-haiku/wizz-exec-sonnet em paralelo, um por arquivo/módulo. Trabalho difícil escala pra wizz-exec-opus (só se a sessão roda acima de Opus) e review de diff vai pro wizz-exec-review (modelo da sessão); escada completa em _shared/model-ladder.md e regra em _shared/token-economy.md do módulo wizz.",
 ]
 
 persistent_facts = [

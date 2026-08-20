@@ -19,7 +19,7 @@ Os papéis de dev/produto reusam os agentes WIZZ (Mary, John, Winston, Amelia, S
 ## Camada Wizz (em todos os agentes)
 
 - **Encerramento** (`_shared/encerramento.md`): bloco ✅/➡️/🎯 ao terminar.
-- **Economia de token** (`_shared/token-economy.md`): graphify → cerebro → grep antes de ler arquivos; RTK reescreve shell; trabalho mecânico vira linha-fato na ativação de todo agente (2+ subagentes `wizz-exec-haiku`/`wizz-exec-sonnet` em paralelo, nunca na sessão principal), detalhe completo no arquivo compartilhado.
+- **Economia de token** (`_shared/token-economy.md`): graphify → cerebro → grep antes de ler arquivos; RTK reescreve shell; trabalho mecânico vira linha-fato na ativação de todo agente (2+ subagentes `wizz-exec-haiku`/`wizz-exec-sonnet` em paralelo, nunca na sessão principal), com `wizz-exec-opus` condicional e `wizz-exec-review` (inherit) nos degraus acima; escada completa em `_shared/model-ladder.md`.
 - **Cerebro** (`_shared/cerebro.md`): auto-load leve na ativação, lembrete de salvar no fim.
 - **Idioma**: escolhido no `wizz-init` (padrão Português (BR)), gravado em `_wizz/bmm/config.yaml`.
 - **Encadeamento**: automático. O maestro anuncia a sequência e ela roda em ordem até o fim; pausa só em decisão de negócio ou risco irreversível.

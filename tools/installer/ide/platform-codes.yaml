@@ -8,9 +8,14 @@
 #     target_dir: Directory where skill directories are installed (project/workspace)
 #     global_target_dir: (optional) User-home directory for global install
 #     ancestor_conflict_check: (optional) Refuse install when ancestor dir has WIZZ files
-#     agents_target_dir: (optional) Directory for native Claude Code subagents
-#       (src/modules/wizz/subagents/*.md). Only claude-code supports the
-#       `model:` frontmatter field these files rely on.
+#     agents_target_dir: (optional) Directory for native WIZZ-authored subagents
+#       (src/modules/wizz/subagents/). Currently declared by claude-code, codex,
+#       opencode, and gemini.
+#     agents_source_subdir: (optional) Subdirectory under subagents/ that holds
+#       the platform's native subagent file format (e.g. codex/*.toml,
+#       opencode/*.md, gemini/*.md). Omitted for claude-code, which reads
+#       straight from the subagents/ root (its native format is *.md with a
+#       `model:` frontmatter field).
 #
 # INSTALL SCOPE — LOCAL PER PROJECT IS THE ENFORCED DEFAULT.
 # The installer only ever writes skills to the project-relative `target_dir`
@@ -82,6 +87,8 @@ platforms:
     installer:
       target_dir: .agents/skills
       global_target_dir: ~/.codex/skills
+      agents_target_dir: .codex/agents
+      agents_source_subdir: codex
 
   codewhale:
     name: "CodeWhale"
@@ -145,6 +152,8 @@ platforms:
     installer:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
+      agents_target_dir: .gemini/agents
+      agents_source_subdir: gemini
 
   github-copilot:
     name: "GitHub Copilot"
@@ -258,6 +267,8 @@ platforms:
       target_dir: .agents/skills
       global_target_dir: ~/.agents/skills
       commands_target_dir: .opencode/commands
+      agents_target_dir: .opencode/agents
+      agents_source_subdir: opencode
 
   openhands:
     name: "OpenHands"
