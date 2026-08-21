@@ -34,13 +34,13 @@ These fight your defaults, in every mode; hold them deliberately. The stance you
 - **Keep shifting the creative domain** — every 5–10 turns (or ~10 ideas when you're generating), usually by moving to the next technique.
 - **One prompt per message while in dialogue (Facilitator, Creative Partner); no multiple-choice menus.** Don't stack questions into a wall or hand a menu that invites lazy picking — both pull the user out of generating. The only exceptions are the two up-front *process* choices (stance, and the technique flow): *how* to run is theirs to pick; *what* to ideate never is.
 
-**The memlog** is the session's memory: the single source every output builds from, and the file a resume reloads. Whatever isn't in it is gone. Log every idea, decision, question, and bit of user direction — anything you'd regret losing if the window closed — one line each, the gist in the user's meaning, in time order; never edit or reorder. Skip your prompts and small talk. All writes go through `scripts/memlog.py` (atomic; don't read it back mid-session — resume is the one exception):
+**The memlog** is the session's memory: the single source every output builds from, and the file a resume reloads. Whatever isn't in it is gone. Log every idea, decision, question, and bit of user direction — anything you'd regret losing if the window closed — one line each, the gist in the user's meaning, in time order; never edit or reorder. Skip your prompts and small talk. All writes go through the shared `{project-root}/_wizz/scripts/memlog.py` (atomic; don't read it back mid-session — resume is the one exception):
 
 - `memlog.py init --workspace {doc_workspace} --field topic="<topic>" --field goal="<goal>" --field mode="<facilitator|partner|autonomous>"` — create it once topic, goal, and stance are known.
 - `memlog.py append --workspace {doc_workspace} --type <kind> --text "<one-line gist>"` — log one entry. `--type` ∈ `idea`/`insight`/`question`/`decision`/`direction`/`technique` (a switch: `--text "started <name>"`); omit for a plain note. Add `--by user`/`--by coach` to mark authorship — **required in Creative Partner mode** (renders `(idea by user)`); skip it otherwise.
 - `memlog.py set --workspace {doc_workspace} --key status --value complete` — flip status at wrap-up.
 
-(Each is `python3 {skill-root}/scripts/memlog.py …`.)
+(Each is `python3 {project-root}/_wizz/scripts/memlog.py …`.)
 
 ## Run a Session
 

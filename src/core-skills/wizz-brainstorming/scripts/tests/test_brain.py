@@ -3,6 +3,7 @@
 # dependencies = ["pytest>=8.0"]
 # ///
 """Tests for brain.py. Run: uv run -m pytest scripts/tests/test_brain.py"""
+import json
 import sys
 from pathlib import Path
 
@@ -186,6 +187,27 @@ def test_extra_appears_in_list_and_random(lib, extra, capsys):
     assert "Regulatory Inversion" in capsys.readouterr().out
 
 
+def test_extra_replaces_shipped_row_by_name(lib, extra, tmp_path, capsys):
+    shipped = brain.load(Path(lib))[0]
+    overlay = tmp_path / "replace.json"
+    overlay.write_text(
+        json.dumps([{"category": shipped["category"], "technique_name": shipped["technique_name"], "description": "RETUNED"}]),
+        encoding="utf-8",
+    )
+    brain.main(["--file", str(lib), "--extra", str(overlay), "list", "--all"])
+    out = capsys.readouterr().out
+    assert "RETUNED" in out
+    assert out.count(shipped["technique_name"]) == 1  # replaced, not duplicated
+
+
+def test_extra_malformed_exits_cleanly(lib, tmp_path, capsys):
+    bad = tmp_path / "bad.json"
+    for content in ('{not json', '{"a": 1}', '["not-an-object"]'):
+        bad.write_text(content, encoding="utf-8")
+        assert brain.main(["--file", str(lib), "--extra", str(bad), "categories"]) == 2
+        assert "could not read --extra" in capsys.readouterr().err
+
+
 def test_extra_is_first_class_in_html(lib, extra, tmp_path):
     out = tmp_path / "sel.html"
     assert brain.main(["--file", str(lib), "--extra", str(extra), "html", "--out", str(out)]) == 0
@@ -207,11 +229,11 @@ def test_unknown_category_style_uses_fallback_glyph():
 
 def test_shipped_selector_is_in_sync_with_catalog():
     # foolproofing: if someone edits brain-methods.csv they must regenerate the page.
-    # Regenerate with: python3 brain.py html --out assets/brain-selector.html
+    # Regenerate with: uv run brain.py html --out assets/brain-selector.html
     asset = brain.DEFAULT_FILE.parent / "brain-selector.html"
     assert asset.is_file(), "missing assets/brain-selector.html — generate it"
     expected = brain.html_doc(brain.load(brain.DEFAULT_FILE))
     assert asset.read_text(encoding="utf-8") == expected, (
         "assets/brain-selector.html is stale; regenerate: "
-        "python3 brain.py html --out assets/brain-selector.html"
+        "uv run brain.py html --out assets/brain-selector.html"
     )

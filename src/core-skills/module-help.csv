@@ -1,6 +1,7 @@
 module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs
 Core,_meta,,,,,,,,,false,https://docs.wizz-method.org/llms.txt,
 Core,wizz-brainstorming,Brainstorming,BSP,Use early in ideation or when stuck generating ideas.,,,anytime,,,false,{output_folder}/brainstorming,brainstorming session
+Core,wizz-forge-idea,Forge Idea,FI,"Test an idea — software, business, creative, research, or personal — through probing questions from different personas until you can act on it or drop it with confidence. Can hand the result to wizz-spec or wizz-quick-dev.",,,anytime,,,false,{output_folder}/forge,refined-idea brief (optional)
 Core,wizz-party-mode,Party Mode,PM,Orchestrate multi-agent discussions when you need multiple perspectives or want agents to collaborate.,,,anytime,,,false,,
 Core,wizz-help,Wizz Help,BH,,,,anytime,,,false,,
 Core,wizz-index-docs,Index Docs,ID,Use when LLM needs to understand available docs without loading everything.,,,anytime,,,false,,
