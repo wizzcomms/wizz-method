@@ -10,7 +10,6 @@
 let _clack = null;
 let _clackCore = null;
 let _picocolors = null;
-const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
@@ -578,10 +577,6 @@ async function autocomplete(options) {
   return result;
 }
 
-function hasPathSeparator(value) {
-  return value.endsWith('/') || value.endsWith('\\');
-}
-
 function expandHome(input) {
   if (!input) return input;
   if (input === '~') return os.homedir();
@@ -591,91 +586,60 @@ function expandHome(input) {
   return input;
 }
 
-function toDirectoryOption(value, label = value, synthetic = false) {
-  return { value, label, synthetic };
-}
-
-function isExistingDirectory(value) {
-  try {
-    return fs.existsSync(value) && fs.statSync(value).isDirectory();
-  } catch {
-    return false;
-  }
-}
-
-function listDirectoryOptions(input, options) {
+/**
+ * Resolve o texto do prompt de diretório para um caminho absoluto.
+ * @param {string} input - Texto submetido
+ * @param {Object} [options] - { cwd, default }
+ * @returns {string} Caminho absoluto
+ */
+function resolveDirectoryInput(input, options = {}) {
   const cwd = options.cwd || process.cwd();
-  const rawInput = input.trim();
-  const expandedInput = expandHome(rawInput);
-  const trailingSep = hasPathSeparator(rawInput) || hasPathSeparator(expandedInput);
-  const resolvedInput = expandedInput ? path.resolve(cwd, expandedInput) : cwd;
-  const browseDir = expandedInput && !trailingSep && !isExistingDirectory(resolvedInput) ? path.dirname(resolvedInput) : resolvedInput;
-  const prefix = expandedInput && browseDir !== resolvedInput ? path.basename(resolvedInput).toLowerCase() : '';
-  const results = [];
-
-  if (!trailingSep && isExistingDirectory(resolvedInput)) {
-    results.push(toDirectoryOption(resolvedInput, `. (use this directory)`));
-  }
-
-  if (isExistingDirectory(browseDir)) {
-    try {
-      for (const entry of fs.readdirSync(browseDir, { withFileTypes: true })) {
-        if (!entry.isDirectory()) continue;
-        if (prefix && !entry.name.toLowerCase().startsWith(prefix)) continue;
-        const fullPath = path.join(browseDir, entry.name);
-        if (!results.some((option) => option.value === fullPath)) {
-          results.push(toDirectoryOption(fullPath));
-        }
-      }
-    } catch {
-      // Skip unreadable directories; validation still reports path issues.
-    }
-  }
-
-  const validation = options.validate?.(rawInput);
-  const hasMatchingOption = results.some((option) => option.value === resolvedInput);
-  if (expandedInput && !validation && !hasMatchingOption) {
-    results.unshift(toDirectoryOption(resolvedInput, `Create/use: ${resolvedInput}`, true));
-  }
-
-  return results;
+  const rawInput = typeof input === 'string' ? input.trim() : '';
+  // Linha vazia significa "usar o default", resolvido do mesmo jeito que texto
+  // digitado, para um default `~/…` ou relativo ainda devolver caminho absoluto.
+  const effective = rawInput || (options.default || '').trim();
+  if (!effective) return cwd;
+  return path.resolve(cwd, expandHome(effective));
 }
 
 /**
- * Directory prompt with autocomplete candidates and create-directory support.
- * Uses @clack/core directly so typed paths that do not exist yet can still be
- * submitted when validation allows creating them.
+ * Directory prompt.
+ *
+ * Entrada de texto simples: o que está na linha é o que é submetido, resolvido
+ * para caminho absoluto.
+ *
+ * A linha vem pré-preenchida com o default (o diretório atual, de onde os
+ * installs costumam ser rodados) como texto editável de verdade, e não como
+ * placeholder, para poder ser encurtada ou estendida em vez de redigitada.
+ * Limpar a linha e apertar Enter ainda aceita o default.
+ *
+ * Substitui uma AutocompletePrompt cuja lista de candidatos era invisível: o
+ * Enter devolvia a opção em foco, não o texto digitado, então dava para instalar
+ * num caminho que o usuário nunca escreveu. Com TextPrompt o defeito some por
+ * construção — não existe seleção escondida que o Enter possa submeter.
+ *
  * @param {Object} options - Prompt options
  * @param {string} options.message - Prompt message
- * @param {string} [options.default] - Default directory
- * @param {string} [options.placeholder] - Placeholder text
+ * @param {string} [options.default] - Default directory, pré-preenchido na linha
+ * @param {string} [options.placeholder] - Placeholder mostrado só se a linha for limpa
  * @param {Function} [options.validate] - Sync validation function
- * @returns {Promise<string>} Selected or typed directory path
+ * @param {Object} [options.input] - Input stream (default process.stdin; testes injetam)
+ * @param {Object} [options.output] - Output stream (default process.stdout; testes injetam)
+ * @returns {Promise<string>} Caminho absoluto do diretório
  */
 async function directory(options) {
   const core = await getClackCore();
   const color = await getPicocolors();
-  const tabCompletion = {
-    prefix: '',
-    index: -1,
-    options: [],
-    lastValue: '',
-  };
 
-  let prompt;
-  prompt = new core.AutocompletePrompt({
+  const prompt = new core.TextPrompt({
+    ...(options.input ? { input: options.input } : {}),
+    ...(options.output ? { output: options.output } : {}),
     initialValue: options.default,
-    options: () => listDirectoryOptions(prompt?.userInput || '', options),
-    filter: () => true,
-    validate: (value) => options.validate?.(value ?? prompt.userInput),
+    defaultValue: options.default,
+    validate: options.validate,
     render() {
-      const title = `${color.gray('◆')}  ${options.message}`;
       const bar = color.gray('│');
-      const barEnd = color.gray('└');
       const userInput = this.userInput;
-      const placeholder = options.placeholder || options.default;
-      const inputDisplay = userInput ? this.userInputWithCursor : `${color.inverse(color.hidden('_'))}${color.dim(placeholder || '')}`;
-      const errorLine = this.state === 'error' ? [`${color.yellow('│')}  ${color.yellow(this.error)}`] : [];
 
       switch (this.state) {
         case 'submit': {
@@ -685,42 +649,20 @@ async function directory(options) {
           return `${color.gray('◇')}  ${options.message}\n${bar}  ${color.strikethrough(color.dim(userInput || ''))}`;
         }
         default: {
-          return [title, `${bar}  ${inputDisplay}`, ...errorLine, barEnd].join('\n');
+          const placeholder = options.placeholder || options.default;
+          const inputDisplay = userInput ? this.userInputWithCursor : `${color.inverse(color.hidden('_'))}${color.dim(placeholder || '')}`;
+          const lines = [`${color.gray('◆')}  ${options.message}`, `${bar}  ${inputDisplay}`];
+          if (this.state === 'error') lines.push(`${color.yellow('│')}  ${color.yellow(this.error)}`);
+          lines.push(color.gray('└'));
+          return lines.join('\n');
         }
       }
     },
   });
 
-  const hasSetUserInput = typeof prompt._setUserInput === 'function';
-  const hasClearUserInput = typeof prompt._clearUserInput === 'function';
-
-  prompt.on('key', (_, key) => {
-    if (key?.name !== 'tab') return;
-    if (!hasSetUserInput) return; // @clack/core API surface changed — skip Tab silently.
-    const currentInput = prompt.userInput;
-    const isContinuingCycle = tabCompletion.lastValue && currentInput === tabCompletion.lastValue;
-    const completionOptions = isContinuingCycle ? tabCompletion.options : prompt.filteredOptions.filter((option) => !option.synthetic);
-    if (completionOptions.length === 0) return;
-
-    if (isContinuingCycle) {
-      tabCompletion.index = (tabCompletion.index + 1) % completionOptions.length;
-    } else {
-      tabCompletion.prefix = currentInput;
-      tabCompletion.options = completionOptions;
-      tabCompletion.index = 0;
-    }
-
-    const focusedOption = completionOptions[tabCompletion.index];
-    if (!focusedOption) return;
-    const completedValue = focusedOption.value;
-    tabCompletion.lastValue = completedValue;
-    if (hasClearUserInput) prompt._clearUserInput();
-    prompt._setUserInput(completedValue, true);
-  });
-
   const result = await prompt.prompt();
   await handleCancel(result);
-  return result;
+  return resolveDirectoryInput(result, options);
 }
 
 /**
