@@ -35,7 +35,9 @@ Also append each `defer` finding to `{deferred_work_file}` under a heading `## D
 
 Announce what was written:
 
-> **Code review complete.** <D> `decision-needed`, <P> `patch`, <W> `defer`, <R> dismissed as noise.
+> **Code review complete.** <D> `decision-needed`, <P> `patch`, <W> `defer`, <R> dismissed.
+
+The findings report ends with a `Dismissed` appendix — one line per dismissed finding: the finding and the reason that disposed of its claim — in the story file's `### Review Findings` section when `{spec_file}` is set, at the tail of the chat listing otherwise.
 
 If `{spec_file}` is set, add: `Findings written to the review findings section in {spec_file}.`
 Otherwise add: `Findings are listed above. No story file was provided, so nothing was persisted.`
@@ -86,7 +88,7 @@ Skip this section if `{spec_file}` is not set.
 
 #### Determine new status based on review outcome
 
-- If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved HIGH/MEDIUM issues remain: set `{new_status}` = `done`. Update the story file Status section to `done`.
+- If all `decision-needed` and `patch` findings were resolved (fixed or dismissed) AND no unresolved `high`/`medium` findings remain: set `{new_status}` = `done`. Update the story file Status section to `done`.
 - If `patch` findings were left as action items, or unresolved issues remain: set `{new_status}` = `in-progress`. Update the story file Status section to `in-progress`.
 
 Save the story file.

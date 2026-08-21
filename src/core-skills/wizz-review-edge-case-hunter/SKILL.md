@@ -16,7 +16,7 @@ Ignore the rest of the codebase unless the provided content explicitly reference
 
 **MANDATORY: Execute steps in the Execution section IN EXACT ORDER. DO NOT skip steps or change the sequence. When a halt condition triggers, follow its specific instruction exactly. Each action within a step is a REQUIRED action to complete that step.**
 
-**Your method is exhaustive path enumeration — mechanically walk every branch, not hunt by intuition. Report ONLY paths and conditions that lack handling — discard handled ones silently. Do NOT editorialize or add filler — findings only.**
+**Your method is exhaustive path enumeration — mechanically walk every branch, not hunt by intuition. Report ONLY paths and conditions that lack handling — discard handled ones silently. Do NOT editorialize or add filler. Do not assign severity labels, rankings, or priority levels.**
 
 
 ## EXECUTION
@@ -33,6 +33,7 @@ Ignore the rest of the codebase unless the provided content explicitly reference
 
 - If `also_consider` input was provided, incorporate those areas into the analysis
 - Walk all branching paths: control flow (conditionals, loops, error handlers, early returns) and domain boundaries (where values, states, or conditions transition). Derive the relevant edge classes from the content itself — don't rely on a fixed checklist. Examples: missing else/default, unguarded inputs, off-by-one loops, arithmetic overflow, implicit type coercion, race conditions, timeout gaps
+- Consider implicit branches: the diff special-cases or changes the handling of one or more members of a fixed set of values — enums, status codes, sentinels, type tags, flags, value ranges. The rest of the set is implicit branches (e.g. the diff changes the `RED` and `YELLOW` cases of a `RED`/`YELLOW`/`GREEN` enum; `GREEN` is the implicit branch)
 - For each path: determine whether the content handles it
 - Collect only the unhandled paths as findings — discard handled ones silently
 
@@ -41,7 +42,20 @@ Ignore the rest of the codebase unless the provided content explicitly reference
 - Revisit every edge class from Step 2 — e.g., missing else/default, null/empty inputs, off-by-one loops, arithmetic overflow, implicit type coercion, race conditions, timeout gaps
 - Add any newly found unhandled paths to findings; discard confirmed-handled ones
 
-### Step 4: Present Findings
+### Step 4: Deletion Check
+
+Runs only when the diff removed or replaced meaningful code (ignore pure renames and whitespace). Subordinate to the edge-case pass; findings are usually few or none.
+
+For each chunk of removed or replaced code, ask: did it carry behavior or a contract that the change neither re-established nor intentionally retired? Add a finding for any resulting regression, orphaned reference, or newly-dead code. Skip anything already covered by your edge-case findings. Add nothing if nothing qualifies.
+
+Deletion findings go in the same array with the four standard fields plus:
+
+- `kind`: `"deletion"`
+- `confidence`: `"high"`, `"medium"`, or `"low"` — these are inferences; rate them
+
+For a deletion finding the standard fields read as: `location` = the removed item; `trigger_condition` = the behavior or contract it enforced; `guard_snippet` = where or how to re-establish it; `potential_consequence` = the regression or orphan.
+
+### Step 5: Present Findings
 
 Output findings as a JSON array following the Output Format specification exactly.
 
@@ -59,7 +73,7 @@ Return ONLY a valid JSON array of objects. Each object must contain exactly thes
 }]
 ```
 
-No extra text, no explanations, no markdown wrapping. An empty array `[]` is valid when no unhandled paths are found.
+No extra text, no explanations, no markdown wrapping. An empty array `[]` is valid when no unhandled paths are found. Deletion findings from Step 4, if any, go in the same array with the extra `kind` and `confidence` fields described there.
 
 
 ## HALT CONDITIONS
