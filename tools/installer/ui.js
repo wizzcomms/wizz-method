@@ -114,6 +114,45 @@ async function getModuleVersion(moduleCode, { repoUrl = null, registryDefault = 
  * UI utilities for the installer
  */
 class UI {
+  /**
+   * Avisa uma vez para cada módulo selecionado que o registry marca como
+   * depreciado.
+   *
+   * Um módulo depreciado nunca é removido da seleção — uma instalação
+   * existente continua funcionando e continua sendo atualizada quando pedido.
+   * O aviso é a única mudança de comportamento, e é ele que informa quem usa
+   * CLI (`--modules`, `--yes`) o que o picker interativo mostra como dica.
+   *
+   * @param {Array<string>} selectedModules - Códigos prestes a ser instalados
+   * @returns {Promise<Array<string>>} Os códigos depreciados que geraram aviso
+   */
+  async _warnDeprecatedModules(selectedModules = []) {
+    const externalManager = new ExternalModuleManager();
+    let registryModules;
+    try {
+      registryModules = await externalManager.listAvailable();
+    } catch {
+      return []; // Registry ilegível — nunca travar uma instalação por causa de um aviso.
+    }
+
+    const deprecatedByCode = new Map();
+    for (const mod of registryModules) {
+      if (!mod.deprecated) continue;
+      deprecatedByCode.set(mod.code, mod);
+      for (const alias of mod.aliases) deprecatedByCode.set(alias, mod);
+    }
+
+    const warned = [];
+    for (const code of selectedModules) {
+      const mod = deprecatedByCode.get(code);
+      if (!mod || warned.includes(mod.code)) continue;
+      warned.push(mod.code);
+      const detail = mod.deprecationMessage || 'It is no longer receiving updates.';
+      await prompts.log.warn(`${mod.name} (${mod.code}) is deprecated. ${detail}`);
+    }
+    return warned;
+  }
+
   async _retainUnavailableInstalledModules(selectedModules, installedModuleIds, wizzDir, options = {}) {
     const { OfficialModules } = require('./modules/official-modules');
     const officialCodes = new Set(['core']);
@@ -274,6 +313,10 @@ class UI {
 
       // Handle quick update separately
       if (actionType === 'quick-update') {
+        // O Quick Update nunca mostra o picker de módulos, então este é o único
+        // ponto em que uma instalação existente de módulo depreciado ouve o aviso.
+        await this._warnDeprecatedModules(existingInstall.moduleIds || []);
+
         return {
           actionType: 'quick-update',
           directory: confirmedDirectory,
@@ -337,6 +380,11 @@ class UI {
             `Retaining ${preservedModules.length} installed module(s) with no available source: ${preservedModules.join(', ')}`,
           );
         }
+
+        // Mostra os avisos de depreciação para o que acabou selecionado. O picker
+        // interativo só dá a dica na lista de opções, e os caminhos --modules /
+        // --yes nunca veem essa lista.
+        await this._warnDeprecatedModules(selectedModules);
 
         // For existing installs, resolve per-module update decisions BEFORE
         // we clone anything. Reads the existing manifest's recorded channel
@@ -422,6 +470,8 @@ class UI {
     if (!selectedModules.includes('core')) {
       selectedModules.unshift('core');
     }
+
+    await this._warnDeprecatedModules(selectedModules);
 
     // Interactive channel gate: "Ready to install (all stable)? [Y/n]"
     // Only shown for fresh installs with no channel flags and an external module
@@ -1236,25 +1286,32 @@ class UI {
       }
     }
 
-    // Add external registry modules (skip built-in duplicates)
-    const externalRegistryModules = registryModules.filter((mod) => !mod.builtIn && !builtInCodes.has(mod.code));
+    // Add external registry modules (skip built-in duplicates and deprecated
+    // modules that are not already installed — um módulo depreciado continua
+    // visível só para quem já o tem instalado poder seguir gerenciando).
+    const externalRegistryModules = registryModules.filter(
+      (mod) => !mod.builtIn && !builtInCodes.has(mod.code) && (!mod.deprecated || installedModuleIds.has(mod.code)),
+    );
     let externalRegistryEntries = [];
     if (externalRegistryModules.length > 0) {
       const spinner = await prompts.spinner();
       spinner.start('Checking latest module versions...');
 
       externalRegistryEntries = await Promise.all(
-        externalRegistryModules.map(async (mod) => ({
-          code: mod.code,
-          entry: await buildModuleEntry(
+        externalRegistryModules.map(async (mod) => {
+          const entry = await buildModuleEntry(
             mod.code,
             mod.name,
             mod.description,
             mod.defaultSelected,
             mod.url || null,
             mod.defaultChannel || null,
-          ),
-        })),
+          );
+          if (mod.deprecated && mod.deprecationMessage) {
+            entry.hint = entry.hint ? `${entry.hint} — ${mod.deprecationMessage}` : mod.deprecationMessage;
+          }
+          return { code: mod.code, entry };
+        }),
       );
 
       spinner.stop('Checked latest module versions.');

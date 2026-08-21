@@ -137,6 +137,12 @@ class Installer {
 
       const restoreResult = await this._restoreUserFiles(paths, updateState);
 
+      // Mostra as mensagens de pós-instalação de "ação necessária" dos módulos
+      // instalados (ex.: rodar uma skill de setup) e deixa o usuário confirmar
+      // antes do resumo final, para "Wizz Method is ready to use!" continuar
+      // sendo a última coisa exibida.
+      await this._displayPostInstallMessages(config, officialModules);
+
       // Render consolidated summary
       await this.renderInstallSummary(results, {
         wizzDir: paths.wizzDir,
@@ -1205,6 +1211,57 @@ class Installer {
       rounded: true,
       formatBorder: color.green,
     });
+  }
+
+  /**
+   * Exibe as mensagens de pós-instalação definidas no registry para os módulos
+   * instalados nesta execução. São avisos de "ação necessária" (ex.: "rode a
+   * skill wizz-loop-setup") que o usuário precisa ver para concluir o setup.
+   * São definidas pela propriedade `post-install-message` na entrada do módulo
+   * em `wizz-modules.yaml`.
+   *
+   * Instalações interativas exigem que o usuário confirme cada mensagem
+   * (Enter); instalações não-interativas (--yes / skipPrompts) imprimem a
+   * mensagem e seguem sem bloquear, para CI e scripts não travarem.
+   *
+   * @param {Object} config - Config da instalação (config.modules, config.skipPrompts)
+   * @param {Object} officialModules - Instância de OfficialModules (carrega o registry)
+   */
+  async _displayPostInstallMessages(config, officialModules) {
+    const moduleCodes = config.modules || [];
+    if (moduleCodes.length === 0) return;
+
+    const externalManager = officialModules && officialModules.externalModuleManager;
+    if (!externalManager) return;
+
+    const color = await prompts.getColor();
+
+    for (const code of moduleCodes) {
+      let moduleInfo;
+      try {
+        moduleInfo = await externalManager.getModuleByCode(code);
+      } catch {
+        continue; // Módulos embutidos (core/bmm/wizz) não estão no registry — pular.
+      }
+
+      const message = moduleInfo && moduleInfo.postInstallMessage;
+      if (!message) continue;
+
+      await prompts.box(String(message).trim(), `⚑ Action needed — ${moduleInfo.name || code}`, {
+        rounded: true,
+        formatBorder: color.yellow,
+      });
+
+      // Interativo: exige confirmação antes de seguir. Pula o prompt bloqueante
+      // em instalações não-interativas (a mensagem continua sendo mostrada).
+      if (!config.skipPrompts) {
+        await prompts.text({
+          message: 'Press Enter to acknowledge',
+          placeholder: '',
+          default: '',
+        });
+      }
+    }
   }
 
   /**

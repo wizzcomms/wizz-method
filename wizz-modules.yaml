@@ -17,6 +17,29 @@
 # repo changes owner, disappears, or ships something unexpected.
 # type: experimental — same delegated trust, plus unstable by upstream's
 # own definition.
+#
+# deprecated (optional, default false) — when true, the module is hidden from
+# the installer picker UNLESS it is already installed (so existing users can
+# still see/manage it, but new users are not offered it).
+# deprecation-message (optional) — surfaced in the picker hint for a deprecated
+# module that is still installed; use it to point users to the replacement.
+#
+# marketplace-plugin (optional, default false) — when true, the module's
+# installable skills are resolved from its .claude-plugin/marketplace.json via
+# the plugin resolver (instead of copying the single module-definition dir).
+# Use this for modules whose module.yaml does not sit alongside the skill
+# folders. module-definition should still point at the real module.yaml so
+# config/version lookups work.
+#
+# post-install-message (optional) — an "action needed" notice shown to the user
+# after install completes, once for each install run that includes the module.
+# Interactive installs require the user to acknowledge it (press Enter);
+# non-interactive (--yes) installs print it and continue. Use for required
+# follow-up steps (e.g. "run the X setup skill").
+#
+# aliases (optional) — prior `code` values this module was registered under.
+# An existing install recorded under an alias resolves to this entry instead of
+# being orphaned as "no source available" when the code changes.
 
 modules:
   bmad-method-test-architecture-enterprise:
@@ -41,19 +64,33 @@ modules:
     npmPackage: bmad-builder
     default_channel: stable
 
-  wizz-automator:
-    url: https://github.com/bmad-code-org/wizz-automator
-    module-definition: skills/module.yaml
-    code: automator
-    name: "Wizz Automator Epic Builder Experimental"
-    description: "EXPERIMENTAL: only supports claude and codex currently"
+  bmad-loop:
+    url: https://github.com/bmad-code-org/bmad-loop
+    module-definition: src/bmad_loop/data/skills/bmad-loop-setup/assets/module.yaml
+    code: bmad-loop
+    # bauto é o código pré-rename (o módulo era bmad-auto antes do repo e do
+    # conteúdo serem renomeados para bmad-loop); mantém instalações em bauto
+    # migrando para a frente em vez de virarem órfãs.
+    aliases: [bauto]
+    name: "Wizz Loop"
+    description: "Builds, verifies, and retros a whole epic unattended"
     defaultSelected: false
-    type: experimental
-    npmPackage: bmad-story-automator
-    default_channel: next
+    type: upstream-org
+    default_channel: stable
+    # As skills vivem fora de um diretório único de module.yaml; resolve pelo
+    # .claude-plugin/marketplace.json via plugin resolver (ver external-manager).
+    marketplace-plugin: true
+    post-install-message: |
+      Wizz Loop installed. To finish setup, run the bmad-loop-setup skill
+      from your agent:
+
+        > use the bmad-loop-setup skill
+
+      It installs the bmad-loop orchestrator tool and wires up the per-project
+      hooks and policy. The automation skills don't run until setup completes.
 
   bmad-creative-intelligence-suite:
-    url: https://github.com/bmad-code-org/wizz-module-creative-intelligence-suite
+    url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
     module-definition: src/module.yaml
     code: cis
     name: "Wizz Creative Intelligence Suite"
@@ -64,7 +101,7 @@ modules:
     default_channel: stable
 
   bmad-game-dev-studio:
-    url: https://github.com/bmad-code-org/wizz-module-game-dev-studio.git
+    url: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
     module-definition: src/module.yaml
     code: gds
     name: "Wizz Game Dev Studio"
@@ -73,6 +110,21 @@ modules:
     type: upstream-org
     npmPackage: bmad-game-dev-studio
     default_channel: stable
+
+  # --- Deprecated: hidden from the picker unless already installed ---
+
+  wizz-automator:
+    url: https://github.com/bmad-code-org/bmad-automator
+    module-definition: skills/module.yaml
+    code: automator
+    name: "Wizz Automator Epic Builder Experimental"
+    description: "EXPERIMENTAL: only supports claude and codex currently"
+    defaultSelected: false
+    type: experimental
+    npmPackage: bmad-story-automator
+    default_channel: next
+    deprecated: true
+    deprecation-message: "Wizz Automator has been deprecated and is replaced by Wizz Loop (bmad-loop). Install Wizz Loop instead."
 
   bmad-method-wds-expansion:
     url: https://github.com/bmad-code-org/bmad-method-wds-expansion
@@ -85,3 +137,5 @@ modules:
     type: upstream-org
     npmPackage: bmad-wds
     default_channel: stable
+    deprecated: true
+    deprecation-message: "Whiteport Design Studio is no longer receiving updates. Its capabilities are being folded into the bmm module as enhanced UX features. Your existing install is kept as-is."

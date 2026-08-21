@@ -316,7 +316,29 @@ class OfficialModules {
       await fs.remove(targetPath);
     }
 
-    await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
+    // Módulos marketplace-plugin do registry mantêm as skills instaláveis fora do
+    // diretório que contém o module.yaml (sourcePath aponta para o assets/ da
+    // skill -setup), então não dá para instalá-los copiando o sourcePath. Copia
+    // os diretórios de skill resolvidos, do mesmo jeito que um install custom de
+    // marketplace monta um módulo. Todo o resto (manifest, versão) segue pelo
+    // caminho padrão de módulo externo abaixo.
+    const marketplaceInfo = await this.externalModuleManager.getModuleByCode(moduleName);
+    if (marketplaceInfo && marketplaceInfo.marketplacePlugin) {
+      const pluginResolution = this.externalModuleManager.getPluginResolution(moduleName);
+      // Falha alto: copiar o sourcePath aqui instalaria só o assets/ da skill
+      // -setup (module.yaml + module-help.csv) e nenhuma skill — um install
+      // parcial e silenciosamente quebrado. Aborta em vez disso.
+      if (!pluginResolution || !Array.isArray(pluginResolution.skillPaths) || pluginResolution.skillPaths.length === 0) {
+        throw new Error(
+          `Module '${moduleName}' is registered as a marketplace plugin but its skills could not be resolved ` +
+            `from .claude-plugin/marketplace.json (missing or malformed on the selected channel). ` +
+            `Aborting to avoid a partial install with no skills.`,
+        );
+      }
+      await this._copyResolvedSkills(pluginResolution, targetPath, fileTrackingCallback, options.moduleConfig);
+    } else {
+      await this.copyModuleWithFiltering(sourcePath, targetPath, fileTrackingCallback, options.moduleConfig);
+    }
 
     if (!options.skipModuleInstaller) {
       await this.createModuleDirectories(moduleName, wizzDir, options);
@@ -343,6 +365,51 @@ class OfficialModules {
   }
 
   /**
+   * Assenta em disco uma resolução do PluginResolver: copia cada diretório de
+   * skill resolvido (achatado pelo nome da folha) para targetPath e coloca o
+   * module-help.csv na raiz do módulo. Compartilhado pelos installs custom de
+   * marketplace (installFromResolution) e pelos installs oficiais de módulo
+   * marketplace-plugin (install), para os dois caminhos não divergirem.
+   * @param {Object} resolved - ResolvedModule do PluginResolver
+   * @param {string} targetPath - Diretório de destino do módulo (ex.: wizzDir/<code>)
+   * @param {Function} fileTrackingCallback - Callback opcional de rastreio de arquivos
+   * @param {Object} moduleConfig - Configuração do módulo repassada ao filtro de cópia
+   */
+  async _copyResolvedSkills(resolved, targetPath, fileTrackingCallback = null, moduleConfig = {}) {
+    await fs.ensureDir(targetPath);
+
+    // Copia cada diretório de skill, achatado pelo nome da folha. Os nomes de
+    // folha precisam ser únicos — duas skills que achatam para o mesmo diretório
+    // se sobrescreveriam em silêncio, então falha alto em vez disso.
+    const seenLeaves = new Map();
+    for (const skillPath of resolved.skillPaths) {
+      const skillDirName = path.basename(skillPath);
+      if (seenLeaves.has(skillDirName)) {
+        throw new Error(
+          `Cannot install module '${resolved.code}': skill directories '${seenLeaves.get(skillDirName)}' and ` +
+            `'${skillPath}' share the leaf name '${skillDirName}' and would overwrite each other. ` +
+            `Skill directory names must be unique.`,
+        );
+      }
+      seenLeaves.set(skillDirName, skillPath);
+      const skillTarget = path.join(targetPath, skillDirName);
+      await this.copyModuleWithFiltering(skillPath, skillTarget, fileTrackingCallback, moduleConfig);
+    }
+
+    // Coloca o module-help.csv na raiz do módulo.
+    const helpTarget = path.join(targetPath, 'module-help.csv');
+    if (resolved.moduleHelpCsvPath) {
+      // Estratégias 1-4: copia o arquivo existente.
+      await fs.copy(resolved.moduleHelpCsvPath, helpTarget, { overwrite: true });
+      if (fileTrackingCallback) fileTrackingCallback(helpTarget);
+    } else if (resolved.synthesizedHelpCsv) {
+      // Estratégia 5: escreve o conteúdo sintetizado.
+      await fs.writeFile(helpTarget, resolved.synthesizedHelpCsv, 'utf8');
+      if (fileTrackingCallback) fileTrackingCallback(helpTarget);
+    }
+  }
+
+  /**
    * Install a module from a PluginResolver resolution result.
    * Copies specific skill directories and places module-help.csv at the target root.
    * @param {Object} resolved - ResolvedModule from PluginResolver
@@ -357,27 +424,7 @@ class OfficialModules {
       await fs.remove(targetPath);
     }
 
-    await fs.ensureDir(targetPath);
-
-    // Copy each skill directory, flattened by leaf name
-    for (const skillPath of resolved.skillPaths) {
-      const skillDirName = path.basename(skillPath);
-      const skillTarget = path.join(targetPath, skillDirName);
-      await this.copyModuleWithFiltering(skillPath, skillTarget, fileTrackingCallback, options.moduleConfig);
-    }
-
-    // Place module-help.csv at the module root
-    if (resolved.moduleHelpCsvPath) {
-      // Strategies 1-4: copy the existing file
-      const helpTarget = path.join(targetPath, 'module-help.csv');
-      await fs.copy(resolved.moduleHelpCsvPath, helpTarget, { overwrite: true });
-      if (fileTrackingCallback) fileTrackingCallback(helpTarget);
-    } else if (resolved.synthesizedHelpCsv) {
-      // Strategy 5: write synthesized content
-      const helpTarget = path.join(targetPath, 'module-help.csv');
-      await fs.writeFile(helpTarget, resolved.synthesizedHelpCsv, 'utf8');
-      if (fileTrackingCallback) fileTrackingCallback(helpTarget);
-    }
+    await this._copyResolvedSkills(resolved, targetPath, fileTrackingCallback, options.moduleConfig);
 
     // Create directories declared in module.yaml (strategies 1-4 may have these)
     if (!options.skipModuleInstaller) {

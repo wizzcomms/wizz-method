@@ -94,6 +94,13 @@ class ExternalModuleManager {
   // ExternalModuleManager) sees resolutions made during install.
   static _resolutions = new Map();
 
+  // moduleCode → ResolvedModule (do PluginResolver). Preenchido para módulos do
+  // registry marcados com `marketplace-plugin: true`, cujas skills instaláveis
+  // vivem fora de um único diretório de module.yaml e precisam ser resolvidas a
+  // partir de .claude-plugin/marketplace.json. Compartilhado entre instâncias
+  // para o install() aproveitar a resolução feita no findModuleSource.
+  static _pluginResolutions = new Map();
+
   constructor() {}
 
   /**
@@ -103,6 +110,15 @@ class ExternalModuleManager {
    */
   getResolution(moduleCode) {
     return ExternalModuleManager._resolutions.get(moduleCode) || null;
+  }
+
+  /**
+   * Resolução marketplace-plugin em cache para um módulo (se houver).
+   * @param {string} moduleCode
+   * @returns {Object|null} ResolvedModule do PluginResolver, ou null
+   */
+  getPluginResolution(moduleCode) {
+    return ExternalModuleManager._pluginResolutions.get(moduleCode) || null;
   }
 
   /**
@@ -147,8 +163,16 @@ class ExternalModuleManager {
       npmPackage: mod.npm_package || mod.npmPackage || null,
       pluginName: mod.plugin_name || mod.pluginName || null,
       defaultChannel: normalizeChannelName(mod.default_channel || mod.defaultChannel) || 'stable',
+      deprecated: mod.deprecated === true,
+      deprecationMessage: mod.deprecation_message || mod['deprecation-message'] || mod.deprecationMessage || null,
+      marketplacePlugin: mod.marketplace_plugin === true || mod['marketplace-plugin'] === true || mod.marketplacePlugin === true,
+      postInstallMessage: mod.post_install_message || mod['post-install-message'] || mod.postInstallMessage || null,
       builtIn: mod.built_in === true,
       isExternal: mod.built_in !== true,
+      // Códigos anteriores sob os quais este módulo foi registrado (ex.: `bmad-loop`
+      // era `bauto`). Deixa um módulo renomeado continuar resolvendo instalações
+      // existentes em vez de órfã-las — ver getModuleByCode().
+      aliases: Array.isArray(mod.aliases) ? mod.aliases : [],
     };
   }
 
@@ -173,13 +197,27 @@ class ExternalModuleManager {
   }
 
   /**
-   * Get module info by code
+   * Get module info by code. Cai no `aliases` da entrada do registry, de modo
+   * que um módulo renomeado (com `code` alterado) ainda resolve para instalações
+   * gravadas sob o código anterior.
    * @param {string} code - The module code (e.g., 'cis')
    * @returns {Object|null} Module info or null if not found
    */
   async getModuleByCode(code) {
     const modules = await this.listAvailable();
-    return modules.find((m) => m.code === code) || null;
+    return modules.find((m) => m.code === code) || modules.find((m) => m.aliases.includes(code)) || null;
+  }
+
+  /**
+   * Resolve a possibly-legacy module code to its current canonical code.
+   * Returns the input unchanged if it doesn't match any registry entry or
+   * alias (e.g. a custom/unknown module).
+   * @param {string} code
+   * @returns {Promise<string>}
+   */
+  async resolveCanonicalCode(code) {
+    const info = await this.getModuleByCode(code);
+    return info ? info.code : code;
   }
 
   /**
@@ -502,6 +540,24 @@ class ExternalModuleManager {
       return null;
     }
 
+    // Normaliza para o código canônico — um install gravado sob um alias
+    // (ex.: `bauto`) precisa resolver para a entrada atual do registry.
+    moduleCode = moduleInfo.code;
+
+    // Módulos marketplace-plugin (entradas do registry marcadas com
+    // `marketplace-plugin`) trazem um .claude-plugin/marketplace.json e mantêm o
+    // module.yaml dentro do assets/ de uma skill, e não num diretório único ao
+    // lado das skills. Resolve pelo PluginResolver (a mesma máquina que os
+    // installs por URL custom usam) e devolve o diretório que contém o
+    // module.yaml, para os chamadores de config/versão/diretório funcionarem;
+    // o install() copia os diretórios de skill resolvidos.
+    if (moduleInfo.marketplacePlugin) {
+      const pluginMod = await this.resolvePluginModule(moduleCode, options);
+      if (pluginMod && pluginMod.moduleYamlPath) {
+        return path.dirname(pluginMod.moduleYamlPath);
+      }
+    }
+
     // Clone the external module repo
     const cloneDir = await this.cloneExternalModule(moduleCode, options);
 
@@ -555,6 +611,88 @@ class ExternalModuleManager {
         `The repository may have been restructured after this release was tagged.${channelHint}`,
     );
   }
+  /**
+   * Resolve um módulo marketplace-plugin do registry para uma definição de
+   * plugin instalável. Clona o repo (respeitando o plano de canal), lê o
+   * .claude-plugin/marketplace.json e roda o PluginResolver contra o plugin que
+   * corresponde a este módulo. O resultado (skillPaths + module.yaml +
+   * module-help.csv) fica em cache para o install() copiar os diretórios de
+   * skill resolvidos.
+   *
+   * @param {string} moduleCode - Código do módulo externo
+   * @param {Object} options - Opções repassadas a cloneExternalModule
+   * @returns {Promise<Object|null>} ResolvedModule do PluginResolver, ou null
+   *   quando o módulo não é marketplace plugin ou não pode ser resolvido.
+   */
+  async resolvePluginModule(moduleCode, options = {}) {
+    const moduleInfo = await this.getModuleByCode(moduleCode);
+    if (!moduleInfo || moduleInfo.builtIn || !moduleInfo.marketplacePlugin) {
+      return null;
+    }
+
+    // Normaliza para o código canônico — ver cloneExternalModule.
+    moduleCode = moduleInfo.code;
+
+    const cloneDir = await this.cloneExternalModule(moduleCode, options);
+
+    const marketplacePath = path.join(cloneDir, '.claude-plugin', 'marketplace.json');
+    if (!(await fs.pathExists(marketplacePath))) {
+      return null;
+    }
+
+    let marketplace;
+    try {
+      marketplace = JSON.parse(await fs.readFile(marketplacePath, 'utf8'));
+    } catch {
+      return null;
+    }
+
+    const plugins = Array.isArray(marketplace.plugins) ? marketplace.plugins : [];
+    if (plugins.length === 0) {
+      return null;
+    }
+
+    // Prefere o plugin cujo nome bate com o plugin_name do registry (ou o code),
+    // caindo para qualquer plugin que declare skills.
+    const preferredName = moduleInfo.pluginName || moduleInfo.code;
+    const ordered = [...plugins].sort((a, b) => {
+      const am = a?.name === preferredName ? 0 : 1;
+      const bm = b?.name === preferredName ? 0 : 1;
+      return am - bm;
+    });
+
+    const { PluginResolver } = require('./plugin-resolver');
+    const resolver = new PluginResolver();
+
+    for (const plugin of ordered) {
+      if (!plugin || !Array.isArray(plugin.skills) || plugin.skills.length === 0) {
+        continue;
+      }
+      let resolvedMods;
+      try {
+        resolvedMods = await resolver.resolve(cloneDir, plugin);
+      } catch {
+        continue;
+      }
+      if (!resolvedMods || resolvedMods.length === 0) {
+        continue;
+      }
+      // Casa pelo código do registry, depois pelo nome preferido do plugin,
+      // depois aceita um único módulo resolvido.
+      const match =
+        resolvedMods.find((mod) => mod.code === moduleCode) ||
+        resolvedMods.find((mod) => mod.code === preferredName) ||
+        (resolvedMods.length === 1 ? resolvedMods[0] : null);
+      if (match) {
+        match.repoUrl = moduleInfo.url;
+        ExternalModuleManager._pluginResolutions.set(moduleCode, match);
+        return match;
+      }
+    }
+
+    return null;
+  }
+
   cachedModules = null;
 }
 
