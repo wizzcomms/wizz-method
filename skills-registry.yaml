@@ -293,6 +293,10 @@ areas:
         when: "Setar/auditar tracking e medição (GA4, GTM, eventos, UTM, atribuição)."
       - id: site-launch-kit
         when: "Site pronto ou quase pronto pra ir ao ar: revisão de pré-lançamento em 15 rodadas corretivas (CTA acima da dobra, barra fixa mobile, tempo de resposta, prova social real, FAQ+FAQPage, imagens reais, endereço, titles, Open Graph, breadcrumbs, alt text, schema local, robots/sitemap, LGPD, medição), com regra anti-invenção e PENDÊNCIAS. Gatilhos: 'vamos subir o site', 'checklist de lançamento', 'revisa antes do deploy', pré-go-live, ou um item isolado (og:image, FAQ com schema, robots.txt). Roda DEPOIS do site construído, ANTES do deploy."
+      - id: pesquisa-de-publico-do-piva
+        when: "Pesquisa profunda de público, VoC, níveis de consciência, matriz de ângulos e léxico nativo de oferta compilados em HTML (metodologia @soupiva)."
+      - id: wizz-offer-forge
+        when: "Forjar oferta irresistível de resposta direta/infoproduto (mecanismo único, empilhamento de valor, garantia reversa, ponte de tráfego)."
     mcps:
       - id: scrapling
         when: "Scraping/crawl web para pesquisa de mercado, prospecção de leads e inteligência competitiva. Bypass anti-bot (Cloudflare), parsing adaptativo, spider concorrente. Requer: pip install 'scrapling[ai]' && scrapling install."

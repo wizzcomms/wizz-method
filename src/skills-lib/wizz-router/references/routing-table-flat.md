@@ -75,6 +75,8 @@ Use esta tabela **só fora de projeto Wizz** (sem `_wizz/`), quando o router map
 | Ferramenta grátis de captação de leads | `free-tool-strategy` | 2 |
 | A/B test, variações, experimentos de conversão | `ab-test-setup` + `analytics-tracking` | 2 |
 | Copywriting, copy, persuasão, texto de venda | `copywriting` + `humanizer` | 1 |
+| Pesquisa de público de oferta, VoC, matriz de ângulos, léxico de infoproduto | `pesquisa-de-publico-do-piva` | 1 |
+| Forjar oferta, criar oferta irresistível, mecanismo único, bônus, garantia | `wizz-offer-forge` + `pricing-strategy` | 1 |
 | Pesquisa de mercado, inteligência competitiva | `deep-research` | 2 |
 
 ## Contexto e Memória

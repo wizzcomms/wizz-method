@@ -64,6 +64,16 @@ description = "Churn, retenção, cancelamento"
 prompt = "Invoque a skill GLOBAL 'churn-prevention' via a ferramenta Skill."
 
 [[agent.menu]]
+code = "PV"
+description = "Pesquisa de público, VoC e matriz de ângulos (Piva)"
+prompt = "Invoque a skill GLOBAL 'pesquisa-de-publico-do-piva' via a ferramenta Skill. Peça o documento/descrição da oferta e gere o arsenal com dashboard HTML final."
+
+[[agent.menu]]
+code = "OF"
+description = "Forjar oferta irresistível (Offer Forge)"
+prompt = "Invoque a skill GLOBAL 'wizz-offer-forge' via a ferramenta Skill. Conecte com a pesquisa de público e estruture o mecanismo único, empilhamento de valor, garantia reversa e ponte de tráfego."
+
+[[agent.menu]]
 code = "SC"
 description = "Scraping/prospecção real (concorrente, leads, dados web)"
 prompt = "Use o MCP 'scrapling' (via ToolSearch para carregar as ferramentas) para scraping real, bypass de anti-bot e prospecção de leads. Se não estiver ativo, informe o requisito de instalação e ofereça planejar a estratégia primeiro."
