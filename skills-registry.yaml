@@ -133,8 +133,8 @@ areas:
         when: "Gerar/refinar componentes prontos via 21st.dev (UI builder, inspiration, refiner)."
         server:
           command: npx
-          # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
-          args: ["-y", "@21st-dev/magic@0.1.0"]
+          # Pin de supply chain (2026-08-23): versão fixa; atualizar conscientemente.
+          args: ["-y", "@21st-dev/magic@0.2.2"]
           env:
             API_KEY: "${MAGIC_API_KEY}"
     clis:
@@ -144,60 +144,31 @@ areas:
         install: "npm i -g @21st-dev/cli && npx @21st-dev/cli install-skill"
       - id: hyperframes
         when: "DESENHAR telas de vídeo em HTML/CSS (HTML→MP4, agent-native, 20+ skills): cena isolada e MUDA — maqueta de WhatsApp/ChatGPT, gráfico animado, título, loop. NÃO usar para montagem com áudio/SFX/legenda sincronizada (posicionador de áudio falhou em produção, ~2,76s de drift; CSS vaza entre telas): a montagem final é do Remotion (regra: HyperFrames desenha, Remotion monta — ver _shared/video-pipeline.md do módulo wizz). Precisa ffmpeg + Node 22 + Chrome headless."
-        # Gate de plataforma (2026-07-08): o `install` virou clone+checkout
-        # POSIX (mktemp/rm), então macOS/Linux/WSL — mesma regra das
-        # clone-and-run abaixo. (Antes ficava sem gate porque check/install
-        # eram só npx.)
         platform: [darwin, linux]
-        # Check (2026-07-08): antes era `npx --yes hyperframes --version`, que
-        # baixa o pacote do npm e portanto passa SEMPRE — o installer reportava
-        # "já instalado" sem as skills nunca terem sido adicionadas. O que o
-        # `install` traz são as SKILLS, então o check testa a skill instalada.
         check: "test -d $HOME/.claude/skills/hyperframes"
-        # Pin de supply chain (2026-07-08): a convenção `#<sha>` na URL NÃO
-        # funciona — a CLI `skills add` trata o fragmento como BRANCH
-        # (`git clone --branch <sha>` → "Remote branch not found"), e não há
-        # flag --ref/pin. Pin real = clone temporário + checkout do SHA +
-        # `skills add` do path local. `--copy` é obrigatório (senão symlinka
-        # pro temp dir que é apagado); `-g` casa com o `check` global; `-y`
-        # evita prompt em shell não-interativo. Atualizar conscientemente.
-        install: 'd="$(mktemp -d)" && git clone https://github.com/heygen-com/hyperframes.git "$d" && git -C "$d" checkout 4c8064d4d3d1ffe51a10b1c7eee79a49b2fc468f && npx skills add "$d" -g -y --copy && rm -rf "$d"'
+        # Pin de supply chain (2026-08-23): clone temporário + checkout do SHA
+        # + `skills add` do path local. Atualizar conscientemente.
+        install: 'd="$(mktemp -d)" && git clone https://github.com/heygen-com/hyperframes.git "$d" && git -C "$d" checkout 59a69a145bfbd0f10dee72246b68ee5d9bd71063 && npx skills add "$d" -g -y --copy && rm -rf "$d"'
       - id: claude-video
         when: "Analisar/entender vídeo EXISTENTE: baixa, extrai frames e transcreve para resumir, achar momentos ou diagnosticar footage. NÃO cria vídeo. Precisa ffmpeg + yt-dlp (+ Groq/OpenAI p/ transcrição sem legenda)."
-        # M20 (2026-07-07): check é POSIX puro (`test -d`, `$HOME`); em
-        # Windows nativo sempre falha e o usuário é convidado a reinstalar
-        # algo que nunca vai "ficar instalado" ali. Suporte oficial é
-        # macOS/Linux/WSL (WSL reporta platform 'linux').
         platform: [darwin, linux]
         check: "test -d $HOME/.claude/skills/watch"
-        # Pin de supply chain (2026-07-08): clone temporário + checkout do SHA
-        # + `skills add` local (mesma convenção e racional do hyperframes
-        # acima — `#<sha>` na URL falha porque a CLI trata o fragmento como
-        # branch); atualizar conscientemente.
+        # Pin de supply chain (2026-08-23): clone temporário + checkout do SHA
+        # + `skills add` local. Atualizar conscientemente.
         install: 'd="$(mktemp -d)" && git clone https://github.com/bradautomates/claude-video.git "$d" && git -C "$d" checkout 83da59fa78c3eee9e20f515fe75c438bb5166efd && npx skills add "$d" -g -y --copy && rm -rf "$d"'
       - id: buttercut
         when: "EDITAR vídeo por IA: cortes, selects, cenas, roughcut via XML/FFmpeg. Sugerir quando o pedido for editar/cortar vídeo. Clone-and-run no PROJETO (não é skill add), pesado: Ruby + Python + FFmpeg + WhisperX. AVISOS: ~GB de modelos (WhisperX), build demorado, só Apple Silicon."
         platform: darwin-arm64
         check: "test -d ./buttercut"
-        # Pin de supply chain (2026-07-06): checkout de SHA fixo; atualizar conscientemente.
-        install: "git clone https://github.com/barefootford/buttercut.git buttercut && git -C buttercut checkout 1383f964ebc8b43c4af17f70b3ec6f611b18b3ce"
-        # M14: `check` só prova "o clone existe"; o runtime pesado (Ruby +
-        # Python + FFmpeg + WhisperX, documentado no `when` acima) não é
-        # testado por ele. `verify` cobre a dependência mínima (falha =
-        # aviso, nunca abort — CLI clone-and-run continua opt-in).
+        # Pin de supply chain (2026-08-23): checkout de SHA fixo; atualizar conscientemente.
+        install: "git clone https://github.com/barefootford/buttercut.git buttercut && git -C buttercut checkout f71d9537e2c22c3c4c1c659c4bdfb11e90ccd961"
         verify: "command -v ffmpeg >/dev/null 2>&1 && command -v ruby >/dev/null 2>&1 && command -v python3 >/dev/null 2>&1"
       - id: voicebox
         when: "Voz/TTS/clonagem de voz local para narração/VO de vídeo (7 engines TTS + Whisper STT). App desktop que expõe endpoint MCP local em runtime. Clone-and-run no projeto."
-        # M20: check é POSIX puro (`test -d`); suporte oficial macOS/Linux/WSL.
         platform: [darwin, linux]
         check: "test -d ./voicebox"
-        # Pin de supply chain (2026-07-06): checkout de SHA fixo; atualizar conscientemente.
-        install: "git clone https://github.com/jamiepine/voicebox.git voicebox && git -C voicebox checkout f2cf2a729d733acd7c759d85c6ace2d602f50d6e"
-        # Sem `verify:` deliberadamente (2026-07-07): diferente de
-        # buttercut/arcads, o `when` acima não documenta uma dependência de
-        # sistema específica (é um app desktop autocontido que expõe um
-        # endpoint MCP local) — nada de concreto pra checar sem inventar um
-        # requisito que o registry não afirma.
+        # Pin de supply chain (2026-08-23): checkout de SHA fixo; atualizar conscientemente.
+        install: "git clone https://github.com/jamiepine/voicebox.git voicebox && git -C voicebox checkout 2bcb98d1a8b6fe05e15fbc1559e3085669e4035d"
       - id: ctc-align
         when: "Timestamps palavra a palavra CONFIÁVEIS de narração TTS (texto conhecido): sincronizar legenda, corte de cena, animação e elemento gráfico com a fala. Fonte única de timing em vídeo — substitui timestamps do Whisper e estimativa manual. Skill da lib: ctc-align (instalação + helper align.py + regras de âncora monotônica e duração mínima). Roda em CPU, sem CUDA."
         platform: [darwin, linux]
@@ -241,15 +212,10 @@ areas:
     clis:
       - id: distribb
         when: "EXECUTAR distribuição de SEO: publicar artigos + construir backlinks pela rede da Distribb, conectar Google Search Console, autopublicar notícias. Complementa (não duplica) as skills de SEO que só geram/auditam. Requer Distribb API + GSC (+ DataForSEO/Ahrefs no plano free)."
-        # M20: check é POSIX puro (`ls`, `grep -qi`, `$HOME`); suporte oficial
-        # macOS/Linux/WSL.
         platform: [darwin, linux]
         check: "ls $HOME/.claude/skills 2>/dev/null | grep -qi distribb"
-        # Pin de supply chain (2026-07-08): clone temporário + checkout do SHA
-        # + `skills add` local (mesma convenção e racional do hyperframes
-        # acima — `#<sha>` na URL falha porque a CLI trata o fragmento como
-        # branch); atualizar conscientemente.
-        install: 'd="$(mktemp -d)" && git clone https://github.com/Bomx/distribb-skill.git "$d" && git -C "$d" checkout 860700de171f2ff741985ffdc739010f3f0c0e25 && npx skills add "$d" -g -y --copy && rm -rf "$d"'
+        # Pin de supply chain (2026-08-23): clone temporário + checkout do SHA. Atualizar conscientemente.
+        install: 'd="$(mktemp -d)" && git clone https://github.com/Bomx/distribb-skill.git "$d" && git -C "$d" checkout 061a055768e13cf09108932a90aeb2e957183858 && npx skills add "$d" -g -y --copy && rm -rf "$d"'
 
   growth:
     agent: wizz-growth
@@ -303,16 +269,10 @@ areas:
         server:
           command: scrapling
           args: ["mcp"]
-        # The MCP server lives in the `[ai]` extra, and fetching needs browsers.
-        # Without this the installer would write a config for a binary that
-        # isn't installed → the client fails with ENOENT. `setup` makes the
-        # installer install the package, download browsers, resolve `scrapling`
-        # to an absolute path (server.command is rewritten), and verify it boots
-        # before writing; if verify fails the server is skipped, not written.
         setup:
           bin: scrapling
-          # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
-          install: 'uv tool install "scrapling[ai]==0.4.10" || pipx install "scrapling[ai]==0.4.10" || pip install --user "scrapling[ai]==0.4.10"'
+          # Pin de supply chain (2026-08-23): versão fixa; atualizar conscientemente.
+          install: 'uv tool install "scrapling[ai]==0.4.14" || pipx install "scrapling[ai]==0.4.14" || pip install --user "scrapling[ai]==0.4.14"'
           post_install: "{bin} install"
           verify: "{bin} --version"
 
@@ -326,20 +286,6 @@ areas:
         when: "Decidir O QUE produzir de conteúdo (topic clusters, calendário, pilares)."
       - id: copy-editing
         when: "Revisar/editar o texto do roteiro ou da legenda antes de publicar."
-    # Roteiro viral em si (hook, corpo, CTA) é conhecimento do próprio agente
-    # wizz-social (Blueprint de Roteiro Viral em knowledge/), não uma skill global.
-    #
-    # CLIs de vídeo: o roteiro é o começo do pipeline (roteiro → voz → timing →
-    # telas → montagem → corte → publicação). As tools de vídeo VIVEM na área
-    # `designer` (fonte única, não duplicar aqui). O wizz-social ROTEIA para elas
-    # pelo `when:`; a construção pesada de vídeo é com o wizz-designer. Cadeia e
-    # regra completa em src/modules/wizz/_shared/video-pipeline.md:
-    #   voicebox     → narração/voz/TTS do roteiro
-    #   ctc-align    → timestamps palavra a palavra da narração (fonte de timing)
-    #   hyperframes  → desenhar as TELAS (visual mudo, HTML→MP4)
-    #   remotion     → MONTAR o filme (áudio, SFX, legenda, timing de frame)
-    #   buttercut    → editar/cortar o vídeo gravado (só darwin-arm64)
-    #   claude-video → analisar um vídeo de referência (frames + transcrição)
 
   ads:
     agent: wizz-ads
@@ -356,28 +302,17 @@ areas:
         when: "Gestão real de campanha Meta/Facebook/Instagram via API (criar/editar/medir ads)."
         server:
           command: npx
-          # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
-          # Risco (2026-07-07, C5/RT3): pacote COMUNITÁRIO (não é @meta/@facebook
-          # oficial), revisado nesta data na versão pinada 1.0.0; acesso a
-          # META_ACCESS_TOKEN = gasto real de ads. O mesmo token é reaproveitado
-          # pela CLI `arcads` (ver clis.arcads nesta mesma área): duas
-          # ferramentas, mesma credencial. Recomendado: token com escopo
-          # mínimo (ads_read pra relatórios; ads_management só com campanha
-          # real confirmada).
+          # Pin de supply chain (2026-08-23): versão fixa; atualizar conscientemente.
           args: ["-y", "mcp-meta-ads@1.0.0"]
           env:
             META_ACCESS_TOKEN: "${META_ACCESS_TOKEN}"
     clis:
       - id: arcads
         when: "GERAR vídeo-ad e imagem por IA (Seedance/Sora/Veo/Kling/OmniHuman + Nano Banana) e publicar como Meta ad. Clone-and-run no projeto: git clone + ./scripts/setup.sh; precisa Python 3.10+ e ARCADS API key em .env (META_ACCESS_TOKEN opcional p/ publicar)."
-        # M20: check é POSIX puro (`test -d`); suporte oficial macOS/Linux/WSL.
         platform: [darwin, linux]
         check: "test -d ./arcads-claude-code"
-        # Pin de supply chain (2026-07-06): checkout de SHA fixo; atualizar conscientemente.
-        install: "git clone https://github.com/krusemediallc/arcads-claude-code.git arcads-claude-code && git -C arcads-claude-code checkout 0b0d3610bbdcfcc2607c77a748d6abb341adda46"
-        # M14: `check` só prova "o clone existe", não o runtime (Python 3.10+
-        # documentado no `when` acima). `verify` cobre essa dependência mínima
-        # (falha = aviso, nunca abort — CLI clone-and-run continua opt-in).
+        # Pin de supply chain (2026-08-23): checkout de SHA fixo; atualizar conscientemente.
+        install: "git clone https://github.com/krusemediallc/arcads-claude-code.git arcads-claude-code && git -C arcads-claude-code checkout 0bfafb256cfce3ff4447d7ea1611a37f0af536be"
         verify: "command -v python3 >/dev/null 2>&1 && python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)'"
 
   architect:
@@ -409,15 +344,8 @@ areas:
         when: "Operar Supabase de verdade: rodar SQL, migrations, inspecionar schema/RLS, logs. Default é READ-ONLY e escopado a um projeto (--read-only --project-id); para ESCREVER (migrations, mutações), o agente precisa remover conscientemente o --read-only desta entrada antes de usar — nunca por padrão silencioso."
         server:
           command: npx
-          # Pin de supply chain (2026-07-06): versão fixa (era @latest); atualizar conscientemente.
-          # Read-only + projeto escopado por padrão (2026-07-07, C5/RT3):
-          # SUPABASE_ACCESS_TOKEN sem esses flags permite SQL arbitrário na
-          # conta inteira. --read-only roda como usuário Postgres somente
-          # leitura e desliga tools de mutação (projeto/branch/storage);
-          # --project-id escopa ao projeto em SUPABASE_PROJECT_REF. Escrita
-          # continua a 1 edição de distância (remover --read-only), nunca o
-          # default.
-          args: ["-y", "@supabase/mcp-server-supabase@0.8.2", "--read-only", "--project-id", "${SUPABASE_PROJECT_REF}"]
+          # Pin de supply chain (2026-08-23): versão fixa; atualizar conscientemente.
+          args: ["-y", "@supabase/mcp-server-supabase@0.11.0", "--read-only", "--project-id", "${SUPABASE_PROJECT_REF}"]
           env:
             SUPABASE_ACCESS_TOKEN: "${SUPABASE_ACCESS_TOKEN}"
 
@@ -429,14 +357,12 @@ areas:
         when: "Passe único adversarial, ad hoc, fora de workflow — 'tear this apart' num trecho colado, sem contexto de projeto. Não confundir com wizz-review-adversarial-general (camada interna 'Blind Hunter' chamada só por wizz-code-review) nem com wizz-code-review (orquestrador bmm: 3 camadas paralelas + triagem, para review real de diff/PR)."
       - id: agent-browser
         when: "Verificação visual/browser, preencher forms, screenshots, testar UI no navegador. CLI já instalado (não é MCP); browser SEMPRE via agent-browser, nunca Playwright."
-    # qa NÃO declara mcps: verificação de browser é via agent-browser (CLI/skill),
-    # não via MCP. Não usar o MCP do Playwright.
     clis:
       - id: agent-browser
         when: "Dirigir um browser real pra E2E/verificação: navegar, clicar, preencher form, screenshot, console. É CLI, não MCP."
         check: "agent-browser --version"
-        # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
-        install: "npm install -g agent-browser@0.27.0"
+        # Pin de supply chain (2026-08-23): versão fixa; atualizar conscientemente.
+        install: "npm install -g agent-browser@0.34.0"
 
   analyst:
     agent: wizz-agent-analyst
@@ -451,8 +377,8 @@ areas:
         when: "Pesquisa web/prior-art durante planejamento (web search, descoberta de fontes)."
         server:
           command: npx
-          # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
-          args: ["-y", "exa-mcp-server@3.2.1"]
+          # Pin de supply chain (2026-08-23): versão fixa; atualizar conscientemente.
+          args: ["-y", "exa-mcp-server@3.4.1"]
           env:
             EXA_API_KEY: "${EXA_API_KEY}"
 
@@ -484,8 +410,8 @@ mcp_utility:
     when: "Docs atualizadas de qualquer lib/framework/SDK (React, Next, Prisma, Tailwind...). Útil em todo dev."
     server:
       command: npx
-      # Pin de supply chain (2026-07-06): versão fixa; atualizar conscientemente.
-      args: ["-y", "@upstash/context7-mcp@3.2.2"]
+      # Pin de supply chain (2026-08-23): versão fixa; atualizar conscientemente.
+      args: ["-y", "@upstash/context7-mcp@4.0.3"]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CLIs — ferramentas de linha de comando que os agentes chamam direto (não são
@@ -523,16 +449,17 @@ cli_utility:
     # --version` só testava que rodava). Agora `check` volta a ser só
     # presença/versão (roda e imprime o número); a COMPARAÇÃO semver contra
     # min_version é feita pelo installer (detectClis), não em shell.
-    min_version: 0.43.0
+    min_version: 0.45.0
     check: "rtk --version"
-    # Pin de supply chain (2026-07-07): tag v0.43.0 (antes: branch master)
-    # Checksum do install.sh nesta tag (2026-07-07): sha256
+    # Pin de supply chain (2026-08-23): tag v0.45.0 (antes: v0.43.0)
+    # Checksum do install.sh nesta tag (2026-08-23): sha256
     # d6eb73a772903e13ff34ee1be8a8b24e896ba9a978f20d2279a08b4083ea6f77
+    # (install.sh idêntico ao v0.43.0 — mesmo checksum.)
     # (RT1: tag git pode ser movida à força; o checksum trava o conteúdo real
     # que será executado, não só o nome da tag. Verificado com `shasum -c`
     # antes do `sh`; se a tag mudar de conteúdo, o install aborta em vez de
     # rodar script desconhecido.)
-    install: "curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/tags/v0.43.0/install.sh -o /tmp/rtk-install-v0.43.0.sh && echo 'd6eb73a772903e13ff34ee1be8a8b24e896ba9a978f20d2279a08b4083ea6f77  /tmp/rtk-install-v0.43.0.sh' | shasum -a 256 -c - && sh /tmp/rtk-install-v0.43.0.sh"
+    install: "curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/tags/v0.45.0/install.sh -o /tmp/rtk-install-v0.45.0.sh && echo 'd6eb73a772903e13ff34ee1be8a8b24e896ba9a978f20d2279a08b4083ea6f77  /tmp/rtk-install-v0.45.0.sh' | shasum -a 256 -c - && sh /tmp/rtk-install-v0.45.0.sh"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SQUADS — painéis consultivos de personas (rodam via wizz-party-mode).
