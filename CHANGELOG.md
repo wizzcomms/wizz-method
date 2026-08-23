@@ -4,6 +4,23 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.16.0] - 2026-08-23
+
+### Adicionado
+
+- **Porte BMAD 6.8.0 → 6.11.0**:
+  - Review em 4 camadas (`wizz-code-review`, `wizz-quick-dev`) com triagem por verificação (`claims-check.md`, `deletion-check.md`, `edge-case-hunter.md`, `verification-gap.md`).
+  - Módulo `bmad-loop` (Wizz Loop) com suporte a marketplace-plugin e aliases.
+  - Retrospectiva orientada por evidência (`sprint_status.py`, `git_evidence.py`).
+  - Sprint planning determinístico (`sprint_plan.py`) com validação de prontidão e rastreamento.
+  - Elicitação avançada (`pick_methods.py`, `assets/methods.csv`).
+  - Forge idea e party memory (`wizz-forge-idea`, `resolve_personas.py`, `party-memory.md`).
+  - Prompt de diretório interativo no instalador (`TextPrompt` com suporte a edição/submissão e caminhos relativos/absolutos).
+- **Novas Skills de Growth & Oferta**:
+  - `pesquisa-de-publico-do-piva`: pipeline de 6 relatórios encadeados (VoC, Schwartz, Níveis de Consciência, Trend Report, Matriz de Ângulos em 4 Zonas e Léxico do Público) gerando dashboard HTML por abas.
+  - `wizz-offer-forge`: engenharia de ofertas de resposta direta (mecanismo único da causa/solução, empilhamento de valor com 4 bônus anti-objeção, garantia reversa nível 3 e ponte para criativos de tráfego).
+  - Integrações nos menus rápidos (`[PV]` e `[OF]` em `wizz-growth`), no registry e na routing table flat.
+
 ## [1.15.0] - 2026-08-20
 
 ### Adicionado
