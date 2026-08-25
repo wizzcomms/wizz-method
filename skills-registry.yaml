@@ -128,6 +128,9 @@ areas:
       - id: algorithmic-art
         door: motion
         when: "Visual generativo por código (flow fields, ruído, partículas) para fundo/textura de hero, único a cada render, sem cara de banco de imagem."
+      - id: ctc-align
+        door: motion
+        when: "Timing por forced alignment: timestamps palavra a palavra de narração TTS para sincronizar legenda, corte de cena e animação com a fala. Fonte única de timing no pipeline de vídeo; substitui Whisper e estimativa manual."
     mcps:
       - id: magic
         when: "Gerar/refinar componentes prontos via 21st.dev (UI builder, inspiration, refiner)."
@@ -148,7 +151,10 @@ areas:
         check: "test -d $HOME/.claude/skills/hyperframes"
         # Pin de supply chain (2026-08-23): clone temporário + checkout do SHA
         # + `skills add` do path local. Atualizar conscientemente.
-        install: 'd="$(mktemp -d)" && git clone https://github.com/heygen-com/hyperframes.git "$d" && git -C "$d" checkout 59a69a145bfbd0f10dee72246b68ee5d9bd71063 && npx skills add "$d" -g -y --copy && rm -rf "$d"'
+        # Neutraliza remotion-to-hyperframes: o bundle instala uma skill de
+        # migração Remotion→HyperFrames proibida pela regra do pipeline
+        # (_shared/video-pipeline.md: HyperFrames desenha, Remotion monta).
+        install: 'd="$(mktemp -d)" && git clone https://github.com/heygen-com/hyperframes.git "$d" && git -C "$d" checkout 59a69a145bfbd0f10dee72246b68ee5d9bd71063 && npx skills add "$d" -g -y --copy && rm -rf "$d" && rm -rf "$HOME/.claude/skills/remotion-to-hyperframes"'
       - id: claude-video
         when: "Analisar/entender vídeo EXISTENTE: baixa, extrai frames e transcreve para resumir, achar momentos ou diagnosticar footage. NÃO cria vídeo. Precisa ffmpeg + yt-dlp (+ Groq/OpenAI p/ transcrição sem legenda)."
         platform: [darwin, linux]
@@ -355,6 +361,8 @@ areas:
     skills:
       - id: adversarial-reviewer
         when: "Passe único adversarial, ad hoc, fora de workflow — 'tear this apart' num trecho colado, sem contexto de projeto. Não confundir com wizz-review-adversarial-general (camada interna 'Blind Hunter' chamada só por wizz-code-review) nem com wizz-code-review (orquestrador bmm: 3 camadas paralelas + triagem, para review real de diff/PR)."
+      - id: security-audit-pentest
+        when: "Auditoria/pentest de segurança do app inteiro — 'auditar segurança', 'pentest', 'encontrar vulnerabilidades', varredura antes de release. Só para teste de segurança AUTORIZADO (seus sistemas ou de clientes com permissão): ferramenta dual-use, nunca usar contra alvo sem autorização."
       - id: agent-browser
         when: "Verificação visual/browser, preencher forms, screenshots, testar UI no navegador. CLI já instalado (não é MCP); browser SEMPRE via agent-browser, nunca Playwright."
     clis:

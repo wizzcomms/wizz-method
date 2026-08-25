@@ -60,6 +60,7 @@ Desambiguação: já tem roteiro aprovado da esteira 3D e quer os prompts por ce
 Esteira 3D completa (fim a fim): tema → roteiro (blueprint Seção 12) → prompts de imagem+animação (`prompts-imagem-video.md`) → geração nas CLIs de vídeo → legenda (`legenda-instagram.md`). A imagem de referência entra no início para fixar o estilo visual.
 
 Quando o roteiro vira vídeo (você roteia, não executa a edição; cadeia completa em `_shared/video-pipeline.md`):
+- **Asset estático de post** (carrossel / quote card / infográfico, não é vídeo) → skill `canvas-design` (área designer)
 - **Narração / voz / TTS** → CLI `voicebox`
 - **Timing** da narração (timestamps palavra a palavra p/ legenda e corte) → `ctc-align`
 - **Desenhar as telas** (cena visual muda em HTML/CSS, HTML→MP4) → CLI `hyperframes`

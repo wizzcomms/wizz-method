@@ -1,6 +1,6 @@
 # Tabela de Roteamento — Modo Flat
 
-Use esta tabela **só fora de projeto Wizz** (sem `_wizz/`), quando o router mapeia skills/CLIs/MCPs direto. Dentro de projeto Wizz a delegação é decidida pela regra de dispatch no SKILL.md (maestro vs agente de área) e esta tabela não é necessária.
+Use esta tabela pra mapear skills/CLIs/MCPs direto **fora de projeto Wizz** (sem `_wizz/`) — aí o router dispara a skill sozinho. **Dentro de projeto Wizz** ela também pode ser consultada como ÍNDICE DE CAPACIDADES, pra descobrir uma capacidade relevante que o usuário não nomeou (ex.: "quero um carrossel" → `canvas-design`); mas a delegação continua sendo feita pelo dispatch normal do SKILL.md (agente da área / maestro) — a tabela nunca dispara a skill direto dentro de projeto Wizz.
 
 **Verificação de existência:** antes de oferecer qualquer skill, confirme que ela existe no ambiente (catálogo de skills da sessão ou `ls ~/.claude/skills`); se não existir, não ofereça: use o protocolo de skill faltante (`find-skills`).
 
@@ -77,7 +77,7 @@ Use esta tabela **só fora de projeto Wizz** (sem `_wizz/`), quando o router map
 | Copywriting, copy, persuasão, texto de venda | `copywriting` + `humanizer` | 1 |
 | Pesquisa de público de oferta, VoC, matriz de ângulos, léxico de infoproduto | `pesquisa-de-publico-do-piva` | 1 |
 | Forjar oferta, criar oferta irresistível, mecanismo único, bônus, garantia | `wizz-offer-forge` + `pricing-strategy` | 1 |
-| Pesquisa de mercado, inteligência competitiva | `deep-research` | 2 |
+| Pesquisa de mercado, inteligência competitiva | `deep-research` (plugin externo — só se instalado) | 2 |
 
 ## Contexto e Memória
 

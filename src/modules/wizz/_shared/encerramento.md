@@ -34,3 +34,20 @@ Se preferir já partir pro código, chame o wizz-agent-dev.
 🎯 Comando: /wizz:designer
 💾 Quer que eu salve a estrutura no cerebro?
 ```
+
+## Marcador de decisão (telemetria, opt-in)
+
+Em todo pedido **roteado** (não em conversa trivial), adicione **1 linha extra** no fim da resposta, depois do bloco acima:
+
+```
+🧭 {"rota":"agent:designer","sel":["canvas-design"],"desc":[["hyperframes","carrossel é estático não vídeo"]],"gate":"ok","repetiria":true}
+```
+
+Formato exato — objeto JSON plano numa única linha, sem quebras:
+- `rota`: `"agent:<area>"`, `"maestro"` ou `"flat:<skill>"` — quem de fato tratou o pedido.
+- `sel`: array com os ids das skills/agentes selecionados.
+- `desc`: array de `[id_descartado, "motivo em até 6 palavras"]` — o que você considerou e não usou, e por quê.
+- `gate`: string curta com o resultado do gate aplicado (ex: `"ok"`, `"pulado"`, `"bloqueado"`).
+- `repetiria`: bool — self-eval mínima: se recebesse este pedido de novo, faria a mesma escolha?
+
+Isso é telemetria de decisão: um hook de evento Stop lê o transcript e appenda o marcador num log local, opt-in via `WIZZ_TRACE=1` (sem isso, o hook nem toca em disco). Custo: ~30-60 tokens de output, 0 de input. Não emita em conversa trivial.

@@ -10,7 +10,7 @@ description: "OBRIGATÓRIO: invoque ANTES de agir em qualquer pedido não-trivia
 
 Invoque esta skill ANTES de agir em pedidos não-triviais (feature, bug, design, marketing, SEO, infra, refactor, audit, review, integração, configuração — amplo OU específico).
 
-**Exceção única:** edições de 1 linha (typo, rename) e conversa pura.
+**Exceção única:** edições de 1 linha (typo, rename) e conversa pura. **Critério objetivo (TRIVIALITY GATE):** pedido que toca ≤1 arquivo, ~≤10 linhas, sem comportamento novo, mudança de tipo conhecido → executa direto, sem acionar router/maestro.
 
 **Fora do Plan Mode:** liste candidatas via `AskUserQuestion` e aguarde confirmação ANTES de disparar. Nunca auto-dispare fora do Plan Mode.
 **Dentro do Plan Mode:** auto-dispare todas as relevantes para enriquecer o plano.
@@ -42,6 +42,8 @@ Avalie a **Área**: quantas áreas o pedido toca (design, dev, copy, seo, growth
 
 > Um agente de área só cobre a área dele. 2+ áreas exigem coordenação = trabalho do maestro; a cláusula de área decide sozinha, sem somar com mais nada.
 
+**Descoberta de capacidade (índice, não atalho de delegação):** a [tabela de roteamento flat](references/routing-table-flat.md) também pode ser consultada aqui, dentro de projeto Wizz, quando o pedido não nomeia a capacidade certa (ex.: "quero um carrossel" → índice aponta `canvas-design`). Ela só serve pra achar o nome da capacidade; a entrega continua pelo dispatch normal acima (agente da área / maestro) — nunca dispare a skill direto a partir da tabela dentro de projeto Wizz.
+
 **Exemplos calibrados de borda** (do dataset de evals, `evals/routing/dataset.json`):
 
 - *Trivial → direto (sem router):* `t07` ("trocar 'envie' por 'enviar' na linha 42"): edição de 1 linha.
@@ -54,6 +56,8 @@ Ao delegar (pro maestro ou pro agente de área), declare o brief no formato do [
 ### B) Fora de projeto Wizz (modo flat) — aí você roteia direto
 
 Não há agentes wizz nem maestro. Você é a porta de descoberta global. Fluxo: analise a intenção (pode ter várias dimensões) → mapeie candidatas pela **[tabela de roteamento](references/routing-table-flat.md)** → fora do Plan Mode, apresente via `AskUserQuestion` e confirme → dispare as aprovadas via `Skill` (em paralelo quando independentes). Se nada cobrir, use o protocolo de **skill/MCP faltante** (no fim da mesma tabela).
+
+**Ao encerrar o modo flat**, emita 1 linha máquina-legível de decision-trace — telemetria de decisão coletada por hook — no formato exato: `🧭 {"rota":"flat:<skill>","sel":["id",...],"desc":[["id_descartado","motivo≤6 palavras"]],"gate":"n/a","repetiria":true}`
 
 ## Modo Auditoria 360°
 
