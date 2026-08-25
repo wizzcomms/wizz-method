@@ -292,6 +292,11 @@ class OfficialModules {
    * @param {Object} options.logger - Logger instance for output
    */
   async install(moduleName, wizzDir, fileTrackingCallback = null, options = {}) {
+    // Aliases (ex.: bauto → bmad-loop) chegam crus via --modules e via
+    // moduleIds de instalações antigas; sem normalizar aqui, o cache de
+    // getPluginResolution, o targetPath e o manifest usariam o código legado.
+    moduleName = await this.externalModuleManager.resolveCanonicalCode(moduleName);
+
     // Check if this module has a plugin resolution (custom marketplace install)
     const { CustomModuleManager } = require('./custom-module-manager');
     const customMgr = new CustomModuleManager();

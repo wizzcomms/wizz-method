@@ -49,8 +49,9 @@ Formule a Promessa Primária em 1 frase de alto impacto:
 Consulte `references/empilhamento-valor.md`:
 - **Produto Principal:** O caminho mais rápido e direto ao resultado.
 - **Bônus 1 (Velocidade):** Templates, atalhos, checklists prontos que encurtam a execução.
-- **Bônus 2 (Segurança):** Como evitar o erro mais comum ou o que fazer em caso de dúvida.
-- **Bônus 3 (Próximo Passo):** O que fazer depois de atingir o primeiro marco.
+- **Bônus 2 (Quebra de Objeção):** Elimina a maior desculpa para não comprar.
+- **Bônus 3 (Blindagem / Segurança):** Como evitar o erro mais comum ou o que fazer em caso de imprevisto.
+- **Bônus 4 (Próximo Nível):** O que fazer depois de atingir o primeiro marco.
 - **Order Bump Estratégico:** Complemento impulsivo de alta margem (30-50% de take rate).
 
 ### Passo 4 — Ancoragem de Preço & Garantia Reversa
