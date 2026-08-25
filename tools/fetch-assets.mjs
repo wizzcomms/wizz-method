@@ -4,8 +4,9 @@
 // Por que existe: `huashu-design/assets/**/*.mp3` (~30MB) e
 // `canvas-design/canvas-fonts/**/*.ttf` (~5.5MB) inflavam o pacote npm em
 // ~73%, mas só são necessários no primeiro uso real de export de vídeo
-// (BGM/SFX) ou de uma variante de fonte específica. Os arquivos continuam no
-// git (fonte de verdade); só saem do tarball publicado. Este script baixa o
+// (BGM/SFX) ou de uma variante de fonte específica. Fonte de verdade dos BGM
+// é o GitHub Release assets-v1 (fora do git e do tarball desde o P2 da
+// auditoria 360°); os SFX pequenos e as fontes seguem no git. Este script baixa o
 // bundle certo, no lugar certo, verificando sha256 (mesmo espírito do pin
 // com checksum do rtk — nunca extrai um bundle adulterado).
 //

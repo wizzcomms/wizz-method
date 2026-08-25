@@ -101,3 +101,9 @@ graphify-out/
 # Documentos internos de trabalho (relatórios de auditoria, playbooks) — nunca versionar
 _audit/
 _local/
+
+# BGM do huashu-design: fora do git desde o P2 da auditoria 360° (2026-08-25).
+# Fonte de verdade = GitHub Release assets-v1 (huashu-audio.tar.gz, sha256 pinado
+# em tools/fetch-assets.mjs); baixados sob demanda por add-music.sh/mix-voiceover.sh.
+# Os SFX pequenos (assets/sfx/**) continuam versionados.
+src/skills-lib/huashu-design/assets/bgm-*.mp3
