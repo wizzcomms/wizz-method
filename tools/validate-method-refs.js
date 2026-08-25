@@ -131,7 +131,11 @@ function collectRegistryIds(registry) {
     resolvedRegistry = yaml.parse(fs.readFileSync(registryPath, 'utf8'));
   }
 
-  for (const area of Object.values(resolvedRegistry.areas || {})) {
+  for (const [areaKey, area] of Object.entries(resolvedRegistry.areas || {})) {
+    // A chave da área também é endereço de agente válido: o marcador de
+    // decisão (encerramento.md) e o dataset de evals roteiam por
+    // `agent:<area>` (ex.: agent:designer), não pelo id wizz-<area>.
+    ids.agents.add(areaKey);
     if (area && area.agent) ids.agents.add(area.agent);
     for (const skill of area.skills || []) if (skill.id) ids.skills.add(skill.id);
     for (const cli of area.clis || []) if (cli.id) ids.tools.add(cli.id);
