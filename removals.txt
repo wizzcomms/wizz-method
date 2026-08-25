@@ -60,3 +60,9 @@ wizz-distillator
 # wizz-create-ux-design: renamed to wizz-ux (spine-based skill with separate
 # DESIGN.md and EXPERIENCE.md outputs).
 wizz-create-ux-design
+# taste-redesign: merged into taste-skill (P2 auditoria 360°, 2026-08-25).
+# The redesign audit checklist and upgrade techniques now live as
+# references/design-audit.md and references/upgrade-techniques.md inside
+# taste-skill; taste-skill's description and redesign-protocol.md cover
+# the same existing-project audit ground taste-redesign used to own.
+taste-redesign

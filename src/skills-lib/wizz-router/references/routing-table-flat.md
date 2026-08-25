@@ -16,6 +16,7 @@ Use esta tabela pra mapear skills/CLIs/MCPs direto **fora de projeto Wizz** (sem
 | Dependências, packages, vulnerabilidades, npm audit | `database-and-deps` | 2 |
 | Segurança, XSS, CSRF, SQLi, IDOR, OWASP, rate limit, CORS, clickjacking, PII na resposta, enumeração de usuário, headers | `web-security` + `auth-and-secrets` | 1 |
 | Auditoria/pentest de segurança do app inteiro, "auditar segurança", "pentest", "encontrar vulnerabilidades", varredura antes de release | `security-audit-pentest` | 1 |
+| Auditoria de prontidão pra lançamento, "tá pronto pra lançar?", checklist de release amplo (técnico, segurança, SEO, analytics, conteúdo, legal, infra), "o que falta antes de ir pra produção" | `launch-readiness` | 1 |
 | Desktop, Electron, contextIsolation, code signing | `desktop-security` | 2 |
 
 ## Área Técnica — Código e Qualidade

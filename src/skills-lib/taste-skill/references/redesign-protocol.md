@@ -18,7 +18,7 @@ Document the current state before proposing changes:
 * **Information architecture** - page tree, primary nav, key conversion paths.
 * **Content blocks** - what exists, what's doing work, what's filler.
 * **Patterns to preserve** - signature interactions, recognisable hero, copy voice.
-* **Patterns to retire** - AI-slop tells, broken layouts, dead links, generic stock imagery, perf traps.
+* **Patterns to retire** - AI-slop tells, broken layouts, dead links, generic stock imagery, perf traps. Run the full checklist in [design-audit.md](design-audit.md) (Section 11.G) against the project and list every match here.
 * **Dial reading of the existing site** - infer current `DESIGN_VARIANCE` / `MOTION_INTENSITY` / `VISUAL_DENSITY`. That's your starting point, not the baseline.
 * **SEO baseline** - current ranking pages, meta titles, structured data, OG cards. **SEO migration is the #1 redesign risk.**
 
@@ -30,7 +30,7 @@ Document the current state before proposing changes:
 * **Respect existing analytics events.** Do not rename buttons, form fields, section IDs that downstream tracking depends on.
 
 ### 11.D Modernisation Levers (priority order)
-Apply in order - stop when the brief is satisfied:
+Apply in order - stop when the brief is satisfied. Concrete techniques for each lever live in [upgrade-techniques.md](upgrade-techniques.md) (Section 11.H).
 1. **Typography refresh** - biggest visual lift per unit of risk.
 2. **Spacing & rhythm** - increase section padding, fix vertical rhythm.
 3. **Color recalibration** - desaturate, unify neutrals, keep brand accent.

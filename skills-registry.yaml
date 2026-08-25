@@ -84,7 +84,7 @@ areas:
           pairs_with: [taste-skill, motion-3d-director]
       - id: taste-skill
         door: direcao
-        when: "Anti-slop em briefs NOVOS: lê o brief, define a direção e audita contra defaults de AI."
+        when: "Anti-slop em briefs NOVOS: lê o brief, define a direção e audita contra defaults de AI. Também cobre projeto EXISTENTE: audita o código atual, lista problemas, prioriza fixes (protocolo de redesign)."
       - id: motion-3d-director
         door: direcao
         when: "Direção de motion/animação, 3D, WebGL, scroll cinematográfico, image-to-video. Decide o caminho ANTES de implementar."
@@ -93,7 +93,7 @@ areas:
       - id: ui-ux-pro-max
         entry: true
         door: construcao
-        when: "PORTA de construção: criar/melhorar UI (design system, paleta, tipografia, componente, página). Puxa: premium-landing-ui-researcher (landing premium greenfield), ui-component-curator (1 componente em projeto existente), impeccable (gate de polish/acessibilidade), taste-redesign (anti-slop em código existente), huashu-design (protótipo HTML hi-fi/variantes/review) e react-components (Stitch→React)."
+        when: "PORTA de construção: criar/melhorar UI (design system, paleta, tipografia, componente, página). Puxa: premium-landing-ui-researcher (landing premium greenfield), ui-component-curator (1 componente em projeto existente), impeccable (gate de polish/acessibilidade), taste-skill (anti-slop em código existente, protocolo de redesign), huashu-design (protótipo HTML hi-fi/variantes/review) e react-components (Stitch→React)."
       - id: premium-landing-ui-researcher
         door: construcao
         when: "Projeto NOVO (greenfield): cria landing premium do zero, hero, 3D high-end. Estratégia source-first."
@@ -103,9 +103,6 @@ areas:
       - id: impeccable
         door: construcao
         when: "Gate de polish/qualidade de frontend: hardening de UI, acessibilidade, anti-padrões. Refina o que já existe."
-      - id: taste-redesign
-        door: construcao
-        when: "Anti-slop em projeto EXISTENTE: audita o código atual, lista problemas, prioriza fixes."
       - id: huashu-design
         door: construcao
         when: "Direção visual + protótipo HTML hi-fi, exploração de variantes, review 5-dim, export MP4/GIF."
@@ -379,6 +376,13 @@ areas:
         when: "Passe único adversarial, ad hoc, fora de workflow — 'tear this apart' num trecho colado, sem contexto de projeto. Não confundir com wizz-review-adversarial-general (camada interna 'Blind Hunter' chamada só por wizz-code-review) nem com wizz-code-review (orquestrador bmm: 3 camadas paralelas + triagem, para review real de diff/PR)."
       - id: security-audit-pentest
         when: "Auditoria/pentest de segurança do app inteiro — 'auditar segurança', 'pentest', 'encontrar vulnerabilidades', varredura antes de release. Só para teste de segurança AUTORIZADO (seus sistemas ou de clientes com permissão): ferramenta dual-use, nunca usar contra alvo sem autorização."
+      - id: launch-readiness
+        when: "Auditoria de prontidão pra lançamento (Pre-launch Audit), multi-área: técnico/build, segurança, SEO/descoberta, analytics/medição, conteúdo/copy/prova social, legal/LGPD, infra/deploy/rollback. Gatilhos: 'tá pronto pra lançar?', 'auditoria de pré-lançamento', 'checklist de release amplo', 'o que falta antes de ir pra produção'. Gate por estágio: só roda de verdade em mvp/production, e recusa educadamente em estágio de descoberta/ideação. Diagnostica e prioriza por severidade (bloqueia/alto/médio/ok), nunca corrige cego: aponta security-audit-pentest pra aprofundar segurança com prova de exploração e site-launch-kit pra executar a correção quando a superfície do achado é site. Resultado persiste numa seção datada do project-context.md."
+        not_when:
+          - "Estágio de descoberta/ideação: projeto ainda sem superfície construída pra auditar (sem project-context.md, ou stage 'prototype' vazio)."
+          - "Correção de um achado isolado de site já identificado: nesse caso vá direto pra site-launch-kit."
+        rel:
+          pairs_with: [site-launch-kit, security-audit-pentest]
       - id: agent-browser
         when: "Verificação visual/browser, preencher forms, screenshots, testar UI no navegador. CLI já instalado (não é MCP); browser SEMPRE via agent-browser, nunca Playwright."
     clis:

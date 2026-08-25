@@ -46,7 +46,7 @@ description: "Checklist operacional de pré-lançamento de site em 15 rodadas co
 
 ## O que esta skill NÃO faz
 
-- Não redesenha layout, paleta ou conteúdo de seções (use `taste-redesign` / `impeccable`).
+- Não redesenha layout, paleta ou conteúdo de seções (use `taste-skill` / `impeccable`).
 - Não cria a página do zero (use `premium-landing-ui-researcher`).
 - Não faz diagnóstico amplo de ranking/tráfego (use `seo-audit`).
 - Não escreve copy de venda nova (use `copywriting`); aqui só se ajusta rótulo e microcopy de atrito com material que já existe no site.

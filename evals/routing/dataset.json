@@ -286,5 +286,75 @@
     "prompt": "estratégia de referral: programa, UI, emails, tracking, análise",
     "expected": "maestro",
     "note": "4+ áreas (growth, designer, copy, ads), artefato alto"
+  },
+  {
+    "id": "d01",
+    "prompt": "preciso de um carrossel pro Instagram com a identidade da marca, tipo um quote card",
+    "expected": "agent:designer",
+    "expected_skills": ["canvas-design"],
+    "note": "descoberta (P2 auditoria 360°, exemplo canônico): PNG/carrossel gerado por código, nunca nomeia 'canvas-design'"
+  },
+  {
+    "id": "d02",
+    "prompt": "preciso dos timestamps certos da narração pra bater a legenda exatamente com a fala",
+    "expected": "agent:designer",
+    "expected_skills": ["ctc-align"],
+    "note": "descoberta: timing por forced alignment, nunca cita 'ctc-align' nem 'forced alignment'"
+  },
+  {
+    "id": "d03",
+    "prompt": "vou começar o brief de um produto novo do zero, quero fugir da cara de site feito por IA genérica",
+    "expected": "agent:designer",
+    "expected_skills": ["taste-skill"],
+    "note": "descoberta: anti-slop em brief NOVO usa taste-skill (também cobre projeto existente desde a fusão P2, mas aqui é brief novo)"
+  },
+  {
+    "id": "d04",
+    "prompt": "a página de vendas recebe bastante visita mas quase ninguém compra",
+    "expected": "agent:growth",
+    "expected_skills": ["page-cro"],
+    "note": "descoberta: sintoma de conversão de página, nunca diz 'CRO' nem 'conversão'"
+  },
+  {
+    "id": "d05",
+    "prompt": "vamos subir o site amanhã, o que precisa ser conferido antes de ir pro ar?",
+    "expected": "agent:growth",
+    "expected_skills": ["site-launch-kit"],
+    "note": "descoberta: pré-lançamento, usa o gatilho real do registry ('vamos subir o site') mas nunca cita a skill"
+  },
+  {
+    "id": "d06",
+    "prompt": "quero saber se os eventos do funil de conversão estão sendo medidos certo no GA4",
+    "expected": "agent:growth",
+    "expected_skills": ["analytics-tracking"],
+    "note": "descoberta: medição/GA4/eventos, evita a palavra 'tracking'"
+  },
+  {
+    "id": "d07",
+    "prompt": "quero que o ChatGPT e o Perplexity citem a gente quando alguém pergunta sobre o assunto",
+    "expected": "agent:seo",
+    "expected_skills": ["ai-seo"],
+    "note": "descoberta: AEO/GEO sem nomear 'AI SEO' nem a skill"
+  },
+  {
+    "id": "d08",
+    "prompt": "quero que o Google mostre as estrelas de avaliação no resultado de busca do produto",
+    "expected": "agent:seo",
+    "expected_skills": ["schema-markup"],
+    "note": "descoberta: rich result de review, nunca diz 'schema' nem 'dados estruturados'"
+  },
+  {
+    "id": "d09",
+    "prompt": "preciso de um material pro time comercial rebater as objeções mais comuns dos clientes",
+    "expected": "agent:copy",
+    "expected_skills": ["sales-enablement"],
+    "note": "descoberta: material de vendas/objeções, nunca nomeia a skill"
+  },
+  {
+    "id": "d10",
+    "prompt": "os mesmos 3 anúncios não têm dado mais resultado, preciso de mais variações de headline pra testar no Meta",
+    "expected": "agent:ads",
+    "expected_skills": ["ad-creative"],
+    "note": "descoberta: variações de anúncio em escala, evita dizer 'ad creative'"
   }
 ]

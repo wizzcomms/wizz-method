@@ -1,6 +1,6 @@
 ---
 name: taste-skill
-description: Anti-slop frontend skill for landing pages, portfolios, and redesigns. The agent reads the brief, infers the right design direction, and ships interfaces that do not look templated. Real design systems when applicable, audit-first on redesigns, strict pre-flight check. Use when building or redesigning a landing page, portfolio, or marketing site that must not look AI-generated. Detailed rules live in references/, loaded on demand.
+description: Anti-slop frontend skill for landing pages, portfolios, and redesigns or audits of existing sites and apps. The agent reads the brief, infers the right design direction, and ships interfaces that do not look templated. On an existing project it audits the current design first, identifies generic AI patterns, lists every problem found, and prioritizes fixes without breaking functionality, working with any CSS framework or vanilla CSS. Real design systems when applicable, audit-first on redesigns, strict pre-flight check. Use when building, redesigning, or auditing a landing page, portfolio, or marketing site, or when upgrading an existing site or app that looks generic or AI-generated. Detailed rules live in references/, loaded on demand.
 ---
 
 # tasteskill: Anti-Slop Frontend Skill
@@ -14,7 +14,7 @@ This file is the index. The full rulebook is split into `references/*.md`, one f
 
 1. **Read the brief, not your defaults.** Infer page kind, vibe, audience, constraints. Output a one-line "Design Read" before any code. If genuinely ambiguous, ask exactly one question.
 2. **Set the three dials** (`DESIGN_VARIANCE / MOTION_INTENSITY / VISUAL_DENSITY`, baseline `8 / 6 / 4`) from the design read. Steps 1-2 protocol and tables: [brief-and-dials](references/brief-and-dials.md).
-3. **Redesign?** Detect the mode first (preserve vs overhaul) and audit before touching anything: [redesign-protocol](references/redesign-protocol.md).
+3. **Redesign or audit of an existing project?** Detect the mode first (preserve vs overhaul) and audit before touching anything: [redesign-protocol](references/redesign-protocol.md) for mode detection and preservation rules, [design-audit](references/design-audit.md) for the full audit checklist, and [upgrade-techniques](references/upgrade-techniques.md) for the fix techniques once the audit is done.
 4. **Pick the foundation.** Real design system (official package) vs honest aesthetic build: [design-systems](references/design-systems.md).
 5. **Build with the default stack and conventions** ([architecture-conventions](references/architecture-conventions.md)) and apply the bias-correction directives for typography, color, layout, images, copy ([design-directives](references/design-directives.md)).
 6. **Add motion only when motivated:** [motion-patterns](references/motion-patterns.md).
@@ -44,6 +44,8 @@ These apply to every task, no exceptions, before reading anything else:
 | [anti-slop-tells.md](references/anti-slop-tells.md) | Forbidden AI-tell patterns, production-test tells, em-dash ban | 9 |
 | [pattern-vocabulary.md](references/pattern-vocabulary.md) | Named patterns: heroes, nav, grids, cards, scroll, text, libraries | 10 |
 | [redesign-protocol.md](references/redesign-protocol.md) | Mode detection, audit-first, preservation, modernisation levers | 11 |
+| [design-audit.md](references/design-audit.md) | Full audit checklist for existing projects: typography, color, layout, interactivity, content, components, iconography, code quality, strategic omissions | 11.G |
+| [upgrade-techniques.md](references/upgrade-techniques.md) | High-impact fix techniques for redesigns: typography, layout, motion, surface upgrades | 11.H |
 | [block-library.md](references/block-library.md) | Block Library contract and file schema | 12 |
 | [preflight-checklist.md](references/preflight-checklist.md) | Final pre-flight check matrix (mandatory gate) | 14 |
 

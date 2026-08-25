@@ -11,11 +11,135 @@
 
 const os = require('node:os');
 const path = require('node:path');
+const yaml = require('yaml');
 const fs = require('../fs-native');
 const prompts = require('../prompts');
+const { getProjectRoot } = require('../project-root');
 
 function getTraceFile() {
   return process.env.WIZZ_TRACE_FILE || path.join(os.homedir(), '.claude', 'wizz-trace.jsonl');
+}
+
+// `--coverage` (P2 da auditoria 360°, "evals de descoberta"): cruza o
+// catálogo de skills do skills-registry.yaml (fonte única, lido em runtime
+// e nunca hardcoded aqui) contra os marcadores de decisão (`type:
+// "decision"`, escritos por tools/hooks/wizz-decision-trace.js) já
+// agregados no mesmo JSONL. Mede subutilização de roteamento: uma skill
+// pode estar SELECIONADA (`sel`), DESCARTADA COM MOTIVO (`desc`, correto:
+// foi considerada e explicitamente preterida) ou NUNCA CONSIDERADA (não
+// aparece em nenhum dos dois arrays de nenhum trace): esta última é a
+// falha de roteamento silenciosa que o item da auditoria pede pra medir.
+function getRegistryFile() {
+  return path.join(getProjectRoot(), 'skills-registry.yaml');
+}
+
+// Lê e parseia skills-registry.yaml, devolvendo o catálogo de ids de
+// skills em ordem alfabética estável (mesma lista independente da ordem em
+// que as áreas/skills aparecem no YAML). Escopo deliberado: só as skills
+// `areas.*.skills[]` e as cross-cutting `utility[]` (graphify, find-skills,
+// enhance-prompt, wizz-router; também são skills de verdade em
+// src/skills-lib/). CLIs/MCPs/squads ficam de fora: `sel`/`desc` no
+// marcador de decisão podem citar agentes ou skills (ver encerramento.md),
+// mas este comando mede especificamente subutilização de SKILL, não de
+// ferramenta/squad. Lança em vez de devolver `null` em erro: quem chama
+// decide como reportar (fail-clear, não fail-silent: ao contrário do
+// trace, o catálogo é a fonte de verdade e um erro aqui é um bug real).
+function collectSkillCatalog(registryFile) {
+  const raw = fs.readFileSync(registryFile, 'utf8');
+  const registry = yaml.parse(raw);
+  const ids = new Set();
+  for (const area of Object.values(registry.areas || {})) {
+    for (const skill of area.skills || []) {
+      if (skill && typeof skill.id === 'string') ids.add(skill.id);
+    }
+  }
+  for (const item of registry.utility || []) {
+    if (item && typeof item.id === 'string') ids.add(item.id);
+  }
+  return [...ids].sort();
+}
+
+// Agrega os traces `type: "decision"` já parseados contra o catálogo.
+// Função pura (mesmo espírito de `aggregate`/`aggregateLadder`), testável
+// sem tocar em disco. `catalogIds` já deve vir ordenado (saída de
+// `collectSkillCatalog`): a ordem de `neverConsidered` deriva dela, então
+// a saída é estável entre execuções.
+//
+// Ids de `sel`/`desc` que não pertencem ao catálogo (ex.: agente
+// "wizz-designer" em vez de skill) são ignorados aqui, não contados como
+// erro: o marcador aceita os dois tipos (encerramento.md), este comando só
+// mede a fatia de skills.
+//
+// Categorização mutuamente exclusiva por skill (soma sempre = catalogTotal):
+// selecionada (apareceu em algum `sel`) > descartada-só (apareceu só em
+// `desc`, nunca em `sel`) > nunca considerada (nenhum dos dois). Se uma
+// skill foi selecionada numa decisão e descartada noutra, conta como
+// selecionada: "foi de fato usada ao menos uma vez" pesa mais que "também
+// foi preterida uma vez" para o proposito de subutilização.
+function aggregateCoverage(entries, catalogIds) {
+  const catalogSet = new Set(catalogIds);
+  const selected = new Set();
+  const discarded = new Set();
+  let decisionCount = 0;
+
+  for (const entry of entries) {
+    if (!entry || entry.type !== 'decision') continue;
+    const decision = entry.decision;
+    if (!decision || typeof decision !== 'object') continue;
+    decisionCount++;
+
+    if (Array.isArray(decision.sel)) {
+      for (const id of decision.sel) {
+        if (typeof id === 'string' && catalogSet.has(id)) selected.add(id);
+      }
+    }
+    if (Array.isArray(decision.desc)) {
+      for (const pair of decision.desc) {
+        if (Array.isArray(pair) && typeof pair[0] === 'string' && catalogSet.has(pair[0])) {
+          discarded.add(pair[0]);
+        }
+      }
+    }
+  }
+
+  const discardedOnly = [];
+  const neverConsidered = [];
+  for (const id of catalogIds) {
+    if (selected.has(id)) continue;
+    if (discarded.has(id)) discardedOnly.push(id);
+    else neverConsidered.push(id);
+  }
+
+  return {
+    catalogTotal: catalogIds.length,
+    decisionCount,
+    selectedCount: selected.size,
+    discardedOnlyCount: discardedOnly.length,
+    neverConsidered,
+  };
+}
+
+function formatCoverageSummary(stats, registryFile) {
+  const consideredCount = stats.catalogTotal - stats.neverConsidered.length;
+  const lines = [
+    `Catálogo:                ${stats.catalogTotal} skills (${registryFile})`,
+    `Traces de decisão:       ${stats.decisionCount}`,
+    `Selecionadas (sel):      ${stats.selectedCount} (${pct(stats.selectedCount, stats.catalogTotal)})`,
+    `Descartadas c/ motivo:   ${stats.discardedOnlyCount} (${pct(stats.discardedOnlyCount, stats.catalogTotal)})`,
+    `Nunca consideradas:      ${stats.neverConsidered.length} (${pct(stats.neverConsidered.length, stats.catalogTotal)})`,
+    `Cobertura do catálogo:   ${pct(consideredCount, stats.catalogTotal)}`,
+  ];
+
+  if (stats.decisionCount === 0) {
+    lines.push('', '(nenhum trace de decisão encontrado; rode com WIZZ_TRACE=1 e feche pedidos roteados pra gerar dados)');
+  } else if (stats.neverConsidered.length === 0) {
+    lines.push('', 'Nunca consideradas: nenhuma, catálogo 100% coberto.');
+  } else {
+    lines.push('', 'Nunca consideradas:');
+    for (const id of stats.neverConsidered) lines.push(`  ${id}`);
+  }
+
+  return lines.join('\n');
 }
 
 // Faz o parse de 1 linha JSONL. Retorna `null` (em vez de lançar) para
@@ -166,7 +290,7 @@ function formatLadderSummary(ladderStats) {
 module.exports = {
   command: 'trace-report',
   description: 'Resume o arquivo local de trace do roteamento (WIZZ_TRACE)',
-  options: [],
+  options: [['--coverage', 'Cruza o catálogo de skills do registry contra os traces: mede skills nunca consideradas no roteamento']],
   action: async (options) => {
     try {
       const traceFile = getTraceFile();
@@ -193,6 +317,30 @@ module.exports = {
         }
       }
 
+      // `--coverage` é um modo alternativo, não aditivo: troca as 2 caixas
+      // base (contagem trivial/mode e escada de modelos) por 1 caixa focada
+      // em subutilização de skills. Motivo: são leituras diferentes do mesmo
+      // JSONL (roteamento agregado vs catálogo x descoberta): misturar as
+      // 3 caixas por padrão poluiria a saída sem ganho pro caso de uso de
+      // cada flag.
+      if (options.coverage) {
+        const registryFile = getRegistryFile();
+        let catalogIds;
+        try {
+          catalogIds = collectSkillCatalog(registryFile);
+        } catch (error) {
+          await prompts.log.error(`Não foi possível ler o catálogo de skills: ${error.message}`);
+          await prompts.log.message(`Esperado em: ${registryFile}`);
+          process.exit(1);
+          return;
+        }
+
+        const coverageStats = aggregateCoverage(entries, catalogIds);
+        await prompts.box(formatCoverageSummary(coverageStats, registryFile), 'Cobertura do Catálogo de Skills');
+        process.exit(0);
+        return;
+      }
+
       const stats = { ...aggregate(entries), corruptedCount };
 
       await prompts.box(formatSummary(stats, traceFile), 'Wizz Trace Report');
@@ -211,5 +359,17 @@ module.exports = {
   },
   // Exportado só para teste unitário direto da agregação, sem precisar
   // spawnar o processo pra cada caso de borda.
-  _internal: { aggregate, parseLine, formatSummary, aggregateLadder, ladderBucket, formatLadderSummary, pct },
+  _internal: {
+    aggregate,
+    parseLine,
+    formatSummary,
+    aggregateLadder,
+    ladderBucket,
+    formatLadderSummary,
+    pct,
+    collectSkillCatalog,
+    aggregateCoverage,
+    formatCoverageSummary,
+    getRegistryFile,
+  },
 };

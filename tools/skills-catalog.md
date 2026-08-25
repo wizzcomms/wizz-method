@@ -4,7 +4,7 @@
 > Fonte canônica para verificar existência de skills antes de rotear.
 > Skills duplicadas são marcadas com `[Claude]` e `[OpenCode]`.
 
-## Skills Únicas (116)
+## Skills Únicas (115)
 
 | Skill | Claude (`~/.claude/skills/`) | OpenCode (`~/.agents/skills/`) | Obsidian (`~/.opencode/skills/`) |
 |---|---|---|---|
@@ -108,7 +108,6 @@
 | springboot-patterns | — | ✅ | — |
 | stitch-design | — | ✅ | — |
 | supabase-postgres-best-practices | ✅ | ✅ | — |
-| taste-redesign | ✅ | ✅ | — |
 | taste-skill | ✅ | ✅ | — |
 | tdd-mastery | — | ✅ | — |
 | testing-strategies | — | ✅ | — |
@@ -121,8 +120,8 @@
 
 ## Estatísticas
 
-- **Total skills únicas:** 116
-- **Skills duplicadas (ambos diretórios):** 60
+- **Total skills únicas:** 115
+- **Skills duplicadas (ambos diretórios):** 59
 - **Skills só no Claude:** 11
 - **Skills só no OpenCode:** 40
 - **Skills só no Obsidian:** 5

@@ -21,6 +21,12 @@ const path = require('node:path');
 const os = require('node:os');
 const { execFileSync } = require('node:child_process');
 const fs = require('../tools/installer/fs-native');
+// Reusa a implementação real (nunca reimplementa/hardcoda o catálogo aqui,
+// `collectSkillCatalog`/`getRegistryFile` leem o skills-registry.yaml de
+// verdade em runtime; os testes de --coverage abaixo derivam os ids a testar
+// desse catálogo ao vivo, então continuam válidos mesmo com o registry em
+// edição concorrente por outro agente).
+const traceReportModule = require('../tools/installer/commands/trace-report.js');
 
 const colors = {
   reset: '[0m',
@@ -71,11 +77,11 @@ const FIXTURE_LINES = [
 
 const TIMEOUT_MS = 15_000;
 
-function runCommand(env) {
+function runCommand(env, extraArgs = []) {
   const repoRoot = path.resolve(__dirname, '..');
   const cli = path.join(repoRoot, 'tools', 'installer', 'wizz-cli.js');
   try {
-    const stdout = execFileSync(process.execPath, [cli, 'trace-report'], {
+    const stdout = execFileSync(process.execPath, [cli, 'trace-report', ...extraArgs], {
       cwd: repoRoot,
       encoding: 'utf8',
       timeout: TIMEOUT_MS,
@@ -91,6 +97,20 @@ function runCommand(env) {
       spawnError: error,
     };
   }
+}
+
+// Escapa um id de skill (pode conter '-') para uso literal em RegExp.
+function escapeRegExp(s) {
+  return s.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}
+
+// Verdadeiro se `id` aparece como item de lista com marcador (2 espaços de
+// indentação, gerados por `formatCoverageSummary`, ainda visíveis dentro do
+// padding que `prompts.box` acrescenta): não como substring solta de outro
+// texto. Ids de skill são curtos o bastante pra nunca serem quebrados pelo
+// wrap de linha do box (ao contrário de paths longos, ver Case 1 acima).
+function listsAsNeverConsidered(output, id) {
+  return new RegExp(`  ${escapeRegExp(id)}(\\s|$)`, 'm').test(output);
 }
 
 async function main() {
@@ -151,6 +171,143 @@ async function main() {
       'missing-file case prints a friendly message (no stack trace)',
     );
     assert(!/at\s+.*\.js:\d+:\d+/.test(missingResult.stdout), 'missing-file case does not print a JS stack trace');
+
+    // --- Case 3: --coverage, JSONL ausente (P2 da auditoria 360°) ---
+    // O ramo --coverage é alcançado DEPOIS do early-return de "arquivo
+    // ausente" (ver action() em trace-report.js), então o comportamento
+    // deve ser idêntico ao Case 2: mensagem amigável, sem stack trace, exit
+    // 0, e a caixa de cobertura não deve aparecer (o early-return acontece
+    // antes de ler o catálogo).
+    const coverageMissingResult = runCommand({ WIZZ_TRACE_FILE: missingFile }, ['--coverage']);
+    assert(
+      coverageMissingResult.spawnError === null,
+      '--coverage exits 0 when trace file is missing',
+      coverageMissingResult.spawnError ? coverageMissingResult.spawnError.message : '',
+    );
+    assert(
+      /nenhum trace encontrado/i.test(coverageMissingResult.stdout) || /nenhum trace encontrado/i.test(coverageMissingResult.stderr),
+      '--coverage missing-file case prints the same friendly message (no stack trace)',
+    );
+    assert(!/at\s+.*\.js:\d+:\d+/.test(coverageMissingResult.stdout), '--coverage missing-file case does not print a JS stack trace');
+    assert(
+      !coverageMissingResult.stdout.includes('Cobertura do Catálogo de Skills'),
+      '--coverage missing-file case never reaches the coverage box',
+    );
+
+    // --- Case 4 & 5: --coverage against the real skills-registry.yaml catalog ---
+    // Deriva o catálogo AO VIVO via a mesma função de produção (nunca
+    // hardcoda ids/contagem aqui): assim os casos continuam válidos mesmo
+    // com o registry em edição concorrente por outro agente (ver nota no
+    // topo do arquivo).
+    const catalogIds = traceReportModule._internal.collectSkillCatalog(traceReportModule._internal.getRegistryFile());
+    assert(
+      catalogIds.length >= 3,
+      'live catalog has at least 3 skill ids to build the coverage fixtures',
+      `catalog size: ${catalogIds.length}`,
+    );
+
+    if (catalogIds.length >= 3) {
+      const [selectedId, discardedId, ...restIds] = catalogIds;
+      const neverConsideredId = restIds[0];
+
+      // Case 4: mix real de selecionada / descartada com motivo / nunca
+      // considerada, mais 1 linha corrompida no meio (deve ser ignorada,
+      // fail-open, mesmo espírito do Case 1).
+      const coverageTmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-trace-coverage-'));
+      const coverageFixtureFile = path.join(coverageTmpDir, 'wizz-trace.jsonl');
+      const decisionLine = JSON.stringify({
+        ts: '2026-01-01T10:00:00.000Z',
+        type: 'decision',
+        session: 'sess-cov-1',
+        decision: {
+          rota: 'agent:designer',
+          sel: [selectedId],
+          desc: [[discardedId, 'motivo curto de teste']],
+          gate: 'ok',
+          repetiria: true,
+        },
+      });
+      await fs.writeFile(coverageFixtureFile, [decisionLine, '{not valid json'].join('\n') + '\n', 'utf8');
+
+      try {
+        const coverageResult = runCommand({ WIZZ_TRACE_FILE: coverageFixtureFile }, ['--coverage']);
+        assert(
+          coverageResult.spawnError === null,
+          '--coverage exits 0 against a fixture mixing selected/discarded/never-considered + 1 corrupted line',
+          coverageResult.spawnError ? coverageResult.spawnError.message : '',
+        );
+        const covOut = coverageResult.stdout;
+
+        assert(covOut.includes('Cobertura do Catálogo de Skills'), 'output includes the coverage box title');
+        assert(
+          new RegExp(`Catálogo:\\s*${catalogIds.length} skills`).test(covOut),
+          'catalog total matches the live registry count',
+          covOut,
+        );
+        assert(/Traces de decisão:\s*1/.test(covOut), 'counts exactly 1 decision line (corrupted line ignored, fail-open)', covOut);
+        assert(/Selecionadas \(sel\):\s*1 /.test(covOut), 'counts 1 selected skill', covOut);
+        assert(/Descartadas c\/ motivo:\s*1 /.test(covOut), 'counts 1 discarded-with-reason skill', covOut);
+        assert(
+          new RegExp(`Nunca consideradas:\\s*${catalogIds.length - 2} `).test(covOut),
+          'never-considered count = catalog total minus the 2 mentioned skills',
+          covOut,
+        );
+        assert(
+          !listsAsNeverConsidered(covOut, selectedId),
+          `selected skill "${selectedId}" does not appear in the never-considered list`,
+          covOut,
+        );
+        assert(
+          !listsAsNeverConsidered(covOut, discardedId),
+          `discarded-with-reason skill "${discardedId}" does not appear in the never-considered list`,
+          covOut,
+        );
+        assert(
+          listsAsNeverConsidered(covOut, neverConsideredId),
+          `a skill never mentioned in any trace ("${neverConsideredId}") is listed as never-considered`,
+          covOut,
+        );
+
+        if (!coverageResult.spawnError && failed > 0) {
+          console.log(`\n${colors.dim}--- case 4 (--coverage, mixed) output ---${colors.reset}`);
+          console.log(covOut);
+        }
+      } finally {
+        await fs.remove(coverageTmpDir).catch(() => {});
+      }
+
+      // Case 5: catálogo 100% coberto (sel cobre TODOS os ids do catálogo
+      // ao vivo): "Nunca consideradas" deve vir vazia, cobertura 100%.
+      const fullTmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'wizz-trace-coverage-full-'));
+      const fullFixtureFile = path.join(fullTmpDir, 'wizz-trace.jsonl');
+      const fullDecisionLine = JSON.stringify({
+        ts: '2026-01-01T10:00:00.000Z',
+        type: 'decision',
+        session: 'sess-cov-full',
+        decision: { rota: 'maestro', sel: catalogIds, desc: [], gate: 'ok', repetiria: true },
+      });
+      await fs.writeFile(fullFixtureFile, fullDecisionLine + '\n', 'utf8');
+
+      try {
+        const fullResult = runCommand({ WIZZ_TRACE_FILE: fullFixtureFile }, ['--coverage']);
+        assert(
+          fullResult.spawnError === null,
+          '--coverage exits 0 against a fixture covering the whole catalog',
+          fullResult.spawnError ? fullResult.spawnError.message : '',
+        );
+        const fullOut = fullResult.stdout;
+        assert(/Nunca consideradas:\s*0 \(0%\)/.test(fullOut), 'never-considered count is 0 when sel covers the whole catalog', fullOut);
+        assert(/Cobertura do catálogo:\s*100%/.test(fullOut), 'coverage percentage is 100% when the whole catalog is mentioned', fullOut);
+        assert(/catálogo 100% coberto/i.test(fullOut), 'output states the catalog is 100% covered instead of listing ids');
+
+        if (!fullResult.spawnError && failed > 0) {
+          console.log(`\n${colors.dim}--- case 5 (--coverage, full) output ---${colors.reset}`);
+          console.log(fullOut);
+        }
+      } finally {
+        await fs.remove(fullTmpDir).catch(() => {});
+      }
+    }
 
     if (result.spawnError || missingResult.spawnError || failed > 0) {
       console.log(`\n${colors.dim}--- case 1 output ---${colors.reset}`);
