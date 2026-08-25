@@ -4,6 +4,39 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.17.0] - 2026-08-25
+
+Fases P0, P1 e P2 da auditoria 360° de agosto/2026: a camada de decisão (router→maestro→agente) vira rastreável, consciente de estágio e mensurável; o catálogo ganha as capacidades aprovadas no veredito e perde as redundantes.
+
+### Adicionado
+
+- **Decision trace**: marcador 🧭 `{rota, sel, desc, gate, repetiria}` no encerramento dos agentes e do modo flat do router; hook Stop `wizz-decision-trace.js` grava em `~/.claude/wizz-trace.jsonl` (opt-in via `WIZZ_TRACE`, fail-silent em toda etapa; `test/test-decision-trace.js` com 20 casos).
+- **`wizz trace-report`**: resumo de roteamento + caixa "Aderência à Escada de Modelos" (evento `type:"ladder"`, só medição, sem enforcement). Flag `--coverage`: cruza o catálogo de skills do registry (lido em runtime) com os traces e lista as skills nunca consideradas (detecção de subutilização).
+- **Estágio lifecycle-aware**: campo `stage:` (`prototype|mvp|production|maintenance`) e seção "Estado do Projeto" no `project-context-template`; router e maestro leem via grep barato (fail-open) e ajustam a recomendação por estágio.
+- **Quality gate no encerramento**: linha "⚠️ Não coberto" obrigatória quando o entregável diverge do brief; maestro despacha `wizz-exec-review`/`wizz-qa` quando há divergência em trabalho de dev.
+- **Skill `launch-readiness`** (área qa): auditoria de pré-lançamento multi-área (técnico, segurança, SEO, analytics, conteúdo, LGPD, infra) com severidade 🔴🟠🟡🟢, gate por estágio, veredito GO/GO COM RESSALVAS/NO-GO e resumo persistido numa seção datada do `project-context.md`; aponta executores (`site-launch-kit`, `security-audit-pentest`) em vez de corrigir cego.
+- **Evals de descoberta**: campo `expected_skills` no dataset de roteamento + 10 casos de "capacidade não mencionada" (ex.: carrossel → `canvas-design`); ids validados por existência contra o registry a cada execução.
+- **Skills órfãs registradas**: `security-audit-pentest` (qa) e `ctc-align` (designer); `test/test-registry-lib-parity.js` quebra se uma skill de `src/skills-lib/` ficar fora do registry.
+- **Registry**: `+Sentry CLI` (architect, condicional), `+Strix` (qa, executor de pentest autorizado com sandbox Docker e retorno defensivo obrigatório), `+fal-video` (designer).
+- **Disciplina de artefatos forçados** nos 16 subagentes `wizz-exec-*` (INTENT, DONE com verificação nomeada, TWINS, PENDING, AUTH, SURPRESA) e revisor que re-executa todo check alegado.
+- **Descoberta cross-área**: routing-table-flat vira índice de capacidades também dentro de projeto Wizz; triviality gate numérico no router.
+
+### Alterado
+
+- **Fusão `taste-redesign` → `taste-skill`**: o audit profundo virou `references/design-audit.md` e `references/upgrade-techniques.md` da `taste-skill`; entrada em `removals.txt` limpa instalações antigas. Remove a única colisão real de trigger (overlap ≥80%).
+- **BGMs do `huashu-design` (~27MB) fora do git**: fonte de verdade passa a ser o GitHub Release `assets-v1` (sha256 pinado em `tools/fetch-assets.mjs`); o npm já os excluía e o download sob demanda segue igual.
+- **Metadados `not_when`/`rel` validados por existência** no schema do registry: id inexistente em `rel.*` quebra o CI.
+
+### Removido
+
+- `arcads` (substituída por `fal-video`), MCP `exa` (WebSearch nativo cobre), `taste-redesign` (fundida) e neutralização da `remotion-to-hyperframes` no install pinado do hyperframes (o bundle trazia a migração proibida pelo `video-pipeline.md`).
+
+## [1.16.1] - 2026-08-23
+
+### Alterado
+
+- Bump de todos os pins de supply chain (skills, CLIs e MCPs pinados por SHA/versão) para os releases mais recentes.
+
 ## [1.16.0] - 2026-08-23
 
 ### Adicionado
