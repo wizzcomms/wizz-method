@@ -80,6 +80,8 @@ areas:
         entry: true
         door: direcao
         when: "PORTA de direção: todo trabalho de decidir ANTES de construir. Brief visual inicial (6 decisões de estética + 3 lógicas) no kickoff. Puxa: taste-skill (direção anti-slop de brief novo) e motion-3d-director (decidir caminho motion/3D/vídeo)."
+        rel:
+          pairs_with: [taste-skill, motion-3d-director]
       - id: taste-skill
         door: direcao
         when: "Anti-slop em briefs NOVOS: lê o brief, define a direção e audita contra defaults de AI."
@@ -122,6 +124,8 @@ areas:
       - id: remotion-best-practices
         door: motion
         when: "MONTAR o filme: vídeo em React (Remotion) com áudio, SFX, legenda e timing com precisão de frame. No pipeline de vídeo é o Remotion que faz a montagem final; o hyperframes só desenha as telas mudas (regra: HyperFrames desenha, Remotion monta — ver _shared/video-pipeline.md do módulo wizz)."
+        rel:
+          after: [hyperframes]
       - id: canvas-design
         door: motion
         when: "Gerar PNG/PDF editável por código (carrossel, quote card, infográfico) com fonte/cor/logo sempre certos. Traz canvas-fonts."
@@ -143,10 +147,15 @@ areas:
     clis:
       - id: 21st-cli
         when: "Fonte PAGA complementar (catálogos gratuitos como React Bits/Cult UI/Componentry vêm primeiro; gate de aprovação do usuário). Buscar, inspecionar, instalar e publicar componentes no 21st.dev via terminal (search/get/add/publish, registry do time @wizzdigitalagency). Complementa o Magic MCP (geração assistida); é o caminho de catálogo/registry e o fallback declarado quando o MCP está offline. O install traz também as skills oficiais 21st-cli-use, 21st-registry e 21st-design-sync. Login interativo: `21st login` (em CI usar env API_KEY_21ST)."
+        rel:
+          pairs_with: [magic]
         check: "command -v 21st"
         install: "npm i -g @21st-dev/cli && npx @21st-dev/cli install-skill"
       - id: hyperframes
         when: "DESENHAR telas de vídeo em HTML/CSS (HTML→MP4, agent-native, 20+ skills): cena isolada e MUDA — maqueta de WhatsApp/ChatGPT, gráfico animado, título, loop. NÃO usar para montagem com áudio/SFX/legenda sincronizada (posicionador de áudio falhou em produção, ~2,76s de drift; CSS vaza entre telas): a montagem final é do Remotion (regra: HyperFrames desenha, Remotion monta — ver _shared/video-pipeline.md do módulo wizz). Precisa ffmpeg + Node 22 + Chrome headless."
+        not_when: "Montagem com áudio/SFX/legenda sincronizada (posicionador de áudio falhou em produção, ~2,76s de drift; CSS vaza entre telas)."
+        rel:
+          before: [remotion-best-practices]
         platform: [darwin, linux]
         check: "test -d $HOME/.claude/skills/hyperframes"
         # Pin de supply chain (2026-08-23): clone temporário + checkout do SHA
@@ -181,6 +190,12 @@ areas:
         check: "test -x ./tools/ctc-align/.venv/bin/ctc-forced-aligner"
         install: 'mkdir -p tools/ctc-align && uv venv --python 3.12 tools/ctc-align/.venv && uv pip install --python tools/ctc-align/.venv/bin/python "git+https://github.com/MahmoudAshraf97/ctc-forced-aligner.git"'
         verify: "command -v ffmpeg >/dev/null 2>&1 && command -v uv >/dev/null 2>&1"
+      - id: fal-video
+        when: "GERAR vídeo/imagem por IA (Veo/Kling/Wan e outros modelos via API da fal.ai), estilo UGC/ad-ready. Substitui o arcads: mesmo caso de uso (vídeo gerado por IA), custo 50-95% menor por vídeo, sem clone-and-run pesado. Precisa FAL_KEY em .env. Sem CLI binária oficial: usa o client Node oficial @fal-ai/client como dependência do projeto."
+        platform: [darwin, linux]
+        check: "test -f node_modules/@fal-ai/client/package.json"
+        # Pin de supply chain (2026-08-25): versão fixa (client oficial fal.ai); atualizar conscientemente.
+        install: "npm install @fal-ai/client@1.10.1"
     references:
       - "references/premium-agency-rules.md (regras $150k-tier, importadas por impeccable/huashu no modo high-end)"
 
@@ -312,14 +327,6 @@ areas:
           args: ["-y", "mcp-meta-ads@1.0.0"]
           env:
             META_ACCESS_TOKEN: "${META_ACCESS_TOKEN}"
-    clis:
-      - id: arcads
-        when: "GERAR vídeo-ad e imagem por IA (Seedance/Sora/Veo/Kling/OmniHuman + Nano Banana) e publicar como Meta ad. Clone-and-run no projeto: git clone + ./scripts/setup.sh; precisa Python 3.10+ e ARCADS API key em .env (META_ACCESS_TOKEN opcional p/ publicar)."
-        platform: [darwin, linux]
-        check: "test -d ./arcads-claude-code"
-        # Pin de supply chain (2026-08-23): checkout de SHA fixo; atualizar conscientemente.
-        install: "git clone https://github.com/krusemediallc/arcads-claude-code.git arcads-claude-code && git -C arcads-claude-code checkout 0bfafb256cfce3ff4447d7ea1611a37f0af536be"
-        verify: "command -v python3 >/dev/null 2>&1 && python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 10) else 1)'"
 
   architect:
     agent: wizz-agent-architect
@@ -354,6 +361,15 @@ areas:
           args: ["-y", "@supabase/mcp-server-supabase@0.11.0", "--read-only", "--project-id", "${SUPABASE_PROJECT_REF}"]
           env:
             SUPABASE_ACCESS_TOKEN: "${SUPABASE_ACCESS_TOKEN}"
+    clis:
+      - id: sentry-cli
+        when: "CONDICIONAL — só ofereça se o projeto JÁ usa Sentry (existe SENTRY_DSN no env, sentry.properties, ou '@sentry/' no package.json) E o estágio é produção: subir release/sourcemaps, associar commits, monitorar erro em deploy. Nunca default e nunca sugerir ADOTAR Sentry só por causa desta CLI — é suporte a um Sentry que já existe, não uma recomendação de ferramenta."
+        not_when:
+          - "Projeto ainda não usa Sentry (sem SENTRY_DSN, sentry.properties ou '@sentry/' no package.json)."
+          - "Fora de estágio de produção."
+        check: "sentry-cli --version"
+        # Pin de supply chain (2026-08-25): versão fixa; atualizar conscientemente.
+        install: "npm install -g @sentry/cli@3.6.2"
 
   qa:
     agent: wizz-qa
@@ -371,6 +387,18 @@ areas:
         check: "agent-browser --version"
         # Pin de supply chain (2026-08-23): versão fixa; atualizar conscientemente.
         install: "npm install -g agent-browser@0.34.0"
+      - id: strix
+        when: "CONDICIONAL, nunca default — executor de pentest AUTÔNOMO e OFENSIVO (agentes de IA que rodam o app, exploram e VALIDAM vulnerabilidades com PoC real). Complementa security-audit-pentest: aquela skill é a metodologia/checklist humana; o Strix é o executor automatizado. Ferramenta dual-use: SÓ contra alvo próprio ou com AUTORIZAÇÃO ESCRITA do dono do sistema e ESCOPO definido — nunca contra alvo de terceiros sem permissão. Roda SEMPRE dentro do sandbox Docker isolado que a própria ferramenta provê (jamais direto no host). Gate condicional: ofereça apenas mediante confirmação explícita do usuário, com escopo e autorização declarados; jamais acione por padrão silencioso. RETORNO DEFENSIVO OBRIGATÓRIO: o executor (subagente) SEMPRE devolve o achado em formato defensivo — falha, severidade, evidência mínima e correção — nunca payload/exploit cru ou arma pronta; assim o revisor recebe conteúdo defensivo pra corrigir, não instrução de ataque. Precisa de Docker rodando e de uma LLM API key configurada."
+        not_when: "Sem alvo próprio ou sem autorização escrita e escopo definido do dono do sistema; nunca acionar por padrão silencioso."
+        rel:
+          pairs_with: [security-audit-pentest]
+        platform: [darwin, linux]
+        check: "command -v strix"
+        # Pin de supply chain (2026-08-25): versão fixa do pacote pip; o sandbox
+        # é a imagem pinada ghcr.io/usestrix/strix-sandbox:1.3.0, puxada no 1º run
+        # dentro do Docker isolado. Atualizar conscientemente.
+        install: "pipx install strix-agent==1.5.3"
+        verify: "command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1"
 
   analyst:
     agent: wizz-agent-analyst
@@ -379,16 +407,7 @@ areas:
       - id: inicio-de-projeto
         when: "Kickoff LEVE de engenharia: stack, personas, glossário, princípios, estrutura de pastas, checklist. Atalho sem cerimônia de PRD."
       - id: implementation-planner
-        when: "Plano técnico de implementação de site/app premium pós-direção aprovada."
-    mcps:
-      - id: exa
-        when: "Pesquisa web/prior-art durante planejamento (web search, descoberta de fontes)."
-        server:
-          command: npx
-          # Pin de supply chain (2026-08-23): versão fixa; atualizar conscientemente.
-          args: ["-y", "exa-mcp-server@3.4.1"]
-          env:
-            EXA_API_KEY: "${EXA_API_KEY}"
+        when: "Plano técnico de implementação de site/app premium pós-direção aprovada. Pesquisa web/prior-art durante o planejamento usa a tool nativa WebSearch (sem custo/MCP metered — o MCP exa foi removido em 2026-08-25)."
 
   memoria:
     agent: wizz-memoria

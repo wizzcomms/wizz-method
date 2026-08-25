@@ -73,6 +73,15 @@ function assistantMessage(text) {
   });
 }
 
+// Mensagem de assistant com um tool_use de Task/Agent — simula a invocação
+// de um subagente wizz-exec-* pela escada de modelos.
+function assistantToolUse(name, input) {
+  return transcriptLine({
+    type: 'assistant',
+    message: { role: 'assistant', content: [{ type: 'tool_use', id: 'toolu_01', name, input }] },
+  });
+}
+
 function writeTranscript(dir, lines) {
   const file = path.join(dir, `transcript-${Date.now()}-${Math.random().toString(36).slice(2)}.jsonl`);
   fs.writeFileSync(file, lines.join('\n') + '\n', 'utf8');
@@ -114,8 +123,8 @@ async function main() {
       const res = runHook({ transcript_path: transcript, session_id: 'sess-abc' }, { WIZZ_TRACE: '1', WIZZ_TRACE_FILE: traceFile });
       assert(res.status === 0, 'hook sai com exit 0', `stderr: ${res.stderr}`);
       const lines = readTraceLines(traceFile);
-      assert(lines.length === 1, 'appenda exatamente 1 linha', JSON.stringify(lines));
-      if (lines.length === 1) {
+      assert(lines.length === 2, 'appenda 2 linhas (decision + ladder)', JSON.stringify(lines));
+      if (lines.length === 2) {
         const entry = lines[0];
         assert(entry.type === 'decision', 'campo type é "decision"');
         assert(entry.session === 'sess-abc', 'campo session vem do payload do hook');
@@ -125,6 +134,12 @@ async function main() {
           'objeto decision bate com o marcador emitido',
           JSON.stringify(entry.decision),
         );
+
+        const ladder = lines[1];
+        assert(ladder.type === 'ladder', 'segunda linha tem type "ladder"');
+        assert(ladder.sessionId === 'sess-abc', 'campo sessionId da linha ladder vem do payload do hook');
+        assert(Array.isArray(ladder.execs) && ladder.execs.length === 0, 'sem tool_use de exec no turno → execs vazio');
+        assert(ladder.rota === VALID_MARKER.rota, 'campo rota da linha ladder vem do marcador de decisão');
       }
     }
 
@@ -143,8 +158,74 @@ async function main() {
       assert(res.status === 0, 'hook sai com exit 0', `stderr: ${res.stderr}`);
       const lines = readTraceLines(traceFile);
       assert(
-        lines.length === 1 && lines[0].decision && lines[0].decision.rota === 'agent:seo',
+        lines.length === 2 && lines[0].decision && lines[0].decision.rota === 'agent:seo',
         'usa o marcador da ÚLTIMA mensagem de assistant, não o primeiro',
+      );
+      assert(
+        lines[1] && lines[1].type === 'ladder' && lines[1].rota === 'agent:seo',
+        'linha ladder também usa o marcador da última mensagem',
+      );
+    }
+
+    console.log('test-decision-trace: escada de modelos — exec detectado no turno atual');
+    {
+      const transcript = writeTranscript(base, [
+        userMessage('cria uma campanha de ads'),
+        assistantToolUse('Task', { subagent_type: 'wizz-exec-sonnet', description: 'gera variações de anúncio' }),
+        assistantMessage(`✅ Campanha pronta.\n\n${MARKER_LINE}`),
+      ]);
+      const traceFile = path.join(base, `trace-exec-${Date.now()}.jsonl`);
+      const res = runHook({ transcript_path: transcript, session_id: 'sess-exec' }, { WIZZ_TRACE: '1', WIZZ_TRACE_FILE: traceFile });
+      assert(res.status === 0, 'hook sai com exit 0', `stderr: ${res.stderr}`);
+      const lines = readTraceLines(traceFile);
+      assert(lines.length === 2, 'appenda decision + ladder', JSON.stringify(lines));
+      const ladder = lines[1];
+      assert(ladder && ladder.type === 'ladder', 'segunda linha é ladder');
+      assert(
+        Array.isArray(ladder.execs) && ladder.execs.length === 1 && ladder.execs[0] === 'wizz-exec-sonnet',
+        'execs contém o wizz-exec-sonnet invocado no turno atual',
+        JSON.stringify(ladder && ladder.execs),
+      );
+    }
+
+    console.log('test-decision-trace: escada de modelos — sem invocação de exec no turno');
+    {
+      const transcript = writeTranscript(base, [
+        userMessage('responde uma dúvida rápida'),
+        assistantMessage(`✅ Respondido direto, sem delegar.\n\n${MARKER_LINE}`),
+      ]);
+      const traceFile = path.join(base, `trace-noexec-${Date.now()}.jsonl`);
+      const res = runHook({ transcript_path: transcript, session_id: 'sess-noexec' }, { WIZZ_TRACE: '1', WIZZ_TRACE_FILE: traceFile });
+      assert(res.status === 0, 'hook sai com exit 0', `stderr: ${res.stderr}`);
+      const lines = readTraceLines(traceFile);
+      assert(lines.length === 2, 'appenda decision + ladder', JSON.stringify(lines));
+      const ladder = lines[1];
+      assert(
+        ladder && Array.isArray(ladder.execs) && ladder.execs.length === 0,
+        'execs vazio quando nenhum wizz-exec-* foi invocado no turno',
+        JSON.stringify(ladder && ladder.execs),
+      );
+    }
+
+    console.log('test-decision-trace: escada de modelos — exec de turno anterior é excluído');
+    {
+      const transcript = writeTranscript(base, [
+        userMessage('pedido 1: cria posts pro instagram'),
+        assistantToolUse('Task', { subagent_type: 'wizz-exec-haiku', description: 'gera legendas' }),
+        assistantMessage('✅ Posts prontos (pedido 1, sem marcador de decisão).'),
+        userMessage('pedido 2: só uma pergunta rápida, não precisa delegar nada'),
+        assistantMessage(`✅ Respondido direto.\n\n${MARKER_LINE}`),
+      ]);
+      const traceFile = path.join(base, `trace-prevturn-${Date.now()}.jsonl`);
+      const res = runHook({ transcript_path: transcript, session_id: 'sess-prevturn' }, { WIZZ_TRACE: '1', WIZZ_TRACE_FILE: traceFile });
+      assert(res.status === 0, 'hook sai com exit 0', `stderr: ${res.stderr}`);
+      const lines = readTraceLines(traceFile);
+      assert(lines.length === 2, 'appenda decision + ladder', JSON.stringify(lines));
+      const ladder = lines[1];
+      assert(
+        ladder && Array.isArray(ladder.execs) && ladder.execs.length === 0,
+        'exec invocado no pedido 1 (turno anterior) NÃO conta pro ladder do pedido 2',
+        JSON.stringify(ladder && ladder.execs),
       );
     }
 

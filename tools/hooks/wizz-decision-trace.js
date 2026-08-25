@@ -27,6 +27,13 @@
 // em QUALQUER etapa (payload inválido, transcript ilegível, JSON do marcador
 // quebrado) sai 0 em silêncio — este hook nunca pode bloquear ou derrubar a
 // sessão.
+//
+// P1 da auditoria 360° (medir aderência à escada de modelos): no MESMO passe
+// de leitura do transcript, quando há marcador de decisão no turno, também
+// varre o turno atual em busca de invocação de subagente wizz-exec-*
+// (Task/Agent com subagent_type contendo "wizz-exec") e appenda uma segunda
+// linha `{"type":"ladder",...}` no mesmo JSONL — mesmas garantias de
+// opt-in/fail-silent/custo-zero. Só medição, nenhum enforcement novo.
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -37,6 +44,11 @@ const os = require('node:os');
 // usa array de arrays (`[...]`), nunca objetos aninhados — então o último
 // `}` da linha é sempre o fechamento do próprio marcador.
 const MARKER_LINE_RE = /🧭\s*(\{[\s\S]*\})\s*$/;
+
+// Detecta invocação de subagente da escada de modelos: tool_use de
+// Task/Agent cujo subagent_type (ou campo equivalente) contém "wizz-exec"
+// (case-insensitive — cobre wizz-exec-haiku/sonnet/opus/review).
+const EXEC_NAME_RE = /wizz-exec/i;
 
 function isTraceEnabled() {
   return process.env.WIZZ_TRACE === '1';
@@ -58,28 +70,66 @@ function extractAssistantText(entry) {
     .join('\n');
 }
 
-// Lê o transcript (JSONL, 1 mensagem por linha) e devolve o texto da ÚLTIMA
-// mensagem de assistant encontrada. Linhas corrompidas são ignoradas
-// (fail-open); se não houver nenhuma mensagem de assistant, devolve ''.
-function readLastAssistantText(transcriptPath) {
+// Lê o transcript (JSONL, 1 mensagem por linha) e devolve o array de
+// entradas já parseadas. Linhas corrompidas são ignoradas (fail-open). Passe
+// único de leitura do disco — tanto o marcador de decisão quanto a detecção
+// de execs da escada de modelos partem deste mesmo array em memória.
+function readTranscriptEntries(transcriptPath) {
   const raw = fs.readFileSync(transcriptPath, 'utf8');
   const lines = raw.split('\n');
-  let lastText = '';
+  const entries = [];
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed) continue;
-    let entry;
     try {
-      entry = JSON.parse(trimmed);
+      entries.push(JSON.parse(trimmed));
     } catch {
       continue; // linha corrompida — ignora, não derruba a leitura
     }
+  }
+  return entries;
+}
+
+// Devolve o texto da ÚLTIMA mensagem de assistant entre as entradas dadas;
+// '' se não houver nenhuma.
+function lastAssistantText(entries) {
+  let lastText = '';
+  for (const entry of entries) {
     if (entry && entry.type === 'assistant') {
       const text = extractAssistantText(entry);
       if (text) lastText = text;
     }
   }
   return lastText;
+}
+
+// Varre só o TURNO ATUAL (entradas depois da última mensagem de `user`) em
+// busca de tool_use de Task/Agent cujo subagent_type contenha "wizz-exec".
+// Execs de turnos anteriores não contam — o objetivo é medir a escada de
+// modelos usada NESTE pedido, não o histórico acumulado da sessão.
+function extractExecInvocations(entries) {
+  let lastUserIndex = -1;
+  for (const [i, entry] of entries.entries()) {
+    if (entry && entry.type === 'user') lastUserIndex = i;
+  }
+  const currentTurn = entries.slice(lastUserIndex + 1);
+
+  const execs = [];
+  for (const entry of currentTurn) {
+    if (!entry || entry.type !== 'assistant') continue;
+    const content = entry.message && entry.message.content;
+    if (!Array.isArray(content)) continue;
+    for (const block of content) {
+      if (!block || block.type !== 'tool_use') continue;
+      if (block.name !== 'Task' && block.name !== 'Agent') continue;
+      const input = block.input || {};
+      const candidate = input.subagent_type || input.subagentType || input.agent || block.name;
+      if (typeof candidate === 'string' && EXEC_NAME_RE.test(candidate)) {
+        execs.push(candidate);
+      }
+    }
+  }
+  return execs;
 }
 
 // Extrai a última ocorrência do marcador 🧭 {...} num texto e devolve o
@@ -131,18 +181,33 @@ function runHook() {
         return;
       }
 
-      const lastText = readLastAssistantText(transcriptPath);
+      const entries = readTranscriptEntries(transcriptPath);
+      const lastText = lastAssistantText(entries);
       const decision = extractDecision(lastText);
       if (!decision) {
         process.exit(0); // nem todo pedido é roteado — ausência é normal
         return;
       }
 
+      const ts = new Date().toISOString();
+      const sessionId = payload.session_id || null;
+
       appendDecision({
-        ts: new Date().toISOString(),
+        ts,
         type: 'decision',
-        session: payload.session_id || null,
+        session: sessionId,
         decision,
+      });
+
+      // Mesmo turno, mesmo passe de leitura: registra a escada de modelos
+      // (quais wizz-exec-* foram invocados neste pedido roteado, se algum).
+      const execs = extractExecInvocations(entries);
+      appendDecision({
+        ts,
+        type: 'ladder',
+        sessionId,
+        execs,
+        rota: decision.rota || null,
       });
 
       process.exit(0);
@@ -160,8 +225,10 @@ if (require.main === module) {
     isTraceEnabled,
     getTraceFile,
     extractAssistantText,
-    readLastAssistantText,
+    readTranscriptEntries,
+    lastAssistantText,
     extractDecision,
+    extractExecInvocations,
     appendDecision,
     runHook,
   };

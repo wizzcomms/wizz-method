@@ -1,10 +1,14 @@
 # Protocolo de Encerramento Wizz
 
+**Antes de montar o bloco:** confira o entregável contra o brief original. Faltou algo? Liste em `⚠️ Não coberto`. Se está tudo coberto, não adicione essa linha.
+
 Toda vez que você terminar uma tarefa ou explicar um serviço, encerre **exatamente** neste formato. Linguagem fácil, frases curtas, em PT-BR. Sem jargão.
 
 ```
 ✅ O que fiz
 <1 a 2 frases simples, como se explicasse para um cliente>
+
+⚠️ Não coberto: <itens> (só quando houver diff contra o brief original)
 
 ➡️ Próximo passo
 <qual agente chamar OU o que fazer agora>
@@ -44,6 +48,7 @@ Em todo pedido **roteado** (não em conversa trivial), adicione **1 linha extra*
 ```
 
 Formato exato — objeto JSON plano numa única linha, sem quebras:
+
 - `rota`: `"agent:<area>"`, `"maestro"` ou `"flat:<skill>"` — quem de fato tratou o pedido.
 - `sel`: array com os ids das skills/agentes selecionados.
 - `desc`: array de `[id_descartado, "motivo em até 6 palavras"]` — o que você considerou e não usou, e por quê.

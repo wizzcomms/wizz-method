@@ -73,13 +73,99 @@ function validateMetadataVersion(entry, where, errors) {
   }
 }
 
+// Recognized keys under a skill's optional `rel:` map. Each value is a list
+// of ids (skill/cli/mcp) that must exist somewhere else in the registry —
+// existence is enforced so `rel` stays truthful instead of decorative prose
+// that silently rots when an id is renamed or removed (e.g. arcads, exa).
+const REL_KEYS = new Set(['after', 'before', 'pairs_with', 'instead_of']);
+
+/**
+ * Validate the optional `not_when` field: free text (no existence check,
+ * just shape) describing conditions where the skill should NOT be used.
+ * Promotes prose like "NÃO usar para..." already embedded in `when` to a
+ * structured field a router/installer could someday read programmatically.
+ */
+function validateNotWhen(entry, where, errors) {
+  if (!('not_when' in entry)) return;
+  const nw = entry.not_when;
+  const valid = isNonEmptyString(nw) || (Array.isArray(nw) && nw.length > 0 && nw.every(isNonEmptyString));
+  if (!valid) {
+    errors.push(`${where}: "not_when" must be a non-empty string or a non-empty array of non-empty strings`);
+  }
+}
+
+/**
+ * Validate the optional `rel` field: a map of after/before/pairs_with/
+ * instead_of → array of ids. Unlike `not_when`, this one IS
+ * validated by existence: every id cited must resolve to a real skill/cli/mcp
+ * id somewhere in the registry (`allIds`), or the validator fails loud. This
+ * is what keeps `rel` from becoming decorative — a typo'd or removed id
+ * (e.g. "arcads", "exa") breaks the build instead of quietly lying.
+ */
+function validateRel(entry, where, errors, allIds) {
+  if (!('rel' in entry)) return;
+  if (!isPlainObject(entry.rel)) {
+    errors.push(`${where}: "rel" must be an object when present`);
+    return;
+  }
+  for (const [key, value] of Object.entries(entry.rel)) {
+    if (!REL_KEYS.has(key)) {
+      errors.push(`${where}: rel.${key} is not a recognized relation (expected one of: ${[...REL_KEYS].join(', ')})`);
+      continue;
+    }
+    if (!Array.isArray(value) || value.length === 0 || !value.every(isNonEmptyString)) {
+      errors.push(`${where}: rel.${key} must be a non-empty array of non-empty strings`);
+      continue;
+    }
+    for (const id of value) {
+      if (!allIds.has(id)) {
+        errors.push(
+          `${where}: rel.${key} references unknown id "${id}" (must be a skill/cli/mcp id that exists elsewhere in the registry)`,
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Collect every skill/mcp/cli id declared anywhere in the registry (areas +
+ * cross-cutting utility/mcp_utility/cli_utility lists). Used to validate
+ * `rel.*` references by existence. Defensive by design: tolerates malformed
+ * shapes (those are already flagged elsewhere) instead of throwing, since
+ * this runs before/alongside the rest of validation.
+ */
+function collectAllIds(registry) {
+  const ids = new Set();
+  const addFrom = (list) => {
+    if (!Array.isArray(list)) return;
+    for (const entry of list) {
+      if (isPlainObject(entry) && isNonEmptyString(entry.id)) ids.add(entry.id);
+    }
+  };
+  if (isPlainObject(registry) && isPlainObject(registry.areas)) {
+    for (const area of Object.values(registry.areas)) {
+      if (!isPlainObject(area)) continue;
+      addFrom(area.skills);
+      addFrom(area.mcps);
+      addFrom(area.clis);
+    }
+  }
+  if (isPlainObject(registry)) {
+    addFrom(registry.utility);
+    addFrom(registry.mcp_utility);
+    addFrom(registry.cli_utility);
+  }
+  return ids;
+}
+
 /**
  * Validate one skill-shaped entry ({id, when, ...}).
  * @param {*} entry
  * @param {string} where - human-readable location for error messages
  * @param {string[]} errors
+ * @param {Set<string>} allIds - every skill/mcp/cli id in the registry, for `rel` existence checks
  */
-function validateSkillEntry(entry, where, errors) {
+function validateSkillEntry(entry, where, errors, allIds) {
   if (!isPlainObject(entry)) {
     errors.push(`${where}: entry is not an object`);
     return;
@@ -93,12 +179,15 @@ function validateSkillEntry(entry, where, errors) {
     errors.push(`${where}: "door" must be a non-empty string when present`);
   }
   validateMetadataVersion(entry, where, errors);
+  validateNotWhen(entry, where, errors);
+  validateRel(entry, where, errors, allIds || new Set());
 }
 
 /**
  * Validate one MCP-shaped entry ({id, when, server: {command, args, env?}}).
+ * @param {Set<string>} allIds - every skill/mcp/cli id in the registry, for `rel` existence checks
  */
-function validateMcpEntry(entry, where, errors) {
+function validateMcpEntry(entry, where, errors, allIds) {
   if (!isPlainObject(entry)) {
     errors.push(`${where}: entry is not an object`);
     return;
@@ -128,6 +217,8 @@ function validateMcpEntry(entry, where, errors) {
     }
   }
   validateMetadataVersion(entry, where, errors);
+  validateNotWhen(entry, where, errors);
+  validateRel(entry, where, errors, allIds || new Set());
 }
 
 /**
@@ -140,8 +231,9 @@ function validateMcpEntry(entry, where, errors) {
  * a plain "x.y.z" string the same comparator can parse. `verify` is just a
  * shell command like `check`/`install` — a non-empty string is all that is
  * required (its content is opaque to the schema, same as `check`).
+ * @param {Set<string>} allIds - every skill/mcp/cli id in the registry, for `rel` existence checks
  */
-function validateCliEntry(entry, where, errors) {
+function validateCliEntry(entry, where, errors, allIds) {
   if (!isPlainObject(entry)) {
     errors.push(`${where}: entry is not an object`);
     return;
@@ -169,6 +261,8 @@ function validateCliEntry(entry, where, errors) {
     errors.push(`${where}: "verify" must be a non-empty string when present`);
   }
   validateMetadataVersion(entry, where, errors);
+  validateNotWhen(entry, where, errors);
+  validateRel(entry, where, errors, allIds || new Set());
 }
 
 /**
@@ -209,6 +303,10 @@ function validateRegistrySchema(registry) {
     errors.push('root: "version" must be a number');
   }
 
+  // Computed up front so skill entries can validate `rel.*` references by
+  // existence against the FULL registry, not just their own area/list.
+  const allIds = collectAllIds(registry);
+
   if (!isPlainObject(registry.areas) || Object.keys(registry.areas).length === 0) {
     errors.push('root: "areas" must be a non-empty object');
   } else {
@@ -222,7 +320,7 @@ function validateRegistrySchema(registry) {
       if (!isNonEmptyString(area.summary)) errors.push(`${base}: missing/invalid "summary"`);
 
       if (Array.isArray(area.skills)) {
-        for (const [i, entry] of area.skills.entries()) validateSkillEntry(entry, `${base}.skills[${i}]`, errors);
+        for (const [i, entry] of area.skills.entries()) validateSkillEntry(entry, `${base}.skills[${i}]`, errors, allIds);
         checkDuplicateIds(area.skills, `${base}.skills`, errors);
       } else {
         errors.push(`${base}: "skills" must be an array`);
@@ -230,7 +328,7 @@ function validateRegistrySchema(registry) {
 
       if ('mcps' in area) {
         if (Array.isArray(area.mcps)) {
-          for (const [i, entry] of area.mcps.entries()) validateMcpEntry(entry, `${base}.mcps[${i}]`, errors);
+          for (const [i, entry] of area.mcps.entries()) validateMcpEntry(entry, `${base}.mcps[${i}]`, errors, allIds);
           checkDuplicateIds(area.mcps, `${base}.mcps`, errors);
         } else {
           errors.push(`${base}: "mcps" must be an array when present`);
@@ -239,7 +337,7 @@ function validateRegistrySchema(registry) {
 
       if ('clis' in area) {
         if (Array.isArray(area.clis)) {
-          for (const [i, entry] of area.clis.entries()) validateCliEntry(entry, `${base}.clis[${i}]`, errors);
+          for (const [i, entry] of area.clis.entries()) validateCliEntry(entry, `${base}.clis[${i}]`, errors, allIds);
           checkDuplicateIds(area.clis, `${base}.clis`, errors);
         } else {
           errors.push(`${base}: "clis" must be an array when present`);
@@ -250,7 +348,7 @@ function validateRegistrySchema(registry) {
 
   if ('utility' in registry) {
     if (Array.isArray(registry.utility)) {
-      for (const [i, entry] of registry.utility.entries()) validateSkillEntry(entry, `utility[${i}]`, errors);
+      for (const [i, entry] of registry.utility.entries()) validateSkillEntry(entry, `utility[${i}]`, errors, allIds);
       checkDuplicateIds(registry.utility, 'utility', errors);
     } else {
       errors.push('root: "utility" must be an array when present');
@@ -259,7 +357,7 @@ function validateRegistrySchema(registry) {
 
   if ('mcp_utility' in registry) {
     if (Array.isArray(registry.mcp_utility)) {
-      for (const [i, entry] of registry.mcp_utility.entries()) validateMcpEntry(entry, `mcp_utility[${i}]`, errors);
+      for (const [i, entry] of registry.mcp_utility.entries()) validateMcpEntry(entry, `mcp_utility[${i}]`, errors, allIds);
       checkDuplicateIds(registry.mcp_utility, 'mcp_utility', errors);
     } else {
       errors.push('root: "mcp_utility" must be an array when present');
@@ -268,7 +366,7 @@ function validateRegistrySchema(registry) {
 
   if ('cli_utility' in registry) {
     if (Array.isArray(registry.cli_utility)) {
-      for (const [i, entry] of registry.cli_utility.entries()) validateCliEntry(entry, `cli_utility[${i}]`, errors);
+      for (const [i, entry] of registry.cli_utility.entries()) validateCliEntry(entry, `cli_utility[${i}]`, errors, allIds);
       checkDuplicateIds(registry.cli_utility, 'cli_utility', errors);
     } else {
       errors.push('root: "cli_utility" must be an array when present');
@@ -297,7 +395,7 @@ function validateRegistrySchema(registry) {
   return { errors, warnings };
 }
 
-module.exports = { validateRegistrySchema, isValidPlatformToken };
+module.exports = { validateRegistrySchema, isValidPlatformToken, collectAllIds };
 
 if (require.main === module) {
   const strict = process.argv.includes('--strict');

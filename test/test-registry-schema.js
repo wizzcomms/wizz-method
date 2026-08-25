@@ -203,6 +203,100 @@ section('validateRegistrySchema — metadata.version (fase 3, item 3.7)');
   );
 }
 
+section('validateRegistrySchema — not_when + rel (P1 auditoria 360°)');
+{
+  // not_when as a plain string passes.
+  const reg = validRegistry();
+  reg.areas.qa.skills[0].not_when = 'Não usar fora de contexto de bug hunting.';
+  const { errors } = validateRegistrySchema(reg);
+  assert(errors.length === 0, 'not_when as a non-empty string passes', JSON.stringify(errors));
+}
+{
+  // not_when as a list of strings passes.
+  const reg = validRegistry();
+  reg.areas.qa.skills[0].not_when = ['Não usar para X.', 'Não usar para Y.'];
+  const { errors } = validateRegistrySchema(reg);
+  assert(errors.length === 0, 'not_when as a non-empty array of strings passes', JSON.stringify(errors));
+}
+{
+  // not_when as an empty string/array is rejected.
+  const reg = validRegistry();
+  reg.areas.qa.skills[0].not_when = '';
+  const { errors } = validateRegistrySchema(reg);
+  assert(
+    errors.some((e) => e.includes('"not_when" must be')),
+    'not_when as an empty string is caught',
+    JSON.stringify(errors),
+  );
+}
+{
+  const reg = validRegistry();
+  reg.areas.qa.skills[0].not_when = [];
+  const { errors } = validateRegistrySchema(reg);
+  assert(
+    errors.some((e) => e.includes('"not_when" must be')),
+    'not_when as an empty array is caught',
+    JSON.stringify(errors),
+  );
+}
+{
+  // rel pointing at an id that exists elsewhere in the registry passes.
+  const reg = validRegistry();
+  reg.areas.qa.skills[0].rel = { pairs_with: ['taste-skill'] }; // exists in areas.designer.skills
+  const { errors } = validateRegistrySchema(reg);
+  assert(errors.length === 0, 'rel referencing an existing id (in a different area) passes', JSON.stringify(errors));
+}
+{
+  // rel pointing at an id that does NOT exist anywhere fails.
+  const reg = validRegistry();
+  reg.areas.qa.skills[0].rel = { instead_of: ['this-id-does-not-exist-anywhere'] };
+  const { errors } = validateRegistrySchema(reg);
+  assert(
+    errors.some((e) => e.includes('references unknown id "this-id-does-not-exist-anywhere"')),
+    'rel referencing a nonexistent id fails loud',
+    JSON.stringify(errors),
+  );
+}
+{
+  // rel with an unrecognized relation key is caught.
+  const reg = validRegistry();
+  reg.areas.qa.skills[0].rel = { obsoletes: ['taste-skill'] };
+  const { errors } = validateRegistrySchema(reg);
+  assert(
+    errors.some((e) => e.includes('is not a recognized relation')),
+    'rel with an unrecognized key is caught',
+    JSON.stringify(errors),
+  );
+}
+{
+  // rel must be an object, not a string/array.
+  const reg = validRegistry();
+  reg.areas.qa.skills[0].rel = 'taste-skill';
+  const { errors } = validateRegistrySchema(reg);
+  assert(
+    errors.some((e) => e.includes('"rel" must be an object')),
+    'rel as a non-object is caught',
+    JSON.stringify(errors),
+  );
+}
+{
+  // rel also validated (by existence) on CLI and MCP entries, not just skills.
+  const reg = validRegistry();
+  reg.areas.qa.clis[0].rel = { pairs_with: ['nonexistent-cli-id'] };
+  const { errors } = validateRegistrySchema(reg);
+  assert(
+    errors.some((e) => e.includes('references unknown id "nonexistent-cli-id"')),
+    'rel on a CLI entry is validated by existence too',
+    JSON.stringify(errors),
+  );
+}
+{
+  const reg = validRegistry();
+  reg.areas.qa.mcps[0].rel = { pairs_with: ['agent-browser'] }; // exists as a CLI id in the same area
+  const { errors } = validateRegistrySchema(reg);
+  assert(errors.length === 0, 'rel on an MCP entry can reference a CLI id and passes', JSON.stringify(errors));
+}
+
 section('validateRegistrySchema — MCP entry errors');
 {
   const reg = validRegistry();

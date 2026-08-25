@@ -38,7 +38,18 @@ First, check if project context already exists:
 - If exists: Read complete file to understand existing rules
 - Present to user: "Found existing project context with {number_of_sections} sections. Would you like to update this or create a new one?"
 
-### 2. Discover Project Technology Stack
+### 2. Determine Project Stage
+
+Infer the project's lifecycle stage from repo signals before going deeper:
+
+- No deploy config, few commits, scaffolding only → likely `prototype`
+- Deployed but still shaping core flows, no monitoring/CI → likely `mvp`
+- CI/CD, monitoring, error tracking, real users → likely `production`
+- Low commit velocity, mostly fixes/deps → likely `maintenance`
+
+Present the inferred stage and confirm with the user: "Pelos sinais do repo, este projeto parece estar em **{{inferred_stage}}**. Confere?" Use the confirmed value for `stage:` in the frontmatter.
+
+### 3. Discover Project Technology Stack
 
 Load and analyze project files to identify technologies:
 
@@ -61,7 +72,7 @@ Load and analyze project files to identify technologies:
 - Linting and formatting configs (.eslintrc, .prettierrc, etc.)
 - Testing configurations (jest.config.js, vitest.config.ts, etc.)
 
-### 3. Identify Existing Code Patterns
+### 4. Identify Existing Code Patterns
 
 Search through existing codebase for patterns:
 
@@ -85,7 +96,7 @@ Search through existing codebase for patterns:
 - Documentation requirements
 - README and API doc patterns
 
-### 4. Extract Critical Implementation Rules
+### 5. Extract Critical Implementation Rules
 
 Look for rules that AI agents might miss:
 
@@ -117,7 +128,7 @@ Look for rules that AI agents might miss:
 - PR review requirements
 - Deployment procedures
 
-### 5. Initialize Project Context Document
+### 6. Initialize Project Context Document
 
 Based on discovery, create or update the context document:
 
@@ -131,7 +142,7 @@ Initialize frontmatter fields.
 Load existing context and prepare for updates
 Set frontmatter `sections_completed` to track what will be updated
 
-### 6. Present Discovery Summary
+### 7. Present Discovery Summary
 
 Report findings to user:
 

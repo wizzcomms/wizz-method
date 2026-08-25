@@ -56,6 +56,17 @@ const FIXTURE_LINES = [
   '{"ts":"2026-01-01T10:04:00.000Z","isTrivial":false,"mode":"flat","contextInjected":"ctx","warnings":[]}',
   // corrupted line (must be skipped, fail-open)
   '{not valid json',
+  // decision + ladder lines written by tools/hooks/wizz-decision-trace.js —
+  // aggregate() must IGNORE these (typed lines) so they don't pollute the
+  // trivial/mode counts above; aggregateLadder() is the only consumer.
+  '{"ts":"2026-01-01T10:05:00.000Z","type":"decision","session":"sess-1","decision":{"rota":"agent:designer"}}',
+  '{"ts":"2026-01-01T10:05:00.000Z","type":"ladder","sessionId":"sess-1","execs":["wizz-exec-sonnet"],"rota":"agent:designer"}',
+  '{"ts":"2026-01-01T10:06:00.000Z","type":"decision","session":"sess-2","decision":{"rota":"agent:copy"}}',
+  '{"ts":"2026-01-01T10:06:00.000Z","type":"ladder","sessionId":"sess-2","execs":[],"rota":"agent:copy"}',
+  '{"ts":"2026-01-01T10:07:00.000Z","type":"decision","session":"sess-3","decision":{"rota":"maestro"}}',
+  '{"ts":"2026-01-01T10:07:00.000Z","type":"ladder","sessionId":"sess-3","execs":["wizz-exec-opus"],"rota":"maestro"}',
+  '{"ts":"2026-01-01T10:08:00.000Z","type":"decision","session":"sess-4","decision":{"rota":"flat"}}',
+  '{"ts":"2026-01-01T10:08:00.000Z","type":"ladder","sessionId":"sess-4","execs":[],"rota":"flat"}',
 ];
 
 const TIMEOUT_MS = 15_000;
@@ -116,6 +127,17 @@ async function main() {
     assert(/ignoradas \(corrompidas\):\s*1/.test(out), 'counts 1 corrupted line as ignored (fail-open)', out);
     assert(out.includes('2026-01-01T10:00:00.000Z'), 'period start reflects earliest ts');
     assert(out.includes('2026-01-01T10:04:00.000Z'), 'period end reflects latest ts');
+
+    // --- Aderência à Escada de Modelos: 4 ladder lines in the fixture ---
+    // sess-1 agent:designer (exec), sess-2 agent:copy (no exec) → both
+    // bucket as "agent:*" (1/2 invoked); sess-3 maestro (exec); sess-4 flat
+    // (no exec) → 2/4 invoked overall.
+    assert(out.includes('Aderência à Escada de Modelos'), 'output includes the model-ladder adherence box title');
+    assert(/Pedidos roteados com dado de escada:\s*4/.test(out), 'counts the 4 ladder-typed lines', out);
+    assert(/Invocaram algum wizz-exec-\*:\s*2 \(50%\)/.test(out), 'counts 2/4 (50%) invoking a wizz-exec-*', out);
+    assert(/agent:\*\s+1\/2 \(50%\)/.test(out), 'agent:* bucket: 1/2 (50%) invoked', out);
+    assert(/maestro\s+1\/1 \(100%\)/.test(out), 'maestro bucket: 1/1 (100%) invoked', out);
+    assert(/flat\s+0\/1 \(0%\)/.test(out), 'flat bucket: 0/1 (0%) invoked', out);
 
     // --- Case 2: missing trace file ---
     const missingResult = runCommand({ WIZZ_TRACE_FILE: missingFile });

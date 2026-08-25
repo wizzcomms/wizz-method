@@ -31,14 +31,24 @@ function parseLine(line) {
 
 // Agrega as entradas já parseadas em contadores/período. Função pura, sem
 // I/O, para ser testável isoladamente do disco.
+//
+// Linhas tipadas (`type: "decision"` do marcador 🧭 e `type: "ladder"` da
+// escada de modelos, ambas escritas por tools/hooks/wizz-decision-trace.js)
+// são IGNORADAS aqui: são outra granularidade de evento (o fecho de um
+// pedido, não o roteamento em si) e contá-las junto de trivial/mode poluiria
+// as contagens. `type: "ladder"` alimenta só `aggregateLadder`, abaixo.
 function aggregate(entries) {
   const byMode = { wizz: 0, flat: 0, null: 0 };
+  let total = 0;
   let trivialCount = 0;
   let warningsCount = 0;
   let firstTs = null;
   let lastTs = null;
 
   for (const entry of entries) {
+    if (entry.type === 'decision' || entry.type === 'ladder') continue;
+    total++;
+
     if (entry.isTrivial) {
       trivialCount++;
     } else {
@@ -54,14 +64,61 @@ function aggregate(entries) {
   }
 
   return {
-    total: entries.length,
+    total,
     trivialCount,
-    routedCount: entries.length - trivialCount,
+    routedCount: total - trivialCount,
     byMode,
     warningsCount,
     firstTs,
     lastTs,
   };
+}
+
+// Bucket de rota pra agregação da escada de modelos: agrupa qualquer
+// "agent:*" (designer, copy, seo, etc.) numa única chave — o que importa
+// pra aderência é "foi delegado a um agente de área", não qual área
+// especificamente. `maestro` e `flat` ficam como buckets próprios; qualquer
+// outro valor (ou ausência) cai em `outro`.
+function ladderBucket(rota) {
+  if (typeof rota !== 'string' || rota.length === 0) return 'outro';
+  if (rota.startsWith('agent:')) return 'agent:*';
+  if (rota === 'maestro') return 'maestro';
+  if (rota === 'flat') return 'flat';
+  return 'outro';
+}
+
+// Agrega as linhas `type: "ladder"` (uma por pedido roteado que fechou com
+// marcador de decisão — ver wizz-decision-trace.js) em aderência à escada
+// de modelos: quantos pedidos invocaram algum subagente wizz-exec-*,
+// quebrado por rota. Função pura, mesmo espírito de `aggregate`.
+function aggregateLadder(entries) {
+  const byRoute = {};
+
+  const bump = (bucket, invoked) => {
+    if (!byRoute[bucket]) byRoute[bucket] = { total: 0, withExec: 0 };
+    byRoute[bucket].total++;
+    if (invoked) byRoute[bucket].withExec++;
+  };
+
+  let total = 0;
+  let withExec = 0;
+
+  for (const entry of entries) {
+    if (!entry || entry.type !== 'ladder') continue;
+    total++;
+    const invoked = Array.isArray(entry.execs) && entry.execs.length > 0;
+    if (invoked) withExec++;
+    bump(ladderBucket(entry.rota), invoked);
+  }
+
+  return { total, withExec, byRoute };
+}
+
+// Percentual formatado, protegido contra divisão por zero (mostra "—" em
+// vez de NaN%/Infinity% quando o denominador é 0).
+function pct(part, total) {
+  if (!total) return '—';
+  return `${Math.round((part / total) * 100)}%`;
 }
 
 function formatSummary(stats, traceFile) {
@@ -79,6 +136,30 @@ function formatSummary(stats, traceFile) {
   if (stats.corruptedCount > 0) {
     lines.push(`Linhas ignoradas (corrompidas): ${stats.corruptedCount}`);
   }
+  return lines.join('\n');
+}
+
+// Ordem de exibição fixa das rotas na segunda caixa — independente da ordem
+// em que apareceram no arquivo, pra saída estável entre execuções.
+const ROUTE_DISPLAY_ORDER = ['agent:*', 'maestro', 'flat', 'outro'];
+
+function formatLadderSummary(ladderStats) {
+  const lines = [
+    `Pedidos roteados com dado de escada: ${ladderStats.total}`,
+    `Invocaram algum wizz-exec-*:         ${ladderStats.withExec} (${pct(ladderStats.withExec, ladderStats.total)})`,
+    'Por rota:',
+  ];
+
+  const routes = ROUTE_DISPLAY_ORDER.filter((route) => ladderStats.byRoute[route]);
+  if (routes.length === 0) {
+    lines.push('  (sem dados)');
+  } else {
+    for (const route of routes) {
+      const bucket = ladderStats.byRoute[route];
+      lines.push(`  ${route.padEnd(8)} ${bucket.withExec}/${bucket.total} (${pct(bucket.withExec, bucket.total)})`);
+    }
+  }
+
   return lines.join('\n');
 }
 
@@ -116,6 +197,9 @@ module.exports = {
 
       await prompts.box(formatSummary(stats, traceFile), 'Wizz Trace Report');
 
+      const ladderStats = aggregateLadder(entries);
+      await prompts.box(formatLadderSummary(ladderStats), 'Aderência à Escada de Modelos');
+
       process.exit(0);
     } catch (error) {
       await prompts.log.error(`Trace report failed: ${error.message}`);
@@ -127,5 +211,5 @@ module.exports = {
   },
   // Exportado só para teste unitário direto da agregação, sem precisar
   // spawnar o processo pra cada caso de borda.
-  _internal: { aggregate, parseLine, formatSummary },
+  _internal: { aggregate, parseLine, formatSummary, aggregateLadder, ladderBucket, formatLadderSummary, pct },
 };

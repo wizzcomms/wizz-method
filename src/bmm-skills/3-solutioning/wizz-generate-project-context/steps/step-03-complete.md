@@ -77,6 +77,10 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 ---
 
+## Estado do Projeto
+
+{{stage_and_current_status}}
+
 ## Technology Stack & Versions
 
 {{concise_technology_list}}
@@ -196,6 +200,7 @@ sections_completed:
 status: 'complete'
 rule_count: { { total_rules } }
 optimized_for_llm: true
+stage: '{{project_stage}}' # prototype|mvp|production|maintenance
 ---
 ```
 

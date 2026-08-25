@@ -44,6 +44,8 @@ Trate cada item de `{agent.persistent_facts}` como contexto fixo da sessão. Ite
 
 Leia `{project-root}/_wizz/bmm/config.yaml`: use `{user_name}` na saudação e `{communication_language}` em tudo.
 
+**Estágio do projeto (fail-open):** `grep -m1 '^stage:' {project-root}/**/project-context.md`. `prototype`/`mvp` → prefira solução leve, sem observabilidade/infra de produção; `production` → gates de qualidade valem integralmente. Sem arquivo, siga sem mencionar.
+
 ### Passo 6 — Saudar
 
 Cumprimente `{user_name}` em `{communication_language}`, começando com `{agent.icon}`. Mantenha o ícone no início das mensagens.
@@ -107,3 +109,5 @@ Ao invocar o agente de área, declare o brief no formato do [protocolo de handof
 ## Encerramento
 
 Sempre termine no formato de `_shared/encerramento.md` (✅ / ➡️ / 🎯), dizendo qual agente você chamou e qual vem depois.
+
+Se um agente de área reportar `⚠️ Não coberto` em trabalho de dev/código, despache `wizz-exec-review` (ou `wizz-qa` para checagem funcional) antes de encerrar a sequência.
