@@ -72,7 +72,6 @@ grep -m1 "^vault:" "/caminho/CEREBRO.md"
 [Vault]/
   CEREBRO.md              ← índice central (identidade + projetos ativos — manter < 150 linhas úteis)
   _index/
-    sessions.md           ← log histórico de sessões (append-only, nunca lido)
     cerebro-archive.md    ← excedente do CEREBRO.md movido na compactação do /salvar (grep, nunca Read completo)
   _knowledge/
     about-me.md
@@ -85,7 +84,7 @@ grep -m1 "^vault:" "/caminho/CEREBRO.md"
   _content/               ← YYYY-MM-DD-[slug].md
   _prospects/             ← YYYY-MM-DD-[slug].md
   projetos/
-    [nome].md             ← estado atual do projeto (estrutura: cabeçalho + stack + Hoje + Onde parou + O que falta + Sessões)
+    [nome].md             ← estado atual do projeto (estrutura: cabeçalho + stack + Última sessão + Onde parou + O que falta + Sessões)
 ```
 
 **Regra de links:** sempre wiki-links `[[arquivo]]` dentro do vault. CONTEXT.md usa Markdown puro.
@@ -103,6 +102,6 @@ Cada comando tem seu procedimento passo-a-passo completo em um arquivo de refer�
 - Wiki-links `[[arquivo]]` dentro do vault. Markdown puro no CONTEXT.md.
 - Datas absolutas no formato `YYYY-MM-DD`, nunca relativas ("ontem", "semana passada"). Fatos voláteis (versão publicada, estado de release, etc.) levam prefixo `em YYYY-MM-DD:` no texto; na releitura, o agente trata como snapshot daquele momento, não como fato atual.
 - Nunca apagar histórico — só acrescentar.
-- Log histórico de sessões vai em `_index/sessions.md`, não no CEREBRO.md — mantém o CEREBRO.md curto.
+- Narrativa de sessão mora no arquivo do projeto: bloco `Última sessão` (sobrescrito) + 1 linha na tabela `Sessões`. Não existe mais `_index/sessions.md`: era escrito e nunca lido por nenhum comando, e saiu em 2026-08-28.
 - Resumos: 1 linha por item.
 - CEREBRO.md deve ficar sempre < 150 linhas úteis — mover tabelas longas para `_index/`.

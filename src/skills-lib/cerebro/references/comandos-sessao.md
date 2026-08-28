@@ -82,20 +82,24 @@ wc -l "$VAULT/projetos/$PROJ.md"
 
 **2. Ler apenas o final do arquivo do projeto (1 Read)**
 - `offset = (total_linhas - 80)`, `limit = 80`
-- Isso captura: Hoje atual, Onde parou, O que falta, tabela Sessões
+- Isso captura: Última sessão, Onde parou, O que falta, tabela Sessões
 
 **3. Construir as alterações na memória, depois aplicar (Edits atômicos)**
 
-Em `projetos/[nome].md`, sempre adicionar ACIMA da seção "Onde parou" existente:
+Em `projetos/[nome].md`, **sobrescrever** o bloco "Última sessão" que fica ACIMA da seção "Onde parou" (criar se não existir). Máximo 3 bullets, sempre o mesmo cabeçalho, sem empilhar blocos antigos:
 ```markdown
-## Hoje ([data] — [sessão])
-- [item 1]
-- [item 2]
+## Última sessão ([data])
+- [o que foi feito]
+- [o que travou, se travou]
+- [próximo passo óbvio]
 ```
 
 Substituir "Onde parou" e "O que falta" com o estado novo.
 
-Adicionar linha na tabela Sessões (append na última linha da tabela).
+Adicionar 1 linha na tabela Sessões (append na última linha da tabela) — é ela que guarda o histórico, o bloco acima é só o detalhe da vez:
+```markdown
+| [data] | [resumo 1 linha] |
+```
 
 **4. Atualizar bloco do projeto em CEREBRO.md (1 Edit)**
 - Usar grep do passo 1 para saber as linhas exatas
@@ -105,19 +109,19 @@ Adicionar linha na tabela Sessões (append na última linha da tabela).
 - Nunca reescrever o arquivo inteiro
 - Editar apenas: data no cabeçalho, pendências em "O que falta", commit hash se mudou
 
-**6. Append em `_index/sessions.md` (1 Edit ou Write se não existir)**
-```markdown
-| [data] | [projeto] | [resumo 1 linha] |
-```
-
-**7. Se houve decisão relevante:** criar arquivo em `_decisions/` (Write direto, sem Read prévio).
+**6. Se houve decisão relevante:** criar arquivo em `_decisions/` (Write direto, sem Read prévio).
 Aprendizado técnico (armadilha de stack, bug não óbvio, pegadinha de ambiente) **não vai para o vault**: vai para a auto-memória do agente, que é carregada sozinha no início de cada sessão. No vault ninguém lia.
 
-**8. Higiene do índice (compactação)**
+**7. Higiene do índice (compactação)**
 ```bash
 wc -l "$VAULT/CEREBRO.md"
 ```
 - Se > 150 linhas: mover o conteúdo mais antigo/menos essencial (projeto ✅ concluído ou ❌ descontinuado com histórico longo, ou entradas de "Decisões recentes" além das ~15 mais novas) para `_index/cerebro-archive.md`, deixando no lugar só 1 linha de referência `[[_index/cerebro-archive]]`. Nunca apagar, só mover.
 - Se ≤ 150 linhas: pular este passo.
 
-**9. Confirmar em 2 linhas** o que foi salvo.
+```bash
+grep -c "^| " "$VAULT/projetos/$PROJ.md"
+```
+- Tabela Sessões com mais de 15 linhas: mover as mais antigas para `_index/cerebro-archive.md`, sob `## Sessões antigas — [projeto]`, deixando as 15 mais novas no arquivo do projeto. Nunca apagar, só mover.
+
+**8. Confirmar em 2 linhas** o que foi salvo.

@@ -29,7 +29,7 @@ Após bug não-óbvio resolvido, decisão importante, armadilha de stack ou corr
 |---|---|
 | decisão de arquitetura ou de produto | Cérebro `_decisions/` (`/cerebro decisao`) |
 | estado do projeto (onde parou, o que falta) | Cérebro `projetos/<nome>.md`, bloco no topo (`/cerebro salvar`) |
-| narrativa de sessão (o que rolou no dia) | Cérebro `_index/sessions.md` |
+| narrativa de sessão (o que rolou no dia) | Cérebro `projetos/<nome>.md`: bloco `Última sessão` (sobrescrito) + 1 linha na tabela `Sessões` |
 | armadilha de stack, bug não-óbvio, pegadinha de ambiente | auto-memória do agente (Claude Code: `memory/`) |
 | preferência de trabalho, correção recebida do usuário | auto-memória do agente |
 | como-fazer, definição de produto, metodologia | o artefato ou a skill; a memória guarda só o **caminho** |
