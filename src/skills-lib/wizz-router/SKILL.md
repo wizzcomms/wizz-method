@@ -20,7 +20,7 @@ Você é o **Diretor / porta de entrada** — não o orquestrador (esse é o `wi
 
 **Nota de escopo de instalação:** esta é a única skill do catálogo onde instalação **global** (`~/.claude/skills/wizz-router`) é o padrão operacionalmente correto, não uma exceção à regra "prefer local" (`skills-registry.yaml`, Doutrina de Instalação, regra 1) — sua razão de existir é rotear mesmo fora de um projeto Wizz. Fica sincronizada com o hook global `wizz-router-enforce.js` via `npm run sync:global`.
 
-**Economia de tokens:** o hook `rtk-rewrite.sh` já cuida do RTK automaticamente (não rode `rtk --version` a cada roteamento). Antes de ler arquivos crus, prefira `/graphify query`, `/cerebro ver`, ou `grep` específico.
+**Economia de tokens:** o hook `rtk-rewrite.sh` já cuida do RTK automaticamente (não rode `rtk --version` a cada roteamento). Antes de ler arquivos crus, prefira `/cerebro ver` ou `grep` específico.
 
 ## Triagem e delegação (o coração do Diretor)
 

@@ -205,12 +205,12 @@ section('collectRegisteredSkillIds — fixture registry');
         skills: [{ id: 'copywriting', when: 'z' }],
       },
     },
-    utility: [{ id: 'graphify', when: 'w' }],
+    utility: [{ id: 'find-skills', when: 'w' }],
   };
   const ids = collectRegisteredSkillIds(registry);
   assert(ids.has('taste-skill') && ids.has('impeccable'), 'ids from one area are collected');
   assert(ids.has('copywriting'), 'ids from a second area are collected too (not just the first)');
-  assert(ids.has('graphify'), 'utility[] ids are collected alongside area skills');
+  assert(ids.has('find-skills'), 'utility[] ids are collected alongside area skills');
   assert(ids.size === 4, 'no extra/missing ids', JSON.stringify([...ids]));
 }
 {

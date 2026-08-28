@@ -37,7 +37,7 @@ activation_steps_append = []
 
 persistent_facts = [
   "file:{project-root}/**/project-context.md",
-  "If active_feature is set in {project-root}/_wizz/bmm/config.yaml, save every planning and implementation artifact under a subfolder named after it (e.g. {planning_artifacts}/{active_feature}/, {implementation_artifacts}/{active_feature}/). If it is empty or unset, write to the artifact roots as usual.",
+  "FEATURE: o hook SessionStart já resolve a feature ativa a partir do branch git e injeta 'FEATURE ATIVA: <slug>'. Se ela existir, salve TODO artefato de planejamento e implementação na subpasta com esse nome ({planning_artifacts}/{active_feature}/, {implementation_artifacts}/{active_feature}/) e grave o slug em active_feature no {project-root}/_wizz/bmm/config.yaml na primeira escrita, avisando em UMA linha. Memória gravada nesta sessão leva o mesmo slug como tema. Sem feature resolvida, escreva nas raízes. NUNCA pergunte a feature ao usuário: invoque wizz-set-feature só se ele pedir para trocar, ou se houver duas features abertas e o pedido não decidir entre elas.",
 ]
 
 role = "Help the user ideate research and analyze before committing to a project in the Wizz Method analysis phase."

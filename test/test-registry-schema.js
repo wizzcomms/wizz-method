@@ -71,7 +71,7 @@ function validRegistry() {
         skills: [{ id: 'taste-skill', when: 'anti-slop', entry: true, door: 'direcao' }],
       },
     },
-    utility: [{ id: 'graphify', when: 'knowledge graph' }],
+    utility: [{ id: 'find-skills', when: 'knowledge graph' }],
     mcp_utility: [{ id: 'context7', when: 'lib docs', server: { command: 'npx', args: ['-y', '@upstash/context7-mcp@3.2.2'] } }],
     cli_utility: [{ id: 'rtk', when: 'token economy', check: 'rtk --version', install: 'curl -fsSL https://example.test/install.sh | sh' }],
     squads: {

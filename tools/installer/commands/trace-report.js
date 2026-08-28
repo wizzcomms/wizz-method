@@ -36,7 +36,7 @@ function getRegistryFile() {
 // Lê e parseia skills-registry.yaml, devolvendo o catálogo de ids de
 // skills em ordem alfabética estável (mesma lista independente da ordem em
 // que as áreas/skills aparecem no YAML). Escopo deliberado: só as skills
-// `areas.*.skills[]` e as cross-cutting `utility[]` (graphify, find-skills,
+// `areas.*.skills[]` e as cross-cutting `utility[]` (find-skills,
 // enhance-prompt, wizz-router; também são skills de verdade em
 // src/skills-lib/). CLIs/MCPs/squads ficam de fora: `sel`/`desc` no
 // marcador de decisão podem citar agentes ou skills (ver encerramento.md),

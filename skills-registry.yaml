@@ -424,8 +424,6 @@ areas:
 # UTILITÁRIOS — cross-cutting, não pertencem a uma área só.
 # ─────────────────────────────────────────────────────────────────────────────
 utility:
-  - id: graphify
-    when: "Transformar código/docs em knowledge graph; navegar estrutura antes de ler arquivos crus."
   - id: find-skills
     when: "Nenhuma skill cobre o pedido: buscar/instalar no marketplace (npx skills find)."
   - id: enhance-prompt

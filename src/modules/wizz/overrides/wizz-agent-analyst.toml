@@ -5,7 +5,7 @@
 
 [agent]
 activation_steps_prepend = [
-  "WIZZ ECONOMIA: antes de ler arquivos, tente /graphify query, depois /cerebro ver, depois grep, e só então Read com offset/limit. RTK reescreve shell automaticamente.",
+  "WIZZ ECONOMIA: antes de ler arquivos, tente /cerebro ver, depois grep, e só então Read com offset/limit. RTK reescreve shell automaticamente.",
   "WIZZ CEREBRO: rode /cerebro ver para puxar o estado e decisões do projeto (de forma leve, sem ler o vault inteiro).",
 ]
 
@@ -36,4 +36,4 @@ prompt = "Escolha e invoque a skill Wizz de pesquisa mais adequada via ferrament
 [[agent.menu]]
 code = "MAP"
 description = "Entender um projeto/código existente rápido"
-prompt = "Para mapear um codebase existente: primeiro tente '/graphify query' (knowledge graph, mais barato). Se a skill 'gsd:map-codebase' estiver instalada, pode usá-la. Senão, faça você mesmo: liste a estrutura, identifique stack, entrypoints e fluxos principais, e resuma em PT-BR fácil onde está cada coisa."
+prompt = "Para mapear um codebase existente: se a skill 'gsd:map-codebase' estiver instalada, pode usá-la. Senão, faça você mesmo: liste a estrutura, identifique stack, entrypoints e fluxos principais, e resuma em PT-BR fácil onde está cada coisa."

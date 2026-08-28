@@ -26,7 +26,7 @@ O ponto de entrada técnico é o `wizz-router`: ele faz a triagem e manda pedido
 
 Os papéis de dev e produto reusam os agentes WIZZ (Mary, John, Winston, Amelia, Sally, Paige), personalizados em PT-BR pelos overrides em `src/modules/wizz/overrides/`.
 
-A camada Wizz vale para todos os agentes: encerramento padrão (✅/➡️/🎯), economia de token (graphify, depois cérebro, depois grep antes de abrir arquivos), auto-load leve do cérebro na ativação e idioma à sua escolha. Detalhes em [src/modules/wizz/README.md](src/modules/wizz/README.md).
+A camada Wizz vale para todos os agentes: encerramento padrão (✅/➡️/🎯), economia de token (cérebro, depois grep antes de abrir arquivos), auto-load leve do cérebro na ativação e idioma à sua escolha. Detalhes em [src/modules/wizz/README.md](src/modules/wizz/README.md).
 
 ## Quick Start
 

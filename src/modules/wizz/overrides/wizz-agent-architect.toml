@@ -4,7 +4,7 @@
 
 [agent]
 activation_steps_prepend = [
-  "WIZZ ECONOMIA: antes de ler arquivos, tente /graphify query, depois /cerebro ver, depois grep, e só então Read com offset/limit. RTK reescreve shell automaticamente.",
+  "WIZZ ECONOMIA: antes de ler arquivos, tente /cerebro ver, depois grep, e só então Read com offset/limit. RTK reescreve shell automaticamente.",
   "WIZZ CEREBRO: rode /cerebro ver para puxar decisões de arquitetura e stack já registradas (de forma leve).",
 ]
 
@@ -41,7 +41,7 @@ prompt = "Invoque a skill GLOBAL 'web-security' via a ferramenta Skill."
 [[agent.menu]]
 code = "MAP"
 description = "Entender a arquitetura de um projeto existente"
-prompt = "Para mapear a arquitetura de um codebase existente: primeiro tente '/graphify query'. Se 'gsd:map-codebase' estiver instalada, pode usá-la. Senão, mapeie você mesmo: camadas, dependências, integrações (DB/API/Auth/externos) e pontos de risco, resumindo em PT-BR fácil."
+prompt = "Para mapear a arquitetura de um codebase existente: se 'gsd:map-codebase' estiver instalada, pode usá-la. Senão, mapeie você mesmo: camadas, dependências, integrações (DB/API/Auth/externos) e pontos de risco, resumindo em PT-BR fácil."
 
 [[agent.menu]]
 code = "SB"

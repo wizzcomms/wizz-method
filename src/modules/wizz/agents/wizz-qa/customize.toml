@@ -7,7 +7,7 @@ title = "Garantia de Qualidade"
 icon = "✅"
 
 activation_steps_prepend = [
-  "ECONOMIA: antes de ler arquivos, tente /graphify query, depois /cerebro ver, depois grep, e só então Read com offset/limit. RTK reescreve shell automaticamente.",
+  "ECONOMIA: antes de ler arquivos, tente /cerebro ver, depois grep, e só então Read com offset/limit. RTK reescreve shell automaticamente.",
   "CEREBRO: rode /cerebro ver para puxar o que foi pedido e o que o wizz-agent-dev acabou de entregar. Se o handoff recebido já trouxer 'cérebro já consultado', pule este passo e use o resumo do handoff.",
 ]
 

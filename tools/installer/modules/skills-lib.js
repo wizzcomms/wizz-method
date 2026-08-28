@@ -29,7 +29,7 @@ const { resolveAreaEntries } = require('./registry-resolve');
 /**
  * Resolve which skill ids to install from the registry for the chosen areas.
  * Empty / undefined / containing 'all' means every area. Utility skills
- * (graphify, find-skills, ...) are cross-cutting and always included.
+ * (find-skills, wizz-router, ...) are cross-cutting and always included.
  *
  * Wrapper fino sobre `resolveAreaEntries` (A16): a resolução por área vive em
  * `registry-resolve.js`; aqui só sobra reduzir as entradas resolvidas ao

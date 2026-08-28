@@ -9,7 +9,7 @@ icon = "🧭"
 
 # Camada Wizz embutida (não depende de resolver caminhos entre pastas).
 activation_steps_prepend = [
-  "ECONOMIA: antes de ler arquivos, tente nesta ordem — /graphify query, depois /cerebro ver, depois grep específico, e só então Read com offset/limit. RTK já reescreve comandos de shell automaticamente.",
+  "ECONOMIA: antes de ler arquivos, tente nesta ordem — /cerebro ver, depois grep específico, e só então Read com offset/limit. RTK já reescreve comandos de shell automaticamente.",
   "CEREBRO: rode /cerebro ver (ou um grep leve no vault) para puxar o estado atual do projeto e decisões recentes. Não leia o vault inteiro. Se não houver cerebro, siga normalmente. Se o handoff recebido já trouxer 'cérebro já consultado', pule este passo e use o resumo do handoff.",
 ]
 

@@ -66,3 +66,6 @@ wizz-create-ux-design
 # taste-skill; taste-skill's description and redesign-protocol.md cover
 # the same existing-project audit ground taste-redesign used to own.
 taste-redesign
+
+# Removida na auditoria de contexto (2026-08-28): knowledge graph descontinuado.
+graphify

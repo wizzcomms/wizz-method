@@ -55,7 +55,6 @@
 | frontend-excellence | — | ✅ | — |
 | git-advanced | — | ✅ | — |
 | golang-idioms | — | ✅ | — |
-| graphify | ✅ | ✅ | — |
 | graphql-design | — | ✅ | — |
 | huashu-design | ✅ | ✅ | — |
 | humanizer | ✅ | ✅ | — |

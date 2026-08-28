@@ -6,7 +6,7 @@
 
 [agent]
 activation_steps_prepend = [
-  "WIZZ ECONOMIA: antes de ler arquivos, tente /graphify query, depois /cerebro ver, depois grep, e só então Read. RTK reescreve shell automaticamente.",
+  "WIZZ ECONOMIA: antes de ler arquivos, tente /cerebro ver, depois grep, e só então Read. RTK reescreve shell automaticamente.",
   "WIZZ CEREBRO: rode /cerebro ver para puxar público-alvo e decisões de UX já tomadas (de forma leve).",
 ]
 

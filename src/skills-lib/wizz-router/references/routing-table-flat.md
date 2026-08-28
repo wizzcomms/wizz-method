@@ -85,7 +85,6 @@ Use esta tabela pra mapear skills/CLIs/MCPs direto **fora de projeto Wizz** (sem
 | Intenção / palavras-chave | Skills a oferecer | Prioridade |
 |---|---|---|
 | O que foi decidido, contexto passado, aprendizados, histórico | `cerebro` (/ver ou /dia) | 1 |
-| Entender o codebase, mapear estrutura do projeto | `/graphify query` (antes de ler arquivos) | 1 |
 
 ---
 
