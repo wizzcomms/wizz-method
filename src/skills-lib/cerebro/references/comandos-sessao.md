@@ -125,15 +125,10 @@ Arquivo sem bloco `## Estado`: criar agora, logo abaixo do título, com o que a 
 - Usar grep do passo 1 para saber as linhas exatas
 - Edit cirúrgico apenas nas linhas "Última sessão" e "Pendente"
 
-**5. Atualizar CONTEXT.md (Edit cirúrgico — só campos alterados)**
+**5. Se houve decisão relevante:** criar arquivo em `_decisions/` (ver `comandos-rotina-e-captura.md` para o frontmatter e a regra de grep-antes-de-gravar).
+Aprendizado técnico (armadilha de stack, bug não óbvio, pegadinha de ambiente) **não vai para o vault**: vai para a auto-memória do agente. No vault ninguém lia. No Claude Code ela carrega sozinha no início da sessão; em Codex, OpenCode e Gemini o caminho de leitura é o `/memoria` (ver `comandos-pesquisa-e-memoria.md`).
 
-- Nunca reescrever o arquivo inteiro
-- Editar apenas: data no cabeçalho, pendências em "O que falta", commit hash se mudou
-
-**6. Se houve decisão relevante:** criar arquivo em `_decisions/` (ver `comandos-rotina-e-captura.md` para o frontmatter e a regra de grep-antes-de-gravar).
-Aprendizado técnico (armadilha de stack, bug não óbvio, pegadinha de ambiente) **não vai para o vault**: vai para a auto-memória do agente, que é carregada sozinha no início de cada sessão. No vault ninguém lia.
-
-**7. Higiene do índice (compactação)**
+**6. Higiene do índice (compactação)**
 
 ```bash
 wc -l "$VAULT/CEREBRO.md"
@@ -148,4 +143,4 @@ grep -c "^| " "$VAULT/projetos/$PROJ.md"
 
 - Tabela Sessões com mais de 15 linhas: mover as mais antigas para `_index/cerebro-archive.md`, sob `## Sessões antigas — [projeto]`, deixando as 15 mais novas no arquivo do projeto. Nunca apagar, só mover.
 
-**8. Confirmar em 2 linhas** o que foi salvo.
+**7. Confirmar em 2 linhas** o que foi salvo.

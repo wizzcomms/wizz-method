@@ -472,7 +472,7 @@ areas:
     summary: "Memória do projeto: o que foi decidido, salvar, ver estado."
     skills:
       - id: cerebro
-        when: "Recuperar/salvar decisões, contexto, aprendizados; ver estado do projeto (/ver, /salvar, /decisao, /dump)."
+        when: "Recuperar/salvar decisões, contexto, aprendizados; ver estado do projeto (/ver, /salvar, /decisao, /dump); ler a auto-memória fora do Claude Code (/memoria)."
 
 # ─────────────────────────────────────────────────────────────────────────────
 # UTILITÁRIOS — cross-cutting, não pertencem a uma área só.
