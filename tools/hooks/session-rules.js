@@ -2,7 +2,7 @@
 //
 // Fonte de verdade: wizz-method/tools/hooks/. Instalar via `npm run sync:global`.
 //
-// Duas responsabilidades, um processo só (SessionStart roda 1x por sessão):
+// Três responsabilidades, um processo só (SessionStart roda 1x por sessão):
 //
 //   1. Regras de comunicação, injetadas UMA vez por sessão (antes:
 //      no-narration-enforce repetia ~80 tokens em TODO prompt via
@@ -14,9 +14,16 @@
 //      Custo zero quando não há `_wizz/` nem branch de feature: a linha
 //      simplesmente não é emitida.
 //
+//   3. Teto da auto-memória: o teto de 40 memórias e 8 KB de índice está
+//      escrito no CLAUDE.md global desde 2026-08-28, mas nada disparava a
+//      checagem — quem estoura só descobre quando o índice já custa caro em
+//      toda sessão. Aqui a checagem acontece sozinha, 1x por sessão, e só
+//      fala quando há o que dizer. Abaixo de 90% do teto: silêncio, zero token.
+//
 // Nunca bloqueia: qualquer erro vira "sem feature ativa" e a sessão segue.
 
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 
 // Cópia comprimida e INTENCIONAL da regra de comunicação. A fonte é
@@ -189,6 +196,105 @@ function buildFeatureContext(cwd) {
   return parts.join(' ');
 }
 
+// ── Teto da auto-memória ────────────────────────────────────────────────
+// Fonte do teto: ~/.claude/CLAUDE.md ("Teto da auto-memória", 2026-08-28).
+// Mudou lá, mude aqui: test/test-feature-context.js falha se divergirem.
+const MEMORY_MAX_FILES = 40;
+const MEMORY_MAX_INDEX_BYTES = 8 * 1024;
+// Avisa ANTES de estourar. Estourar já significa sessões caras rodando faz
+// tempo; o valor do aviso está em chegar enquanto a poda ainda é barata.
+const MEMORY_WARN_RATIO = 0.9;
+
+/**
+ * Resolve o diretório de auto-memória do projeto. O slug histórico do Claude
+ * Code troca `/` e `.` por `-`, mas nem sempre normalizou espaço do mesmo
+ * jeito, então há um fallback por basename. O fallback só vale quando há UM
+ * candidato: aviso apontando para o projeto errado é pior que aviso nenhum.
+ * @param {string} cwd
+ * @returns {string} caminho do diretório, ou '' quando não há memória
+ */
+function resolveMemoryDir(cwd) {
+  try {
+    const base = path.join(os.homedir(), '.claude', 'projects');
+    const direct = path.join(base, cwd.replaceAll(/[/.]/g, '-'), 'memory');
+    if (fs.existsSync(direct)) return direct;
+
+    const name = path.basename(cwd);
+    if (!name) return '';
+    const matches = fs
+      .readdirSync(base)
+      .filter((entry) => entry.endsWith(`-${name}`) || entry.endsWith(`-${name.replaceAll(/[ .]/g, '-')}`))
+      .map((entry) => path.join(base, entry, 'memory'))
+      .filter((dir) => fs.existsSync(dir));
+    return matches.length === 1 ? matches[0] : '';
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Conta as memórias e mede o índice. `_archive/` fica de fora de propósito:
+ * é exatamente para onde a poda move os originais, então contá-lo faria o
+ * aviso nunca sumir depois de resolvido.
+ * @param {string} memoryDir
+ * @returns {{files: number, indexBytes: number}}
+ */
+function measureMemory(memoryDir) {
+  let files = 0;
+  let indexBytes = 0;
+  try {
+    for (const entry of fs.readdirSync(memoryDir, { withFileTypes: true })) {
+      if (!entry.isFile() || !entry.name.endsWith('.md')) continue;
+      if (entry.name === 'MEMORY.md') {
+        indexBytes = fs.statSync(path.join(memoryDir, entry.name)).size;
+        continue;
+      }
+      files++;
+    }
+  } catch {
+    return { files: 0, indexBytes: 0 };
+  }
+  return { files, indexBytes };
+}
+
+/**
+ * Monta o aviso a partir da medida. Parte pura de propósito: é o que decide o
+ * silêncio, então precisa ser testável sem montar um ~/.claude falso.
+ * Devolve '' abaixo de 90% dos dois tetos — o caso comum, e o silêncio é o
+ * que mantém o custo em zero.
+ * @param {number} files
+ * @param {number} indexBytes
+ * @returns {string}
+ */
+function formatMemoryCeiling(files, indexBytes) {
+  if (files === 0 && indexBytes === 0) return '';
+
+  const over = files > MEMORY_MAX_FILES || indexBytes > MEMORY_MAX_INDEX_BYTES;
+  const near =
+    files >= Math.floor(MEMORY_MAX_FILES * MEMORY_WARN_RATIO) || indexBytes >= Math.floor(MEMORY_MAX_INDEX_BYTES * MEMORY_WARN_RATIO);
+  if (!over && !near) return '';
+
+  const kb = (indexBytes / 1024).toFixed(1);
+  const estado = `${files}/${MEMORY_MAX_FILES} memórias e índice de ${kb}/8 KB`;
+
+  return over
+    ? `TETO DA AUTO-MEMÓRIA ESTOURADO neste projeto: ${estado}. Acima do teto o índice custa mais token por sessão do que economiza. Antes de gravar qualquer memória nova, pode: funda por subsistema (N memórias do mesmo tema viram 1 arquivo com seções) e mova os originais para \`_archive/\`, que não entra no índice. Nunca apague. Método em project_poda_automemoria_plano.`
+    : `AUTO-MEMÓRIA PERTO DO TETO neste projeto: ${estado}. Ainda cabe, mas ao gravar memória nova prefira ATUALIZAR um registro existente a criar um segundo, e verifique se o fato não pertence a outra camada (decisão e estado de projeto são do Cérebro, não daqui).`;
+}
+
+/**
+ * Resolve, mede e formata. É o que o hook chama; a decisão de falar ou calar
+ * mora em formatMemoryCeiling.
+ * @param {string} cwd
+ * @returns {string}
+ */
+function buildMemoryCeilingContext(cwd) {
+  const memoryDir = resolveMemoryDir(cwd);
+  if (!memoryDir) return '';
+  const { files, indexBytes } = measureMemory(memoryDir);
+  return formatMemoryCeiling(files, indexBytes);
+}
+
 // Só lê stdin quando o hook é invocado direto pelo Claude Code. Sob `require`
 // (os testes), o módulo expõe as funções puras sem consumir stdin nem sair.
 if (require.main === module) {
@@ -204,18 +310,30 @@ if (require.main === module) {
 
 function finish(raw) {
   let context = RULES;
+
+  // Um cwd só para as duas resoluções: o do payload manda, porque o
+  // process.cwd() do hook pode não ser o projeto da sessão. Feature e teto
+  // de memória olhando projetos diferentes seria pior que não avisar.
+  let cwd = process.cwd();
   try {
-    let cwd = process.cwd();
-    try {
-      const payload = JSON.parse(raw || '{}');
-      if (payload && typeof payload.cwd === 'string' && payload.cwd) cwd = payload.cwd;
-    } catch {
-      // payload ausente ou inválido: cai no cwd do processo
-    }
+    const payload = JSON.parse(raw || '{}');
+    if (payload && typeof payload.cwd === 'string' && payload.cwd) cwd = payload.cwd;
+  } catch {
+    // payload ausente ou inválido: cai no cwd do processo
+  }
+
+  try {
     const feature = buildFeatureContext(cwd);
     if (feature) context += `\n\n${feature}`;
   } catch {
     // resolução de feature NUNCA derruba as regras de comunicação
+  }
+
+  try {
+    const ceiling = buildMemoryCeilingContext(cwd);
+    if (ceiling) context += `\n\n${ceiling}`;
+  } catch {
+    // teto da memória é aviso, não gate: erro aqui não afeta o resto
   }
 
   try {
@@ -234,6 +352,13 @@ function finish(raw) {
 }
 
 module.exports = {
+  MEMORY_MAX_FILES,
+  MEMORY_MAX_INDEX_BYTES,
+  MEMORY_WARN_RATIO,
+  resolveMemoryDir,
+  measureMemory,
+  formatMemoryCeiling,
+  buildMemoryCeilingContext,
   toSlug,
   featureFromBranch,
   readConfigFeature,

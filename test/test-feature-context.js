@@ -206,6 +206,90 @@ section('regra de comunicação: fonte única contra a cópia do hook');
 }
 
 // ─────────────────────────────────────────────────────────────────────────
+section('teto da auto-memória: só fala quando há o que dizer');
+
+/**
+ * Monta um diretório de memória fake com N memórias e um índice de tamanho
+ * controlado, e devolve o caminho. Testa `measureMemory` e o texto do aviso
+ * sem depender do ~/.claude real do usuário.
+ */
+function makeMemoryDir({ files = 0, indexBytes = 0, archived = 0 } = {}) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'wizz-memoria-'));
+  for (let i = 0; i < files; i++) fs.writeFileSync(path.join(dir, `memoria_${i}.md`), 'x');
+  if (indexBytes > 0) fs.writeFileSync(path.join(dir, 'MEMORY.md'), 'x'.repeat(indexBytes));
+  if (archived > 0) {
+    const archive = path.join(dir, '_archive');
+    fs.mkdirSync(archive);
+    for (let i = 0; i < archived; i++) fs.writeFileSync(path.join(archive, `velha_${i}.md`), 'x');
+  }
+  return dir;
+}
+
+{
+  const dir = makeMemoryDir({ files: 19, indexBytes: 3546 });
+  const m = hook.measureMemory(dir);
+  assert(m.files === 19, 'measureMemory conta as memórias', `esperado 19, veio ${m.files}`);
+  assert(m.indexBytes === 3546, 'measureMemory mede o índice', `esperado 3546, veio ${m.indexBytes}`);
+}
+
+{
+  // A propriedade que faz o aviso ser resolvível: se `_archive/` contasse, podar
+  // não apagaria o aviso e ele viraria ruído permanente que ninguém mais lê.
+  const dir = makeMemoryDir({ files: 10, indexBytes: 500, archived: 90 });
+  const m = hook.measureMemory(dir);
+  assert(m.files === 10, '_archive/ não entra na conta (senão a poda nunca resolve o aviso)', `veio ${m.files}`);
+}
+
+{
+  // MEMORY.md é o índice, não uma memória: contá-lo faria o teto de 40 chegar em 39.
+  const dir = makeMemoryDir({ files: 40, indexBytes: 100 });
+  assert(hook.measureMemory(dir).files === 40, 'MEMORY.md não conta como memória');
+}
+
+assert(hook.formatMemoryCeiling(19, 3546) === '', 'bem abaixo do teto: silêncio (custo zero, caso comum)');
+
+{
+  const msg = hook.formatMemoryCeiling(37, 6158);
+  assert(msg !== '' && /PERTO DO TETO/.test(msg), 'a 37/40 avisa ANTES de estourar', `veio: ${msg.slice(0, 60)}`);
+  assert(!/ESTOURADO/.test(msg), 'perto do teto não usa o texto de estourado');
+}
+
+{
+  const msg = hook.formatMemoryCeiling(41, 100);
+  assert(/ESTOURADO/.test(msg), 'acima de 40 memórias: aviso de estourado');
+  assert(/_archive/.test(msg) && /Nunca apague/.test(msg), 'o aviso diz o que fazer (fundir + arquivar, nunca apagar)');
+}
+
+// Os dois tetos são independentes: poucas memórias com índice gordo também estoura.
+assert(/ESTOURADO/.test(hook.formatMemoryCeiling(5, 9000)), 'índice acima de 8 KB estoura sozinho, mesmo com poucas memórias');
+assert(hook.formatMemoryCeiling(0, 0) === '', 'medida zerada (dir ilegível) não vira aviso');
+
+{
+  const vazio = fs.mkdtempSync(path.join(os.tmpdir(), 'wizz-memoria-vazia-'));
+  assert(hook.buildMemoryCeilingContext(vazio) === '', 'projeto sem auto-memória: silêncio, nunca erro');
+  assert(hook.resolveMemoryDir(vazio) === '', 'resolveMemoryDir devolve vazio quando não há memória (não inventa caminho)');
+}
+
+{
+  // O teto vive no CLAUDE.md global; o hook roda longe do repo e precisa da
+  // constante embutida. Se as duas divergirem, o aviso passa a mentir.
+  const claudeMd = path.join(os.homedir(), '.claude', 'CLAUDE.md');
+  if (fs.existsSync(claudeMd)) {
+    const src = fs.readFileSync(claudeMd, 'utf8');
+    assert(
+      new RegExp(`${hook.MEMORY_MAX_FILES} mem`).test(src),
+      `o teto de arquivos do hook (${hook.MEMORY_MAX_FILES}) bate com o CLAUDE.md global`,
+    );
+    assert(
+      new RegExp(`${hook.MEMORY_MAX_INDEX_BYTES / 1024} ?KB`).test(src),
+      `o teto de índice do hook (${hook.MEMORY_MAX_INDEX_BYTES / 1024} KB) bate com o CLAUDE.md global`,
+    );
+  } else {
+    console.log('  (sem ~/.claude/CLAUDE.md nesta máquina — checagem de paridade do teto pulada)');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────
 console.log(`\n${colors.cyan}${'='.repeat(55)}${colors.reset}`);
 console.log(`  Passed: ${colors.green}${passed}${colors.reset}`);
 console.log(`  Failed: ${failed > 0 ? colors.red : colors.green}${failed}${colors.reset}`);
