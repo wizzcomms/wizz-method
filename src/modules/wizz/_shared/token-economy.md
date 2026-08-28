@@ -17,12 +17,10 @@ Nunca abra arquivos grandes "para entender o contexto" sem antes tentar os 3 pas
 
 ## Output
 
-- **Não narre o passo a passo enquanto trabalha.** Nada de "agora vou fazer X, depois Y". Isso gasta token e polui a conversa. Trabalhe direto e só mostre o resultado.
-- **Pause e pergunte no que é importante.** Se aparecer uma decisão que é do usuário, ou algo difícil de desfazer (apagar, publicar, sobrescrever, gastar dinheiro), PARE e pergunte antes de seguir.
-- **Feche com resumo curto.** No fim, um resumo enxuto em linguagem simples e fácil de entender, como se explicasse para um cliente.
-- Resposta enxuta, em PT-BR fácil. Sem repetir o que o usuário já sabe.
-- Não narre opções que você não vai seguir. Recomende e aja.
-- Não re-explique o que já foi dito na sessão.
+As regras de como responder (não narrar, pausar só no que é decisão do usuário, fechar com resumo curto, resposta enxuta por default) moram em **`_shared/communication-rules.md`**, que já entra no prompt de todo agente pelo `include`. Não estão repetidas aqui de propósito: a mesma regra escrita em dois arquivos que carregam juntos é o dobro do token pelo mesmo efeito.
+
+O que é economia de token, e por isso fica aqui:
+
 - Para tarefas grandes, delegue a subagentes (Explore/Plan) para não inchar o contexto principal.
 
 ## Delegação

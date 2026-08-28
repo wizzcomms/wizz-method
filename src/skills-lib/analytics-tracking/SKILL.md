@@ -197,6 +197,8 @@ dataLayer.push({
 - Be specific but concise: `blog_footer_cta`, not `cta1`
 - Document all UTMs in a spreadsheet
 
+**For closed value lists, the naming standard, BR/PT checkout specifics and governance**: See [references/utm-taxonomy.md](references/utm-taxonomy.md)
+
 ---
 
 ## Debugging and Validation

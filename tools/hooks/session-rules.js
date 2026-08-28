@@ -19,6 +19,10 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
+// Cópia comprimida e INTENCIONAL da regra de comunicação. A fonte é
+// src/modules/wizz/_shared/communication-rules.md; este hook precisa ser
+// autocontido porque roda de ~/.claude/hooks, longe do repo. Editou lá,
+// edite aqui: test/test-feature-context.js falha se as duas divergirem.
 const RULES =
   'REGRA DE COMUNICAÇÃO (permanente, não-negociável): não narrar o passo a passo ' +
   'enquanto trabalha; pausar e perguntar SÓ em decisão do usuário ou risco ' +

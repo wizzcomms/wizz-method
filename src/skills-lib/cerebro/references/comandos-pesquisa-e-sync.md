@@ -38,6 +38,6 @@ Carregue este arquivo ao executar `/prospect` ou `/sync`. Antes de tudo, releia 
 1. Read `CONTEXT.md` no diretório atual (arquivo pequeno — OK ler completo)
 2. `wc -l "$VAULT/projetos/$PROJ.md"` → tail Read das últimas 60 linhas
 3. Identificar diferenças em: estado atual, pendências, decisões
-4. Edit cirúrgico em `projetos/[nome].md` (só seções alteradas): sobrescrever o bloco `## Última sessão ([data])` e acrescentar 1 linha na tabela Sessões
+4. Edit cirúrgico em `projetos/[nome].md` (só seções alteradas): sobrescrever o bloco `## Estado` no topo e acrescentar 1 linha na tabela Sessões
 5. `grep -n "Última sessão\|Pendente" "$VAULT/CEREBRO.md" | grep -i "$PROJ"` → Edit linha
 6. Confirmar em 2 linhas

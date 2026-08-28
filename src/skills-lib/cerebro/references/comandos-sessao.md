@@ -2,11 +2,30 @@
 
 Carregue este arquivo ao executar `/iniciar`, `/ver` ou `/salvar`. Antes de tudo, releia a REGRA DE OURO e a seção Vault no SKILL.md principal — esses comandos dependem delas.
 
+## O bloco Estado
+
+Todo arquivo em `projetos/` começa com um bloco `## Estado` de no **máximo 12 linhas**, logo abaixo do título. Ele é sobrescrito a cada `/salvar` e é a única coisa que o `/ver` precisa ler.
+
+```markdown
+## Estado
+- **Fase:** [em que ponto o projeto está, 1 linha]
+- **Stack:** [1 linha]
+- **Onde parou:** [1 linha]
+- **Próximo passo:** [1 linha, a primeira coisa a fazer ao voltar]
+- **Bloqueio:** [1 linha, ou "nenhum"]
+- **Última sessão:** [YYYY-MM-DD] — [1 linha]
+```
+
+Por que 12 linhas: o `/ver` vira 1 Read de 14 linhas em vez de um tail de 60. E o bloco fica no topo, onde qualquer humano abrindo a nota também lê primeiro.
+
+O que **não** entra no bloco: histórico, decisão, aprendizado, lista longa de pendências. Histórico é a tabela `Sessões`; decisão é `_decisions/`; aprendizado é a auto-memória do agente; a lista completa de pendências é a seção `O que falta`.
+
 ## /iniciar
 
 **Objetivo:** configurar projeto novo. Só cria arquivos — não lê nada além do CEREBRO.md mínimo.
 
 **Passos:**
+
 1. Descobrir vault (ver seção Vault)
 2. `grep -c "$PROJ" "$VAULT/CEREBRO.md"` → verificar se projeto já existe (0 = novo)
 3. Se novo: entrevistar em 1 mensagem (organização, info essencial, estilo, modo)
@@ -15,9 +34,18 @@ Carregue este arquivo ao executar `/iniciar`, `/ver` ou `/salvar`. Antes de tudo
 6. Confirmar
 
 **Template `projetos/[nome].md`:**
+
 ```markdown
 # [Nome] — Estado Atual
 > Atualizado: [data]
+
+## Estado
+- **Fase:** [fase]
+- **Stack:** [stack]
+- **Onde parou:** [1 linha]
+- **Próximo passo:** [1 linha]
+- **Bloqueio:** nenhum
+- **Última sessão:** [data] — [1 linha]
 
 ## Preferências
 - Organização: [resposta]
@@ -25,11 +53,8 @@ Carregue este arquivo ao executar `/iniciar`, `/ver` ou `/salvar`. Antes de tudo
 - Estilo: [resposta]
 - Modo: [registro / sugestivo]
 
-## Stack
-[breve descrição]
-
-## Onde parou
--
+## Contexto
+[o que o bloco Estado não cabe: stack detalhada, restrições, links]
 
 ## O que falta
 - [ ]
@@ -41,6 +66,7 @@ Carregue este arquivo ao executar `/iniciar`, `/ver` ou `/salvar`. Antes de tudo
 ```
 
 **Template bloco em CEREBRO.md:**
+
 ```markdown
 ### [Nome] [emoji]
 - **Stack:** [stack]
@@ -51,20 +77,14 @@ Carregue este arquivo ao executar `/iniciar`, `/ver` ou `/salvar`. Antes de tudo
 
 ## /ver
 
-**Objetivo:** mostrar estado atual rápido. Máximo: 1 Read.
+**Objetivo:** mostrar estado atual rápido. Máximo: 1 Read de 14 linhas.
 
 **Passos:**
-1. `wc -l "$VAULT/projetos/$PROJ.md"` → total de linhas
-2. Read com `offset=(n-60)`, `limit=60` → pega Onde parou + O que falta + Sessões
-3. Retornar em formato condensado:
 
-```
-## [Projeto] — [data última sessão]
-Stack: [1 linha]
-Onde parou: [bullets]
-O que falta: [checkboxes]
-Última sessão: [1 linha]
-```
+1. Read `projetos/[nome].md` com `limit=14` (o bloco Estado está no topo)
+2. Devolver o bloco quase como está, sem reescrever
+
+**Arquivo antigo, sem bloco Estado no topo:** cai no caminho lento uma única vez — `wc -l` e Read das últimas 60 linhas — e ao devolver, ofereça criar o bloco. Aceito, o próximo `/ver` volta a custar 1 Read curto.
 
 ## /salvar
 
@@ -73,6 +93,7 @@ O que falta: [checkboxes]
 **Passos (executar em ordem, sem desvios):**
 
 **1. Localizar projeto e bloco no CEREBRO.md (1 bash call)**
+
 ```bash
 VAULT=~/Documents/projects/Obsidian\ Vault
 PROJ=construcao   # inferir do diretório atual ou contexto
@@ -80,48 +101,51 @@ grep -n "### \|Última sessão\|Pendente" "$VAULT/CEREBRO.md" | grep -A2 -i "$PR
 wc -l "$VAULT/projetos/$PROJ.md"
 ```
 
-**2. Ler apenas o final do arquivo do projeto (1 Read)**
-- `offset = (total_linhas - 80)`, `limit = 80`
-- Isso captura: Última sessão, Onde parou, O que falta, tabela Sessões
+**2. Ler o topo e o fim do arquivo do projeto (2 Reads curtos)**
+
+- topo: `limit=14` → bloco Estado
+- fim: `offset = (total_linhas - 40)`, `limit = 40` → O que falta e tabela Sessões
 
 **3. Construir as alterações na memória, depois aplicar (Edits atômicos)**
 
-Em `projetos/[nome].md`, **sobrescrever** o bloco "Última sessão" que fica ACIMA da seção "Onde parou" (criar se não existir). Máximo 3 bullets, sempre o mesmo cabeçalho, sem empilhar blocos antigos:
-```markdown
-## Última sessão ([data])
-- [o que foi feito]
-- [o que travou, se travou]
-- [próximo passo óbvio]
-```
+Em `projetos/[nome].md`:
 
-Substituir "Onde parou" e "O que falta" com o estado novo.
+- **Sobrescrever o bloco `## Estado`** inteiro, mantendo os mesmos 6 campos e o teto de 12 linhas. Não empilhar bloco novo: o histórico é a tabela.
+- Atualizar a seção `O que falta` (marcar o que saiu, acrescentar o que entrou).
+- Acrescentar 1 linha ao fim da tabela `Sessões`:
 
-Adicionar 1 linha na tabela Sessões (append na última linha da tabela) — é ela que guarda o histórico, o bloco acima é só o detalhe da vez:
 ```markdown
 | [data] | [resumo 1 linha] |
 ```
 
+Arquivo sem bloco `## Estado`: criar agora, logo abaixo do título, com o que a sessão apurou.
+
 **4. Atualizar bloco do projeto em CEREBRO.md (1 Edit)**
+
 - Usar grep do passo 1 para saber as linhas exatas
 - Edit cirúrgico apenas nas linhas "Última sessão" e "Pendente"
 
 **5. Atualizar CONTEXT.md (Edit cirúrgico — só campos alterados)**
+
 - Nunca reescrever o arquivo inteiro
 - Editar apenas: data no cabeçalho, pendências em "O que falta", commit hash se mudou
 
-**6. Se houve decisão relevante:** criar arquivo em `_decisions/` (Write direto, sem Read prévio).
+**6. Se houve decisão relevante:** criar arquivo em `_decisions/` (ver `comandos-rotina-e-captura.md` para o frontmatter e a regra de grep-antes-de-gravar).
 Aprendizado técnico (armadilha de stack, bug não óbvio, pegadinha de ambiente) **não vai para o vault**: vai para a auto-memória do agente, que é carregada sozinha no início de cada sessão. No vault ninguém lia.
 
 **7. Higiene do índice (compactação)**
+
 ```bash
 wc -l "$VAULT/CEREBRO.md"
 ```
+
 - Se > 150 linhas: mover o conteúdo mais antigo/menos essencial (projeto ✅ concluído ou ❌ descontinuado com histórico longo, ou entradas de "Decisões recentes" além das ~15 mais novas) para `_index/cerebro-archive.md`, deixando no lugar só 1 linha de referência `[[_index/cerebro-archive]]`. Nunca apagar, só mover.
 - Se ≤ 150 linhas: pular este passo.
 
 ```bash
 grep -c "^| " "$VAULT/projetos/$PROJ.md"
 ```
+
 - Tabela Sessões com mais de 15 linhas: mover as mais antigas para `_index/cerebro-archive.md`, sob `## Sessões antigas — [projeto]`, deixando as 15 mais novas no arquivo do projeto. Nunca apagar, só mover.
 
 **8. Confirmar em 2 linhas** o que foi salvo.

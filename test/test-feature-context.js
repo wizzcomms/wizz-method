@@ -163,6 +163,48 @@ section('buildFeatureContext: as três propriedades que importam');
   assert(ctxFora.includes('não é projeto Wizz'), 'fora de projeto Wizz não promete subpasta de artefato');
 }
 
+section('regra de comunicação: fonte única contra a cópia do hook');
+{
+  // A regra de comunicação existe em DOIS lugares por necessidade técnica: o
+  // arquivo compartilhado (que entra no prompt de todo agente via `include`) e
+  // a constante RULES deste hook (que roda de ~/.claude/hooks, longe do repo,
+  // e por isso precisa ser autocontida). Duas cópias só são aceitáveis enquanto
+  // dizem a mesma coisa. Este teste é o que impede a segunda de envelhecer.
+  const hookSrc = fs.readFileSync(path.join(__dirname, '..', 'tools', 'hooks', 'session-rules.js'), 'utf8');
+  const sharedSrc = fs.readFileSync(path.join(__dirname, '..', 'src', 'modules', 'wizz', '_shared', 'communication-rules.md'), 'utf8');
+
+  const rulesMatch = hookSrc.match(/const RULES =([\s\S]*?);\n/);
+  assert(Boolean(rulesMatch), 'o hook ainda declara a constante RULES');
+  const hookRules = rulesMatch ? rulesMatch[1] : '';
+
+  // Cada pilar é uma ideia, não uma frase: as duas cópias têm registros
+  // diferentes (uma é instrução de sistema, a outra é prompt de agente), então
+  // comparar texto literal daria falso positivo toda vez que alguém reescreve.
+  const PILARES = [
+    { nome: 'não narrar o passo a passo', hook: /não narrar o passo a passo/i, shared: /não narre o passo a passo/i },
+    {
+      nome: 'pausar só em decisão do usuário ou risco irreversível',
+      hook: /risco\s+' \+\s*'irrevers|risco irrevers/i,
+      shared: /risco irrevers/i,
+    },
+    { nome: 'fechar com resumo curto', hook: /resumo curto/i, shared: /resumo curto/i },
+    { nome: 'sem em-dash', hook: /em-dash/i, shared: /em-dash|travessão/i },
+    {
+      nome: 'enxuto por default, expandir sob demanda',
+      hook: /expandir só sob demanda/i,
+      shared: /expanda só quando pedirem|expandir só sob demanda/i,
+    },
+  ];
+
+  for (const pilar of PILARES) {
+    assert(pilar.hook.test(hookRules), `hook cobre o pilar: ${pilar.nome}`);
+    assert(pilar.shared.test(sharedSrc), `fonte única cobre o pilar: ${pilar.nome}`);
+  }
+
+  assert(/FONTE ÚNICA/.test(sharedSrc), 'a fonte única se declara como fonte única (quem editar sabe que existe cópia)');
+  assert(/communication-rules\.md/.test(hookSrc), 'o hook aponta de volta para a fonte única');
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 console.log(`\n${colors.cyan}${'='.repeat(55)}${colors.reset}`);
 console.log(`  Passed: ${colors.green}${passed}${colors.reset}`);

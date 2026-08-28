@@ -36,19 +36,38 @@ Carregue este arquivo ao executar `/dia`, `/dump`, `/decisao` ou `/conteudo`. An
 
 ## /decisao
 
-**Objetivo:** registrar decisão. Zero reads de arquivos existentes.
+**Objetivo:** registrar decisão. 1 grep antes, nenhum Read.
 
 **Passos:**
 1. Receber descrição + alternativas + projeto (perguntar tudo de uma vez se não passado)
-2. Write direto em `_decisions/YYYY-MM-DD-[slug].md` (template abaixo)
-3. `grep -n "## Decisões recentes" "$VAULT/CEREBRO.md"` → linha
-4. Edit para inserir referência wiki-link logo abaixo dessa linha
-5. Se há projeto: `grep -n "## Decisões" "$VAULT/projetos/$PROJ.md"` → Edit 1 linha
+2. **Grep antes de gravar** (obrigatório, 1 bash call):
+
+```bash
+grep -ril "<2 ou 3 palavras do tema>" "$VAULT/_decisions/" | head -5
+```
+
+- Achou decisão sobre o mesmo tema: **não crie arquivo novo**. Abra o que existe e decida entre dois caminhos:
+  - a decisão nova **substitui** a antiga → marque a antiga com `status: superseded` e `supersedida_por: <slug novo>`, e crie a nova com `supersede: <slug antigo>`
+  - a decisão nova **detalha** a antiga → edite a antiga, não crie a segunda
+- Não achou nada: siga para o passo 3.
+
+3. Write direto em `_decisions/YYYY-MM-DD-[slug].md` (template abaixo)
+4. `grep -n "## Decisões recentes" "$VAULT/CEREBRO.md"` → linha
+5. Edit para inserir referência wiki-link logo abaixo dessa linha
+6. Se há projeto: `grep -n "## Decisões" "$VAULT/projetos/$PROJ.md"` → Edit 1 linha
 
 **Template `_decisions/YYYY-MM-DD-[slug].md`:**
 ```markdown
+---
+data: YYYY-MM-DD
+projeto: [nome]
+tema: [2 a 4 palavras-chave separadas por vírgula, é por elas que o grep acha]
+status: ativa
+supersede: [slug da decisão que esta substitui, ou omitir]
+supersedida_por: [preenchido depois, quando outra decisão substituir esta]
+---
+
 # [Título]
-> Data: [data] | Projeto: [[projetos/nome]] | Status: ativa
 
 ## Decisão
 [1-2 linhas]

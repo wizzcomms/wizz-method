@@ -76,7 +76,8 @@ grep -m1 "^vault:" "/caminho/CEREBRO.md"
   _knowledge/
     about-me.md
     goals.md
-  _decisions/             ← YYYY-MM-DD-[slug].md
+  _decisions/             ← YYYY-MM-DD-[slug].md, com frontmatter (data, projeto, tema,
+                            status, supersede). O campo `tema` é o que o grep acha.
                             (não existe mais `_learnings/`: era escrito e nunca
                              lido por nenhum comando, e foi removido em 2026-08-28.
                              Armadilha de stack e bug não óbvio vão para a
@@ -84,7 +85,7 @@ grep -m1 "^vault:" "/caminho/CEREBRO.md"
   _content/               ← YYYY-MM-DD-[slug].md
   _prospects/             ← YYYY-MM-DD-[slug].md
   projetos/
-    [nome].md             ← estado atual do projeto (estrutura: cabeçalho + stack + Última sessão + Onde parou + O que falta + Sessões)
+    [nome].md             ← estado atual do projeto (estrutura: cabeçalho + bloco `Estado` de 12 linhas no topo + Preferências + Contexto + O que falta + Sessões)
 ```
 
 **Regra de links:** sempre wiki-links `[[arquivo]]` dentro do vault. CONTEXT.md usa Markdown puro.
@@ -102,6 +103,7 @@ Cada comando tem seu procedimento passo-a-passo completo em um arquivo de refer�
 - Wiki-links `[[arquivo]]` dentro do vault. Markdown puro no CONTEXT.md.
 - Datas absolutas no formato `YYYY-MM-DD`, nunca relativas ("ontem", "semana passada"). Fatos voláteis (versão publicada, estado de release, etc.) levam prefixo `em YYYY-MM-DD:` no texto; na releitura, o agente trata como snapshot daquele momento, não como fato atual.
 - Nunca apagar histórico — só acrescentar.
-- Narrativa de sessão mora no arquivo do projeto: bloco `Última sessão` (sobrescrito) + 1 linha na tabela `Sessões`. Não existe mais `_index/sessions.md`: era escrito e nunca lido por nenhum comando, e saiu em 2026-08-28.
+- **Grep antes de gravar.** Antes de criar decisão, ideia ou registro novo, busque o tema na pasta de destino. Se o fato já existe, atualize o registro que existe; decisão que substitui outra marca a antiga como `superseded` em vez de conviver com ela.
+- Narrativa de sessão mora no arquivo do projeto: bloco `Estado` no topo (12 linhas, sobrescrito a cada `/salvar`) + 1 linha na tabela `Sessões`. Não existe mais `_index/sessions.md`: era escrito e nunca lido por nenhum comando, e saiu em 2026-08-28.
 - Resumos: 1 linha por item.
 - CEREBRO.md deve ficar sempre < 150 linhas úteis — mover tabelas longas para `_index/`.
