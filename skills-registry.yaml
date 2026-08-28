@@ -154,33 +154,41 @@ areas:
         rel:
           before: [remotion-best-practices]
         platform: [darwin, linux]
-        check: "test -d $HOME/.claude/skills/hyperframes"
+        # O check confere o SHA fixado, não só a existência da pasta: o bundle é
+        # copiado (não clonado), então o pin é gravado num marcador no install.
+        check: 'grep -qx 59a69a145bfbd0f10dee72246b68ee5d9bd71063 "$HOME/.claude/skills/hyperframes/.wizz-pin" 2>/dev/null'
         # Pin de supply chain (2026-08-23): clone temporário + checkout do SHA
         # + `skills add` do path local. Atualizar conscientemente.
         # Neutraliza remotion-to-hyperframes: o bundle instala uma skill de
         # migração Remotion→HyperFrames proibida pela regra do pipeline
         # (_shared/video-pipeline.md: HyperFrames desenha, Remotion monta).
-        install: 'd="$(mktemp -d)" && git clone https://github.com/heygen-com/hyperframes.git "$d" && git -C "$d" checkout 59a69a145bfbd0f10dee72246b68ee5d9bd71063 && npx skills add "$d" -g -y --copy && rm -rf "$d" && rm -rf "$HOME/.claude/skills/remotion-to-hyperframes"'
+        install: 'd="$(mktemp -d)" && git clone https://github.com/heygen-com/hyperframes.git "$d" && git -C "$d" checkout 59a69a145bfbd0f10dee72246b68ee5d9bd71063 && npx skills add "$d" -g -y --copy && printf "%s\\n" 59a69a145bfbd0f10dee72246b68ee5d9bd71063 > "$HOME/.claude/skills/hyperframes/.wizz-pin" && rm -rf "$d" && rm -rf "$HOME/.claude/skills/remotion-to-hyperframes"'
       - id: claude-video
         when: "Analisar/entender vídeo EXISTENTE: baixa, extrai frames e transcreve para resumir, achar momentos ou diagnosticar footage. NÃO cria vídeo. Precisa ffmpeg + yt-dlp (+ Groq/OpenAI p/ transcrição sem legenda)."
         platform: [darwin, linux]
-        check: "test -d $HOME/.claude/skills/watch"
+        # O check confere o SHA fixado, não só a existência da pasta: o bundle é
+        # copiado (não clonado), então o pin é gravado num marcador no install.
+        check: 'grep -qx 83da59fa78c3eee9e20f515fe75c438bb5166efd "$HOME/.claude/skills/watch/.wizz-pin" 2>/dev/null'
         # Pin de supply chain (2026-08-23): clone temporário + checkout do SHA
         # + `skills add` local. Atualizar conscientemente.
-        install: 'd="$(mktemp -d)" && git clone https://github.com/bradautomates/claude-video.git "$d" && git -C "$d" checkout 83da59fa78c3eee9e20f515fe75c438bb5166efd && npx skills add "$d" -g -y --copy && rm -rf "$d"'
+        install: 'd="$(mktemp -d)" && git clone https://github.com/bradautomates/claude-video.git "$d" && git -C "$d" checkout 83da59fa78c3eee9e20f515fe75c438bb5166efd && npx skills add "$d" -g -y --copy && printf "%s\\n" 83da59fa78c3eee9e20f515fe75c438bb5166efd > "$HOME/.claude/skills/watch/.wizz-pin" && rm -rf "$d"'
       - id: buttercut
         when: "EDITAR vídeo por IA: cortes, selects, cenas, roughcut via XML/FFmpeg. Sugerir quando o pedido for editar/cortar vídeo. Clone-and-run no PROJETO (não é skill add), pesado: Ruby + Python + FFmpeg + WhisperX. AVISOS: ~GB de modelos (WhisperX), build demorado, só Apple Silicon."
         platform: darwin-arm64
-        check: "test -d ./buttercut"
+        # Clone-and-run: o próprio repo responde o SHA, então o check compara com o
+        # pin. O install repara um clone existente em vez de falhar no git clone.
+        check: 'test "$(git -C ./buttercut rev-parse HEAD 2>/dev/null)" = f71d9537e2c22c3c4c1c659c4bdfb11e90ccd961'
         # Pin de supply chain (2026-08-23): checkout de SHA fixo; atualizar conscientemente.
-        install: "git clone https://github.com/barefootford/buttercut.git buttercut && git -C buttercut checkout f71d9537e2c22c3c4c1c659c4bdfb11e90ccd961"
+        install: "{ [ -d buttercut/.git ] || git clone https://github.com/barefootford/buttercut.git buttercut; } && git -C buttercut fetch --tags origin && git -C buttercut checkout f71d9537e2c22c3c4c1c659c4bdfb11e90ccd961"
         verify: "command -v ffmpeg >/dev/null 2>&1 && command -v ruby >/dev/null 2>&1 && command -v python3 >/dev/null 2>&1"
       - id: voicebox
         when: "Voz/TTS/clonagem de voz local para narração/VO de vídeo (7 engines TTS + Whisper STT). App desktop que expõe endpoint MCP local em runtime. Clone-and-run no projeto."
         platform: [darwin, linux]
-        check: "test -d ./voicebox"
+        # Clone-and-run: o próprio repo responde o SHA, então o check compara com o
+        # pin. O install repara um clone existente em vez de falhar no git clone.
+        check: 'test "$(git -C ./voicebox rev-parse HEAD 2>/dev/null)" = 2bcb98d1a8b6fe05e15fbc1559e3085669e4035d'
         # Pin de supply chain (2026-08-23): checkout de SHA fixo; atualizar conscientemente.
-        install: "git clone https://github.com/jamiepine/voicebox.git voicebox && git -C voicebox checkout 2bcb98d1a8b6fe05e15fbc1559e3085669e4035d"
+        install: "{ [ -d voicebox/.git ] || git clone https://github.com/jamiepine/voicebox.git voicebox; } && git -C voicebox fetch --tags origin && git -C voicebox checkout 2bcb98d1a8b6fe05e15fbc1559e3085669e4035d"
       - id: ctc-align
         when: "Timestamps palavra a palavra CONFIÁVEIS de narração TTS (texto conhecido): sincronizar legenda, corte de cena, animação e elemento gráfico com a fala. Fonte única de timing em vídeo — substitui timestamps do Whisper e estimativa manual. Skill da lib: ctc-align (instalação + helper align.py + regras de âncora monotônica e duração mínima). Roda em CPU, sem CUDA."
         platform: [darwin, linux]
@@ -231,9 +239,11 @@ areas:
       - id: distribb
         when: "EXECUTAR distribuição de SEO: publicar artigos + construir backlinks pela rede da Distribb, conectar Google Search Console, autopublicar notícias. Complementa (não duplica) as skills de SEO que só geram/auditam. Requer Distribb API + GSC (+ DataForSEO/Ahrefs no plano free)."
         platform: [darwin, linux]
-        check: "ls $HOME/.claude/skills 2>/dev/null | grep -qi distribb"
+        # O check confere o SHA fixado, não só a existência da pasta: o bundle é
+        # copiado (não clonado), então o pin é gravado num marcador no install.
+        check: 'grep -qx 061a055768e13cf09108932a90aeb2e957183858 "$HOME/.claude/skills/distribb/.wizz-pin" 2>/dev/null'
         # Pin de supply chain (2026-08-23): clone temporário + checkout do SHA. Atualizar conscientemente.
-        install: 'd="$(mktemp -d)" && git clone https://github.com/Bomx/distribb-skill.git "$d" && git -C "$d" checkout 061a055768e13cf09108932a90aeb2e957183858 && npx skills add "$d" -g -y --copy && rm -rf "$d"'
+        install: 'd="$(mktemp -d)" && git clone https://github.com/Bomx/distribb-skill.git "$d" && git -C "$d" checkout 061a055768e13cf09108932a90aeb2e957183858 && npx skills add "$d" -g -y --copy && printf "%s\\n" 061a055768e13cf09108932a90aeb2e957183858 > "$HOME/.claude/skills/distribb/.wizz-pin" && rm -rf "$d"'
 
   growth:
     agent: wizz-growth
