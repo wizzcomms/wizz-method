@@ -16,6 +16,7 @@ Um artefato mestre `OFFER-SPEC.md` contendo:
 4. **Ancoragem de Preço, Modelagem de Planos & Order Bumps / Upsells**.
 5. **Garantia Reversa / Inversão de Risco** (Risco Zero ou Ganho Duplo).
 6. **Ponte de Tráfego: Matriz de Hooks e Ângulos de Criativos**.
+7. **Plano de Medição** (eventos mínimos, padrão de UTM, metas por transição, hipótese e número que reprova).
 
 ## Princípios de Forja de Oferta
 
@@ -28,10 +29,20 @@ Um artefato mestre `OFFER-SPEC.md` contendo:
 
 ### Passo 0 — Coleta de Insumos & Ambição
 
-Consulte o contexto existente ou pergunte ao usuário:
+**Antes de perguntar qualquer coisa, leia o que já existe.** Oferta boa nasce do resultado da anterior, não de página em branco.
+
+Se a skill `cerebro` estiver instalada, rode `/cerebro ver` do projeto e faça um grep por tema em `_decisions/`. Procure especificamente: oferta anterior do mesmo público, preço que já foi testado, garantia que já foi usada, e decisão registrada que proíba algum caminho. Traga o que achou como insumo e diga na resposta de onde veio. Sem a skill instalada, pule este bloco e siga com as perguntas abaixo.
+
+Depois, consulte o contexto existente ou pergunte ao usuário:
 1. **Pesquisa de Público Prévia:** Existe um relatório da skill `pesquisa-de-publico-do-piva` ou notas de VoC? Se sim, importe como insumo primário. Se não, defina Avatar, Dor Latente e Nível de Consciência inicial.
 2. **Modelo de Negócio:** Low-ticket (R$ 10 a R$ 97), Front-end médio (R$ 197 a R$ 497) ou High-ticket / Mentoria (R$ 1.000 a R$ 10.000+)?
 3. **Veículo de Entrega:** Curso gravado, comunidade, templates/ferramentas, mentoria ao vivo, SaaS ou híbrido?
+
+### Passo 0.5 — Régua local tem precedência
+
+Se a skill `lowticket-metodologia` estiver instalada neste projeto, leia as entradas de **oferta, preço e garantia** do INDEX dela e use esses valores como régua acima dos padrões desta skill (faixas de preço, múltiplo de upsell, prazo de garantia). Declare na resposta qual régua está valendo. Onde a régua local contradisser esta skill, **a régua local vence**.
+
+Sem essa skill instalada, siga com os padrões desta skill. Nada muda.
 
 ### Passo 1 — Destilação do Mecanismo Único
 
@@ -70,6 +81,20 @@ Consulte `references/ponte-trafego.md`:
   3. *Gancho da Demonstração do Mecanismo*
   4. *Gancho da História de Transformação / Case*
 
-### Passo 6 — Compilação e Entrega
+### Passo 6 — Plano de Medição
+
+Consulte `references/plano-de-medicao.md`.
+
+Uma oferta sem definição de sucesso não pode ser diagnosticada depois: quando ela não converte, ninguém sabe se o furo foi criativo, página, checkout ou a oferta em si. Este passo fecha esse buraco enquanto a promessa ainda está fresca.
+
+Derive da própria oferta, sem inventar número:
+- **Eventos mínimos** que precisam existir para medir esta promessa.
+- **Padrão de UTM** por canal de entrada.
+- **Metas por transição do funil**, calibradas para este ticket, com a fonte da régua declarada.
+- **A hipótese principal** em uma frase, e o **número que reprova a oferta**.
+
+Se a skill `tracking-audit` estiver instalada, delegue a implantação e a conferência para ela: aqui se declara o que precisa ser verdade, lá se prova que é.
+
+### Passo 7 — Compilação e Entrega
 
 Grave o artefato final em `{output_folder}/offers/OFFER-[NOME_SLUG].md` e apresente um resumo executivo com os 4 pontos de decisão para validação imediata do usuário.

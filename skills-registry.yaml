@@ -347,6 +347,14 @@ areas:
         when: "Gerar/iterar criativos e headlines de anúncio em escala (RSA, variações)."
       - id: analytics-tracking
         when: "Tracking de conversão pros anúncios (compartilhada com growth)."
+      - id: tracking-audit
+        when: "Auditar rastreamento de oferta de resposta direta. Modo implantação: pixel, CAPI, domínio verificado, eventos priorizados, UTM com ID, repasse do parâmetro nativo pelo checkout, higiene de nomenclatura, compra-teste por rota. Modo diagnóstico: qual transição do funil está furando, medição contra conversão, ROI verdadeiro contra falso, qual dado falta pra decidir."
+        not_when:
+          - "Plano de medição de SaaS ou produto instrumentado por evento de uso: é analytics-tracking."
+          - "Decidir bid, orçamento ou estrutura de campanha: é paid-ads."
+        rel:
+          pairs_with: [analytics-tracking, paid-ads]
+          before: [page-cro]
       # Módulo lowticket (src/modules/lowticket) — instaladas COM O MÓDULO, não
       # por skills-lib. O campo `module` é o gate: resolveSkillIds as ignora ao
       # copiar de src/skills-lib, e o router continua enxergando as entradas.

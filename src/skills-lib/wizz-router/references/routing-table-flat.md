@@ -61,6 +61,7 @@ Use esta tabela pra mapear skills/CLIs/MCPs direto **fora de projeto Wizz** (sem
 | Ideias de marketing, estratégia de marketing, posicionamento | `marketing-ideas` + `marketing-psychology` + `product-marketing-context` | 1 |
 | Paid ads, anúncios, Google Ads, Meta Ads, TikTok Ads, mídia paga | `paid-ads` + `ad-creative` + `analytics-tracking` + **MCP meta-ads** | 1 |
 | Gestão de campanha Meta/Facebook/Instagram via API real | **MCP meta-ads** (`mcp-meta-ads`) direto | 1 |
+| Pixel/UTM/atribuição erradas, "a venda não bate com o gerenciador", "onde está furando o funil", tráfego orgânico inflado, conferir tracking antes de subir campanha | `tracking-audit` (+ `analytics-tracking` se for SaaS/produto) | 1 |
 | Lançamento de feature, lançamento de produto, go-to-market | `launch-strategy` + `social-content` + `email-sequence` | 1 |
 | Site pronto pra subir, pré-lançamento de SITE, "revisa antes do deploy", checklist de go-live, ou item pontual pré-lançamento (og:image/prévia de link, FAQ com schema, robots.txt, LGPD, alt text) | `site-launch-kit` | 1 |
 | Preço, planos, pricing, monetização | `pricing-strategy` + `paywall-upgrade-cro` | 1 |
