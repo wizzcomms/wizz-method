@@ -35,7 +35,7 @@ Antes de qualquer rede ou MCP, inspecionar o que o usuário já tem:
 
 1. **Pasta `modelos lp/` (ou equivalente)**: rodar `find ~ -maxdepth 6 -type d -iname "modelos*lp*"` para localizar. Listar subpastas, ler package.json e README.md de cada projeto promissor. Identificar quais já tem Lenis, GSAP, R3F, OGL, Embla, Framer Motion, shaders prontos.
 2. **Projeto atual do usuário**: se houver, listar dependências instaladas (`cat package.json`) e componentes/utilities existentes que podem ser reaproveitados.
-3. **Cérebro / vault do usuário**: usar grep nos arquivos do vault (`projetos/`, `_learnings/`) para achar padrões técnicos já documentados em projetos anteriores.
+3. **Cérebro / vault do usuário**: usar grep nos arquivos do vault (`projetos/`, `_decisions/`) para achar padrões técnicos já documentados em projetos anteriores.
 
 Saída desta fase: lista de **componentes, libs e padrões reaproveitáveis** com path absoluto.
 

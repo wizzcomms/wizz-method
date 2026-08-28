@@ -110,7 +110,8 @@ Adicionar linha na tabela Sessões (append na última linha da tabela).
 | [data] | [projeto] | [resumo 1 linha] |
 ```
 
-**7. Se houve decisão ou aprendizado relevante:** criar arquivo em `_decisions/` ou `_learnings/` (Write direto, sem Read prévio).
+**7. Se houve decisão relevante:** criar arquivo em `_decisions/` (Write direto, sem Read prévio).
+Aprendizado técnico (armadilha de stack, bug não óbvio, pegadinha de ambiente) **não vai para o vault**: vai para a auto-memória do agente, que é carregada sozinha no início de cada sessão. No vault ninguém lia.
 
 **8. Higiene do índice (compactação)**
 ```bash

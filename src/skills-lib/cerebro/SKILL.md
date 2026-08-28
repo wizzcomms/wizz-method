@@ -50,7 +50,7 @@ Read offset=(linha-5) limit=15       # → lê só o trecho necessário
 - `CEREBRO.md` — **nunca Read completo**. Grep para achar o bloco do projeto (5–8 linhas), Edit direto.
 - `projetos/[nome].md` — Read das **últimas 80 linhas** (tail). Sessões e estado atual ficam no final.
 - `CONTEXT.md` — Edit cirúrgico nos campos alterados. Nunca reescrever completo.
-- `_decisions/`, `_learnings/`, `_content/` — Write direto, sem ler arquivo existente.
+- `_decisions/`, `_content/` — Write direto, sem ler arquivo existente.
 
 ## Vault
 
@@ -78,7 +78,10 @@ grep -m1 "^vault:" "/caminho/CEREBRO.md"
     about-me.md
     goals.md
   _decisions/             ← YYYY-MM-DD-[slug].md
-  _learnings/             ← YYYY-MM-DD-[slug].md
+                            (não existe mais `_learnings/`: era escrito e nunca
+                             lido por nenhum comando, e foi removido em 2026-08-28.
+                             Armadilha de stack e bug não óbvio vão para a
+                             auto-memória do agente, que carrega sozinha.)
   _content/               ← YYYY-MM-DD-[slug].md
   _prospects/             ← YYYY-MM-DD-[slug].md
   projetos/
