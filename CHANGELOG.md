@@ -4,6 +4,36 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [1.18.0] - 2026-08-28
+
+Auditoria de contexto (P0, P1 e P2) e o desenho de memória fechado: o módulo lowticket estreia como módulo instalável, o roteamento de memória passa a ter uma fonte por tipo de fato, e o teto da auto-memória deixa de ser texto num arquivo para virar aviso automático.
+
+### Adicionado
+
+- **Módulo `lowticket`** (`src/modules/lowticket/`, `default_selected: false`): base de conhecimento low ticket em 20 shards PT com INDEX, guardrails e contrato de leitura em 3 degraus (o pior caso de leitura cai de 10,6k para ~5k tokens), mais `CATALOGO.md` com a análise das 155 peças do swipe file. O caminho do swipe file resolve por `swipe_file_path` em `[modules.lowticket]` do `config.user.toml`, com fallback convencional e aviso explícito quando não acha.
+- **4 skills operacionais do lowticket**: `lowticket-trafego`, `lowticket-funil`, `lowticket-minerador` e `lowticket-pagina`. Todas leem o Cérebro na ativação e nenhuma tem memória própria, igual ao `wizz-offer-forge`.
+- **Guarda de material de terceiro** (`test:lowticket-third-party`): o conhecimento do módulo é destilação escrita do zero, e a fonte bruta fica fora do npm. O teste falha alto quando um re-porte descuidado traz de volta citação verbatim ou nome de produto de terceiro.
+- **Skill `tracking-audit`** (área ads), em dois modos: implantação (página, pixel/CAPI/domínio, 8 eventos priorizados, repasse pelo checkout, compra-teste por rota) e diagnóstico (as 5 transições, hierarquia do que atacar, ROI verdadeiro contra falso). Inclui `utm-e-atribuicao` e resolve a régua no passo 0 sem publicar número de curso nenhum.
+- **Plano de Medição no `wizz-offer-forge`**: passo 0 lê o Cérebro antes de perguntar, passo 0.5 defere para `lowticket-metodologia` quando instalada, passo 6 monta o plano e delega a implantação para o `tracking-audit`.
+- **Comando `/memoria` na skill `cerebro`**: ponte de leitura da auto-memória para Codex, OpenCode e Gemini. Resolve `~/.claude/projects/<slug>/memory/` e lê o índice de lá, sem criar camada nova nem segunda cópia dos fatos.
+- **Aviso de teto da auto-memória** no `session-rules.js` (terceira responsabilidade do mesmo hook SessionStart, para não custar outro processo): dispara a partir de 90% do teto de 40 memórias e 8 KB de índice, com `_archive/` fora da conta para que podar realmente apague o aviso. Silencioso abaixo disso.
+- **`test:cli-pin-consistency`**: toda entrada de CLI cujo `install:` fixa um SHA precisa citar o mesmo SHA no `check:`, senão o build quebra.
+
+### Alterado
+
+- **Uma fonte por tipo de fato**: a regra de escrita dupla (CLAUDE.md do projeto + Cérebro) está revogada. Decisão e estado vão para o Cérebro, armadilha de stack e preferência para a auto-memória do agente, como-fazer para o artefato, e as outras camadas guardam no máximo um ponteiro.
+- **Narrativa de sessão mora no arquivo do projeto**: o bloco empilhável virou `## Estado` sobrescrito no topo, com o histórico em 1 linha por sessão na tabela `Sessões` (teto de 15, excedente para `_index/cerebro-archive.md`).
+- **`check:` dos 5 bundles de CLI valida o SHA fixado**, não só a existência da pasta. `hyperframes`, `claude-video` e `distribb` gravam o SHA num marcador `.wizz-pin`; `buttercut` e `voicebox` respondem por `git rev-parse HEAD`, e o install passou a reparar um clone existente em vez de falhar.
+- **`validate-method-refs` aceita `agent:<area>`** como referência válida: o marcador de decisão e o dataset de evals roteiam por área, e o validador só resolvia id de agente.
+- Tabela de roteamento de memória passa a dizer "auto-memória do agente", não "do Claude Code". Hooks seguem exclusivos do Claude Code por decisão, com o limite documentado em `_shared/cerebro.md`.
+
+### Removido
+
+- **`graphify`** sai do ecossistema inteiro (registry, `token-economy.md`, os 15 `customize.toml`, `routing-table-flat`, READMEs e `src/skills-lib`), com entrada em `removals.txt` para o installer limpar as cópias já instaladas.
+- **`CONTEXT.md` e o comando `/sync`**: existiam para espelhar o vault para agente cloud, que saiu de uso. `references/comandos-pesquisa-e-sync.md` virou `comandos-pesquisa-e-memoria.md` e o `/salvar` perdeu o passo do CONTEXT.md (8 passos viraram 7).
+- **Pasta `_learnings/` do vault** sai do caminho de escrita das skills: era escrita pelo `/salvar` e lida por nenhum comando. Aprendizado técnico vai para a auto-memória, que carrega sozinha.
+- Bloco `rtk-instructions` fora do CLAUDE.md dos projetos (~1,2k tokens por sessão): o hook `rtk-rewrite.sh` já faz o trabalho.
+
 ## [1.17.0] - 2026-08-25
 
 Fases P0, P1 e P2 da auditoria 360° de agosto/2026: a camada de decisão (router→maestro→agente) vira rastreável, consciente de estágio e mensurável; o catálogo ganha as capacidades aprovadas no veredito e perde as redundantes.
