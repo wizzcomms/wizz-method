@@ -1,0 +1,31 @@
+code: lowticket
+name: "Wizz Low Ticket"
+description: "Low ticket direct-response playbook for Meta Ads (BR/PT): funnel diagnosis, bid-cap campaigns, creatives, sales pages, upsell ladders and offer mining. Knowledge base in Portuguese, loaded one shard at a time."
+default_selected: false
+
+# --- Origin note (read this before editing the knowledge base) ---
+#
+# The knowledge under skills/lowticket-metodologia/knowledge/ is a distillation
+# written from scratch: facts, benchmarks, checklists and critical analysis.
+# No third-party lesson text, transcript, PDF or prompt ships in this package.
+# The raw sources stay on the author's machine, outside npm and outside git.
+# Keep it that way: when you extend a shard, write the fact, never the quote.
+#
+# The knowledge body, the shard filenames and the INDEX are in Portuguese on
+# purpose (the market it describes is BR/PT and the vocabulary is native).
+# The framework surface (this file, SKILL.md frontmatter, the registry entry,
+# the README) stays in English like the rest of Wizz Method.
+# Decision recorded 2026-08-28.
+
+# --- Module-specific config ---
+
+swipe_file_path:
+  prompt:
+    - "Absolute path to your creative swipe file (the folder holding the reference videos and images)?"
+    - "Optional. Leave it empty: the skills still work from the written analysis in CATALOGO.md."
+  scope: user
+  default: ""
+  result: "{value}"
+
+directories:
+  - "{output_folder}/lowticket"

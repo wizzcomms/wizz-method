@@ -49,6 +49,20 @@ const TIME_ESTIMATE_PATTERNS = [/takes?\s+\d+\s*min/i, /~\s*\d+\s*min/i, /estima
 
 const SEVERITY_ORDER = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
 
+/**
+ * Code do módulo empacotado que contém este diretório de skill, se houver.
+ * `src/modules/lowticket/skills/lowticket-trafego` -> 'lowticket'.
+ * @param {string} skillDir - Diretório absoluto da skill
+ * @returns {string|null} O code do módulo, ou null fora de src/modules/
+ */
+function moduleCodeFromPath(skillDir) {
+  const parts = skillDir.split(path.sep);
+  const i = parts.lastIndexOf('modules');
+  if (i === -1 || i + 1 >= parts.length) return null;
+  const code = parts[i + 1];
+  return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(code) ? code : null;
+}
+
 // --- Output Escaping ---
 
 function escapeAnnotation(str) {
@@ -193,7 +207,14 @@ function validateSkill(skillDir) {
   // credited BMAD engine internals. Exempt them from the wizz-owned naming rule.
   // SKILL-05 (name must match the directory basename) still applies to them.
   const isVendoredGlobal = skillDir.split(path.sep).includes('skills-lib');
-  if (name && !isVendoredGlobal && !NAME_REGEX.test(name)) {
+  // Uma skill que vive num módulo empacotado (src/modules/<code>/) pode usar o
+  // CODE DO MÓDULO como namespace em vez de `wizz-`: é o mesmo papel que o
+  // prefixo `wizz-` cumpre no módulo wizz, só que o dono é o módulo. Ex.:
+  // src/modules/lowticket/skills/lowticket-trafego. Fora do próprio módulo o
+  // prefixo continua exigido, então o namespace segue sendo verificável.
+  const moduleCode = moduleCodeFromPath(skillDir);
+  const matchesModuleNamespace = Boolean(moduleCode) && new RegExp(`^${moduleCode}-[a-z0-9]+(-[a-z0-9]+)*$`).test(name || '');
+  if (name && !isVendoredGlobal && !matchesModuleNamespace && !NAME_REGEX.test(name)) {
     findings.push({
       rule: 'SKILL-04',
       title: 'name Format',

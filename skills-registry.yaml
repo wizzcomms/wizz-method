@@ -281,6 +281,28 @@ areas:
         when: "Pesquisa profunda de público, VoC, níveis de consciência, matriz de ângulos e léxico nativo de oferta compilados em HTML (metodologia @soupiva)."
       - id: wizz-offer-forge
         when: "Forjar oferta irresistível de resposta direta/infoproduto (mecanismo único, empilhamento de valor, garantia reversa, ponte de tráfego)."
+      # Módulo lowticket (src/modules/lowticket) — ver nota em ads.skills.
+      - id: lowticket-metodologia
+        module: lowticket
+        when: "Roteador da base low ticket BR/PT: gatilho → um shard. Régua de preço, garantia e oferta que tem precedência sobre a skill genérica."
+        not_when:
+          - "SaaS, B2B, site de cliente, high ticket ou mentoria: os números não transferem."
+      - id: lowticket-funil
+        module: lowticket
+        when: "Escada pós-checkout de low ticket: upsell 1, upsell 2, downsell, oferta final, régua de preço por degrau e copy das páginas."
+        not_when:
+          - "Antes de existir um front-end que converte: estender funil sobre front que não vende multiplica zero."
+      - id: lowticket-minerador
+        module: lowticket
+        when: "Garimpo e veredito de oferta de concorrente: vocabulário de busca, veredito em 4 níveis, comparação lado a lado, diagnóstico de por que não escalou."
+        not_when:
+          - "A oferta já está definida: aí é wizz-offer-forge."
+      - id: lowticket-pagina
+        module: lowticket
+        when: "Engenharia de performance da página de venda low ticket: connect rate, ordem do pixel, LCP/TTFB/CLS, peso acima da dobra, relatório antes e depois."
+        not_when:
+          - "Reescrever copy, preço ou estrutura de oferta: esta skill é o engenheiro, não o copywriter."
+          - "Site institucional ou app."
     mcps:
       - id: scrapling
         when: "Scraping/crawl web para pesquisa de mercado, prospecção de leads e inteligência competitiva. Bypass anti-bot (Cloudflare), parsing adaptativo, spider concorrente. Requer: pip install 'scrapling[ai]' && scrapling install."
@@ -315,6 +337,20 @@ areas:
         when: "Gerar/iterar criativos e headlines de anúncio em escala (RSA, variações)."
       - id: analytics-tracking
         when: "Tracking de conversão pros anúncios (compartilhada com growth)."
+      # Módulo lowticket (src/modules/lowticket) — instaladas COM O MÓDULO, não
+      # por skills-lib. O campo `module` é o gate: resolveSkillIds as ignora ao
+      # copiar de src/skills-lib, e o router continua enxergando as entradas.
+      - id: lowticket-metodologia
+        module: lowticket
+        when: "Roteador da base low ticket BR/PT: gatilho → um shard (diagnóstico de funil, bid cap, criativo, oferta, página, Instagram, upsell, mineração). Carrega guardrails junto."
+        not_when:
+          - "SaaS, B2B, site de cliente, high ticket ou mentoria: os números não transferem."
+      - id: lowticket-trafego
+        module: lowticket
+        when: "Diagnóstico e régua de campanha Meta de low ticket: estrutura 1-1-X, bid cap, régua de 3x, quando cortar, como escalar, ler print do gerenciador ou do funil."
+        not_when:
+          - "Google Ads institucional, campanha de marca, lead gen B2B."
+          - "Escrever copy ou criativo: a skill lê número, não produz anúncio."
     mcps:
       - id: meta-ads
         when: "Gestão real de campanha Meta/Facebook/Instagram via API (criar/editar/medir ads)."

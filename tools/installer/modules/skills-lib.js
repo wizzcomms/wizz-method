@@ -43,6 +43,12 @@ function resolveSkillIds(registry, selectedAreas) {
   const entries = resolveAreaEntries(registry, selectedAreas, {
     listKey: 'skills',
     utilityKey: 'utility',
+    // Uma entrada com `module:` vem de src/modules/<module>/skills/, não de
+    // src/skills-lib/ — ela é instalada junto do módulo. Sem este gate o
+    // installer procuraria src/skills-lib/<id>/SKILL.md, não acharia, e
+    // reportaria a skill como "skipped" em toda instalação. Ela continua no
+    // registry porque o router/maestro precisa enxergá-la para rotear.
+    isActionable: (raw) => !raw.module,
   });
   return entries.map((entry) => entry.id);
 }

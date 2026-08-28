@@ -40,6 +40,23 @@
 # aliases (optional) — prior `code` values this module was registered under.
 # An existing install recorded under an alias resolves to this entry instead of
 # being orphaned as "no source available" when the code changes.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# NOT LISTED HERE: bundled local modules.
+# ─────────────────────────────────────────────────────────────────────────────
+# This file registers modules that live in ANOTHER repository and are fetched
+# at install time. Modules that ship inside this repo under src/modules/<code>/
+# are auto-discovered by the installer (OfficialModules.listAvailable scans
+# src/modules/ for a module.yaml) and must NOT get an entry here — an entry
+# without a real upstream `url` would break resolution.
+#
+# Bundled local modules today:
+#   wizz       src/modules/wizz/       default_selected: true
+#   lowticket  src/modules/lowticket/  default_selected: false
+#
+# Their installable skills are declared in skills-registry.yaml with a
+# `module:` field, which keeps the router aware of them while telling the
+# skills-lib copier to leave them alone (see tools/installer/modules/skills-lib.js).
 
 modules:
   bmad-method-test-architecture-enterprise:

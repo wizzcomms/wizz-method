@@ -356,5 +356,40 @@
     "expected": "agent:ads",
     "expected_skills": ["ad-creative"],
     "note": "descoberta: variações de anúncio em escala, evita dizer 'ad creative'"
+  },
+  {
+    "id": "lt01",
+    "prompt": "subi a campanha ontem, já gastou R$200 e o ROAS tá 0,6. troco o criativo ou mexo na página?",
+    "expected": "agent:ads",
+    "expected_skills": ["lowticket-trafego", "lowticket-metodologia"],
+    "note": "descoberta: régua de 3x bid cap; a resposta certa é não julgar ainda, nunca diz 'bid cap'"
+  },
+  {
+    "id": "lt02",
+    "prompt": "o gerenciador diz 1.200 cliques no link mas só 700 visualizações de página. onde tá vazando?",
+    "expected": "agent:ads",
+    "expected_skills": ["lowticket-pagina"],
+    "note": "descoberta: connect rate de 58%, engenharia de página; nunca diz 'connect rate' nem 'LCP'"
+  },
+  {
+    "id": "lt03",
+    "prompt": "meu produto de R$27 vende bem mas o faturamento não sobe. o que ofereço depois da compra?",
+    "expected": "agent:growth",
+    "expected_skills": ["lowticket-funil"],
+    "note": "descoberta: escada pós-checkout; nunca diz 'upsell' nem 'downsell'"
+  },
+  {
+    "id": "lt04",
+    "prompt": "achei um concorrente vendendo a R$97 há uns 3 meses. vale a pena eu fazer uma versão disso?",
+    "expected": "agent:growth",
+    "expected_skills": ["lowticket-minerador"],
+    "note": "descoberta: veredito de oferta minerada e reposicionamento de ticket; nunca diz 'minerar'"
+  },
+  {
+    "id": "lt05",
+    "prompt": "qual prazo de garantia eu ponho num produto de R$19,90 vendido no Instagram?",
+    "expected": "agent:growth",
+    "expected_skills": ["lowticket-metodologia", "wizz-offer-forge"],
+    "note": "descoberta: a régua da base tem precedência sobre o default da skill genérica, e é um ponto em aberto (7 vs 14 dias)"
   }
 ]
