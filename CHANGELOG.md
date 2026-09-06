@@ -4,7 +4,7 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [Unreleased]
+## [1.18.1] - 2026-09-06
 
 ### Corrigido
 
