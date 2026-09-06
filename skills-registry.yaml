@@ -64,7 +64,8 @@
 version: 1
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ÁREAS — cada uma tem um agente dono (executor) e as skills que ele puxa.
+# ÁREAS — `agent` identifica uma SKILL de persona, invocada via Skill.
+# Não usar esse valor como subagent_type. Subagentes nativos são wizz-exec-*.
 # ─────────────────────────────────────────────────────────────────────────────
 areas:
   designer:
@@ -132,22 +133,7 @@ areas:
       - id: ctc-align
         door: motion
         when: "Timing por forced alignment: timestamps palavra a palavra de narração TTS para sincronizar legenda, corte de cena e animação com a fala. Fonte única de timing no pipeline de vídeo; substitui Whisper e estimativa manual."
-    mcps:
-      - id: magic
-        when: "Gerar/refinar componentes prontos via 21st.dev (UI builder, inspiration, refiner)."
-        server:
-          command: npx
-          # Pin de supply chain (2026-08-23): versão fixa; atualizar conscientemente.
-          args: ["-y", "@21st-dev/magic@0.2.2"]
-          env:
-            API_KEY: "${MAGIC_API_KEY}"
     clis:
-      - id: 21st-cli
-        when: "Fonte PAGA complementar (catálogos gratuitos como React Bits/Cult UI/Componentry vêm primeiro; gate de aprovação do usuário). Buscar, inspecionar, instalar e publicar componentes no 21st.dev via terminal (search/get/add/publish, registry do time @wizzdigitalagency). Complementa o Magic MCP (geração assistida); é o caminho de catálogo/registry e o fallback declarado quando o MCP está offline. O install traz também as skills oficiais 21st-cli-use, 21st-registry e 21st-design-sync. Login interativo: `21st login` (em CI usar env API_KEY_21ST)."
-        rel:
-          pairs_with: [magic]
-        check: "command -v 21st"
-        install: "npm i -g @21st-dev/cli && npx @21st-dev/cli install-skill"
       - id: hyperframes
         when: "DESENHAR telas de vídeo em HTML/CSS (HTML→MP4, agent-native, 20+ skills): cena isolada e MUDA — maqueta de WhatsApp/ChatGPT, gráfico animado, título, loop. NÃO usar para montagem com áudio/SFX/legenda sincronizada (posicionador de áudio falhou em produção, ~2,76s de drift; CSS vaza entre telas): a montagem final é do Remotion (regra: HyperFrames desenha, Remotion monta — ver _shared/video-pipeline.md do módulo wizz). Precisa ffmpeg + Node 22 + Chrome headless."
         not_when: "Montagem com áudio/SFX/legenda sincronizada (posicionador de áudio falhou em produção, ~2,76s de drift; CSS vaza entre telas)."

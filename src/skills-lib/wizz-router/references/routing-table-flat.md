@@ -52,7 +52,7 @@ Use esta tabela pra mapear skills/CLIs/MCPs direto **fora de projeto Wizz** (sem
 | Gerar vídeo-ad/imagem por IA (Sora/Veo/Kling) + publicar Meta | CLI `arcads` (registry `ads`; git clone + Arcads API key) | 1 |
 | Analisar/entender vídeo existente (frames + transcrição) | CLI `claude-video` (registry designer; `npx skills add bradautomates/claude-video`) | 2 |
 | Narração / voz / TTS / clonagem de voz para vídeo | CLI `voicebox` (registry designer; app local com endpoint MCP) | 2 |
-| Componentes prontos via Magic (21st.dev) | Use diretamente: `mcp__magic__21st_magic_component_inspiration` / `mcp__magic__21st_magic_component_builder` | 1 |
+| Pesquisar componentes compatíveis com o projeto | `ui-component-curator` (demos, código e registries públicos com evidências) | 1 |
 
 ## Área de Marketing / Growth
 
@@ -97,6 +97,6 @@ Quando nenhuma skill/MCP instalado cobrir o pedido, **classifique o que falta** 
 
 **Falta um MCP:** informe → `claude mcp list` → consulte `skills-registry.yaml` (`mcps:`/`mcp_utility:`, com `server` pronto) → proponha `claude mcp add <id> [-e VAR=$VAR] -- <command> [args]`. Secrets sempre via env/placeholder, nunca token real.
 
-MCPs comuns: context7 (docs de libs), magic/21st (UI), supabase (Postgres), meta-ads (Meta), exa (pesquisa). Browser/E2E é sempre via CLI `agent-browser`, nunca via MCP Playwright.
+MCPs comuns: context7 (docs de libs), supabase (Postgres), meta-ads (Meta), exa (pesquisa). Browser/E2E é sempre via CLI `agent-browser`, nunca via MCP Playwright.
 
 Para paid ads Meta, o MCP `mcp-meta-ads` dá acesso real à API Meta Marketing (campanhas, ad sets, ads, métricas, criativos). Combine com `paid-ads` + `ad-creative` + `analytics-tracking`. O `META_ACCESS_TOKEN` vem de env local: nunca exponha em logs ou código commitado.

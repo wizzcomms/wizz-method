@@ -1,0 +1,592 @@
+{
+  "checkedAt": "2026-09-06T08:31:51.484Z",
+  "scope": "src/skills-lib; public upstream entrypoints at recorded revisions. This is an audit baseline, not an import lock.",
+  "sources": [
+    {
+      "repository": "coreyhaines31/marketingskills",
+      "revision": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+      "commitDate": "2026-09-05T04:48:02Z",
+      "skills": [
+        {
+          "id": "copywriting",
+          "path": "skills/copywriting/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "ce18137ae31ab37f261078501431649865ab6b403054d97490754e82acb002d8",
+          "localEntrySha256": "f5d879acc5caa36e64c03382b08a6910ede4ab150ee78c97827a2f1ed1feb9dd",
+          "upstreamName": "copywriting"
+        },
+        {
+          "id": "ab-test-setup",
+          "path": "skills/ab-testing/SKILL.md",
+          "previousPath": "skills/ab-test-setup/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "1fd229160f6014f3f2d7c92cc7d2f991fbf8dc9ed68aac9793c71b408a6d1144",
+          "localEntrySha256": "74d1e7313e5edc509d5a31bad28f9197ad19517b7513f2570130b31e634485b0",
+          "upstreamName": "ab-testing"
+        },
+        {
+          "id": "ad-creative",
+          "path": "skills/ad-creative/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "e5b0cd0bc6bf55ab2abd02ca399fa996b67324cbda0dd1a719689e9322ba6808",
+          "localEntrySha256": "cade0cbe70e7b1ea1f3dd0085206079bc3d78d9d36fe84776247815f3c1f0f21",
+          "upstreamName": "ad-creative"
+        },
+        {
+          "id": "ai-seo",
+          "path": "skills/ai-seo/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "b1ecd93ebc65af886f81bc0a90645c8fd4ffdf68c5b3d4495a9e61481d954d00",
+          "localEntrySha256": "f09949533a3f99ca30b046fc78fa44fd606a3816c186e10f9a3e8dec52becd23",
+          "upstreamName": "ai-seo"
+        },
+        {
+          "id": "analytics-tracking",
+          "path": "skills/analytics/SKILL.md",
+          "previousPath": "skills/analytics-tracking/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "3eda97d96b2329daa933b6fdb94bf81aaa1196e3e344e56a8805f972a7438404",
+          "localEntrySha256": "fcfa7e6c071602094287d0439820593dce0a2c37cc5d37a71bb2f9e5345ceb1b",
+          "upstreamName": "analytics"
+        },
+        {
+          "id": "churn-prevention",
+          "path": "skills/churn-prevention/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "88fd25b77e44ef3689d68d54091df9659a40f5e905c8bdeb09bdeed3f049ad67",
+          "localEntrySha256": "8cb4d4992cd1aa87aa71de83fc7ab0ea75de896e544acc4bab4960ccfe9e9fa6",
+          "upstreamName": "churn-prevention"
+        },
+        {
+          "id": "cold-email",
+          "path": "skills/cold-email/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "b7f8d793169a5111c857e5720c6b80028686cc95d5a0d0d6570957c2710aff9e",
+          "localEntrySha256": "95f710a596c488b0e3ecc51bb5d5b1db8fa589251bbf8ad0f58169797eca89ab",
+          "upstreamName": "cold-email"
+        },
+        {
+          "id": "competitor-alternatives",
+          "path": "skills/competitors/SKILL.md",
+          "previousPath": "skills/competitor-alternatives/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "99e9ea715b1ac6dbaedda345a27358fb5e099f7d4fd5be63789d6e65cf2a6f46",
+          "localEntrySha256": "1db87980b24239715c09c78cf77f24eb054dd59f83ee48397cfb8afd18d18790",
+          "upstreamName": "competitors"
+        },
+        {
+          "id": "content-strategy",
+          "path": "skills/content-strategy/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "0ad572d607884c561668810f77cd21bbe3e0508c64090f2997661a728360f946",
+          "localEntrySha256": "6ac99af8e2085702d2fa74e3b850e389d181d708eceb27e6fd6aa73fa3085d42",
+          "upstreamName": "content-strategy"
+        },
+        {
+          "id": "copy-editing",
+          "path": "skills/copy-editing/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "9b5a20be3dc5513c8f0b4f4c4960857e4d28ed83698a5b33c8dde9dc75a47bf6",
+          "localEntrySha256": "3b1efa37a2a764a72974a3a721e8d011de0cf81acef4baa06042bd69f6b692fe",
+          "upstreamName": "copy-editing"
+        },
+        {
+          "id": "email-sequence",
+          "path": "skills/emails/SKILL.md",
+          "previousPath": "skills/email-sequence/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "1fbd54df4c59f48408057e7db0dfb1a53c033e6a4ca5cd1927a47c51ec28d8f1",
+          "localEntrySha256": "534aac44dbd4eb9b83b52fac8c6775bac7d7d8db5e46e8c136167e8a96588219",
+          "upstreamName": "emails"
+        },
+        {
+          "id": "form-cro",
+          "path": "skills/cro/SKILL.md",
+          "previousPath": "skills/form-cro/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "199016bec3b44bc6a7507b111b6028f6550cc852cd54c7d0df789f15d6f814c4",
+          "localEntrySha256": "76dcd4251cff62ae24c9c96d5d40ecc44c39e0c234f1c976732f66ed218014eb",
+          "upstreamName": "cro"
+        },
+        {
+          "id": "free-tool-strategy",
+          "path": "skills/free-tools/SKILL.md",
+          "previousPath": "skills/free-tool-strategy/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "609158ee26c6005cf6138635a1a8ac4928322651c82ba13584db19d610d61e6b",
+          "localEntrySha256": "a9aa55a24d194c9b9cf007db4ee154950d68648941945b304ac8f7f5c314cb84",
+          "upstreamName": "free-tools"
+        },
+        {
+          "id": "launch-strategy",
+          "path": "skills/launch/SKILL.md",
+          "previousPath": "skills/launch-strategy/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "1d5f5e6a4caaa5b62604a8df324b060eb99da567e65e9fc5a69b9999c61325b2",
+          "localEntrySha256": "1f04f2596f2c4ba63c2fbdb1b9e35b0aa641b39cf8ffa0c74d2e093d2d0c96cf",
+          "upstreamName": "launch"
+        },
+        {
+          "id": "marketing-ideas",
+          "path": "skills/marketing-ideas/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "d5ea46d2d2eb2fb039494e8b545550a6bd5b5b9aedc5e65a228ac514deb018ff",
+          "localEntrySha256": "06f3abcebf414e92fd93abef15e33eebcbde2382e861d13af30aecef5929b3c5",
+          "upstreamName": "marketing-ideas"
+        },
+        {
+          "id": "marketing-psychology",
+          "path": "skills/marketing-psychology/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "573bbe4f6e300e7fb75299e314f56e26382d284782caa2ae0e0f33eb2e646548",
+          "localEntrySha256": "84b8c37ef7a13a548254dd1a663e732fb1b621b6e1f176e4dfa8f6fbe2ad9ef4",
+          "upstreamName": "marketing-psychology"
+        },
+        {
+          "id": "onboarding-cro",
+          "path": "skills/onboarding/SKILL.md",
+          "previousPath": "skills/onboarding-cro/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "ca219e0ba8f931888e2a634624ab927206f8ef26aeca2250399c3c48da0341e0",
+          "localEntrySha256": "94899064ca72db87c9d84d27f393ec61ac03db9a0c1fd465e9aee4d31cdf8134",
+          "upstreamName": "onboarding"
+        },
+        {
+          "id": "page-cro",
+          "path": "skills/cro/SKILL.md",
+          "previousPath": "skills/page-cro/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "199016bec3b44bc6a7507b111b6028f6550cc852cd54c7d0df789f15d6f814c4",
+          "localEntrySha256": "60db341ae3a52ecd6521bdbb3741e22b20197ec130c61728cbbb7c1951988c9c",
+          "upstreamName": "cro"
+        },
+        {
+          "id": "paid-ads",
+          "path": "skills/ads/SKILL.md",
+          "previousPath": "skills/paid-ads/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "5759f8e81a2fc61c135cb7e63b472e8788cf6a1a143b865b818e215d0fc02c69",
+          "localEntrySha256": "065a516ee82d1c260ec89f859fa4856e1deb7291a136d9ea64d5f1c7e906aec3",
+          "upstreamName": "ads"
+        },
+        {
+          "id": "paywall-upgrade-cro",
+          "path": "skills/paywalls/SKILL.md",
+          "previousPath": "skills/paywall-upgrade-cro/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "d062c03f6b99e76ffaa367a1494ba80098b2033d4d74609b895373a024a8eac1",
+          "localEntrySha256": "aa09549f503bb656af4109bfdb256d7e12fda988e5f26ecffe19c88b5d9c07e6",
+          "upstreamName": "paywalls"
+        },
+        {
+          "id": "popup-cro",
+          "path": "skills/popups/SKILL.md",
+          "previousPath": "skills/popup-cro/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "6c66e7f923c1eebc7eb7b94971af2e8016d3b5316e14bb1ad4b15ed3522084ce",
+          "localEntrySha256": "d740ebe56183ec71c01d5a7c96e8e0c0b0319fb9332e3dcb8414d3b1e33eb5e9",
+          "upstreamName": "popups"
+        },
+        {
+          "id": "pricing-strategy",
+          "path": "skills/pricing/SKILL.md",
+          "previousPath": "skills/pricing-strategy/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "6cb88c2e944331c12f2fb83341ff16aba85a34629df11f4cffc7f611e4df6868",
+          "localEntrySha256": "e049d919778199f0f33e09e4bb08f9331edd821ec32503c5b919725696ca92b3",
+          "upstreamName": "pricing"
+        },
+        {
+          "id": "product-marketing-context",
+          "path": "skills/product-marketing/SKILL.md",
+          "previousPath": "skills/product-marketing-context/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "6dfd6bd485f62448385844cb9eceefcee0977c843d7a1c9e6077590d4e19d1ec",
+          "localEntrySha256": "e80bbfe3c243ccc39f238dc9bc64ec4a4f9ff0af366a5b17081b92bac69902e4",
+          "upstreamName": "product-marketing"
+        },
+        {
+          "id": "programmatic-seo",
+          "path": "skills/programmatic-seo/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "15cb5979cab5263ede902a830e03342869256ece17905bff240eef498e27cde1",
+          "localEntrySha256": "3f5b405f4058a7d4beacfef8c981ffe12dc9ecb965f6f6d121c4e762f0353cf2",
+          "upstreamName": "programmatic-seo"
+        },
+        {
+          "id": "referral-program",
+          "path": "skills/referrals/SKILL.md",
+          "previousPath": "skills/referral-program/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "103bd339d6d7796fae1128487c1560f38feecd94898d0d7c44ca0383f4c809d9",
+          "localEntrySha256": "b84708a01d428290c7a24c74b7e2522168e198143142fcc862e69c7f4a1190f3",
+          "upstreamName": "referrals"
+        },
+        {
+          "id": "revops",
+          "path": "skills/revops/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "bb27b16ad41c5c2d4fea14c12359c6a01fc755f2bb91140f0c2c43b05b3adb10",
+          "localEntrySha256": "e95d6aed18a922b6f807da4507e4e4532b0c87e9b498cc5e1baddbd62cc16d6e",
+          "upstreamName": "revops"
+        },
+        {
+          "id": "sales-enablement",
+          "path": "skills/sales-enablement/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "d83c3244dd8e2e64d585f1ff0d760eff181587f06b90ceaf8127a4ce618265dd",
+          "localEntrySha256": "06b11f87b93885d7b4b5d2f26ce27555039099bb105918a751a3dc6f3a7a27eb",
+          "upstreamName": "sales-enablement"
+        },
+        {
+          "id": "schema-markup",
+          "path": "skills/schema/SKILL.md",
+          "previousPath": "skills/schema-markup/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "d8b7aa7bcd9727a87fb5470a6c9ee252b99a7ccb84f637d7c67c5d155b507e0b",
+          "localEntrySha256": "728f221b25d062afe204f3980d46db4800ac05f9fb68fd2cdcc8e7bfa7b68e79",
+          "upstreamName": "schema"
+        },
+        {
+          "id": "seo-audit",
+          "path": "skills/seo-audit/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "9420a6c1ffcf7212766bcb618c28766ecb084631bed8045f3115d42b1230d368",
+          "localEntrySha256": "94b91d7f70d6941ed776d94babb6cec9af94fe9dbe2ce6795bddf45a8d635ef8",
+          "upstreamName": "seo-audit"
+        },
+        {
+          "id": "signup-flow-cro",
+          "path": "skills/signup/SKILL.md",
+          "previousPath": "skills/signup-flow-cro/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "9395aabae64891ebdac5f31d17c83b9d47546dc0c9b22654c7b89e9b04da7cf6",
+          "localEntrySha256": "5968f34d11c8828a936d9791a8b1493f83b8b997ae86867e84e03391af1c7636",
+          "upstreamName": "signup"
+        },
+        {
+          "id": "site-architecture",
+          "path": "skills/site-architecture/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "a47f693c6a4f45db89276d8c341b3aa3054090cc8002dd4a2635448d7d152492",
+          "localEntrySha256": "4e89403300d7fc9f11c26e13091d9d437ddf1c5571fb91104965db53e04e33bd",
+          "upstreamName": "site-architecture"
+        },
+        {
+          "id": "social-content",
+          "path": "skills/social/SKILL.md",
+          "previousPath": "skills/social-content/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "8cc93d9b361622cdb640e87969747b85603bed2d268e923179f8dfb4799ec8c7",
+          "localEntrySha256": "72e7f6bbed00a77512bb4afc4b93b7d527948450d8b5a37e8cc3deec23cf2680",
+          "upstreamName": "social"
+        }
+      ]
+    },
+    {
+      "repository": "vercel-labs/skills",
+      "revision": "435076e78988e1e6ec40d00b0b1d76bdbbc5419a",
+      "commitDate": "2026-08-18T20:28:31Z",
+      "skills": [
+        {
+          "id": "find-skills",
+          "path": "skills/find-skills/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "c00eeea0e13e74fe4a9d84ba0a8542205a1b736d65f13134fe1a6647eb14976f",
+          "localEntrySha256": "a837524992cbd549d63c0d711258787087817f96e9040717d091dca1b342fe59",
+          "upstreamName": "find-skills"
+        }
+      ]
+    },
+    {
+      "repository": "remotion-dev/skills",
+      "revision": "f54682712abc4a68cdc7c41513bd3b3298829873",
+      "commitDate": "2026-09-05T13:21:24Z",
+      "skills": [
+        {
+          "id": "remotion-best-practices",
+          "path": "skills/remotion-best-practices/SKILL.md",
+          "previousPath": "skills/remotion/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "0a059111dc9888c3bc10db184fe070735c53b7e2b68f2eacb8356435f41227ea",
+          "localEntrySha256": "f9cb3ad8ba11e39d725924a97682144042d413ab63592929a61634d5d2b73bd5",
+          "upstreamName": "remotion-best-practices"
+        }
+      ]
+    },
+    {
+      "repository": "supabase/agent-skills",
+      "revision": "8331f910845103c08d51f6ca1d86ebb7d1f745e3",
+      "commitDate": "2026-08-12T07:36:50Z",
+      "skills": [
+        {
+          "id": "supabase-postgres-best-practices",
+          "path": "skills/supabase-postgres-best-practices/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "ad65e776f45e761bafc609d3f506c77c1032225aa65e0c4c02f241b8071e5855",
+          "localEntrySha256": "a87ebaa3345e54e31315ce1c848940820b1c42e47f5ef9213db2f69f4515b3f4",
+          "upstreamName": "supabase-postgres-best-practices"
+        }
+      ]
+    },
+    {
+      "repository": "google-labs-code/stitch-skills",
+      "revision": "0337446dadde6f8c94210444e2aa9d546126480f",
+      "commitDate": "2026-08-17T20:20:22Z",
+      "skills": [
+        {
+          "id": "enhance-prompt",
+          "path": "plugins/stitch-utilities/skills/enhance-prompt/SKILL.md",
+          "previousPath": "skills/enhance-prompt/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "ccb200c798072438b642b1fa6a5c515563159e2fab3d56e813d76d8afa9a7ce6",
+          "localEntrySha256": "1b68fbe89ae99b599e6d1f5de78aa23a543efa46672fcbe42c20db4620aefffd",
+          "upstreamName": "enhance-prompt"
+        },
+        {
+          "id": "react-components",
+          "path": "plugins/stitch-build/skills/react-components/SKILL.md",
+          "previousPath": "skills/react-components/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "a978bf8fb135c69f944432dfa4166d6a88903c524ed4be51899a226f7daa223e",
+          "localEntrySha256": "fae6fe70068184c9e06406918a03fb5f939b4abf40c9635fbcd0799993815f75",
+          "upstreamName": "stitch::react-components"
+        }
+      ]
+    },
+    {
+      "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "revision": "314307f156aeab0c6b567bbaa1ce4e7aabd5a636",
+      "commitDate": "2026-09-06T04:31:08Z",
+      "skills": [
+        {
+          "id": "ui-ux-pro-max",
+          "path": ".claude/skills/ui-ux-pro-max/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "ea087c341bfb5b23195c7302027268ede86da802554c18a5c4896a6017b439f9",
+          "localEntrySha256": "83fae74bbe57a103c5752a051dbbab80e759a15bb37c15823bb833e3d6caf6ce",
+          "upstreamName": "ui-ux-pro-max"
+        }
+      ]
+    },
+    {
+      "repository": "pbakaus/impeccable",
+      "revision": "831cabee8b4bc1a2b66e5ae22003e9a19b57d464",
+      "commitDate": "2026-09-05T23:34:46Z",
+      "skills": [
+        {
+          "id": "impeccable",
+          "path": ".claude/skills/impeccable/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "495437d5e0b4fb6a3134019e9ade3a036089b9ff18ffb150b035ce0999d75e01",
+          "localEntrySha256": "d14b66dce0bb47c6f941ec6ce949a1967046454d92cb78b9c14d94b4cd23a08b",
+          "upstreamName": "impeccable"
+        }
+      ]
+    },
+    {
+      "repository": "alchaincyf/huashu-design",
+      "revision": "a790f704d85f277cc93d2081b0840d00036969bb",
+      "commitDate": "2026-08-25T03:05:42Z",
+      "skills": [
+        {
+          "id": "huashu-design",
+          "path": "SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "6cdcaef51dda726ad2eaeea66248c373ecbda7f64c067fcae667444a5a9c1089",
+          "localEntrySha256": "e5f3bda3e6326494849c6326f85f38cf8ada7262eeaca00fcb73fe1aba99f2e6",
+          "upstreamName": "huashu-design"
+        }
+      ]
+    },
+    {
+      "repository": "delphi-ai/animate-skill",
+      "revision": "71bc617e7000e69b679549f13ea132e696420d6c",
+      "commitDate": "2026-01-28T18:52:21Z",
+      "skills": [
+        {
+          "id": "animate",
+          "path": "SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "c457dc6228181294349052cd30feeaf6e97f7425258241a60ed22c2d00786288",
+          "localEntrySha256": "2f5b78779be4933d7a12bf8324b8ad054e1a48ff58c65855e23d384fb79172cc",
+          "upstreamName": "animate"
+        }
+      ]
+    },
+    {
+      "repository": "blader/humanizer",
+      "revision": "e2e92e7b4b8229253ed5c8e81dc65463fdeddda5",
+      "commitDate": "2026-08-19T05:58:53Z",
+      "skills": [
+        {
+          "id": "humanizer",
+          "path": "SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "14fc8a965b6e0a8dc100ba4dffeab55cb94bbac112abbde7e014d5c15a35c202",
+          "localEntrySha256": "9ace9200712a8cb2e68ccbc9e578fcf2ecbaec9b70c9c3a9f4481268359c6216",
+          "upstreamName": "humanizer"
+        }
+      ]
+    },
+    {
+      "repository": "vercel-labs/agent-browser",
+      "revision": "4726eceeb3274eef34ab082ee04d7288c54dec70",
+      "commitDate": "2026-09-06T04:49:25Z",
+      "skills": [
+        {
+          "id": "agent-browser",
+          "path": "skills/agent-browser/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "3a7520e64de2dfaa516b6721c001e84e06e3c06a187b82af029ae721540ebfac",
+          "localEntrySha256": "6c6f82937179a69979e881ac682d150a8fb05559652504e76aa5f619cce34432",
+          "upstreamName": "agent-browser"
+        }
+      ]
+    },
+    {
+      "repository": "anthropics/skills",
+      "revision": "41bbe19d1a1a7eaab5e7bb9050a417e5c6cffc8f",
+      "commitDate": "2026-09-03T16:37:13Z",
+      "skills": [
+        {
+          "id": "canvas-design",
+          "path": "skills/canvas-design/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "a1f288079624402f30682753c1d43920b6664785698d21d3e7aa197450a6448b",
+          "localEntrySha256": "5ed6693429627e258a9efd5fb6d1808ad7d8a773ce255c505447d688cb130349",
+          "upstreamName": "canvas-design"
+        },
+        {
+          "id": "algorithmic-art",
+          "path": "skills/algorithmic-art/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "3bc4092c09804853186524c826bc0621b940bb6122c05b84496dff95388e6eef",
+          "localEntrySha256": "ee6d3c2424a0e72b21ccaf3830eccb23004934e5fd006f45e2fcc5ce6eb7789d",
+          "upstreamName": "algorithmic-art"
+        }
+      ]
+    },
+    {
+      "repository": "Leonxlnx/taste-skill",
+      "revision": "ccbc15639c97057cbfcf32ecebc38ef716e4bb37",
+      "commitDate": "2026-08-24T15:23:56Z",
+      "skills": [
+        {
+          "id": "taste-skill",
+          "path": "skills/taste-skill/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "aa194351b246b8b4799099d4ed7b033d29eab6e6e3d58d8d2172978be7b3ec89",
+          "localEntrySha256": "69c7c23b5733d7e00bbfe5ac473b9f1b14e203467cd3c1c8ed51d25f7a68b184",
+          "upstreamName": "design-taste-frontend"
+        }
+      ]
+    },
+    {
+      "repository": "kylezantos/design-motion-principles",
+      "revision": "4a9ca879f24a361f4dca4174fe2da0f67b5ddee3",
+      "commitDate": "2026-05-30T23:17:34Z",
+      "skills": [
+        {
+          "id": "design-motion-principles",
+          "path": "skills/design-motion-principles/SKILL.md",
+          "status": 200,
+          "upstreamEntrySha256": "599f42dbf011df38f3fcaf1497533af447d91cf97443b92439455af103c25b2e",
+          "localEntrySha256": "599f42dbf011df38f3fcaf1497533af447d91cf97443b92439455af103c25b2e",
+          "upstreamName": "design-motion-principles"
+        }
+      ]
+    }
+  ],
+  "unverifiedLocalSkills": [
+    "adversarial-reviewer",
+    "ai-product-design",
+    "auth-and-secrets",
+    "caching-and-queues",
+    "cerebro",
+    "cloud-and-infra",
+    "ctc-align",
+    "database-and-deps",
+    "database-scaling",
+    "decision-maker",
+    "desktop-security",
+    "implementation-planner",
+    "infrastructure",
+    "inicio-de-projeto",
+    "launch-readiness",
+    "motion-3d-director",
+    "pesquisa-de-publico-do-piva",
+    "premium-landing-ui-researcher",
+    "security-audit-pentest",
+    "site-launch-kit",
+    "tracking-audit",
+    "ui-component-curator",
+    "web-security",
+    "wizz-offer-forge",
+    "wizz-router"
+  ],
+  "componentSources": [
+    {
+      "repo": "DavidHDev/react-bits",
+      "status": 200,
+      "commit": "0e69e737242df1d257b4e5e399b01ae1d7901375",
+      "date": "2026-09-05T16:18:20Z",
+      "matches": [
+        "src/ts-default/Backgrounds/LiquidChrome/LiquidChrome.tsx",
+        "src/ts-default/Backgrounds/LiquidEther/LiquidEther.tsx",
+        "src/ts-default/Components/Carousel/Carousel.tsx",
+        "src/ts-default/Components/DepthCarousel/DepthCarousel.tsx"
+      ]
+    },
+    {
+      "repo": "nolly-studio/cult-ui",
+      "status": 200,
+      "commit": "3b855612fb524cb042cc91b65f0cd575057471cc",
+      "date": "2026-07-22T17:37:52Z",
+      "matches": [
+        "apps/www/components/ui/carousel.tsx",
+        "apps/www/registry/default/example/feature-carousel-demo.tsx",
+        "apps/www/registry/default/example/hero-liquid-metal-demo.tsx",
+        "apps/www/registry/default/example/loading-carousel-demo.tsx"
+      ]
+    },
+    {
+      "repo": "aliimam-in/aliimam",
+      "status": 200,
+      "commit": "18ea470daa771363103c2d8c5262dce39725e81c",
+      "date": "2026-08-27T15:56:07Z",
+      "matches": ["packages/ui/src/components/carousel.tsx"]
+    },
+    {
+      "repo": "WatermelonCorp/watermellon-registry",
+      "status": 200,
+      "commit": "0099addd50a985bf53bdb81140ab4b72fc0668ce",
+      "date": "2026-08-30T10:31:00Z",
+      "matches": [
+        "src/components/ui/carousel.tsx",
+        "src/components/watermelon-ui/carousel-navigator-base.tsx",
+        "src/components/watermelon-ui/carousel-navigator.tsx",
+        "src/components/watermelon-ui/carousel-slider-base.tsx"
+      ]
+    },
+    {
+      "repo": "heyfabrika/styleui",
+      "status": 200,
+      "commit": "3da5706548882038f448a8ff4e570680a06b25c4",
+      "date": "2026-05-21T13:26:51Z",
+      "matches": []
+    },
+    {
+      "repo": "bklit/bklit-ui",
+      "status": 200,
+      "commit": "c57f66bfa7c3198edb677b567ce08cbf364ae159",
+      "date": "2026-07-28T16:48:53Z",
+      "matches": [
+        "apps/web/components/charts/line-chart-studio-trio-demo.tsx",
+        "apps/web/components/docs/line-chart-brush-demo.tsx",
+        "apps/web/components/docs/line-chart-date-range-demo.tsx",
+        "apps/web/components/docs/line-chart-loading-demo.tsx"
+      ]
+    }
+  ]
+}

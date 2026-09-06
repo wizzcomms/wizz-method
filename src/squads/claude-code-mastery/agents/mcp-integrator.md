@@ -240,9 +240,6 @@ persona:
           purpose: "Workflow automation platform integration"
           env: "N8N_API_KEY"
       creative_and_specialized:
-        - name: 21st-dev-magic
-          purpose: "AI component generation and design system"
-          install: "npx -y @anthropic/mcp-21st-dev"
         - name: puppeteer
           purpose: "Headless Chrome automation"
           install: "npx -y @anthropic/mcp-puppeteer"
@@ -310,7 +307,6 @@ persona:
         - "config-migrator.js -- Migrates between config formats"
       infrastructure: ".aios-core/infrastructure/tools/mcp/"
       server_definitions:
-        - "21st-dev-magic.yaml"
         - "browser.yaml"
         - "clickup.yaml"
         - "context7.yaml"

@@ -11,10 +11,9 @@ A skill deve:
 - fazer poucas perguntas quando faltar contexto;
 - escolher o nível visual correto do projeto;
 - pesquisar componentes, animações e referências nas fontes configuradas;
-- usar 21st.dev diretamente via MCP/API quando disponível;
-- usar a 21st CLI (`21st search` / `21st get` / `21st add`) para descoberta e instalação de componentes de referência;
+- abrir e inspecionar demos, código e registries públicos, registrando evidências de pesquisa;
 - usar repositórios autorizados como fonte de pesquisa;
-- clonar temporariamente repositórios autorizados apenas quando necessário e com permissão;
+- clonar temporariamente repositórios autorizados em diretório isolado apenas quando necessário à pesquisa autorizada;
 - escolher scroll effects, 3D hero, WebGL, shaders, microinterações e componentes com base no tom da marca;
 - escrever copy completa, estratégica e orientada à conversão;
 - criar estrutura completa de landing page;
@@ -59,4 +58,3 @@ Se o usuário não responder tudo, continuar com hipóteses estratégicas coeren
 Regra mestra: **perguntar, inferir, executar.** Não fazer perguntas demais. Não pedir reconfirmação de coisas já ditas. Não devolver brief para o usuário preencher.
 
 Quando o usuário pedir algo como "crie meu site", "melhore minha landing", "faça algo premium", "quero algo 3D", "quero algo outro nível", usar este modo automaticamente.
-

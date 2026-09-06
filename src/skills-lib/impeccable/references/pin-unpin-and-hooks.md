@@ -1,17 +1,7 @@
-# Pin/unpin and hooks management commands
+# Pin, unpin and hooks
 
-Load this file when the user invokes `pin`, `unpin`, or `hooks` (with any argument). Covers: creating/removing standalone command shortcuts, and managing the design detector hook that auto-runs after direct UI file edits.
+The Wizz instruction-only adaptation does not ship the upstream management runtime. `pin`, `unpin` and `hooks` are therefore not executable through this bundle.
 
-## Pin / Unpin
+If asked to manage them, first inspect whether the project separately installed the official Impeccable runtime. If present, consult its installed help and current official documentation and use only commands it actually supports. If absent, explain the missing capability and prepare an installation plan if requested. Do not install another runtime automatically during UI work.
 
-**Pin** creates a standalone shortcut so `{{command_prefix}}<command>` invokes `{{command_prefix}}impeccable <command>` directly. **Unpin** removes it. The script writes to every harness directory present in the project.
-
-```bash
-node {{scripts_path}}/pin.mjs <pin|unpin> <command>
-```
-
-Valid `<command>` is any command from the table above. Report the script's result concisely. Confirm the new shortcut on success, relay stderr verbatim on error.
-
-## Hooks
-
-`{{command_prefix}}impeccable hooks <on|off|status|ignore-rule|ignore-file|ignore-value|reset>` manages the design detector hook for this project. The hook auto-runs the detector after direct UI file edits and surfaces findings as system reminders. Full flow is in [reference/hooks.md](reference/hooks.md); load it when the user invokes `{{command_prefix}}impeccable hooks` with any argument.
+UI audit and polish remain available through the bundled [command-workflows](command-workflows.md). Never report a hook or detector as active based solely on these instructions.

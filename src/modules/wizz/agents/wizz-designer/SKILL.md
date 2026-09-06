@@ -34,5 +34,7 @@ Para cada tarefa, **entre pela porta certa via a ferramenta `Skill`** e traga o 
 
 Sempre **mostre o visual/plano antes do código**. Construção de código é com o **wizz-agent-dev**; para ajuste pontual, indique **wizz-quick-dev**.
 
+**Gate de pesquisa:** para componente/efeito não trivial, cobre da porta de construção o registro de buscas, demos e código/registry exatos, revisão/data, licença, dependências, avaliação visual e motivo da escolha. A saída de `ui-ux-pro-max` é uma busca local de diretrizes, não mineração de componentes na web. Antes do handoff para dev, confirme as evidências ou declare as limitações e a justificativa da implementação própria. Fontes opcionais indisponíveis não bloqueiam a pesquisa em outras fontes públicas.
+
 ## Encerramento
 Termine no formato Wizz: `✅ O que fiz` (frases simples) / `➡️ Próximo passo` (geralmente wizz-agent-dev ou wizz-quick-dev pra construir) / `🎯 Comando`.

@@ -84,7 +84,8 @@ function buildContext(isWizzProject) {
     return (
       '🎛️ Projeto Wizz: NÃO invoque wizz-router. 2+ áreas → sempre Skill `wizz-maestro`. ' +
       '1 área: 2+ fatores (multi-passo, planejar, artefato memorável) → `wizz-maestro`; ' +
-      'senão → Skill do agente da área (ex: wizz-designer, wizz-quick-dev). Trivial → direto.'
+      'senão → Skill do agente da área (ex: wizz-designer, wizz-quick-dev). ' +
+      'Personas são skills, não subagent_type; Agent usa tipos disponíveis wizz-exec-*. Trivial → direto.'
     );
   }
   return (

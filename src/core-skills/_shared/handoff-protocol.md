@@ -4,10 +4,11 @@ Contrato mínimo que todo orquestrador ou spawn de subagente usa ao delegar
 trabalho: wizz-router, wizz-maestro, wizz-party-mode (subagent/agent-team)
 e swarm-orchestrator. Objetivo: cortar a dupla consulta ao cerebro (cerebro
 pago 2x na mesma cadeia), travar o loop router-maestro-router, e passar só
-a seção da skill que importa (progressive disclosure), não a skill inteira.
+o entrypoint da skill e apenas as referências necessárias (progressive disclosure), não o pacote inteiro.
 
 ## Campos do brief
 
+- skill de área: nome canônico da persona a invocar via `Skill` (ex.: `wizz-growth`). Não é `subagent_type`: para isolar a tarefa, escolha um executor nativo disponível (`wizz-exec-*`) e instrua-o a carregar essa skill antes de trabalhar. A ausência de um executor não impede invocar a skill na sessão atual.
 - origem: quem está delegando (ex: wizz-router, wizz-maestro). Regra
   anti-loop: nunca invoque quem já está na cadeia de origem. Exemplo
   proibido: router delega pro maestro, maestro devolve pro router.
@@ -17,9 +18,10 @@ a seção da skill que importa (progressive disclosure), não a skill inteira.
   novo, usa o resumo recebido.
 - decisões já tomadas na cadeia: lista curta do que já foi decidido antes
   deste handoff (ex: paleta aprovada, escopo definido).
-- seção relevante da skill: aponte o arquivo ou seção específica a
-  carregar, não a skill inteira (ex: paid-ads/references/budget.md). Quem
-  recebe carrega só isso, não o pacote completo da skill.
+- seção relevante da skill: indique o assunto e as referências necessárias.
+  Quem recebe carrega primeiro o SKILL.md completo via invocação da skill;
+  depois lê apenas as referências exigidas pela tarefa. Skills carregadas
+  pelo lead não são herdadas automaticamente por um subagente.
 - model_hint (opcional): degrau da escada, não modelo cru. Valores:
   `haiku | sonnet | opus | review`. Quem recebe despacha `wizz-exec-<hint>`
   (nativo em Claude Code, Codex, OpenCode e Gemini CLI). Escalada: no

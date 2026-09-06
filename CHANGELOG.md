@@ -4,6 +4,22 @@ Todas as mudanças relevantes do Wizz Method são registradas aqui.
 
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Unreleased]
+
+### Corrigido
+
+- Dispatch de personas Wizz via `Skill`: o campo `agent` do registry não é um tipo nativo de subagente. Router, maestro, growth, handoff e hook distinguem personas dos executores `wizz-exec-*`, corrigindo `Agent type 'wizz-growth' not found`.
+- Pesquisa de design ligada à porta `ui-ux-pro-max`, com evidências de demos, código/registry, revisão, licença e compatibilidade. A busca Python local deixa de ser confundida com mineração na web; buscas por stack ganham orientação explícita e aviso quando ignoradas no modo design-system.
+- Impeccable passa a ter fluxos locais executáveis, sem placeholders de template nem referências a scripts ausentes. A adaptação Wizz declara que não inclui o novo runtime upstream.
+
+### Removido
+
+- 21st/Magic das recomendações, instalação de novas dependências e pesquisa de design. Referências históricas e fixtures de testes continuam preservadas; configurações compartilhadas já existentes não são apagadas pelo instalador.
+
+### Documentado
+
+- Auditoria das fontes de skills em 2026-09-06, com revisões consultadas, caminhos renomeados e limites da comparação. As customizações Wizz não são sobrescritas por pacotes upstream.
+
 ## [1.18.0] - 2026-08-28
 
 Auditoria de contexto (P0, P1 e P2) e o desenho de memória fechado: o módulo lowticket estreia como módulo instalável, o roteamento de memória passa a ter uma fonte por tipo de fato, e o teto da auto-memória deixa de ser texto num arquivo para virar aviso automático.

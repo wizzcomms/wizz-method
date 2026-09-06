@@ -97,6 +97,11 @@ check('flat → manda pro router', () => {
   const ctx = buildContext(false);
   assert.ok(ctx.includes('wizz-router'));
 });
+check('dispatch separa personas Skill dos tipos nativos de Agent', () => {
+  const ctx = buildContext(true);
+  assert.ok(ctx.includes('Personas são skills, não subagent_type'));
+  assert.ok(ctx.includes('Agent usa tipos disponíveis wizz-exec-*'));
+});
 check('injeções são curtas (< 400 chars ≈ ~100 tokens)', () => {
   assert.ok(buildContext(true).length < 400, `wizz: ${buildContext(true).length}`);
   assert.ok(buildContext(false).length < 400, `flat: ${buildContext(false).length}`);

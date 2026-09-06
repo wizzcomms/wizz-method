@@ -73,6 +73,12 @@ if __name__ == "__main__":
 
     # Design system takes priority
     if args.design_system:
+        if args.stack:
+            print(
+                "Warning: --stack is ignored in --design-system mode. "
+                "Run a separate --stack query for implementation guidance.",
+                file=sys.stderr,
+            )
         result = generate_design_system(
             args.query, 
             args.project_name, 

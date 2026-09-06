@@ -21,7 +21,7 @@ Load this file when picking a `--domain` or `--stack` value, or when choosing an
 
 | Stack | Focus |
 |-------|-------|
-| `html-tailwind` | Tailwind utilities, responsive, a11y (DEFAULT) |
+| `html-tailwind` | Tailwind utilities, responsive, a11y (only when project uses it) |
 | `react` | State, hooks, performance, patterns |
 | `nextjs` | SSR, routing, images, API routes |
 | `vue` | Composition API, Pinia, Vue Router |
@@ -38,8 +38,8 @@ The `--design-system` flag supports two output formats:
 
 ```bash
 # ASCII box (default) - best for terminal display
-python3 skills/ui-ux-pro-max/scripts/search.py "fintech crypto" --design-system
+python3 scripts/search.py "fintech crypto" --design-system
 
 # Markdown - best for documentation
-python3 skills/ui-ux-pro-max/scripts/search.py "fintech crypto" --design-system -f markdown
+python3 scripts/search.py "fintech crypto" --design-system -f markdown
 ```

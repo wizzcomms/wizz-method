@@ -114,11 +114,10 @@ A entrega deve parecer um trabalho premium de estratégia, copywriting, design e
 
 Antes de declarar a landing pronta, perguntar-se honestamente:
 
-- Eu **chamei o Magic MCP do 21st.dev** ou declarei que ele não estava disponível? Se não chamei nem declarei, voltar e fazer.
-- Eu **usei a 21st CLI (search/get/add)** ou declarei indisponível? Mesma regra.
+- Eu **abri demos e código/registry dos componentes recomendados** e registrei buscas, URLs/paths, revisão/data, licença, dependências e motivo da escolha?
 - Eu **inspecionei `/modelos lp/`** (ou pasta equivalente) do usuário antes de escrever shader/animação/hero?
-- Eu **pedi autorização para clones** das fontes autorizadas quando o efeito era específico (Ali Imam pra shader, React Bits pra animação)?
-- Cada componente que entreguei tem uma **fonte rastreável** (link 21st.dev, output v0, repo clonado, ou pasta do usuário), ou foi escrito do zero com declaração explícita?
+- Eu registrei fontes indisponíveis e usei cache sem sobrescrever alterações locais?
+- Cada componente que entreguei tem uma **fonte rastreável** (URL exata de código/registry, revisão do repo ou arquivo local), ou foi escrito do zero com declaração explícita?
 - Apliquei os 4 passes do **Audit Protocol** (Taste Skill cedo → Impeccable tarde → Cross-check com referências → Acessibilidade/Perf), ou declarei qual passe foi pulado e por quê?
 - O **Pass 4 (Acessibilidade + Performance)** foi executado? Esse passe nunca pode ser pulado.
 

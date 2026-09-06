@@ -164,7 +164,6 @@ claude mcp add <id> [-e VAR=valor ...] -- <command> [args...]
 # necessário):
 claude mcp add context7 -- npx -y @upstash/context7-mcp@3.2.2
 claude mcp add exa -e EXA_API_KEY=$EXA_API_KEY -- npx -y exa-mcp-server@3.2.1
-claude mcp add magic -e API_KEY=$MAGIC_API_KEY -- npx -y @21st-dev/magic@0.1.0
 claude mcp add supabase -e SUPABASE_ACCESS_TOKEN=$SUPABASE_ACCESS_TOKEN -- npx -y @supabase/mcp-server-supabase@0.8.2 --read-only
 ```
 Versões acima são as pinadas hoje em `skills-registry.yaml` — confira lá antes de copiar, pode ter mudado. Não sugira o MCP do Playwright: browser é sempre via CLI `agent-browser` neste framework, nunca Playwright.

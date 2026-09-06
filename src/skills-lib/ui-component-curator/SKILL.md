@@ -1,6 +1,6 @@
 ---
 name: ui-component-curator
-description: analyze an existing frontend project, infer its visual style and product tone, then research and recommend compatible UI components and effects from 21st.dev and superdesign. use when the user wants help choosing components, effects, sections, or visual patterns that fit an existing project — especially hero effects, cards, buttons, testimonials, pricing sections, navigation, or any interactive pattern. trigger whenever the user wants to add a UI element and wants Claude to study the project first before suggesting options. always read the codebase before recommending, send links for confirmation, and plan before editing.
+description: analyze an existing frontend project, infer its visual style and product tone, then research and recommend compatible UI components and effects from public component catalogs, registries and source repositories. use when the user wants help choosing components, effects, sections, or visual patterns that fit an existing project — especially hero effects, cards, buttons, testimonials, pricing sections, navigation, or any interactive pattern. trigger whenever the user wants to add a UI element and wants Claude to study the project first before suggesting options. always inspect the codebase and exact component sources, provide evidence and plan before editing.
 ---
 
 # Overview
@@ -9,7 +9,7 @@ Read the project. Infer its design language. Then find components that feel like
 
 Act as a UI curator with taste and restraint — not a gallery explorer. Optimize for consistency over novelty.
 
-**Golden rule:** Do not edit before confirming. Plan first → send links → wait for approval → then edit.
+**Golden rule:** Inspect the project → search real sources → document evidence → plan → implement within the user's authorization. Ask only when a material choice or paid access is unresolved.
 
 ---
 
@@ -30,7 +30,13 @@ Extract the project's design DNA:
 
 Do not ask the user to describe the style unless the project has no inspectable UI at all.
 
-## 2. Search 21st.dev and superdesign
+## 2. Search and inspect public sources
+
+Start with existing project components. Then search appropriate public sources: [React Bits](https://reactbits.dev/), [Cult UI](https://www.cult-ui.com/docs), [Componentry](https://componentry.dev/), or [shadcn/ui](https://ui.shadcn.com/docs). Compare at least two suitable sources when available.
+
+Open the exact demo and source file/registry item. Check the actual imports, license, dependencies, stack variant and revision; use current official documentation (Context7 when available) for API compatibility. Inspect animation/interaction in the available browser; label static-only inspection honestly. If a source fails, record the failure and continue elsewhere.
+
+Record search terms, exact URLs/paths, revision/date, license, dependencies, visual inspection status and acceptance/rejection reason in the project's design artifact (or `design-research.md`). A catalog homepage or search snippet is not component evidence. Never invent filenames, components or test results.
 
 Use the inferred style DNA as the search filter. Prefer:
 - options that feel native to the current project
@@ -50,9 +56,9 @@ For each candidate, say briefly:
 
 Provide a compact plan: what changes, which files, any dependency or styling adaptation needed.
 
-## 5. Send links and wait for confirmation
+## 5. Present evidence and proceed within scope
 
-Do not proceed to edit until the user confirms.
+Send the exact candidate links and recommendation. If the user authorized implementation and the design direction is known, proceed with the best fit. Ask only for unresolved direction, paid access or a scope change.
 
 ---
 
@@ -98,5 +104,5 @@ Up to 2 backup options only if genuinely different and useful.
 ## Implementation plan
 What changes, which files, any dependency or adaptation work.
 
-## Links for confirmation
-The candidate links. Await user approval before editing.
+## Research evidence
+Exact candidate demo/source links, revision/date, license and dependencies, visual inspection status, decisions and unavailable sources. State what still needs a user decision.

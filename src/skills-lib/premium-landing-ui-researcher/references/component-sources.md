@@ -4,70 +4,26 @@ Priorizar fontes gratuitas, open source, públicas, registry-based ou fornecidas
 
 Não depender de fontes pagas como parte central do fluxo.
 
-Fluxo recomendado de pesquisa (gratuito primeiro; 21st.dev é PAGO e entra como complemento):
+Fluxo de pesquisa (fontes públicas primeiro; registrar evidências conforme [source-first-protocol](source-first-protocol.md)):
 
 1. referências enviadas pelo usuário (`modelos lp/`, prints, links);
 2. repositórios open source autorizados: cache central em `~/.claude/design-sources/` (React Bits, Cult UI, Ali Imam, Watermelon, StyleUI) + Skiper UI via shadcn + Componentry (componentry.dev, gratuito, React animado);
 3. registries shadcn públicos;
 4. fontes de taste/motion (Impeccable, Taste Skill, Design Motion Principles, MotionSites, Vibe Code Components, Refero Styles com DESIGN.md gratuito);
 5. fontes visuais abertas (Landing Love, Godly, Design Spells, Mobbin, Refero, ScreensDesign, DesignVault, Spline, Unicorn Studio);
-6. 21st.dev (fonte PAGA, complementar, com aprovação do usuário): Magic MCP (`mcp__magic__*`) e 21st CLI (`21st search`/`get`/`add`, registry do time);
-7. hipóteses estratégicas coerentes, quando não houver acesso externo.
+6. hipóteses estratégicas coerentes, quando não houver acesso externo.
 
-## 21st.dev / Magic MCP
+## Evidências de mineração
 
-Esta skill deve usar 21st.dev diretamente quando MCP/API estiver disponível.
+Para cada recomendação, abra a demo e o código/registry do item exato. Registre busca, URL/path, revisão ou data, licença, dependências, compatibilidade e motivo de seleção ou rejeição. Não invente nomes de arquivos nem use a homepage de um catálogo como prova de que um componente foi encontrado.
 
-Não depender de outra skill para usar 21st.dev. Quando útil, a skill `ui-component-curator` pode ser invocada como caminho alternativo para análise prévia do projeto e curadoria visual.
-
-O 21st.dev é fonte prioritária para: component search, UI inspiration search, SVG icon search, Magic MCP, UI generation, component variations, landing page components, SaaS dashboard components, buttons, cards, hero sections, pricing sections, testimonials, AI chat components, text e navigation components, animated components.
-
-Quando o ambiente tiver Magic MCP disponível, usar as ferramentas MCP do 21st.dev diretamente:
-
-- `mcp__magic__21st_magic_component_inspiration`: buscar padrões e referências de seções (hero, pricing, testimonials, features);
-- `mcp__magic__21st_magic_component_builder`: gerar/instalar o componente alinhado ao stack;
-- `mcp__magic__21st_magic_component_refiner`: refinar componentes existentes;
-- `mcp__magic__logo_search`: logos de marcas (integrações, prova social, parceiros).
-
-Fluxo recomendado:
-
-1. Analisar o projeto.
-2. Identificar o nível do site.
-3. Definir quais componentes a página precisa.
-4. Pesquisar no 21st.dev por componentes compatíveis com objetivo, tom e stack.
-5. Priorizar componentes compatíveis com Next.js, React, TypeScript, Tailwind CSS, shadcn/ui e Framer Motion/Motion.
-6. Combinar resultados do 21st.dev com:
-   - React Bits para animações;
-   - Cult UI para componentes shadcn;
-   - Ali Imam para shaders e efeitos visuais;
-   - Watermelon UI para SaaS/product UI;
-   - StyleUI para templates;
-   - Design Motion Principles para regras de movimento;
-   - Taste Skill e Impeccable para qualidade visual.
-
-Se o Magic MCP ou API do 21st.dev não estiver disponível: não inventar resultados específicos, informar que o 21st.dev não está conectado, continuar usando as outras fontes disponíveis, pedir ao usuário para conectar o MCP/API se quiser busca direta no 21st.dev.
-
-## 21st CLI: busca, inspeção e registry do time
-
-O v0 saiu do fluxo (não é mais usado). A **CLI oficial do 21st.dev** cobre busca, inspeção, instalação e publicação, direto do terminal, com o registry do time (`@wizzdigitalagency`).
-
-**Setup (uma vez):** `npm i -g @21st-dev/cli` + `21st login` (browser; em CI usar env `API_KEY_21ST`). As skills oficiais (`21st-cli-use`, `21st-registry`, `21st-design-sync`) instalam com `npx @21st-dev/cli install-skill` e ensinam o agente a publicar/editar/instalar sozinho.
-
-**Fluxo de mineração (3 passos):**
-
-1. **Buscar:** `21st search "<termo>"` (ex: `pricing table`, `hero glass`, `testimonials`), com `--type component|theme|template` quando fizer sentido.
-2. **Inspecionar:** `21st get <id>` pra ver o item antes de decidir; `21st bookmarks` lista os salvos do usuário.
-3. **Instalar/adaptar:** `21st add <user>/<slug>` ou `npx shadcn@latest add https://21st.dev/r/<user>/<slug>`; depois adaptar tokens/tipografia à marca (nunca colar cru).
-
-**Publicar de volta (registry do time):** componente maduro adaptado à marca vira ativo reutilizável: `21st publish ./Componente.tsx --to default` (multi-arquivo via `21st.json`). Temas: `21st publish-theme`. Ver skill `21st-registry`.
-
-**Complemento, não substituto, do Magic MCP:** o Magic MCP continua sendo o caminho de GERAÇÃO/refino assistido (inspiration/builder/refiner); a CLI é o caminho de CATÁLOGO/registry. Se o MCP estiver offline ou sem `MAGIC_API_KEY`, a CLI é o fallback declarado.
+Use o browser disponível para verificar animações e estados quando possível. Se a fonte estiver indisponível, registre isso e continue pelas outras fontes. Inspiração visual e código reutilizável têm critérios de evidência diferentes.
 
 **Overlap com modelos locais:** inspecionar a pasta `modelos lp/` do usuário primeiro; o que já foi minerado e salvo localmente não precisa de rede.
 
 ## Authorized Component / Code Inspection Sources
 
-Estas fontes podem ser clonadas temporariamente, com permissão do usuário, para inspecionar componentes, exemplos ou registries.
+Estas fontes são candidatas à pesquisa; verifique disponibilidade e licença do item escolhido. Siga a Clone Policy abaixo para inspecionar componentes, exemplos ou registries.
 
 ### React Bits
 
@@ -77,7 +33,7 @@ https://github.com/DavidHDev/react-bits.git
 
 Usar para: animações React, text effects, animated backgrounds, scroll effects, hover effects, cards animados, microinterações, loaders, hero animations, partículas, efeitos de cursor, detalhes visuais interativos.
 
-Priorizar componentes open source. Não recomendar nem listar componentes React Bits Pro como dependência obrigatória.
+Verificar a licença do item/revisão: em 2026-09-06 o [LICENSE.md](https://github.com/DavidHDev/react-bits/blob/0e69e737242df1d257b4e5e399b01ae1d7901375/LICENSE.md) declara MIT + Commons Clause. Código público não equivale a MIT sem restrições adicionais. Não recomendar nem listar componentes React Bits Pro como dependência obrigatória.
 
 ### Cult UI
 
@@ -100,7 +56,7 @@ https://github.com/aliimam-in/aliimam.git
 
 Usar para: shaders, liquid wave, pixel grid, ripple shader, border glow, bento layouts, typewriter effects, canvas-based effects, efeitos visuais experimentais.
 
-Se a estrutura do repositório estiver incerta: inspecionar docs primeiro, pedir confirmação antes de clonar, não assumir nomes de componentes sem verificar.
+Se a estrutura do repositório estiver incerta: inspecionar docs primeiro e não assumir nomes de componentes sem verificar.
 
 ### Watermelon UI
 
@@ -128,7 +84,7 @@ Usar para: templates, landing page layouts, páginas prontas, seções instaláv
 ### Animmaster Lib
 
 - Site: https://animmasterlib.dev/ — **fonte PAGA** (300 componentes animados PRO, HTML/CSS/JS/React/Next)
-- Mesmo gate de custo do 21st.dev: só com aprovação do usuário, quando as gratuitas não cobrirem
+- Só usar com acesso/custo autorizado, quando as fontes públicas não cobrirem
 - O que o usuário já comprou/baixou dela vale como recurso local (inspecionar em `modelos lp/`)
 
 ### Bklit UI
@@ -319,32 +275,9 @@ Não prometer código pronto quando a fonte for apenas visual. Não copiar visua
 
 ## Clone Policy
 
-**Não clonar nada automaticamente.**
+Siga a fase de cache de [source-first-protocol](source-first-protocol.md). Prefira arquivos públicos, docs e registry; clone em diretório isolado apenas quando necessário à pesquisa autorizada. Confira origem, revisão e alterações locais antes de atualizar um cache. Nunca sobrescreva trabalho local nem execute scripts do repo para apenas inspecionar código.
 
-Se precisar clonar uma fonte de componentes ou referência, perguntar antes.
-
-Ordem preferida:
-
-1. usar source map conhecido;
-2. usar docs públicas;
-3. usar web/search se disponível;
-4. usar registry URL se disponível;
-5. pedir permissão antes de clonar;
-6. clonar apenas em pasta temporária ou claramente nomeada.
-
-Clonar apenas em pasta temporária, como:
-
-```text
-.design-sources-temp/
-```
-
-Nunca clonar diretamente dentro da estrutura principal do app.
-
-A skill pode clonar temporariamente apenas repositórios das listas `Authorized Component / Code Inspection Sources` e `Authorized Reference Inspection Sources`.
-
-Usar repositórios clonados somente para: pesquisa, inspeção, descoberta de componentes, exemplos, orientação de implementação.
-
-Não manter repositórios clonados como dependência do projeto sem confirmação explícita.
+Use somente os componentes necessários; preserve licença e atribuições. O clone de pesquisa não vira dependência permanente do app.
 
 ## Paid Source Policy
 
@@ -358,8 +291,7 @@ Remover dependência obrigatória de:
 - Cult UI Pro;
 - Skiper UI premium;
 - Spline pago;
-- Unicorn Studio pago;
-- planos pagos do 21st.dev como obrigação (o fluxo funciona no free tier).
+- Unicorn Studio pago.
 
 Usar ferramentas pagas apenas se:
 
@@ -371,4 +303,3 @@ Usar ferramentas pagas apenas se:
 Sempre preferir: open source, registry público, GitHub, docs públicas, screenshots do usuário, referências fornecidas.
 
 Não burlar paywall, login, licenças, limites de plano ou proteções de sites. Se houver dúvida sobre licença, avisar e sugerir alternativa open source.
-
